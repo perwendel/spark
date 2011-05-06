@@ -1,2 +1,1 @@
-mvn compile
-mvn exec:java -Dexec.mainClass="spark.Start"
+mvn compile exec:java -Dexec.mainClass="spark.Start"
