@@ -1,0 +1,8 @@
+target
+bin
+.settings
+.externalToolBuilders
+.project
+.classpath
+.pdm
+reports
