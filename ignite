@@ -1,0 +1,2 @@
+mvn compile
+mvn exec:java -Dexec.mainClass="spark.Start"
