@@ -16,6 +16,11 @@ public class RouteTest {
         return "Hello World!";
     }
     
+    @Route("hello '/:p1/:p2'")
+    public static String newRest(WebContext context) {
+        return "p1 = " + context.getParam("p1") + ", p2 = " + context.getParam("p2");
+    }
+    
     @Route("get '/:p1/:p2'")
     public static String newRes(WebContext context) {
         return "p1 = " + context.getParam("p1") + ", p2 = " + context.getParam("p2");

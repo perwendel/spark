@@ -63,23 +63,10 @@ public class DispatcherFilter implements Filter {
             LOG.info("s: method: " + method + ", route: " + route);
             
             // Parse route string to get HttpMethod and route
-            parseAndAddRoute(route, method);
+            routeMatcher.parseValidateAddRoute(route, method);
             
             // TODO: Remember in a future paramContext ---> TO LOWER CASE !!!
         }
-    }
-    
-    private void parseAndAddRoute(String route, Method target) {
-        System.out.println("Route: " + route);
-        int singleQuoteIndex = route.indexOf('\'');
-        System.out.println(singleQuoteIndex);
-        String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase();
-        String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim().toLowerCase();
-        System.out.println(httpMethod + ", " + url);
-    
-        // Use special enum stuff to get from value
-        HttpMethod method = HttpMethod.valueOf(httpMethod);
-        routeMatcher.addRoute(method, url, target);
     }
     
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)

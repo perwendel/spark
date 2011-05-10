@@ -27,6 +27,10 @@ public class SparkUtils {
         return path;
     }
     
+    public static boolean isNotBlank(String word) {
+        return word != null && word.trim().length() > 0;
+    }
+    
     public static boolean isParam(String routePart) {
         return routePart.startsWith(":");
     }

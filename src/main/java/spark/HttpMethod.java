@@ -10,5 +10,5 @@
 package spark;
 
 public enum HttpMethod {
-    get, post, put, delete
+    get, post, put, delete, head, trace, connect, options
 }
