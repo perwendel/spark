@@ -1,3 +1,12 @@
+/***************************************************************
+ *      _______  ______      ___       ______       __  ___    *
+ *     /       ||   _  \    /   \     |   _  \     |  |/  /    *
+ *    |   (----`|  |_)  |  /  ^  \    |  |_)  |    |  '  /     *
+ *     \   \    |   ___/  /  /_\  \   |      /     |    <      *
+ * .----)   |   |  |     /  _____  \  |  |\  \----.|  .  \     *
+ * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
+ *                                                             *
+ **************************************************************/
 package spark;
 
 import java.lang.reflect.Method;
@@ -103,7 +112,7 @@ public class Node {
     }
     
     public Node findBestMatch(String route) {
-        List<String> path = SparkUtils.convertToList(route);
+        List<String> path = SparkUtils.convertRouteToList(route);
         SearchContext searchContext = new SearchContext();
         searchRec(path, 0, 0, searchContext);
         return searchContext.bestMatch;

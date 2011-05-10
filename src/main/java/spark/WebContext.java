@@ -1,3 +1,12 @@
+/***************************************************************
+ *      _______  ______      ___       ______       __  ___    *
+ *     /       ||   _  \    /   \     |   _  \     |  |/  /    *
+ *    |   (----`|  |_)  |  /  ^  \    |  |_)  |    |  '  /     *
+ *     \   \    |   ___/  /  /_\  \   |      /     |    <      *
+ * .----)   |   |  |     /  _____  \  |  |\  \----.|  .  \     *
+ * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
+ *                                                             *
+ **************************************************************/
 package spark;
 
 import java.util.HashMap;
@@ -20,8 +29,8 @@ public class WebContext {
     private final void setParams(RouteMatch match) {
         LOG.info("set params for requestUri: " + match.getRequestUri() + ", matchUri: " + match.getMatchUri());
     
-        List<String> request = SparkUtils.convertToList(match.getRequestUri());
-        List<String> matched = SparkUtils.convertToList(match.getMatchUri());
+        List<String> request = SparkUtils.convertRouteToList(match.getRequestUri());
+        List<String> matched = SparkUtils.convertRouteToList(match.getMatchUri());
         
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);

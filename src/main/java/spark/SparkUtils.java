@@ -1,3 +1,12 @@
+/***************************************************************
+ *      _______  ______      ___       ______       __  ___    *
+ *     /       ||   _  \    /   \     |   _  \     |  |/  /    *
+ *    |   (----`|  |_)  |  /  ^  \    |  |_)  |    |  '  /     *
+ *     \   \    |   ___/  /  /_\  \   |      /     |    <      *
+ * .----)   |   |  |     /  _____  \  |  |\  \----.|  .  \     *
+ * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
+ *                                                             *
+ **************************************************************/
 package spark;
 
 import java.lang.reflect.Method;
@@ -6,7 +15,7 @@ import java.util.List;
 
 public class SparkUtils {
 
-    public static List<String> convertToList(String route) {
+    public static List<String> convertRouteToList(String route) {
         String[] pathArray = route.split("/");
         List<String> path = new ArrayList<String>();
         for (String p : pathArray) {
