@@ -16,10 +16,10 @@ public class RouteMatcher {
     private Node delete;
 
     public RouteMatcher() {
-        get = Node.createNode("get", null);
-        post = Node.createNode("post", null);
-        put = Node.createNode("get", null);
-        delete = Node.createNode("get", null);
+        get = Node.createNode("get", null, true);
+        post = Node.createNode("post", null, true);
+        put = Node.createNode("get", null, true);
+        delete = Node.createNode("get", null, true);
     }
 
     public void addRoute(HttpMethod httpMethod, String route, Method target) {

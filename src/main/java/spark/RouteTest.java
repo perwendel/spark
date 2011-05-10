@@ -7,19 +7,19 @@ public class RouteTest {
         return "Hello World!";
     }
     
-    @Route("get '/new'")
-    public static String newRes() {
-        return "new resource";
+    @Route("get '/:p1/:p2'")
+    public static String newRes(WebContext context) {
+        return "p1 = " + context.getParam("p1") + ", p2 = " + context.getParam("p2");
     }
     
     @Route("get '/xml'")
-    public String zml() {
+    public static String zml() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tag><sub>Hello World Spark!</sub></tag>";
     }
     
     @Route("get '/bbb/:p2'")
-    public static String params() {
-        return "Params response";
+    public static String params(WebContext context) {
+        return "Params response: " + context.getParam("p2");
     }
     
     @Route("get '/html'")

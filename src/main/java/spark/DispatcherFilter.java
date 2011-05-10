@@ -21,12 +21,14 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 /**
  * TODO: discover new TODOs.
  * 
- * TODO: Add /uri/{param} possibility
+ * TODO: Add /uri/{param} possibility, DONE
+ * TODO: Add *, splat possibility
+ * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static
  * TODO: Add possibility to access HttpServletContext in method impl.
- * TODO: Figure out a nice name
+ * TODO: Figure out a nice name, DONE - SPARK
  * TODO: Add possibility to set content type on return
  * TODO: Create maven archetype
- * TODO: Tweak log4j config
+ * TODO: Tweak log4j config, DONE
  * TODO: Add regexp URIs
  *
  * @author Per Wendel
@@ -71,30 +73,6 @@ public class DispatcherFilter implements Filter {
         routeMatcher.addRoute(method, url, target);
     }
     
-    public static void print() {
-        System.out.println("//balle///:param///");
-    }
-    
-    public static void print2() {
-        System.out.println("balle/fjonger/dong");
-    }
-    
-    public static void main(String[] args) throws Exception {
-        System.out.println(System.out.getClass().getName());
-        
-        RouteMatcher matcher = new RouteMatcher();
-        matcher.addRoute(HttpMethod.get, "//balle///:param///", DispatcherFilter.class.getMethod("print"));
-        matcher.addRoute(HttpMethod.get, "balle/fjonger/dong", DispatcherFilter.class.getMethod("print2"));
-        
-        Method target = matcher.findTargetForRoute(HttpMethod.get, "/balle/fjongera/dong").getTarget();
-        try {
-            target.invoke(target.getDeclaringClass());
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                     throws IOException, ServletException {
         long t0 = System.currentTimeMillis();
@@ -110,8 +88,9 @@ public class DispatcherFilter implements Filter {
 
         Method target = null;
         
+        WebContext webContext = null;
         if (match != null) {
-            new WebContext(match);
+            webContext = new WebContext(match);
             
             // TODO: Do something with the web context
             
@@ -124,11 +103,17 @@ public class DispatcherFilter implements Filter {
             try {
                 Object result;
                 if (Modifier.isStatic(target.getModifiers())) {
-                    result = target.invoke(target.getDeclaringClass());
+                    target.getParameterTypes();
+                    if (SparkUtils.hasWebContext(target)) {
+                        result = target.invoke(target.getDeclaringClass(), webContext);
+                    } else {
+                        result = target.invoke(target.getDeclaringClass());    
+                    }
+                    
                 } else {
                     LOG.warn("Method: '" + target + "' should be static. " + "Spark" + " is nice and will try to invoke it anyways...");
-                    result = target.invoke(target.getDeclaringClass().newInstance());
-                    // TODO: Should we just throw an explicit exception
+                    httpResponse.sendError(500, "Target method not static");
+                    return;
                 }
                 httpResponse.getOutputStream().write(result.toString().getBytes("utf-8"));
                 long t1 = System.currentTimeMillis() - t0;

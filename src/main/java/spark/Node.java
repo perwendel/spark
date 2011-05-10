@@ -8,8 +8,9 @@ public class Node {
     private List<Node> children;
     private Method method;
     private String paramName;
-
-    public static Node createNode(String value, Method method) {
+    private boolean isRoot;
+    
+    public static Node createNode(String value, Method method, boolean isRoot) {
         Node node = new Node();
         node.setMethod(method);
         if (value.startsWith(":")) {
@@ -18,8 +19,12 @@ public class Node {
         } else {
             node.setValue(value);   
         }
-        
+        node.isRoot = isRoot;
         return node;
+    }
+    
+    public static Node createNode(String value, Method method) {
+        return createNode(value, method, false);
     }
     
     public Method getTarget() {
@@ -81,7 +86,7 @@ public class Node {
     public String getPath() {
         String buffer = encodePathPart();
         Node p = getParent();
-        while (p != null && !p.getValue().equals("root")) {
+        while (p != null && !p.isRoot) {
             buffer = p.encodePathPart() + "/" + buffer;
             p = p.getParent();
         }
@@ -98,14 +103,7 @@ public class Node {
     }
     
     public Node findBestMatch(String route) {
-        String[] pathArray = route.split("/");
-        List<String> path = new ArrayList<String>();
-        for (String p : pathArray) {
-            if (p.length() > 0) {
-                path.add(p);
-                System.out.println("p: " + p);
-            }
-        }
+        List<String> path = SparkUtils.convertToList(route);
         SearchContext searchContext = new SearchContext();
         searchRec(path, 0, 0, searchContext);
         return searchContext.bestMatch;
