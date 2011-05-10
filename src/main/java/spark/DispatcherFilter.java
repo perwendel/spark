@@ -30,7 +30,9 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 /**
  * TODO: discover new TODOs.
  * 
- * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc
+ * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc, AND headers
+ * TODO: Redirect func in web context
+ * TODO: Query string in web context
  * TODO: Add *, splat possibility
  * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static
  * TODO: Add possibility to access HttpServletContext in method impl.
@@ -76,7 +78,7 @@ class DispatcherFilter implements Filter {
         long t0 = System.currentTimeMillis();
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-
+        
         String httpMethod = httpRequest.getMethod().toLowerCase();
         String uri = httpRequest.getRequestURI().toLowerCase();
         
@@ -88,7 +90,7 @@ class DispatcherFilter implements Filter {
         
         WebContext webContext = null;
         if (match != null) {
-            webContext = new WebContext(match);
+            webContext = new WebContext(match, httpRequest, httpResponse);
             
             // TODO: Do something with the web context
             

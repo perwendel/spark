@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 
 public class WebContext {
@@ -20,14 +23,22 @@ public class WebContext {
     private static Logger LOG = Logger.getLogger(WebContext.class);
     
     private Map<String, String> params;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
     
-    public WebContext(RouteMatch match) {
+    public WebContext(RouteMatch match, HttpServletRequest request, HttpServletResponse response) {
+        this.request = request;
+        this.response = response;
         params = new HashMap<String, String>();
         setParams(match);
     }
     
     public String getParam(String paramName) {
         return params.get(paramName);
+    }
+    
+    public void setContentType(String type) {
+        response.setContentType(type);
     }
     
     public void returnType() {
