@@ -33,7 +33,7 @@ public class Spark {
         connector.setPort(port);
         server.setConnectors(new Connector[] {connector});
 
-        server.setHandler(new Context());
+        server.setHandler(new JettyHandler());
 
         try {
             System.out.println("== " + NAME + " has taken the stage ...");

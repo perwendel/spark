@@ -19,16 +19,16 @@ import org.mortbay.jetty.handler.AbstractHandler;
 import org.mortbay.log.Log;
 
 
-class Context extends AbstractHandler {
+class JettyHandler extends AbstractHandler {
     private DispatcherFilter filter;
-    public Context() {
+    public JettyHandler() {
         filter = new DispatcherFilter();
         filter.init(null);
     }
 
     public boolean handle(String target, HttpServletRequest request, HttpServletResponse response,
                     int arg3) throws IOException, ServletException {
-        Log.info("Context, handle();");
+        Log.info("jettyhandler, handle();");
         filter.doFilter(request, response, null);
         return true;
     }
