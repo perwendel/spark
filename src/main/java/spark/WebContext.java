@@ -26,6 +26,14 @@ public class WebContext {
         setParams(match);
     }
     
+    public String getParam(String paramName) {
+        return params.get(paramName);
+    }
+    
+    public void returnType() {
+        
+    }
+
     private final void setParams(RouteMatch match) {
         LOG.info("set params for requestUri: " + match.getRequestUri() + ", matchUri: " + match.getMatchUri());
     
@@ -39,14 +47,6 @@ public class WebContext {
                 params.put(SparkUtils.getParamName(matchedPart), request.get(i));
             }
         }
-    }
-    
-    public String getParam(String paramName) {
-        return params.get(paramName);
-    }
-    
-    public void returnType() {
-        
     }
     
 }

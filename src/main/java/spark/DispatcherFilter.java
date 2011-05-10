@@ -42,7 +42,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
  *
  * @author Per Wendel
  */
-public class DispatcherFilter implements Filter {
+class DispatcherFilter implements Filter {
 
     private RouteMatcher routeMatcher;
     

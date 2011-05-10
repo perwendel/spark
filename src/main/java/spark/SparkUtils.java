@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SparkUtils {
+class SparkUtils {
 
     public static List<String> convertRouteToList(String route) {
         String[] pathArray = route.split("/");

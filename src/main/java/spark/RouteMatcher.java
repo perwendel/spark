@@ -15,7 +15,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-public class RouteMatcher {
+/**
+ * Class for matching a request URI to a annotaion "configured" route.
+ *
+ * @author Per Wendel
+ */
+class RouteMatcher {
 
     private static Logger LOG = Logger.getLogger(RouteMatcher.class);
     
@@ -29,15 +34,18 @@ public class RouteMatcher {
     private Node head;
     private Node options;
 
+    /**
+     * Constructor
+     */
     public RouteMatcher() {
-        get = Node.createNode("get", null, true);
-        post = Node.createNode("post", null, true);
-        put = Node.createNode("put", null, true);
-        delete = Node.createNode("delete", null, true);
-        trace = Node.createNode("trace", null, true);
-        connect = Node.createNode("connect", null, true);
-        head = Node.createNode("head", null, true);
-        options = Node.createNode("options", null, true);
+        get = Node.createNode(HttpMethod.get.toString(), null, true);
+        post = Node.createNode(HttpMethod.post.toString(), null, true);
+        put = Node.createNode(HttpMethod.put.toString(), null, true);
+        delete = Node.createNode(HttpMethod.delete.toString(), null, true);
+        trace = Node.createNode(HttpMethod.trace.toString(), null, true);
+        connect = Node.createNode(HttpMethod.connect.toString(), null, true);
+        head = Node.createNode(HttpMethod.head.toString(), null, true);
+        options = Node.createNode(HttpMethod.options.toString(), null, true);
     }
     
     public void parseValidateAddRoute(String route, Method target) {
@@ -62,14 +70,7 @@ public class RouteMatcher {
             LOG.error("The @Route value: " + route + " is not in the correct format", e);
         }
     }
-
-    
-    private void addRoute(HttpMethod httpMethod, String route, Method target) {
-        LOG.info("Adding route: " + httpMethod + " '" + route + "'");
-        Node rootNode = getRootNode(httpMethod);
-        addBranch(rootNode, route, target);
-    }
-
+   
     public RouteMatch findTargetForRoute(HttpMethod httpMethod, String route) {
         Node rootNode = getRootNode(httpMethod);
         Node bestMatch = rootNode.findBestMatch(route);
@@ -79,6 +80,28 @@ public class RouteMatcher {
         return new RouteMatch(bestMatch.getTarget(), bestMatch.getPath(), route);
     }
 
+    
+    private void addRoute(HttpMethod httpMethod, String route, Method target) {
+        LOG.info("Adding route: " + httpMethod + " '" + route + "'");
+        Node rootNode = getRootNode(httpMethod);
+        addBranch(rootNode, route, target);
+    }
+
+    private static void addBranch(Node root, String route, Method method) {
+        String[] pathArray = route.split("/");
+        List<String> path = new ArrayList<String>();
+        Node lastAdded = root;
+        for (String p : pathArray) {
+            if (p.length() > 0) {
+                path.add(p);
+                Node child = Node.createNode(p, null);
+                lastAdded.appendChild(child);
+                lastAdded = child;
+            }
+        }
+        lastAdded.setMethod(method);
+    }
+    
     private Node getRootNode(HttpMethod httpMethod) {
         Node rootNode = null;
         switch (httpMethod) {
@@ -111,21 +134,6 @@ public class RouteMatcher {
                 break;
         }
         return rootNode;
-    }
-    
-    private static void addBranch(Node root, String route, Method method) {
-        String[] pathArray = route.split("/");
-        List<String> path = new ArrayList<String>();
-        Node lastAdded = root;
-        for (String p : pathArray) {
-            if (p.length() > 0) {
-                path.add(p);
-                Node child = Node.createNode(p, null);
-                lastAdded.appendChild(child);
-                lastAdded = child;
-            }
-        }
-        lastAdded.setMethod(method);
     }
 
 }

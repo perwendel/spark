@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node {
+class Node {
     private List<Node> children;
     private Method method;
     private String paramName;

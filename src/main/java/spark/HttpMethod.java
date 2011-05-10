@@ -9,6 +9,6 @@
  **************************************************************/
 package spark;
 
-public enum HttpMethod {
+enum HttpMethod {
     get, post, put, delete, head, trace, connect, options
 }

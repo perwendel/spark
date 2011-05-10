@@ -19,7 +19,7 @@ import org.mortbay.jetty.handler.AbstractHandler;
 import org.mortbay.log.Log;
 
 
-public class Context extends AbstractHandler {
+class Context extends AbstractHandler {
     private DispatcherFilter filter;
     public Context() {
         filter = new DispatcherFilter();

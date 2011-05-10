@@ -11,7 +11,7 @@ package spark;
 
 import java.lang.reflect.Method;
 
-public class RouteMatch {
+class RouteMatch {
 
     private Method target;
     private String matchUri;
