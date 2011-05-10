@@ -30,15 +30,17 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 /**
  * TODO: discover new TODOs.
  * 
- * TODO: Add /uri/{param} possibility, DONE
+ * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc
  * TODO: Add *, splat possibility
  * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static
  * TODO: Add possibility to access HttpServletContext in method impl.
- * TODO: Figure out a nice name, DONE - SPARK
  * TODO: Add possibility to set content type on return
  * TODO: Create maven archetype
- * TODO: Tweak log4j config, DONE
  * TODO: Add regexp URIs
+ *
+ * TODO: Figure out a nice name, DONE - SPARK
+ * TODO: Add /uri/{param} possibility, DONE
+ * TODO: Tweak log4j config, DONE
  *
  * @author Per Wendel
  */
