@@ -9,6 +9,7 @@
  **************************************************************/
 package spark;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,15 @@ public class WebContext {
     
     public void setContentType(String type) {
         response.setContentType(type);
+    }
+    
+    // TODO: implement error handling
+    public void redirect(String location) {
+        try {
+            response.sendRedirect(location);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     public void returnType() {

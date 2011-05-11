@@ -32,11 +32,13 @@ public class RouteTest {
     }
     
     @Route("get '/bbb/:p2'")
-    public static String params(WebContext context) {
-        return "Params response: " + context.getParam("p2");
+    public static void params(WebContext context) {
+        context.redirect("/xml/gris");
+//        return null;
+        //return "Params response: " + context.getParam("p2");
     }
     
-    @Route("get '/html'")
+    @Route("get '/html/gris'")
     public static String html() {
         return "<html><head><title>Spark</title></head><body><div>Yalla bruschan</div></body></html>";
     }
