@@ -10,6 +10,7 @@
 package spark;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,10 @@ class SparkUtils {
         return routePart.substring(1);
     }
  
+    public static boolean isStatic(Method m) {
+        return Modifier.isStatic(m.getModifiers());
+    }
+    
     public static boolean hasWebContext(Method m) {
         Class<?>[] parameterTypes = m.getParameterTypes();
         return (parameterTypes.length == 1 && parameterTypes[0].equals(WebContext.class));

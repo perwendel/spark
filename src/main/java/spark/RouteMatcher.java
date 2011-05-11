@@ -51,6 +51,10 @@ class RouteMatcher {
     public void parseValidateAddRoute(String route, Method target) {
         try {
             System.out.println("Route: " + route);
+            if (!SparkUtils.isStatic(target)) {
+                LOG.error("The @Route value: " + route + " target method is not static. It MUST be static");
+                return;
+            }
             int singleQuoteIndex = route.indexOf('\'');
             System.out.println(singleQuoteIndex);
             String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase();

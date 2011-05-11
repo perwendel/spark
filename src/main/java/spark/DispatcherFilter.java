@@ -31,14 +31,16 @@ import org.reflections.scanners.MethodAnnotationsScanner;
  * TODO: discover new TODOs.
  * 
  * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc, AND headers
- * TODO: Redirect func in web context
  * TODO: Query string in web context
  * TODO: Add *, splat possibility
  * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static
  * TODO: Add possibility to access HttpServletContext in method impl.
  * TODO: Add possibility to set content type on return
  * TODO: Create maven archetype
+ * TODO: Add cache-control helpers
  * TODO: Add regexp URIs
+ * 
+ * TODO: Redirect func in web context, Partly DONE
  *
  * TODO: Figure out a nice name, DONE - SPARK
  * TODO: Add /uri/{param} possibility, DONE
@@ -102,7 +104,7 @@ class DispatcherFilter implements Filter {
         if (target != null) {
             try {
                 Object result;
-                if (Modifier.isStatic(target.getModifiers())) {
+                if (SparkUtils.isStatic(target)) {
                     target.getParameterTypes();
                     if (SparkUtils.hasWebContext(target)) {
                         result = target.invoke(target.getDeclaringClass(), webContext);
@@ -111,12 +113,15 @@ class DispatcherFilter implements Filter {
                     }
                     
                 } else {
-                    LOG.warn("Method: '" + target + "' should be static. " + "Spark" + " is nice and will try to invoke it anyways...");
+                    LOG.warn("Method: '" + target + "' should be static.");
                     httpResponse.sendError(500, "Target method not static");
                     return;
                 }
-                httpResponse.getOutputStream().write(result.toString().getBytes("utf-8"));
+                if (result != null) {
+                    httpResponse.getOutputStream().write(result.toString().getBytes("utf-8"));
+                }
                 long t1 = System.currentTimeMillis() - t0;
+                
                 LOG.info("Time for request: " + t1);
             } catch (Exception e) {
                 LOG.error(e);
