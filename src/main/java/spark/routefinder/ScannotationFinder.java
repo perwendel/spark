@@ -57,15 +57,30 @@ class ScannotationFinder implements AnnotationFinder {
     }
 
     private static void loadClass(List<Class> classes, String className) {
+        Class clazz = null;
+
         try {
-            Class clazz = loadClass(ScannotationFinder.class.getClassLoader(), className);
-            if (clazz == null) {
-                clazz = Class.forName(className, false, ClassLoader.getSystemClassLoader());
-            }
-            classes.add(clazz);
-        } catch (Throwable th) {
-            th.printStackTrace();
+            clazz = Class.forName(className);
+            System.out.println("***********************clazz: " + clazz);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        
+        if (clazz == null) {
+            try {
+                clazz = loadClass(ScannotationFinder.class.getClassLoader(), className);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }    
+        }
+        if (clazz == null) {
+            try {
+                clazz = Class.forName(className, false, ClassLoader.getSystemClassLoader());
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        classes.add(clazz);
     }
 
     private static Class loadClass(ClassLoader loader, String className) throws ClassNotFoundException {
