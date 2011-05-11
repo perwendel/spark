@@ -27,8 +27,12 @@ public class RouteTest {
     }
     
     @Route("get '/xml'")
-    public static String zml() {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tag><sub>Hello World Spark!</sub></tag>";
+    public static String zml(WebContext context) {
+        String query = "";
+        for (String queryParam : context.getQueryParams()) {
+            query += "," + queryParam;
+        }
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tag><sub>Hello World Spark! " + query + "</sub></tag>";
     }
     
     @Route("get '/bbb/:p2'")
@@ -38,9 +42,10 @@ public class RouteTest {
         //return "Params response: " + context.getParam("p2");
     }
     
-    @Route("get '/html/gris'")
-    public static String html() {
-        return "<html><head><title>Spark</title></head><body><div>Yalla bruschan</div></body></html>";
+    @Route("get '/html'")
+    public static String html(WebContext context) {
+        String id = context.getQueryParam("id");
+        return "<html><head><title>Spark</title></head><body><div>Yalla bruschan: " + id + "</div></body></html>";
     }
     
 //    private static class WebContext {

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,12 +35,30 @@ public class WebContext {
         setParams(match);
     }
     
-    public String getParam(String paramName) {
-        return params.get(paramName);
+    public String getParam(String param) {
+        return params.get(param);
     }
     
     public void setContentType(String type) {
         response.setContentType(type);
+    }
+    
+    
+    public String getQueryParam(String queryParam) {
+        return request.getParameter(queryParam);
+    }
+    
+    public String getHeader(String header) {
+        return request.getHeader(header);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Set<String> getQueryParams() {
+        return request.getParameterMap().keySet();
+    }
+    
+    public String getQueryString() {
+        return request.getQueryString();
     }
     
     // TODO: implement error handling
