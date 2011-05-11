@@ -74,8 +74,8 @@ class RouteMatcher {
             LOG.error("The @Route value: " + route + " is not in the correct format", e);
         }
     }
-   
-    public RouteMatch findTargetForRoute(HttpMethod httpMethod, String route) {
+    
+    public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String route) {
         Node rootNode = getRootNode(httpMethod);
         Node bestMatch = rootNode.findBestMatch(route);
         if (bestMatch == null) {

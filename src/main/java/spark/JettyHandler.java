@@ -20,9 +20,9 @@ import org.mortbay.log.Log;
 
 
 class JettyHandler extends AbstractHandler {
-    private DispatcherFilter filter;
+    private MatcherFilter filter;
     public JettyHandler() {
-        filter = new DispatcherFilter();
+        filter = new MatcherFilter();
         filter.init(null);
     }
 
