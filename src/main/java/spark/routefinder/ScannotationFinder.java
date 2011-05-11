@@ -13,8 +13,6 @@ import org.reflections.util.ClasspathHelper;
 import org.scannotation.AnnotationDB;
 import org.scannotation.ClasspathUrlFinder;
 
-import spark.Spark;
-
 @SuppressWarnings("unchecked")
 class ScannotationFinder implements AnnotationFinder {
 
@@ -60,7 +58,7 @@ class ScannotationFinder implements AnnotationFinder {
 
     private static void loadClass(List<Class> classes, String className) {
         try {
-            Class clazz = loadClass(Spark.class.getClassLoader(), className);
+            Class clazz = loadClass(ScannotationFinder.class.getClassLoader(), className);
             if (clazz == null) {
                 clazz = Class.forName(className, false, ClassLoader.getSystemClassLoader());
             }

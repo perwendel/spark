@@ -30,6 +30,9 @@ import spark.routefinder.AnnotationFinderFactory;
 /**
  * TODO: discover new TODOs.
  * 
+ * TODO: There will be problems with annotation scanning when Spark is depended as a maven dependency...
+ * TODO: Check if scannotation works better with maven/windows. If not, don't use it
+ * 
  * TODO: Make available as maven dependency, upload on repo etc...
  * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc, AND headers
  * TODO: Query string in web context
@@ -48,6 +51,7 @@ import spark.routefinder.AnnotationFinderFactory;
  * TODO: Figure out a nice name, DONE - SPARK
  * TODO: Add /uri/{param} possibility, DONE
  * TODO: Tweak log4j config, DONE
+ * 
  *
  * @author Per Wendel
  */
