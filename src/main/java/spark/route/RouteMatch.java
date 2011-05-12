@@ -13,17 +13,26 @@ import java.lang.reflect.Method;
 
 public class RouteMatch {
 
+    private HttpMethod httpMethod;
     private Method target;
     private String matchUri;
     private String requestUri;
     
-    public RouteMatch(Method target, String matchUri, String requestUri) {
+    public RouteMatch(HttpMethod httpMethod, Method target, String matchUri, String requestUri) {
         super();
+        this.httpMethod = httpMethod;
         this.target = target;
         this.matchUri = matchUri;
         this.requestUri = requestUri;
     }
 
+    
+    /**
+     * @return the httpMethod
+     */
+    public HttpMethod getHttpMethod() {
+        return httpMethod;
+    }
     
     /**
      * @return the target
@@ -47,7 +56,6 @@ public class RouteMatch {
     public String getRequestUri() {
         return requestUri;
     }
-    
     
     
 }

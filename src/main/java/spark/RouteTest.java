@@ -23,6 +23,7 @@ public class RouteTest {
     
     @Route("get '/:p1/:p2'")
     public static String newRes(WebContext context) {
+        System.out.println("path info: " + context.getPathInfo());
         return "p1 = " + context.getParam("p1") + ", p2 = " + context.getParam("p2");
     }
     
@@ -33,6 +34,14 @@ public class RouteTest {
             query += "," + queryParam;
         }
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tag><sub>Hello World Spark! " + query + "</sub></tag>";
+    }
+    
+    @Route("post '/xml'")
+    public static String postXml(WebContext context) {
+        for (String header : context.getHeaders()) {
+            System.out.println(header + " = " + context.getHeader(header));
+        }
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tag><sub>echo: " + context.getBody() + ", cl = " + context.getContentLength() + "</sub></tag>";
     }
     
     @Route("get '/bbb/:p2'")

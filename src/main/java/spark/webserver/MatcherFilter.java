@@ -35,10 +35,9 @@ import spark.utils.SparkUtils;
  * TODO: There will be problems with annotation scanning when Spark is depended as a maven dependency...
  * TODO: Check if scannotation works better with maven/windows. If not, don't use it
  * 
+ * TODO: Before annotion for filters...check sinatra page 
+ * TODO: Setting Body, Status Code and Headers
  * TODO: Make available as maven dependency, upload on repo etc...
- * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc, AND headers
- * TODO: Query string in web context
- * TODO: Refactor, extract interfaces
  * TODO: Add *, splat possibility
  * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static, ONGOING
  * TODO: Add possibility to access HttpServletContext in method impl.
@@ -46,14 +45,20 @@ import spark.utils.SparkUtils;
  * TODO: Add possibility to set content type on return
  * TODO: Create maven archetype, "ONGOING"
  * TODO: Add cache-control helpers
- * TODO: Add regexp URIs
  * 
+ * advanced TODO list:
+ * TODO: sessions? (use session servlet context?)
+ * TODO: Add regexp URIs 
+ * 
+ * Ongoing
  * TODO: Redirect func in web context, Partly DONE
- *
+ * TODO: Refactor, extract interfaces, ONGOING
+ * 
  * TODO: Figure out a nice name, DONE - SPARK
  * TODO: Add /uri/{param} possibility, DONE
  * TODO: Tweak log4j config, DONE
- * 
+ * TODO: Query string in web context, DONE
+ * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc, AND headers, DONE
  *
  * @author Per Wendel
  */

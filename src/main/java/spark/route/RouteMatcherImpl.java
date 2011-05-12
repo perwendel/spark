@@ -85,7 +85,7 @@ class RouteMatcherImpl implements RouteMatcher {
         if (bestMatch == null) {
             return null;    
         }
-        return new RouteMatch(bestMatch.getTarget(), bestMatch.getPath(), route);
+        return new RouteMatch(httpMethod, bestMatch.getTarget(), bestMatch.getPath(), route);
     }
 
     
