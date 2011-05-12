@@ -36,6 +36,7 @@ public class RouteTest {
         System.out.println(context.getScheme() + " on port: " + context.getPort() + ", user-agent: " + context.getUserAgent());
         System.out.println(context.getClientIP());
         System.out.println(context.getHost());
+        System.out.println(context.getUrl());
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><tag><sub>Hello World Spark! " + query + "</sub></tag>";
     }
     

@@ -68,7 +68,7 @@ public class WebContext {
         //    request.user_agent        # user agent (used by :agent condition) DONE
         //    request.cookies           # hash of browser cookies
         //    request.xhr?              # is this an ajax request?
-        //    request.url               # "http://example.com/example/foo"
+        //    request.url               # "http://example.com/example/foo"      DONE
         //    request.path              # "/example/foo"
         //    request.ip                # client IP address                     DONE
         //    request.secure?           # false (would be true over ssl)
@@ -126,7 +126,15 @@ public class WebContext {
     }
 
     /**
+     * Returns the URL string
+     */
+    public String getUrl() {
+        return getScheme() + "://" + getHost() + getPathInfo();
+    }
+    
+    /**
      * Returns the path info
+     * Example return: "/example/foo"
      */
     public String getPathInfo() {
         return request.getPathInfo();
