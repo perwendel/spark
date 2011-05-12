@@ -7,7 +7,7 @@
  * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
  *                                                             *
  **************************************************************/
-package spark;
+package spark.webserver;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import spark.WebContext;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.RouteMatcher;

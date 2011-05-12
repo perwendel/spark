@@ -7,7 +7,7 @@
  * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
  *                                                             *
  **************************************************************/
-package spark;
+package spark.webserver;
 
 import java.io.IOException;
 import java.util.Arrays;

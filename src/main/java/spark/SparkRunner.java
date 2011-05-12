@@ -1,17 +1,20 @@
 package spark;
 
-import spark.route.RouteMatcherFactory;
+import spark.webserver.SparkServer;
+import spark.webserver.SparkServerFactory;
 
 public class SparkRunner {
-
+    
+    public static void main(String[] args) {
+        run();
+    }
+    
     /**
      * Initializes and ignites spark
      */
     public static void run() {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.create());
-        matcherFilter.init(null);
-        JettyHandler handler = new JettyHandler(matcherFilter);
-        new Spark(handler);
+        SparkServer server = SparkServerFactory.create();
+        server.ignite();
     }
     
 }

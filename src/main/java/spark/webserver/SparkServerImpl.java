@@ -7,27 +7,33 @@
  * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
  *                                                             *
  **************************************************************/
-package spark;
+package spark.webserver;
 
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 
-class Spark {
+class SparkServerImpl implements SparkServer {
 
     /** The logger. */
     // private static final Logger LOG = Logger.getLogger(Spark.class);
     
     private static final String NAME = "Spark";
+    private Handler handler;
 
-    public Spark(Handler handler) {
-        this(4567, handler);
+    public SparkServerImpl(Handler handler) {
+        this.handler = handler;
+        System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
     }
 
-    public Spark(int port, Handler handler) {
-        System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
+    @Override
+    public void ignite() {
+        ignite(4567);
+    }
 
+    @Override
+    public void ignite(int port) {
         Server server = new Server();
         SocketConnector connector = new SocketConnector();
 
@@ -55,5 +61,5 @@ class Spark {
             System.exit(100);
         }
     }
-
+    
 }
