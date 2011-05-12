@@ -1,4 +1,4 @@
-package spark.routefinder;
+package spark.annotation;
 
 public class AnnotationFinderFactory {
 

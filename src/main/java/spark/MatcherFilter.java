@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import spark.routefinder.AnnotationFinder;
-import spark.routefinder.AnnotationFinderFactory;
+import spark.annotation.AnnotationFinder;
+import spark.annotation.AnnotationFinderFactory;
 
 /**
  * TODO: discover new TODOs.

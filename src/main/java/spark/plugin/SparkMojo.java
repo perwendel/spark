@@ -31,7 +31,7 @@ import spark.Spark;
 public class SparkMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException {
-        System.out.println("Spark plugin executed new class, git-project!!!");
+        System.out.println("Spark ignition...cause: maven");
         new Spark();
     }
 }

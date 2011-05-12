@@ -1,4 +1,4 @@
-package spark.routefinder;
+package spark.annotation;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
