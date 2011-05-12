@@ -20,6 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import spark.route.RouteMatch;
+import spark.utils.SparkUtils;
+
 public class WebContext {
     
     private static Logger LOG = Logger.getLogger(WebContext.class);

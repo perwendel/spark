@@ -19,7 +19,7 @@ package spark.plugin;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
-import spark.Spark;
+import spark.SparkRunner;
 
 /**
  * Goal which touches a timestamp file.
@@ -32,6 +32,6 @@ public class SparkMojo extends AbstractMojo {
     
     public void execute() throws MojoExecutionException {
         System.out.println("Spark ignition...cause: maven");
-        new Spark();
+        SparkRunner.run();
     }
 }

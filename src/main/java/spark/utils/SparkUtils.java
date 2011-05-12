@@ -7,14 +7,16 @@
  * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
  *                                                             *
  **************************************************************/
-package spark;
+package spark.utils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-class SparkUtils {
+import spark.WebContext;
+
+public class SparkUtils {
 
     public static List<String> convertRouteToList(String route) {
         String[] pathArray = route.split("/");

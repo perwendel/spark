@@ -7,7 +7,7 @@
  * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
  *                                                             *
  **************************************************************/
-package spark;
+package spark.route;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -15,14 +15,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import spark.utils.SparkUtils;
+
 /**
  * Class for matching a request URI to a annotaion "configured" route.
  *
  * @author Per Wendel
  */
-class RouteMatcher {
+class RouteMatcherImpl implements RouteMatcher {
 
-    private static Logger LOG = Logger.getLogger(RouteMatcher.class);
+    private static Logger LOG = Logger.getLogger(RouteMatcherImpl.class);
     
     /* Http method root nodes */
     private Node get;
@@ -37,7 +39,7 @@ class RouteMatcher {
     /**
      * Constructor
      */
-    public RouteMatcher() {
+    public RouteMatcherImpl() {
         get = Node.createNode(HttpMethod.get.toString(), null, true);
         post = Node.createNode(HttpMethod.post.toString(), null, true);
         put = Node.createNode(HttpMethod.put.toString(), null, true);
@@ -48,6 +50,7 @@ class RouteMatcher {
         options = Node.createNode(HttpMethod.options.toString(), null, true);
     }
     
+    @Override
     public void parseValidateAddRoute(String route, Method target) {
         try {
             System.out.println("Route: " + route);
@@ -75,6 +78,7 @@ class RouteMatcher {
         }
     }
     
+    @Override
     public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String route) {
         Node rootNode = getRootNode(httpMethod);
         Node bestMatch = rootNode.findBestMatch(route);

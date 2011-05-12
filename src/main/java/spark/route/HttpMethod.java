@@ -7,8 +7,8 @@
  * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
  *                                                             *
  **************************************************************/
-package spark;
+package spark.route;
 
-enum HttpMethod {
+public enum HttpMethod {
     get, post, put, delete, head, trace, connect, options
 }

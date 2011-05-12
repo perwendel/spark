@@ -11,7 +11,6 @@ package spark;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -24,8 +23,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import spark.annotation.AnnotationFinder;
-import spark.annotation.AnnotationFinderFactory;
+import spark.route.HttpMethod;
+import spark.route.RouteMatch;
+import spark.route.RouteMatcher;
+import spark.utils.SparkUtils;
 
 /**
  * TODO: discover new TODOs.
@@ -62,26 +63,11 @@ class MatcherFilter implements Filter {
     /** The logger. */
     private static final Logger LOG = Logger.getLogger(MatcherFilter.class);
     
-    private AnnotationFinder annotationFinder = AnnotationFinderFactory.get();
-    
-    public void init(FilterConfig filterConfig) {
-        routeMatcher = new RouteMatcher();
-        
-        Set<Method> annotated = annotationFinder.findMethodsAnnotatedWith(Route.class);
-        
-        LOG.info("Size: " + annotated.size());
-        
-        for (Method method : annotated) {
-            Route s = method.getAnnotation(Route.class);
-            String route = s.value().toLowerCase().trim();
-            LOG.info("s: method: " + method + ", route: " + route);
-            
-            // Parse route string to get HttpMethod and route
-            routeMatcher.parseValidateAddRoute(route, method);
-            
-            // TODO: Remember in a future paramContext ---> TO LOWER CASE !!!
-        }
+    public MatcherFilter(RouteMatcher routeMatcher) {
+        this.routeMatcher = routeMatcher;
     }
+    
+    public void init(FilterConfig filterConfig) {}
     
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                     throws IOException, ServletException {

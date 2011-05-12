@@ -10,18 +10,22 @@
 package spark;
 
 import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 
-public class Spark {
+class Spark {
 
+    /** The logger. */
+    // private static final Logger LOG = Logger.getLogger(Spark.class);
+    
     private static final String NAME = "Spark";
 
-    public Spark() {
-        this(4567);
+    public Spark(Handler handler) {
+        this(4567, handler);
     }
 
-    public Spark(int port) {
+    public Spark(int port, Handler handler) {
         System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
 
         Server server = new Server();
@@ -33,7 +37,7 @@ public class Spark {
         connector.setPort(port);
         server.setConnectors(new Connector[] {connector});
 
-        server.setHandler(new JettyHandler());
+        server.setHandler(handler);
 
         try {
             System.out.println("== " + NAME + " has taken the stage ...");

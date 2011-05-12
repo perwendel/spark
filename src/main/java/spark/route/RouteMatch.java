@@ -7,11 +7,11 @@
  * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
  *                                                             *
  **************************************************************/
-package spark;
+package spark.route;
 
 import java.lang.reflect.Method;
 
-class RouteMatch {
+public class RouteMatch {
 
     private Method target;
     private String matchUri;
