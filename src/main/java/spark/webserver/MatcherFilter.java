@@ -35,7 +35,7 @@ import spark.utils.SparkUtils;
  * TODO: There will be problems with annotation scanning when Spark is depended as a maven dependency...
  * TODO: Check if scannotation works better with maven/windows. If not, don't use it
  * 
- * TODO: Do we want get-prefixes for all *getters* or do we want a more ruby like approach???
+ * TODO: Do we want get-prefixes for all *getters* or do we want a more ruby like approach??? (Maybe have two choices?)
  * 
  * TODO: Before annotion for filters...check sinatra page 
  * TODO: Setting Body, Status Code and Headers
