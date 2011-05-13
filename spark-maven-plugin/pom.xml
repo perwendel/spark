@@ -1,6 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>spark.plugin</groupId>
 	<artifactId>spark-maven-plugin</artifactId>
@@ -13,6 +12,12 @@
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
 			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
@@ -55,9 +60,11 @@
 		<!--            <scope>provided</scope>-->
 		<!--        </dependency>-->
 
+
 	</dependencies>
 
 	<build>
+
 		<resources>
 			<resource>
 				<filtering>false</filtering>
@@ -75,8 +82,12 @@
 			</resource>
 		</resources>
 
-
 		<plugins>
+			<plugin>
+				<groupId>spark.plugin</groupId>
+				<artifactId>spark-maven-plugin</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</plugin>
 
 			<plugin>
 				<inherited>true</inherited>
@@ -89,33 +100,8 @@
 					<debug>true</debug>
 				</configuration>
 			</plugin>
-			
-			<plugin>
-				<groupId>spark.plugin</groupId>
-				<artifactId>spark-maven-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
-			</plugin>
+
 		</plugins>
 	</build>
-
-	<repositories>
-		<repository>
-			<id>reflections-repo</id>
-			<name>Reflections Maven2 Repository</name>
-			<url>http://reflections.googlecode.com/svn/repo</url>
-		</repository>
-
-		<repository>
-			<id>Apache Nexus</id>
-			<url>https://repository.apache.org/content/repositories/snapshots/
-            </url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 </project>
