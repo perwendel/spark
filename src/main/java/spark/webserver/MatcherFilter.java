@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import spark.Function;
+import spark.Route;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.RouteMatcher;
@@ -98,10 +98,10 @@ class MatcherFilter implements Filter {
         if (target != null) {
             try {
                 Object result = null;
-                if (target instanceof Function) {
-                    Function function = ((Function) target);
+                if (target instanceof Route) {
+                    Route function = ((Route) target);
                     function.set(match, httpRequest, httpResponse);
-                    result = function.exec();
+                    result = function.handle();
                 }
                 if (result != null) {
                     httpResponse.getOutputStream().write(result.toString().getBytes("utf-8"));

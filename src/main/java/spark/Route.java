@@ -14,28 +14,22 @@ import org.apache.log4j.Logger;
 import spark.route.RouteMatch;
 import spark.utils.SparkUtils;
 
-public abstract class Function {
+public abstract class Route {
 
-    private static Logger LOG = Logger.getLogger(Function.class);
+    private static Logger LOG = Logger.getLogger(Route.class);
 
     private Map<String, String> params;
     private HttpServletResponse response;
 
     protected Request request;
 
-    private boolean initialized = false;
-    
     /**
      * TODO: javadoc
      * @return
      */
-    public abstract Object exec();
+    public abstract Object handle();
 
     public final void set(RouteMatch match, HttpServletRequest servletRequest, HttpServletResponse response) {
-        if (initialized) {
-            throw new IllegalStateException();
-        }
-        initialized = true;
         request = new Request(match.getHttpMethod(), servletRequest);
         this.response = response;
         params = setParams(match);

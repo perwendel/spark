@@ -1,43 +1,43 @@
-package spark;
+package spark.test;
+
+import spark.Route;
+import spark.Spark;
 
 public class SparkTest {
     
     public static void main(String[] args) {
-        Spark.setPort(4567);
-        
-        Spark.get("/sport/:section", new Function() {
+        Spark.get("/sport/:section", new Route() {
             @Override
-            public Object exec() {
+            public Object handle() {
                 return "these are the sport pages, section: " + params(":section") + ", " + request.ip();
             }
         });
         
-        Spark.get("/news/:section", new Function() {
+        Spark.get("/news/:section", new Route() {
             @Override
-            public Object exec() {
+            public Object handle() {
                 return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>" + params("section") + "</news>";
             }
         });
         
-        Spark.get("/redirect", new Function() {
+        Spark.get("/redirect", new Route() {
             @Override
-            public Object exec() {
+            public Object handle() {
                 redirect("/news/world");
                 return null;
             }
         });
         
-        Spark.get("/", new Function() {
+        Spark.get("/", new Route() {
             @Override
-            public Object exec() {
-                set(null, null, null);
+            public Object handle() {
                 return "root";
             }
         });
         
-        Spark.post("/", new Function() {
+        Spark.post("/", new Route() {
             @Override
-            public Object exec() {
+            public Object handle() {
                 return "echo: " + request.body();
             }
         });

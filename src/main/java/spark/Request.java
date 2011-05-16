@@ -52,35 +52,35 @@ public class Request {
     /**
      * Returns request method e.g. GET, POST, PUT, ...
      */
-    protected String requestMethod() {
+    public String requestMethod() {
         return httpMethod.name();
     }
 
     /**
      * Returns the scheme
      */
-    protected String scheme() {
+    public String scheme() {
         return servletRequest.getScheme();
     }
     
     /**
      * Returns the host
      */
-    protected String host() {
+    public String host() {
         return servletRequest.getHeader("host");
     }
 
     /**
      * Returns the user-agent
      */
-    protected String userAgent() {
+    public String userAgent() {
         return servletRequest.getHeader(USER_AGENT);
     }
     
     /**
      * Returns the server port
      */
-    protected int port() {
+    public int port() {
         return servletRequest.getServerPort();
     }
 
@@ -89,35 +89,35 @@ public class Request {
      * Returns the path info
      * Example return: "/example/foo"
      */
-    protected String pathInfo() {
+    public String pathInfo() {
         return servletRequest.getPathInfo();
     }
     
     /**
      * Returns the URL string
      */
-    protected String url() {
+    public String url() {
         return scheme() + "://" + host() + pathInfo();
     }
     
     /**
      * Returns the content type of the body
      */
-    protected String contentType() {
+    public String contentType() {
         return servletRequest.getContentType();
     }
 
     /**
      * Returns the client's IP address
      */
-    protected String ip() {
+    public String ip() {
         return servletRequest.getRemoteAddr();
     }
     
     /**
      * Returns the request body sent by the client
      */
-    protected String body() {
+    public String body() {
         if (body == null) {
             try {
                 body = IOUtils.toString(servletRequest.getInputStream());
@@ -130,7 +130,7 @@ public class Request {
     /**
      * Returns the length of request.body
      */
-    protected int contentLength() {
+    public int contentLength() {
         return servletRequest.getContentLength();
     }
 
@@ -138,14 +138,14 @@ public class Request {
      * Returns the value of the provided queryParam
      * Example: query parameter 'id' from the following request URI: /hello?id=foo
      */
-    protected String queryParam(String queryParam) {
+    public String queryParam(String queryParam) {
         return servletRequest.getParameter(queryParam);
     }
 
     /**
      * Returns the value of the provided header
      */
-    protected String header(String header) {
+    public String header(String header) {
         return servletRequest.getHeader(header);
     }
 
@@ -153,7 +153,7 @@ public class Request {
      * Returns all query parameters
      */
     @SuppressWarnings("unchecked")
-    protected Set<String> queryParams() {
+    public Set<String> queryParams() {
         return servletRequest.getParameterMap().keySet();
     }
 
@@ -161,7 +161,7 @@ public class Request {
      * Returns all headers
      */
     @SuppressWarnings("unchecked")
-    protected Set<String> headers() {
+    public Set<String> headers() {
         if (headers == null) {
             headers = new TreeSet<String>();
             Enumeration<String> enumeration = servletRequest.getHeaderNames();
@@ -175,14 +175,14 @@ public class Request {
     /**
      * Returns the query string
      */
-    protected String queryString() {
+    public String queryString() {
         return servletRequest.getQueryString();
     }
 
     /**
      * Gets the raw HttpServletRequest object handed in by Jetty
      */
-    protected HttpServletRequest raw() {
+    public HttpServletRequest raw() {
         return servletRequest;
     }
     

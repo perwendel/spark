@@ -40,39 +40,39 @@ public class Spark {
         }
     }
 
-    public static void get(String route, Function f) {
+    public static void get(String route, Route f) {
         addRoute(HttpMethod.get.name(), route, f);
     }
 
-    public static void post(String route, Function f) {
+    public static void post(String route, Route f) {
         addRoute(HttpMethod.post.name(), route, f);
     }
 
-    public static void put(String route, Function f) {
+    public static void put(String route, Route f) {
         addRoute(HttpMethod.put.name(), route, f);
     }
 
-    public static void delete(String route, Function f) {
+    public static void delete(String route, Route f) {
         addRoute(HttpMethod.delete.name(), route, f);
     }
 
-    public static void head(String route, Function f) {
+    public static void head(String route, Route f) {
         addRoute(HttpMethod.head.name(), route, f);
     }
 
-    public static void trace(String route, Function f) {
+    public static void trace(String route, Route f) {
         addRoute(HttpMethod.trace.name(), route, f);
     }
 
-    public static void connect(String route, Function f) {
+    public static void connect(String route, Route f) {
         addRoute(HttpMethod.connect.name(), route, f);
     }
 
-    public static void options(String route, Function f) {
+    public static void options(String route, Route f) {
         addRoute(HttpMethod.options.name(), route, f);
     }
     
-    private static void addRoute(String httpMethod, String route, Function f) {
+    private static void addRoute(String httpMethod, String route, Route f) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route + "'", f);
     }
