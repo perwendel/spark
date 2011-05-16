@@ -8,9 +8,9 @@ import spark.webserver.SparkServerFactory;
 
 // get, post, put, delete, head, trace, connect, options
 /**
- * TODO: Routes are matched in the order they are defined. The first route that matches the request is invoked. ???
+ * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ???
  * 
- * In Spark, a route is an HTTP method paired with a URL-matching pattern. Each route is associated with a function:
+ * In Spark, a route is an HTTP method paired with a URL-matching pattern. Each route is associated with a runction:
  */
 public class Spark {
 
@@ -40,41 +40,41 @@ public class Spark {
         }
     }
 
-    public static void get(String route, Route f) {
-        addRoute(HttpMethod.get.name(), route, f);
+    public static void get(Route r) {
+        addRoute(HttpMethod.get.name(), r);
     }
 
-    public static void post(String route, Route f) {
-        addRoute(HttpMethod.post.name(), route, f);
+    public static void post(Route r) {
+        addRoute(HttpMethod.post.name(), r);
     }
 
-    public static void put(String route, Route f) {
-        addRoute(HttpMethod.put.name(), route, f);
+    public static void put(Route r) {
+        addRoute(HttpMethod.put.name(), r);
     }
 
-    public static void delete(String route, Route f) {
-        addRoute(HttpMethod.delete.name(), route, f);
+    public static void delete(Route r) {
+        addRoute(HttpMethod.delete.name(), r);
     }
 
-    public static void head(String route, Route f) {
-        addRoute(HttpMethod.head.name(), route, f);
+    public static void head(Route r) {
+        addRoute(HttpMethod.head.name(), r);
     }
 
-    public static void trace(String route, Route f) {
-        addRoute(HttpMethod.trace.name(), route, f);
+    public static void trace(Route r) {
+        addRoute(HttpMethod.trace.name(), r);
     }
 
-    public static void connect(String route, Route f) {
-        addRoute(HttpMethod.connect.name(), route, f);
+    public static void connect(Route r) {
+        addRoute(HttpMethod.connect.name(), r);
     }
 
-    public static void options(String route, Route f) {
-        addRoute(HttpMethod.options.name(), route, f);
+    public static void options(Route r) {
+        addRoute(HttpMethod.options.name(), r);
     }
     
-    private static void addRoute(String httpMethod, String route, Route f) {
+    private static void addRoute(String httpMethod, Route r) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route + "'", f);
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + r.getRoute() + "'", r);
     }
 
 }

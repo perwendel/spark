@@ -23,6 +23,16 @@ public abstract class Route {
 
     protected Request request;
 
+    private String route;
+    
+    protected Route(String route) {
+        this.route = route;
+    }
+    
+    String getRoute() {
+        return this.route;
+    }
+    
     /**
      * TODO: javadoc
      * @return
