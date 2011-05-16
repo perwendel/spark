@@ -16,6 +16,15 @@ public class SparkTest {
             }
         });
         
+        Spark.get(new Route("/private") {
+            @Override
+            public Object handle() {
+                status(401);
+                return "Go Away!!!";
+            }
+            
+        });
+        
         Spark.get(new Route("/users/:name") {
             @Override
             public Object handle() {
@@ -26,6 +35,7 @@ public class SparkTest {
         Spark.get(new Route("/news/:section") {
             @Override
             public Object handle() {
+                type("text/xml");
                 return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>" + params("section") + "</news>";
             }
         });

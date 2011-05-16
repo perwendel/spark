@@ -107,18 +107,20 @@ class MatcherFilter implements Filter {
                     httpResponse.getOutputStream().write(result.toString().getBytes("utf-8"));
                 }
                 long t1 = System.currentTimeMillis() - t0;
-                
                 LOG.info("Time for request: " + t1);
             } catch (Exception e) {
                 LOG.error(e);
                 httpResponse.sendError(500);
             }    
         } else {
-            httpResponse.sendError(404, "Route has not been mapped in spark"); 
+            httpResponse.setStatus(404);
+            httpResponse.getOutputStream().write(NOT_FOUND.getBytes("utf-8"));
         }
     }
 
     public void destroy() {
         // TODO Auto-generated method stub
     }
+    
+    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route has not been mapped in Spark</body></html>";
 }

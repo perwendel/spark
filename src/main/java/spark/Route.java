@@ -58,6 +58,20 @@ public abstract class Route {
     }
 
     /**
+     * Sets the status code for the response
+     */
+    protected void status(int statusCode) {
+        response.setStatus(statusCode);
+    }
+    
+    /**
+     * Sets the content type for the response
+     */
+    protected void type(String contentType) {
+        response.setContentType(contentType);
+    }
+    
+    /**
      * Gets the raw response object handed in by Jetty
      */
     protected HttpServletResponse getRawResponse() {
@@ -71,14 +85,6 @@ public abstract class Route {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    protected void returnType() {
-
-    }
-
-    protected void setContentType(String type) {
-        response.setContentType(type);
     }
 
     private final Map<String, String> setParams(RouteMatch match) {

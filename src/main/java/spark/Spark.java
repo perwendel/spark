@@ -19,13 +19,54 @@ public class Spark {
     private static RouteMatcher routeMatcher;
     private static int port = 4567;
     
+    /**
+     * Set the port that Spark should listen on. Default port is 4567.
+     * This has to be called before any route mapping is done.
+     */
     public synchronized static void setPort(int port) {
         if (initialized) {
             throw new IllegalStateException("This must be done before route mapping has begun");
         }
         Spark.port = port;
     }
+
+    public static void get(Route route) {
+        addRoute(HttpMethod.get.name(), route);
+    }
+
+    public static void post(Route route) {
+        addRoute(HttpMethod.post.name(), route);
+    }
+
+    public static void put(Route route) {
+        addRoute(HttpMethod.put.name(), route);
+    }
+
+    public static void delete(Route route) {
+        addRoute(HttpMethod.delete.name(), route);
+    }
+
+    public static void head(Route route) {
+        addRoute(HttpMethod.head.name(), route);
+    }
+
+    public static void trace(Route route) {
+        addRoute(HttpMethod.trace.name(), route);
+    }
+
+    public static void connect(Route route) {
+        addRoute(HttpMethod.connect.name(), route);
+    }
+
+    public static void options(Route route) {
+        addRoute(HttpMethod.options.name(), route);
+    }
     
+    private static void addRoute(String httpMethod, Route route) {
+        init();
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getRoute() + "'", route);
+    }
+
     private synchronized static final void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
@@ -39,42 +80,5 @@ public class Spark {
             initialized = true;
         }
     }
-
-    public static void get(Route r) {
-        addRoute(HttpMethod.get.name(), r);
-    }
-
-    public static void post(Route r) {
-        addRoute(HttpMethod.post.name(), r);
-    }
-
-    public static void put(Route r) {
-        addRoute(HttpMethod.put.name(), r);
-    }
-
-    public static void delete(Route r) {
-        addRoute(HttpMethod.delete.name(), r);
-    }
-
-    public static void head(Route r) {
-        addRoute(HttpMethod.head.name(), r);
-    }
-
-    public static void trace(Route r) {
-        addRoute(HttpMethod.trace.name(), r);
-    }
-
-    public static void connect(Route r) {
-        addRoute(HttpMethod.connect.name(), r);
-    }
-
-    public static void options(Route r) {
-        addRoute(HttpMethod.options.name(), r);
-    }
     
-    private static void addRoute(String httpMethod, Route r) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + r.getRoute() + "'", r);
-    }
-
 }
