@@ -6,8 +6,6 @@ More documentation is on the way!
 Simple example:
 ---------------
 
-package spark.test;
-
 import spark.Route;
 import spark.Spark;
 
