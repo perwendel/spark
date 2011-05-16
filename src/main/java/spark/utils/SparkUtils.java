@@ -9,12 +9,8 @@
  **************************************************************/
 package spark.utils;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-
-import spark.WebContext;
 
 public class SparkUtils {
 
@@ -38,17 +34,8 @@ public class SparkUtils {
         return routePart.startsWith(":");
     }
     
-    public static String getParamName(String routePart) {
-        return routePart.substring(1);
-    }
+//    public static String getParamName(String routePart) {
+//        return routePart.substring(1);
+//    }
  
-    public static boolean isStatic(Method m) {
-        return Modifier.isStatic(m.getModifiers());
-    }
-    
-    public static boolean hasWebContext(Method m) {
-        Class<?>[] parameterTypes = m.getParameterTypes();
-        return (parameterTypes.length == 1 && parameterTypes[0].equals(WebContext.class));
-    }
-    
 }

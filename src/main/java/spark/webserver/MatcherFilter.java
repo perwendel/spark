@@ -10,7 +10,6 @@
 package spark.webserver;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -23,11 +22,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import spark.WebContext;
+import spark.Function;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.RouteMatcher;
-import spark.utils.SparkUtils;
 
 /**
  * TODO: discover new TODOs.
@@ -75,7 +73,9 @@ class MatcherFilter implements Filter {
         this.routeMatcher = routeMatcher;
     }
     
-    public void init(FilterConfig filterConfig) {}
+    public void init(FilterConfig filterConfig) {
+        
+    }
     
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                     throws IOException, ServletException {
@@ -89,35 +89,19 @@ class MatcherFilter implements Filter {
         LOG.info("httpMethod:" + httpMethod + ", uri: " + uri);
         
         RouteMatch match = routeMatcher.findTargetForRequestedRoute(HttpMethod.valueOf(httpMethod), uri);
-
-        Method target = null;
         
-        WebContext webContext = null;
+        Object target = null;
         if (match != null) {
-            webContext = new WebContext(match, httpRequest, httpResponse);
-            
-            // TODO: Do something with the web context
-            
             target = match.getTarget();
         }
         
-        System.out.println("target: " + target);
-        
         if (target != null) {
             try {
-                Object result;
-                if (SparkUtils.isStatic(target)) {
-                    target.getParameterTypes();
-                    if (SparkUtils.hasWebContext(target)) {
-                        result = target.invoke(target.getDeclaringClass(), webContext);
-                    } else {
-                        result = target.invoke(target.getDeclaringClass());    
-                    }
-                    
-                } else {
-                    LOG.warn("Method: '" + target + "' should be static.");
-                    httpResponse.sendError(500, "Target method not static");
-                    return;
+                Object result = null;
+                if (target instanceof Function) {
+                    Function function = ((Function) target);
+                    function.set(match, httpRequest, httpResponse);
+                    result = function.exec();
                 }
                 if (result != null) {
                     httpResponse.getOutputStream().write(result.toString().getBytes("utf-8"));
@@ -129,7 +113,7 @@ class MatcherFilter implements Filter {
                 LOG.error(e);
             }    
         } else {
-            httpResponse.sendError(404);    
+            httpResponse.sendError(404, "Route has not been mapped in spark"); 
         }
     }
 

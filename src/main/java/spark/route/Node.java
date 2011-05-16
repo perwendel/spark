@@ -17,13 +17,13 @@ import spark.utils.SparkUtils;
 
 class Node {
     private List<Node> children;
-    private Method method;
+    private Object target;
     private String paramName;
     private boolean isRoot;
     
     public static Node createNode(String value, Method method, boolean isRoot) {
         Node node = new Node();
-        node.setMethod(method);
+        node.setTarget(method);
         if (value.startsWith(":")) {
             node.setValue(":");
             node.setParamName(value.substring(1));
@@ -38,16 +38,16 @@ class Node {
         return createNode(value, method, false);
     }
     
-    public Method getTarget() {
-        return method;
+    public Object getTarget() {
+        return target;
     }
 
     public boolean hasChildren() {
         return !children.isEmpty();
     }
 
-    public void setMethod(Method method) {
-        this.method = method;
+    public void setTarget(Object method) {
+        this.target = method;
     }
 
     private String value;
@@ -107,7 +107,6 @@ class Node {
     private String encodePathPart() {
         String val = getValue();
         if (val.equals(":")) {
-            System.out.println("hlo");
             val += getParamName();
         }
         return val;

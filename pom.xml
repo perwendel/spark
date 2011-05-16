@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>spark.plugin</groupId>
-	<artifactId>spark-maven-plugin</artifactId>
-	<packaging>maven-plugin</packaging>
+	<groupId>spark</groupId>
+	<artifactId>spark</artifactId>
+	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>spark-maven-plugin Maven Mojo</name>
+	<name>Spark</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
@@ -39,9 +39,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>0.9.5-RC2</version>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>3.0.pre4</version>
 		</dependency>
 
 		<!--  JUNIT DEPENDENCY FOR TESTING -->
@@ -51,16 +51,6 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-
-		<!--  JETTY DEPENDENCIES FOR TESTING  -->
-		<!--        <dependency>-->
-		<!--            <groupId>org.eclipse.jetty.aggregate</groupId>-->
-		<!--            <artifactId>jetty-all-server</artifactId>-->
-		<!--            <version>${jetty.version}</version>-->
-		<!--            <scope>provided</scope>-->
-		<!--        </dependency>-->
-
-
 	</dependencies>
 
 	<build>
@@ -83,12 +73,6 @@
 		</resources>
 
 		<plugins>
-			<plugin>
-				<groupId>spark.plugin</groupId>
-				<artifactId>spark-maven-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
-			</plugin>
-
 			<plugin>
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>

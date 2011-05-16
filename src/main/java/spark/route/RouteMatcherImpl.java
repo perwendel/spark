@@ -9,13 +9,10 @@
  **************************************************************/
 package spark.route;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-
-import spark.utils.SparkUtils;
 
 /**
  * Class for matching a request URI to a annotaion "configured" route.
@@ -23,6 +20,10 @@ import spark.utils.SparkUtils;
  * @author Per Wendel
  */
 class RouteMatcherImpl implements RouteMatcher {
+
+    private static final String ROOT = "/";
+
+    private static final char SINGLE_QUOTE = '\'';
 
     private static Logger LOG = Logger.getLogger(RouteMatcherImpl.class);
     
@@ -51,14 +52,10 @@ class RouteMatcherImpl implements RouteMatcher {
     }
     
     @Override
-    public void parseValidateAddRoute(String route, Method target) {
+    public void parseValidateAddRoute(String route, Object target) {
         try {
             System.out.println("Route: " + route);
-            if (!SparkUtils.isStatic(target)) {
-                LOG.error("The @Route value: " + route + " target method is not static. It MUST be static");
-                return;
-            }
-            int singleQuoteIndex = route.indexOf('\'');
+            int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
             System.out.println(singleQuoteIndex);
             String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase();
             String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim().toLowerCase();
@@ -81,7 +78,14 @@ class RouteMatcherImpl implements RouteMatcher {
     @Override
     public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String route) {
         Node rootNode = getRootNode(httpMethod);
-        Node bestMatch = rootNode.findBestMatch(route);
+        Node bestMatch = null;
+        if (route.equals(ROOT)) {
+            if (rootNode.getTarget() != null) {
+                bestMatch = rootNode;
+            }
+        } else {
+            bestMatch = rootNode.findBestMatch(route);
+        }
         if (bestMatch == null) {
             return null;    
         }
@@ -89,13 +93,17 @@ class RouteMatcherImpl implements RouteMatcher {
     }
 
     
-    private void addRoute(HttpMethod httpMethod, String route, Method target) {
+    private void addRoute(HttpMethod httpMethod, String route, Object target) {
         LOG.info("Adding route: " + httpMethod + " '" + route + "'");
         Node rootNode = getRootNode(httpMethod);
+        if (route.equals(ROOT)) {
+            // Special root case
+            rootNode.setTarget(target);
+        }
         addBranch(rootNode, route, target);
     }
 
-    private static void addBranch(Node root, String route, Method method) {
+    private void addBranch(Node root, String route, Object target) {
         String[] pathArray = route.split("/");
         List<String> path = new ArrayList<String>();
         Node lastAdded = root;
@@ -107,7 +115,7 @@ class RouteMatcherImpl implements RouteMatcher {
                 lastAdded = child;
             }
         }
-        lastAdded.setMethod(method);
+        lastAdded.setTarget(target);
     }
     
     private Node getRootNode(HttpMethod httpMethod) {

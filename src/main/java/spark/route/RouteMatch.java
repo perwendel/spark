@@ -9,16 +9,15 @@
  **************************************************************/
 package spark.route;
 
-import java.lang.reflect.Method;
 
 public class RouteMatch {
 
     private HttpMethod httpMethod;
-    private Method target;
+    private Object target;
     private String matchUri;
     private String requestUri;
     
-    public RouteMatch(HttpMethod httpMethod, Method target, String matchUri, String requestUri) {
+    public RouteMatch(HttpMethod httpMethod, Object target, String matchUri, String requestUri) {
         super();
         this.httpMethod = httpMethod;
         this.target = target;
@@ -37,7 +36,7 @@ public class RouteMatch {
     /**
      * @return the target
      */
-    public Method getTarget() {
+    public Object getTarget() {
         return target;
     }
 
