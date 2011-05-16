@@ -17,7 +17,15 @@ public class Spark {
     private static boolean initialized = false;
 
     private static RouteMatcher routeMatcher;
-
+    private static int port = 4567;
+    
+    public synchronized static void setPort(int port) {
+        if (initialized) {
+            throw new IllegalStateException("This must be done before route mapping has begun");
+        }
+        Spark.port = port;
+    }
+    
     private synchronized static final void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
@@ -25,7 +33,7 @@ public class Spark {
                 @Override
                 public void run() {
                     SparkServer server = SparkServerFactory.create();
-                    server.ignite();
+                    server.ignite(port);
                 }
             }).start();
             initialized = true;

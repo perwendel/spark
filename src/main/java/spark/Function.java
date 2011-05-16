@@ -23,6 +23,8 @@ public abstract class Function {
 
     protected Request request;
 
+    private boolean initialized = false;
+    
     /**
      * TODO: javadoc
      * @return
@@ -30,9 +32,11 @@ public abstract class Function {
     public abstract Object exec();
 
     public final void set(RouteMatch match, HttpServletRequest servletRequest, HttpServletResponse response) {
-        
+        if (initialized) {
+            throw new IllegalStateException();
+        }
+        initialized = true;
         request = new Request(match.getHttpMethod(), servletRequest);
-        
         this.response = response;
         params = setParams(match);
     }

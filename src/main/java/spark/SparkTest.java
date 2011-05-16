@@ -3,6 +3,8 @@ package spark;
 public class SparkTest {
     
     public static void main(String[] args) {
+        Spark.setPort(4567);
+        
         Spark.get("/sport/:section", new Function() {
             @Override
             public Object exec() {
@@ -17,10 +19,19 @@ public class SparkTest {
             }
         });
         
+        Spark.get("/redirect", new Function() {
+            @Override
+            public Object exec() {
+                redirect("/news/world");
+                return null;
+            }
+        });
+        
         Spark.get("/", new Function() {
             @Override
             public Object exec() {
-                return "root:";
+                set(null, null, null);
+                return "root";
             }
         });
         

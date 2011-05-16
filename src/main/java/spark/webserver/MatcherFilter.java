@@ -111,6 +111,7 @@ class MatcherFilter implements Filter {
                 LOG.info("Time for request: " + t1);
             } catch (Exception e) {
                 LOG.error(e);
+                httpResponse.sendError(500);
             }    
         } else {
             httpResponse.sendError(404, "Route has not been mapped in spark"); 
