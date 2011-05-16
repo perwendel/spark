@@ -6,10 +6,20 @@ import spark.Spark;
 public class SparkTest {
     
     public static void main(String[] args) {
-        Spark.get(new Route("/sport/:section") {
+        
+        //  Spark.setPort(5678); <- Uncomment this if you wan't spark to listen on a port different than 4567.
+        
+        Spark.get(new Route("/hello") {
             @Override
             public Object handle() {
-                return "these are the sport pages, section: " + params(":section") + ", " + request.ip();
+                return "Hello World!";
+            }
+        });
+        
+        Spark.get(new Route("/users/:name") {
+            @Override
+            public Object handle() {
+                return "Selected user: " + params(":name");
             }
         });
         
