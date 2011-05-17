@@ -1,7 +1,4 @@
-Spark - a Sinatra inspired micro web framework
-----------------------------------------------
-
-Getting started:
+package spark.examples.hello;
 
 import spark.*;
 
@@ -15,10 +12,3 @@ public class HelloWorld {
         });
     }
 }
-
-View at: http://localhost:4567/hello
-
-More documentation is on the way!
-
-Check out and try the examples in the source code.
-

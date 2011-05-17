@@ -9,51 +9,41 @@
  **************************************************************/
 package spark;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-
-import spark.route.RouteMatch;
 
 /**
- * 
+ * A Route is built up by a path (for url-matching) and the implementation of the 'handle' method.
+ * When a request is made, if present, the matching routes 'handle' method is invoked. 
  *
  * @author Per Wendel
  */
 public abstract class Route {
 
-    private static Logger LOG = Logger.getLogger(Route.class);
-
-//    private HttpServletResponse response;
-
-    protected Request request;
-
-    private String route;
+    private String path;
     
-    protected Route(String route) {
-        this.route = route;
+    /**
+     * Constructor
+     * 
+     * @param path The route path which is used for matching. (e.g. /hello, users/:name) 
+     */
+    protected Route(String path) {
+        this.path = path;
     }
     
     /**
-     * TODO: javadoc
-     * @return
+     * Invoked when a request is made on this route's corresponding path e.g. '/hello'
+     * 
+     * @param request The request object providing information about the HTTP request
+     * @param response The response object providing functionality for modifying the response
+     * 
+     * @return The content to be set in the response
      */
     public abstract Object handle(Request request, Response response);
 
-    String getRoute() {
-        return this.route;
-    }
-    
-    
     /**
-     * Sets the needed information
+     * Returns this route's path
      */
-    public final void set(RouteMatch match, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-        request = new Request(match, servletRequest);
-        Response response = new Response(servletResponse);
-//        this.response = response;
+    String getPath() {
+        return this.path;
     }
-
     
 }

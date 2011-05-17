@@ -15,10 +15,7 @@ import spark.route.RouteMatcherFactory;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
-// get, post, put, delete, head, trace, connect, options
 /**
- * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ???
- * 
  * In Spark, a route is an HTTP method paired with a URL-matching pattern. Each route is associated with a runction:
  * 
  * TODO: Add author on all files, maybe apache2 license text!!!, javadoc
@@ -79,7 +76,7 @@ public class Spark {
     
     private static void addRoute(String httpMethod, Route route) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getRoute() + "'", route);
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route);
     }
 
     private synchronized static final void init() {
@@ -96,4 +93,39 @@ public class Spark {
         }
     }
     
+    /*
+     * TODO: discover new TODOs.
+     * 
+     * TODO: Before method for filters...check sinatra page
+     * 
+     * TODO: Make available as maven dependency, upload on repo etc...
+     * TODO: Add *, splat possibility
+     * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static, ONGOING
+     * 
+     * TODO: Javadoc
+     * 
+     * TODO: Create maven archetype, "ONGOING"
+     * TODO: Add cache-control helpers
+     * 
+     * advanced TODO list:
+     * TODO: sessions? (use session servlet context?)
+     * TODO: Add regexp URIs
+     * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ???
+     * 
+     * Ongoing
+     * 
+     * Done
+     * TODO: Setting Headers
+     * TODO: Do we want get-prefixes for all *getters* or do we want a more ruby like approach??? (Maybe have two choices?)
+     * TODO: Setting Body, Status Code
+     * TODO: Add possibility to set content type on return, DONE
+     * TODO: Add possibility to access HttpServletContext in method impl, DONE
+     * TODO: Redirect func in web context, DONE
+     * TODO: Refactor, extract interfaces, DONE
+     * TODO: Figure out a nice name, DONE - SPARK
+     * TODO: Add /uri/{param} possibility, DONE
+     * TODO: Tweak log4j config, DONE
+     * TODO: Query string in web context, DONE
+     * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc, AND headers, DONE
+     */
 }
