@@ -226,8 +226,6 @@ public class Books {
 
 Example showing a very simple (and stupid) autentication filter that is executed before all other resources:
 
-<code>
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -281,5 +279,3 @@ public class FilterExample {
     }
     
 }
-
-</code>
