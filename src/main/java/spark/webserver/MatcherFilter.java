@@ -67,8 +67,11 @@ class MatcherFilter implements Filter {
         String httpMethod = httpRequest.getMethod().toLowerCase();
         String uri = httpRequest.getRequestURI().toLowerCase();
 
+        String bodyContent = "";
+        
         LOG.debug("httpMethod:" + httpMethod + ", uri: " + uri);
         try {
+            // BEFORE filters
             RouteMatch filterMatch = routeMatcher.findTargetForRequestedRoute(HttpMethod.before, uri);
             if (filterMatch != null) {
                 Object filterTarget = filterMatch.getTarget();
@@ -98,7 +101,7 @@ class MatcherFilter implements Filter {
                         result = route.handle(request, response);
                     }
                     if (result != null) {
-                        httpResponse.getOutputStream().write(result.toString().getBytes("utf-8"));
+                        bodyContent = result.toString();
                     }
                     long t1 = System.currentTimeMillis() - t0;
                     LOG.debug("Time for request: " + t1);
@@ -106,19 +109,36 @@ class MatcherFilter implements Filter {
                     throw hEx;
                 } catch (Exception e) {
                     LOG.error(e);
-                    httpResponse.sendError(500);
+                    httpResponse.setStatus(500);
+                    bodyContent = INTERNAL_ERROR;
                 }
             } else {
                 httpResponse.setStatus(404);
-                httpResponse.getOutputStream().write(NOT_FOUND.getBytes("utf-8"));
+                bodyContent = NOT_FOUND;
+            }
+            
+            // AFTER filters
+            filterMatch = routeMatcher.findTargetForRequestedRoute(HttpMethod.after, uri);
+            if (filterMatch != null) {
+                Object filterTarget = filterMatch.getTarget();
+                if (filterTarget != null && filterTarget instanceof spark.Filter) {
+                    Request request = RequestResponseFactory.create(filterMatch, httpRequest);
+                    Response response = RequestResponseFactory.create(httpResponse);
+                    
+                    spark.Filter filter = (spark.Filter) filterTarget;
+                    filter.handle(request, response);
+                }
             }
         } catch (HaltException hEx) {
             LOG.debug("halt performed");
             httpResponse.setStatus(hEx.getStatusCode());
             if (hEx.getBody() != null) {
-                httpResponse.getOutputStream().write(hEx.getBody().getBytes("utf-8"));
+                bodyContent = hEx.getBody();
             }
         }
+        
+        // Write body content
+        httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
     }
 
     public void destroy() {
@@ -126,4 +146,5 @@ class MatcherFilter implements Filter {
     }
 
     private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route has not been mapped in Spark</body></html>";
+    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
 }

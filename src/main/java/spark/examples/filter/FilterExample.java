@@ -37,6 +37,8 @@ import spark.Spark;
  *     http://localhost:4567/hello?user=foo&password=bar
  * the filter will accept the request and the request will continue to the /hello route.
  *
+ * Note: There is also an "after filter" that adds a header to the response
+ *
  * @author Per Wendel
  */
 public class FilterExample {
@@ -58,6 +60,13 @@ public class FilterExample {
                 if (!(password != null && password.equals(dbPassword))) {
                     halt(401, "You are not welcome here!!!");
                 }
+            }
+        });
+        
+        Spark.after(new Filter("/") {
+            @Override
+            public void handle(Request request, Response response) {
+                response.header("spark", "added by after-filter");
             }
         });
         

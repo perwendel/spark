@@ -45,6 +45,7 @@ class RouteMatcherImpl implements RouteMatcher {
 
     /* Filter root node */
     private Node before;
+    private Node after;
     
     /**
      * Constructor
@@ -59,6 +60,7 @@ class RouteMatcherImpl implements RouteMatcher {
         head = Node.createNode(HttpMethod.head.toString(), null, true);
         options = Node.createNode(HttpMethod.options.toString(), null, true);
         before = Node.createNode(HttpMethod.before.toString(), null, true);
+        after = Node.createNode(HttpMethod.after.toString(), null, true);
     }
     
     @Override
@@ -160,6 +162,9 @@ class RouteMatcherImpl implements RouteMatcher {
                 break;
             case before:
                 rootNode = before;
+                break;
+            case after:
+                rootNode = after;
                 break;
             default:
                 rootNode = get;

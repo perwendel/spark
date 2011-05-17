@@ -19,7 +19,8 @@ package spark;
 
 /**
  * A Route is built up by a path (for url-matching) and the implementation of the 'handle' method.
- * When a request is made, if present, the matching routes 'handle' method is invoked. 
+ * When a request is made, if present, the matching routes 'handle' method is invoked. The object
+ * that is returned from 'handle' will be set to the response body (toString()).
  *
  * @author Per Wendel
  */

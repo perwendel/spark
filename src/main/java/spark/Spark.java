@@ -147,6 +147,15 @@ public class Spark {
         addFilter(HttpMethod.before.name(), filter);
     }
     
+    /**
+     * Maps a filter to be executed after any matching routes
+     * 
+     * @param filter The filter
+     */
+    public static void after(Filter filter) {
+        addFilter(HttpMethod.after.name(), filter);
+    }
+    
     private static void addRoute(String httpMethod, Route route) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route);
