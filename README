@@ -21,4 +21,9 @@ View at: http://localhost:4567/hello
 More documentation is on the way!
 
 Check out and try the examples in the source code.
+You can also check out the javadoc. After getting the source from
+github run: 
 
+mvn javadoc:javadoc
+
+The result is put in /target/site/apidocs

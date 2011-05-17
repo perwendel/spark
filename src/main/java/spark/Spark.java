@@ -24,20 +24,25 @@ import spark.webserver.SparkServerFactory;
 
 /**
  * The main building block of a Spark application is a set of routes. A route is made up of three simple pieces:
- * A verb (get, post, put, delete, head, trace, connect, options)
- * A path (/hello, /users/:name)
- * A callback ( handle(Request request, Response response) )
+ * 
+ * <ul>
+ * <li>A verb (get, post, put, delete, head, trace, connect, options)</li>
+ * <li>A path (/hello, /users/:name)</li>
+ * <li>A callback ( handle(Request request, Response response) )</li>
+ * </ul>
  * 
  * Example:
- * 
- * <code>
- *    Spark.get(new Route("/hello") {
- *       @Override
- *       public Object handle(Request request, Response response) {
- *          return "Hello World!";
- *       }
- *    });
- *  </code>
+ * <pre>
+ * {@code
+ * Spark.get(new Route("/hello") {
+ *    public Object handle(Request request, Response response) {
+ *       return "Hello World!";
+ *    }
+ * });
+ * </pre> 
+  <code>
+      
+   </code>
  * 
  * @author Per Wendel
  */
@@ -49,7 +54,7 @@ public class Spark {
     private static int port = 4567;
     
     /**
-     * Set the port that Spark should listen on. Default port is 4567.
+     * Set the port that Spark should listen on. If not called the default port is 4567.
      * This has to be called before any route mapping is done.
      * 
      * @param port The port number
@@ -61,34 +66,74 @@ public class Spark {
         Spark.port = port;
     }
 
+    /**
+     * Map the route for HTTP GET requests
+     * 
+     * @param route The route
+     */
     public static void get(Route route) {
         addRoute(HttpMethod.get.name(), route);
     }
 
+    /**
+     * Map the route for HTTP POST requests
+     * 
+     * @param route The route
+     */
     public static void post(Route route) {
         addRoute(HttpMethod.post.name(), route);
     }
 
+    /**
+     * Map the route for HTTP PUT requests
+     * 
+     * @param route The route
+     */
     public static void put(Route route) {
         addRoute(HttpMethod.put.name(), route);
     }
 
+    /**
+     * Map the route for HTTP DELETE requests
+     * 
+     * @param route The route
+     */
     public static void delete(Route route) {
         addRoute(HttpMethod.delete.name(), route);
     }
 
+    /**
+     * Map the route for HTTP HEAD requests
+     * 
+     * @param route The route
+     */
     public static void head(Route route) {
         addRoute(HttpMethod.head.name(), route);
     }
 
+    /**
+     * Map the route for HTTP TRACE requests
+     * 
+     * @param route The route
+     */
     public static void trace(Route route) {
         addRoute(HttpMethod.trace.name(), route);
     }
 
+    /**
+     * Map the route for HTTP CONNECT requests
+     * 
+     * @param route The route
+     */
     public static void connect(Route route) {
         addRoute(HttpMethod.connect.name(), route);
     }
-
+    
+    /**
+     * Map the route for HTTP OPTIONS requests
+     * 
+     * @param route The route
+     */
     public static void options(Route route) {
         addRoute(HttpMethod.options.name(), route);
     }
