@@ -1,3 +1,12 @@
+/***************************************************************
+ *      _______  ______      ___       ______       __  ___    *
+ *     /       ||   _  \    /   \     |   _  \     |  |/  /    *
+ *    |   (----`|  |_)  |  /  ^  \    |  |_)  |    |  '  /     *
+ *     \   \    |   ___/  /  /_\  \   |      /     |    <      *
+ * .----)   |   |  |     /  _____  \  |  |\  \----.|  .  \     *
+ * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
+ *                                                             *
+ **************************************************************/
 package spark;
 
 import spark.route.HttpMethod;
@@ -11,6 +20,10 @@ import spark.webserver.SparkServerFactory;
  * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ???
  * 
  * In Spark, a route is an HTTP method paired with a URL-matching pattern. Each route is associated with a runction:
+ * 
+ * TODO: Add author on all files, maybe apache2 license text!!!, javadoc
+ * 
+ * @author Per Wendel
  */
 public class Spark {
 
@@ -22,6 +35,8 @@ public class Spark {
     /**
      * Set the port that Spark should listen on. Default port is 4567.
      * This has to be called before any route mapping is done.
+     * 
+     * @param port The port number
      */
     public synchronized static void setPort(int port) {
         if (initialized) {

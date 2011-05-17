@@ -22,6 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import spark.Request;
+import spark.RequestResponseFactory;
+import spark.Response;
 import spark.Route;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
@@ -30,19 +33,14 @@ import spark.route.RouteMatcher;
 /**
  * TODO: discover new TODOs.
  * 
- * TODO: There will be problems with annotation scanning when Spark is depended as a maven dependency...
- * TODO: Check if scannotation works better with maven/windows. If not, don't use it
+ * TODO: Before method for filters...check sinatra page
  * 
- * TODO: Do we want get-prefixes for all *getters* or do we want a more ruby like approach??? (Maybe have two choices?)
- * 
- * TODO: Before annotion for filters...check sinatra page 
- * TODO: Setting Body, Status Code and Headers
  * TODO: Make available as maven dependency, upload on repo etc...
  * TODO: Add *, splat possibility
  * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static, ONGOING
- * TODO: Add possibility to access HttpServletContext in method impl.
+ * 
  * TODO: Javadoc
- * TODO: Add possibility to set content type on return
+ * 
  * TODO: Create maven archetype, "ONGOING"
  * TODO: Add cache-control helpers
  * 
@@ -51,9 +49,15 @@ import spark.route.RouteMatcher;
  * TODO: Add regexp URIs 
  * 
  * Ongoing
- * TODO: Redirect func in web context, Partly DONE
- * TODO: Refactor, extract interfaces, ONGOING
  * 
+ * Done
+ * TODO: Setting Headers
+ * TODO: Do we want get-prefixes for all *getters* or do we want a more ruby like approach??? (Maybe have two choices?)
+ * TODO: Setting Body, Status Code
+ * TODO: Add possibility to set content type on return, DONE
+ * TODO: Add possibility to access HttpServletContext in method impl, DONE
+ * TODO: Redirect func in web context, DONE
+ * TODO: Refactor, extract interfaces, DONE
  * TODO: Figure out a nice name, DONE - SPARK
  * TODO: Add /uri/{param} possibility, DONE
  * TODO: Tweak log4j config, DONE
@@ -77,16 +81,16 @@ class MatcherFilter implements Filter {
         
     }
     
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain)
                     throws IOException, ServletException {
         long t0 = System.currentTimeMillis();
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         
         String httpMethod = httpRequest.getMethod().toLowerCase();
         String uri = httpRequest.getRequestURI().toLowerCase();
         
-        LOG.info("httpMethod:" + httpMethod + ", uri: " + uri);
+        LOG.debug("httpMethod:" + httpMethod + ", uri: " + uri);
         
         RouteMatch match = routeMatcher.findTargetForRequestedRoute(HttpMethod.valueOf(httpMethod), uri);
         
@@ -99,15 +103,17 @@ class MatcherFilter implements Filter {
             try {
                 Object result = null;
                 if (target instanceof Route) {
-                    Route function = ((Route) target);
-                    function.set(match, httpRequest, httpResponse);
-                    result = function.handle();
+                    Route route = ((Route) target);
+                    Request request = RequestResponseFactory.create(match, httpRequest);
+                    Response response = RequestResponseFactory.create(httpResponse);
+                    route.set(match, httpRequest, httpResponse);
+                    result = route.handle(request, response);
                 }
                 if (result != null) {
                     httpResponse.getOutputStream().write(result.toString().getBytes("utf-8"));
                 }
                 long t1 = System.currentTimeMillis() - t0;
-                LOG.info("Time for request: " + t1);
+                LOG.debug("Time for request: " + t1);
             } catch (Exception e) {
                 LOG.error(e);
                 httpResponse.sendError(500);

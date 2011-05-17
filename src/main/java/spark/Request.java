@@ -1,17 +1,43 @@
+/***************************************************************
+ *      _______  ______      ___       ______       __  ___    *
+ *     /       ||   _  \    /   \     |   _  \     |  |/  /    *
+ *    |   (----`|  |_)  |  /  ^  \    |  |_)  |    |  '  /     *
+ *     \   \    |   ___/  /  /_\  \   |      /     |    <      *
+ * .----)   |   |  |     /  _____  \  |  |\  \----.|  .  \     *
+ * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
+ *                                                             *
+ **************************************************************/
 package spark;
 
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
-import spark.route.HttpMethod;
-import spark.utils.IOUtils;
+import org.apache.log4j.Logger;
 
+import spark.route.HttpMethod;
+import spark.route.RouteMatch;
+import spark.utils.IOUtils;
+import spark.utils.SparkUtils;
+
+/**
+ * Provides information about the HTTP request
+ *
+ * @author Per Wendel
+ */
 public class Request {
 
+    private static Logger LOG = Logger.getLogger(Request.class);
+    
     private static final String USER_AGENT = "user-agent";
+    
+    private Map<String, String> params;
     
     private HttpMethod httpMethod;
     private HttpServletRequest servletRequest;
@@ -21,9 +47,8 @@ public class Request {
     
     private Set<String> headers = null;
     
-    //  request.body              # request body sent by the client (see below), DONE
+    //    request.body              # request body sent by the client (see below), DONE
     //    request.scheme            # "http"                                DONE
-    //    request.script_name       # "/example"
     //    request.path_info         # "/foo",                               DONE
     //    request.port              # 80                                    DONE
     //    request.request_method    # "GET",                                DONE
@@ -31,22 +56,39 @@ public class Request {
     //    request.content_length    # length of request.body,               DONE
     //    request.media_type        # media type of request.body            DONE, content type?
     //    request.host              # "example.com"                         DONE
-    //    request.get?              # true (similar methods for other verbs)
-    //    request.form_data?        # false
     //    request["SOME_HEADER"]    # value of SOME_HEADER header,          DONE
-    //    request.referrer          # the referrer of the client or '/'
     //    request.user_agent        # user agent (used by :agent condition) DONE
-    //    request.cookies           # hash of browser cookies
-    //    request.xhr?              # is this an ajax request?
     //    request.url               # "http://example.com/example/foo"      DONE
-    //    request.path              # "/example/foo"
     //    request.ip                # client IP address                     DONE
+    //    request.env               # raw env hash handed in by Rack,       DONE
+    //    request.get?              # true (similar methods for other verbs)
     //    request.secure?           # false (would be true over ssl)
     //    request.forwarded?        # true (if running behind a reverse proxy)
-    //    request.env               # raw env hash handed in by Rack,       DONE
-    Request(HttpMethod httpMethod, HttpServletRequest request) {
-        this.httpMethod = httpMethod;
+    //    request.cookies           # hash of browser cookies
+    //    request.xhr?              # is this an ajax request?
+    //    request.script_name       # "/example"
+    //    request.form_data?        # false
+    //    request.referrer          # the referrer of the client or '/'
+    
+    /**
+     * Constructor
+     */
+    Request(RouteMatch match, HttpServletRequest request) {
+        this.httpMethod = match.getHttpMethod();
         this.servletRequest = request;
+        params = setParams(match);
+    }
+    
+    /**
+     * Returns the value of the provided route pattern parameter.
+     * Example: parameter 'name' from the following pattern: (get '/hello/:name') 
+     */
+    public final String params(String param) {
+        if (param.startsWith(":")) {
+            return params.get(param);
+        } else {
+            return params.get(":" + param);
+        }
     }
     
     /**
@@ -184,6 +226,30 @@ public class Request {
      */
     public HttpServletRequest raw() {
         return servletRequest;
+    }
+    
+    private final Map<String, String> setParams(RouteMatch match) {
+        LOG.debug("set params for requestUri: "
+                        + match.getRequestUri()
+                        + ", matchUri: "
+                        + match.getMatchUri());
+
+        Map<String, String> params = new HashMap<String, String>();
+        
+        List<String> request = SparkUtils.convertRouteToList(match.getRequestUri());
+        List<String> matched = SparkUtils.convertRouteToList(match.getMatchUri());
+
+        for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
+            String matchedPart = matched.get(i);
+            if (SparkUtils.isParam(matchedPart)) {
+                LOG.debug("matchedPart: "
+                                + matchedPart
+                                + " = "
+                                + request.get(i));
+                params.put(matchedPart, request.get(i));
+            }
+        }
+        return Collections.unmodifiableMap(params);
     }
     
 }

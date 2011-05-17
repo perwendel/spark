@@ -15,6 +15,11 @@ import java.util.List;
 
 import spark.utils.SparkUtils;
 
+/**
+ * 
+ *
+ * @author Per Wendel
+ */
 class Node {
     private List<Node> children;
     private Object target;

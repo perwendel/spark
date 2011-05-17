@@ -20,12 +20,11 @@ import org.apache.log4j.Logger;
  * @author Per Wendel
  */
 class RouteMatcherImpl implements RouteMatcher {
-
-    private static final String ROOT = "/";
-
-    private static final char SINGLE_QUOTE = '\'';
-
+    
     private static Logger LOG = Logger.getLogger(RouteMatcherImpl.class);
+    
+    private static final String ROOT = "/";
+    private static final char SINGLE_QUOTE = '\'';
     
     /* Http method root nodes */
     private Node get;
@@ -54,12 +53,9 @@ class RouteMatcherImpl implements RouteMatcher {
     @Override
     public void parseValidateAddRoute(String route, Object target) {
         try {
-            System.out.println("Route: " + route);
             int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
-            System.out.println(singleQuoteIndex);
             String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase();
             String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim().toLowerCase();
-            System.out.println(httpMethod + ", " + url);
 
             // Use special enum stuff to get from value
             HttpMethod method;

@@ -14,6 +14,11 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 
+/**
+ * 
+ *
+ * @author Per Wendel
+ */
 class SparkServerImpl implements SparkServer {
 
     /** The logger. */

@@ -1,7 +1,21 @@
+/***************************************************************
+ *      _______  ______      ___       ______       __  ___    *
+ *     /       ||   _  \    /   \     |   _  \     |  |/  /    *
+ *    |   (----`|  |_)  |  /  ^  \    |  |_)  |    |  '  /     *
+ *     \   \    |   ___/  /  /_\  \   |      /     |    <      *
+ * .----)   |   |  |     /  _____  \  |  |\  \----.|  .  \     *
+ * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
+ *                                                             *
+ **************************************************************/
 package spark.route;
 
 import org.apache.log4j.Logger;
 
+/**
+ * 
+ *
+ * @author Per Wendel
+ */
 public class RouteMatcherFactory {
 
     /** The logger. */
@@ -11,7 +25,7 @@ public class RouteMatcherFactory {
 
     public static synchronized RouteMatcher get() {
         if (routeMatcher == null) {
-            LOG.info("creates RouteMatcher");
+            LOG.debug("creates RouteMatcher");
             routeMatcher = new RouteMatcherImpl();
         }
         return routeMatcher;

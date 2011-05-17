@@ -20,7 +20,6 @@ public class SparkUtils {
         for (String p : pathArray) {
             if (p.length() > 0) {
                 path.add(p);
-                System.out.println("p: " + p);
             }
         }
         return path;
@@ -33,9 +32,5 @@ public class SparkUtils {
     public static boolean isParam(String routePart) {
         return routePart.startsWith(":");
     }
-    
-//    public static String getParamName(String routePart) {
-//        return routePart.substring(1);
-//    }
  
 }

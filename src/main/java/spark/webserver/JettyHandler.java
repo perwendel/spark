@@ -25,6 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.mortbay.jetty.handler.AbstractHandler;
 import org.mortbay.log.Log;
 
+/**
+ * 
+ *
+ * @author Per Wendel
+ */
 class JettyHandler extends AbstractHandler {
     
     private List<Filter> filters;

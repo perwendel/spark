@@ -1,10 +1,13 @@
-Spark - a Sinatra inspired micro web framework
-----------------------------------------------
-
-More documentation is on the way!
-
-Simple example:
----------------
+/***************************************************************
+ *      _______  ______      ___       ______       __  ___    *
+ *     /       ||   _  \    /   \     |   _  \     |  |/  /    *
+ *    |   (----`|  |_)  |  /  ^  \    |  |_)  |    |  '  /     *
+ *     \   \    |   ___/  /  /_\  \   |      /     |    <      *
+ * .----)   |   |  |     /  _____  \  |  |\  \----.|  .  \     *
+ * |_______/    | _|    /__/     \__\ | _| `._____||__|\__\    *  
+ *                                                             *
+ **************************************************************/
+package spark.examples.simple;
 
 import spark.Request;
 import spark.Response;
@@ -13,6 +16,8 @@ import spark.Spark;
 
 /**
  * A simple example just showing some basic functionality
+ *
+ * @author Per Wendel
  */
 public class SimpleExample {
     
@@ -75,4 +80,3 @@ public class SimpleExample {
         
     }
 }
-
