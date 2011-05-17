@@ -43,6 +43,9 @@ class RouteMatcherImpl implements RouteMatcher {
     private Node head;
     private Node options;
 
+    /* Filter root node */
+    private Node before;
+    
     /**
      * Constructor
      */
@@ -55,6 +58,7 @@ class RouteMatcherImpl implements RouteMatcher {
         connect = Node.createNode(HttpMethod.connect.toString(), null, true);
         head = Node.createNode(HttpMethod.head.toString(), null, true);
         options = Node.createNode(HttpMethod.options.toString(), null, true);
+        before = Node.createNode(HttpMethod.before.toString(), null, true);
     }
     
     @Override
@@ -88,6 +92,12 @@ class RouteMatcherImpl implements RouteMatcher {
             }
         } else {
             bestMatch = rootNode.findBestMatch(route);
+        }
+        if (bestMatch == null) {
+            // Root matches everything
+            if (rootNode.getTarget() != null) {
+                bestMatch = rootNode;
+            }
         }
         if (bestMatch == null) {
             return null;    
@@ -147,6 +157,9 @@ class RouteMatcherImpl implements RouteMatcher {
                 break;
             case connect:
                 rootNode = connect;
+                break;
+            case before:
+                rootNode = before;
                 break;
             default:
                 rootNode = get;

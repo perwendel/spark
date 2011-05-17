@@ -17,13 +17,14 @@
 package spark.route;
 
 /**
- * 
+ * Route matcher
  *
  * @author Per Wendel
  */
 public interface RouteMatcher {
     
     /**
+     * Parses, validates and adds a route
      * 
      * @param route
      * @param target
@@ -31,6 +32,7 @@ public interface RouteMatcher {
     void parseValidateAddRoute(String route, Object target);
     
     /**
+     * Finds the a target route for the requested route path
      * 
      * @param httpMethod
      * @param route

@@ -138,9 +138,23 @@ public class Spark {
         addRoute(HttpMethod.options.name(), route);
     }
     
+    /**
+     * Maps a filter to be executed before any matching routes
+     * 
+     * @param filter The filter
+     */
+    public static void before(Filter filter) {
+        addFilter(HttpMethod.before.name(), filter);
+    }
+    
     private static void addRoute(String httpMethod, Route route) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route);
+    }
+    
+    private static void addFilter(String httpMethod, Filter filter) {
+        init();
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter);
     }
 
     private synchronized static final void init() {

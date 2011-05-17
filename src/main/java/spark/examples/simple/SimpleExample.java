@@ -23,7 +23,7 @@ import spark.Spark;
 
 /**
  * A simple example just showing some basic functionality
- *
+ * 
  * @author Per Wendel
  */
 public class SimpleExample {
@@ -52,7 +52,6 @@ public class SimpleExample {
                 response.status(401);
                 return "Go Away!!!";
             }
-            
         });
         
         Spark.get(new Route("/users/:name") {
@@ -67,6 +66,14 @@ public class SimpleExample {
             public Object handle(Request request, Response response) {
                 response.type("text/xml");
                 return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>" + request.params("section") + "</news>";
+            }
+        });
+        
+        Spark.get(new Route("/protected") {
+            @Override
+            public Object handle(Request request, Response response) {
+                halt(403, "I don't think so!!!");
+                return null;
             }
         });
         

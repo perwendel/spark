@@ -27,3 +27,255 @@ github run:
 mvn javadoc:javadoc
 
 The result is put in /target/site/apidocs
+
+Examples:
+---------
+
+Simple example showing some basic functionality:
+
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.Spark;
+
+/**
+ * A simple example just showing some basic functionality
+ */
+public class SimpleExample {
+    
+    public static void main(String[] args) {
+        
+        //  Spark.setPort(5678); <- Uncomment this if you wan't spark to listen on a port different than 4567.
+        
+        Spark.get(new Route("/hello") {
+            @Override
+            public Object handle(Request request, Response response) {
+                return "Hello World!";
+            }
+        });
+        
+        Spark.post(new Route("/hello") {
+            @Override
+            public Object handle(Request request, Response response) {
+                return "Hello World: " + request.body();
+            }
+        });
+        
+        Spark.get(new Route("/private") {
+            @Override
+            public Object handle(Request request, Response response) {
+                response.status(401);
+                return "Go Away!!!";
+            }
+        });
+        
+        Spark.get(new Route("/users/:name") {
+            @Override
+            public Object handle(Request request, Response response) {
+                return "Selected user: " + request.params(":name");
+            }
+        });
+        
+        Spark.get(new Route("/news/:section") {
+            @Override
+            public Object handle(Request request, Response response) {
+                response.type("text/xml");
+                return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>" + request.params("section") + "</news>";
+            }
+        });
+        
+        Spark.get(new Route("/protected") {
+            @Override
+            public Object handle(Request request, Response response) {
+                halt(403, "I don't think so!!!");
+                return null;
+            }
+        });
+        
+        Spark.get(new Route("/redirect") {
+            @Override
+            public Object handle(Request request, Response response) {
+                response.redirect("/news/world");
+                return null;
+            }
+        });
+        
+        Spark.get(new Route("/") {
+            @Override
+            public Object handle(Request request, Response response) {
+                return "root";
+            }
+        });
+        
+    }
+}
+
+-------------------------------
+
+A simple RESTful example showing howto create, get, update and delete book resources:
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.Spark;
+
+/**
+ * A simple RESTful example showing howto create, get, update and delete book resources.
+ */
+public class Books {
+
+    /**
+     * Map holding the books
+     */
+    private static Map<String, Book> books = new HashMap<String, Book>();
+    
+    public static void main(String[] args) {
+        
+        // Creates a new book resource, will return the ID to the created resource
+        // author and title are sent as query parameters e.g. /books?author=Foo&title=Bar
+        Spark.post(new Route("/books") {
+            Random random = new Random();
+            @Override
+            public Object handle(Request request, Response response) {
+                String author = request.queryParam("author");
+                String title = request.queryParam("title");
+                Book book = new Book(author, title);
+                
+                int id = random.nextInt(Integer.MAX_VALUE);
+                books.put(String.valueOf(id), book);
+                
+                response.status(201); // 201 Created
+                return id;
+            }
+        });
+        
+        // Gets the book resource for the provided id
+        Spark.get(new Route("/books/:id") {
+            @Override
+            public Object handle(Request request, Response response) {
+                Book book = books.get(request.params(":id"));
+                if (book != null) {
+                    return "Title: " + book.getTitle() + ", Author: " + book.getAuthor();
+                } else {
+                    response.status(404); // 404 Not found
+                    return "Book not found";
+                }
+            }
+        });
+        
+        // Updates the book resource for the provided id with new information
+        // author and title are sent as query parameters e.g. /books/<id>?author=Foo&title=Bar
+        Spark.put(new Route("/books/:id") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String id = request.params(":id");
+                Book book = books.get(id);
+                if (book != null) {
+                    String newAuthor = request.queryParam("author");
+                    String newTitle = request.queryParam("title");
+                    if (newAuthor != null) {
+                        book.setAuthor(newAuthor);
+                    }
+                    if (newTitle != null) {
+                        book.setTitle(newTitle);
+                    }
+                    return "Book with id '" + id + "' updated";
+                } else {
+                    response.status(404); // 404 Not found
+                    return "Book not found";
+                }
+            }
+        });
+        
+        // Deletes the book resource for the provided id 
+        Spark.delete(new Route("/books/:id") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String id = request.params(":id");
+                Book book = books.remove(id);
+                if (book != null) {
+                    return "Book with id '" + id + "' deleted";
+                } else {
+                    response.status(404); // 404 Not found
+                    return "Book not found";
+                }
+            }
+        });
+        
+        // Gets all available book resources (id's)
+        Spark.get(new Route("/books") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String ids = "";
+                for (String id : books.keySet()) {
+                   ids += id + " "; 
+                }
+                return ids;
+            }
+        });
+        
+    }
+    
+}
+
+---------------------------------
+
+Example showing a very simple (and stupid) autentication filter that is executed before all other resources:
+
+import java.util.HashMap;
+import java.util.Map;
+
+import spark.Filter;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.Spark;
+
+/**
+ * Example showing a very simple (and stupid) autentication filter that is
+ * executed before all other resources.
+ * 
+ * When requesting the resource with e.g. 
+ *     http://localhost:4567/hello?user=some&password=guy
+ * the filter will stop the execution and the client will get a 401 UNAUTHORIZED with the content 'You are not welcome here'
+ * 
+ * When requesting the resource with e.g. 
+ *     http://localhost:4567/hello?user=foo&password=bar
+ * the filter will accept the request and the request will continue to the /hello route.
+ */
+public class FilterExample {
+
+    private static Map<String, String> usernamePasswords = new HashMap<String, String>();
+    
+    public static void main(String[] args) {
+        
+        usernamePasswords.put("foo", "bar");
+        usernamePasswords.put("admin", "admin");
+        
+        Spark.before(new Filter("/") {
+            @Override
+            public void handle(Request request, Response response) {
+                String user = request.queryParam("user");
+                String password = request.queryParam("password");
+            
+                String dbPassword = usernamePasswords.get(user);
+                if (!(password != null && password.equals(dbPassword))) {
+                    halt(401, "You are not welcome here!!!");
+                }
+            }
+        });
+        
+        Spark.get(new Route("/hello") {
+            @Override
+            public Object handle(Request request, Response response) {
+                return "Hello World!";
+            }
+        });
+        
+    }
+    
+}
