@@ -23,9 +23,21 @@ import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
 /**
- * In Spark, a route is an HTTP method paired with a URL-matching pattern. Each route is associated with a runction:
+ * The main building block of a Spark application is a set of routes. A route is made up of three simple pieces:
+ * A verb (get, post, put, delete, head, trace, connect, options)
+ * A path (/hello, /users/:name)
+ * A callback ( handle(Request request, Response response) )
  * 
- * TODO: Add author on all files, maybe apache2 license text!!!, javadoc
+ * Example:
+ * 
+ * <code>
+ *    Spark.get(new Route("/hello") {
+ *       @Override
+ *       public Object handle(Request request, Response response) {
+ *          return "Hello World!";
+ *       }
+ *    });
+ *  </code>
  * 
  * @author Per Wendel
  */
