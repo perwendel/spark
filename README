@@ -260,40 +260,43 @@ import spark.Route;
  */
 public class FilterExample {
 
-    private static Map<String, String> usernamePasswords = new HashMap<String, String>();
-    
-    public static void main(String[] args) {
-        
-        usernamePasswords.put("foo", "bar");
-        usernamePasswords.put("admin", "admin");
-        
-        before(new Filter("/") {
-            @Override
-            public void handle(Request request, Response response) {
-                String user = request.queryParams("user");
-                String password = request.queryParams("password");
-            
-                String dbPassword = usernamePasswords.get(user);
-                if (!(password != null && password.equals(dbPassword))) {
-                    halt(401, "You are not welcome here!!!");
-                }
+   private static Map<String, String> usernamePasswords = new HashMap<String, String>();
+
+   public static void main(String[] args) {
+
+      usernamePasswords.put("foo", "bar");
+      usernamePasswords.put("admin", "admin");
+
+      before(new Filter("/") {
+         @Override
+         public boolean handle(Request request, Response response) {
+            String user = request.queryParams("user");
+            String password = request.queryParams("password");
+
+            String dbPassword = usernamePasswords.get(user);
+            if (!(password != null && password.equals(dbPassword))) {
+               response.status(401);
+               response.body("You are not welcome here!!!");
+               return false;
             }
-        });
-        
-        after(new Filter("/") {
-            @Override
-            public void handle(Request request, Response response) {
-                response.header("spark", "added by after-filter");
-            }
-        });
-   	     
-        get(new Route("/hello") {
-            @Override
-            public Object handle(Request request, Response response) {
-                return "Hello World!";
-            }
-        });
-        
-    }
-    
+            return true;
+         }
+      });
+
+      after(new Filter("/") {
+         @Override
+         public boolean handle(Request request, Response response) {
+            response.header("spark", "added by after-filter");
+            return true;
+         }
+      });
+
+      get(new Route("/hello") {
+         @Override
+         public Object handle(Request request, Response response) {
+            return "Hello World!";
+         }
+      });
+
+   }
 }

@@ -43,9 +43,9 @@ public abstract class Filter extends AbstractRoot {
      * @param request The request object providing information about the HTTP request
      * @param response The response object providing functionality for modifying the response
      * 
-     * @return The content to be set in the response
+     * @return If execution should continue
      */
-    public abstract void handle(Request request, Response response);
+    public abstract boolean handle(Request request, Response response);
 
     /**
      * Returns this route's path

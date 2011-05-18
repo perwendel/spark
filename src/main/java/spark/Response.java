@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 public class Response {
 
     private HttpServletResponse response;
+    private String body;
     
     Response(HttpServletResponse response) {
         this.response = response;
@@ -46,6 +47,17 @@ public class Response {
      */
     public void type(String contentType) {
         response.setContentType(contentType);
+    }
+    
+    /**
+     * Sets the body
+     */
+    public void body(String body) {
+       this.body = body;
+    }
+    
+    String body() {
+       return this.body;
     }
     
     /**
