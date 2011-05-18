@@ -51,7 +51,7 @@ public class Response {
     /**
      * Gets the raw response object handed in by Jetty
      */
-    public HttpServletResponse getRawResponse() {
+    public HttpServletResponse raw() {
         return response;
     }
 
