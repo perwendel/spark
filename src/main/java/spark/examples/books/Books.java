@@ -16,6 +16,8 @@
  */
 package spark.examples.books;
 
+import static spark.Spark.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -23,7 +25,6 @@ import java.util.Random;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import spark.Spark;
 
 /**
  * A simple RESTful example showing howto create, get, update and delete book resources.
@@ -41,7 +42,7 @@ public class Books {
         
         // Creates a new book resource, will return the ID to the created resource
         // author and title are sent as query parameters e.g. /books?author=Foo&title=Bar
-        Spark.post(new Route("/books") {
+        post(new Route("/books") {
             Random random = new Random();
             @Override
             public Object handle(Request request, Response response) {
@@ -58,7 +59,7 @@ public class Books {
         });
         
         // Gets the book resource for the provided id
-        Spark.get(new Route("/books/:id") {
+        get(new Route("/books/:id") {
             @Override
             public Object handle(Request request, Response response) {
                 Book book = books.get(request.params(":id"));
@@ -73,7 +74,7 @@ public class Books {
         
         // Updates the book resource for the provided id with new information
         // author and title are sent as query parameters e.g. /books/<id>?author=Foo&title=Bar
-        Spark.put(new Route("/books/:id") {
+        put(new Route("/books/:id") {
             @Override
             public Object handle(Request request, Response response) {
                 String id = request.params(":id");
@@ -96,7 +97,7 @@ public class Books {
         });
         
         // Deletes the book resource for the provided id 
-        Spark.delete(new Route("/books/:id") {
+        delete(new Route("/books/:id") {
             @Override
             public Object handle(Request request, Response response) {
                 String id = request.params(":id");
@@ -111,7 +112,7 @@ public class Books {
         });
         
         // Gets all available book resources (id's)
-        Spark.get(new Route("/books") {
+        get(new Route("/books") {
             @Override
             public Object handle(Request request, Response response) {
                 String ids = "";

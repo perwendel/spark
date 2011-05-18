@@ -16,6 +16,8 @@
  */
 package spark.examples.filter;
 
+import static spark.Spark.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +25,6 @@ import spark.Filter;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import spark.Spark;
 
 /**
  * Example showing a very simple (and stupid) autentication filter that is
@@ -50,7 +51,7 @@ public class FilterExample {
         usernamePasswords.put("foo", "bar");
         usernamePasswords.put("admin", "admin");
         
-        Spark.before(new Filter("/") {
+        before(new Filter("/") {
             @Override
             public void handle(Request request, Response response) {
                 String user = request.queryParam("user");
@@ -63,14 +64,14 @@ public class FilterExample {
             }
         });
         
-        Spark.after(new Filter("/") {
+        after(new Filter("/") {
             @Override
             public void handle(Request request, Response response) {
                 response.header("spark", "added by after-filter");
             }
         });
         
-        Spark.get(new Route("/hello") {
+        get(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello World!";

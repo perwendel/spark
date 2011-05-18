@@ -16,10 +16,11 @@
  */
 package spark.examples.simple;
 
+import static spark.Spark.*;
+
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import spark.Spark;
 
 /**
  * A simple example just showing some basic functionality
@@ -30,23 +31,23 @@ public class SimpleExample {
     
     public static void main(String[] args) {
         
-        //  Spark.setPort(5678); <- Uncomment this if you wan't spark to listen on a port different than 4567.
+        //  setPort(5678); <- Uncomment this if you wan't spark to listen on a port different than 4567.
         
-        Spark.get(new Route("/hello") {
+        get(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello World!";
             }
         });
         
-        Spark.post(new Route("/hello") {
+        post(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello World: " + request.body();
             }
         });
         
-        Spark.get(new Route("/private") {
+        get(new Route("/private") {
             @Override
             public Object handle(Request request, Response response) {
                 response.status(401);
@@ -54,14 +55,14 @@ public class SimpleExample {
             }
         });
         
-        Spark.get(new Route("/users/:name") {
+        get(new Route("/users/:name") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Selected user: " + request.params(":name");
             }
         });
         
-        Spark.get(new Route("/news/:section") {
+        get(new Route("/news/:section") {
             @Override
             public Object handle(Request request, Response response) {
                 response.type("text/xml");
@@ -69,7 +70,7 @@ public class SimpleExample {
             }
         });
         
-        Spark.get(new Route("/protected") {
+        get(new Route("/protected") {
             @Override
             public Object handle(Request request, Response response) {
                 halt(403, "I don't think so!!!");
@@ -77,7 +78,7 @@ public class SimpleExample {
             }
         });
         
-        Spark.get(new Route("/redirect") {
+        get(new Route("/redirect") {
             @Override
             public Object handle(Request request, Response response) {
                 response.redirect("/news/world");
@@ -85,7 +86,7 @@ public class SimpleExample {
             }
         });
         
-        Spark.get(new Route("/") {
+        get(new Route("/") {
             @Override
             public Object handle(Request request, Response response) {
                 return "root";
