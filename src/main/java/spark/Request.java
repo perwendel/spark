@@ -194,7 +194,7 @@ public class Request {
     /**
      * Returns the value of the provided header
      */
-    public String header(String header) {
+    public String headers(String header) {
         return servletRequest.getHeader(header);
     }
 
