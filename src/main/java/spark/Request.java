@@ -187,7 +187,7 @@ public class Request {
      * Returns the value of the provided queryParam
      * Example: query parameter 'id' from the following request URI: /hello?id=foo
      */
-    public String queryParam(String queryParam) {
+    public String queryParams(String queryParam) {
         return servletRequest.getParameter(queryParam);
     }
 

@@ -149,8 +149,8 @@ public class Books {
             Random random = new Random();
             @Override
             public Object handle(Request request, Response response) {
-                String author = request.queryParam("author");
-                String title = request.queryParam("title");
+                String author = request.queryParams("author");
+                String title = request.queryParams("title");
                 Book book = new Book(author, title);
                 
                 int id = random.nextInt(Integer.MAX_VALUE);
@@ -183,8 +183,8 @@ public class Books {
                 String id = request.params(":id");
                 Book book = books.get(id);
                 if (book != null) {
-                    String newAuthor = request.queryParam("author");
-                    String newTitle = request.queryParam("title");
+                    String newAuthor = request.queryParams("author");
+                    String newTitle = request.queryParams("title");
                     if (newAuthor != null) {
                         book.setAuthor(newAuthor);
                     }
@@ -270,8 +270,8 @@ public class FilterExample {
         before(new Filter("/") {
             @Override
             public void handle(Request request, Response response) {
-                String user = request.queryParam("user");
-                String password = request.queryParam("password");
+                String user = request.queryParams("user");
+                String password = request.queryParams("password");
             
                 String dbPassword = usernamePasswords.get(user);
                 if (!(password != null && password.equals(dbPassword))) {
@@ -286,7 +286,7 @@ public class FilterExample {
                 response.header("spark", "added by after-filter");
             }
         });
-        
+   	     
         get(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {

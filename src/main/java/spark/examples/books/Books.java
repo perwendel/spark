@@ -46,8 +46,8 @@ public class Books {
             Random random = new Random();
             @Override
             public Object handle(Request request, Response response) {
-                String author = request.queryParam("author");
-                String title = request.queryParam("title");
+                String author = request.queryParams("author");
+                String title = request.queryParams("title");
                 Book book = new Book(author, title);
                 
                 int id = random.nextInt(Integer.MAX_VALUE);
@@ -80,8 +80,8 @@ public class Books {
                 String id = request.params(":id");
                 Book book = books.get(id);
                 if (book != null) {
-                    String newAuthor = request.queryParam("author");
-                    String newTitle = request.queryParam("title");
+                    String newAuthor = request.queryParams("author");
+                    String newTitle = request.queryParams("title");
                     if (newAuthor != null) {
                         book.setAuthor(newAuthor);
                     }

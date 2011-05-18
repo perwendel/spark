@@ -54,8 +54,8 @@ public class FilterExample {
         before(new Filter("/") {
             @Override
             public void handle(Request request, Response response) {
-                String user = request.queryParam("user");
-                String password = request.queryParam("password");
+                String user = request.queryParams("user");
+                String password = request.queryParams("password");
             
                 String dbPassword = usernamePasswords.get(user);
                 if (!(password != null && password.equals(dbPassword))) {
