@@ -21,9 +21,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import spark.Request;
-import spark.Response;
-import spark.Route;
 import spark.utils.SparkUtils;
 
 /**
@@ -97,30 +94,31 @@ public class SimpleRouteMatcher implements RouteMatcher {
             } else {
                 // Number of "path parts" not the same
                 // check wild card:
-                if (pathSize == (thisPathSize - 1) && (path.endsWith("/"))) {
-                    // Hack for making wildcards work with trailing slash
-                    pathList.add("");
-                    pathList.add("");
-                    pathSize += 2;
-                }
-                
-                if (thisPathSize < pathSize) {
-                    for (int i = 0; i < thisPathSize; i++) {
-                        String thisPathPart = thisPathList.get(i);
-                        String pathPart = pathList.get(i);
-                        if (thisPathPart.equals("*") && (i == thisPathSize -1) && this.path.endsWith("*")) {
-                            // wildcard match
-                            return true;
-                        }
-                        if (!thisPathPart.startsWith(":") && !thisPathPart.equals(pathPart)) {
-                            return false;
-                        }
+                if (this.path.endsWith("*")) {
+                    if (pathSize == (thisPathSize - 1) && (path.endsWith("/"))) {
+                        // Hack for making wildcards work with trailing slash
+                        pathList.add("");
+                        pathList.add("");
+                        pathSize += 2;
                     }
-                    // All parts matched
-                    return true;
+
+                    if (thisPathSize < pathSize) {
+                        for (int i = 0; i < thisPathSize; i++) {
+                            String thisPathPart = thisPathList.get(i);
+                            String pathPart = pathList.get(i);
+                            if (thisPathPart.equals("*") && (i == thisPathSize -1) && this.path.endsWith("*")) {
+                                // wildcard match
+                                return true;
+                            }
+                            if (!thisPathPart.startsWith(":") && !thisPathPart.equals(pathPart)) {
+                                return false;
+                            }
+                        }
+                        // All parts matched
+                        return true;
+                    }
+                    // End check wild card
                 }
-                // End check wild card
-                
                 return false;
             }
         }
