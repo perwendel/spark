@@ -58,8 +58,8 @@ public class SimpleRouteMatcher implements RouteMatcher {
         }
 
         private boolean matchPath(String path) {
-            if ((path.endsWith("/") && !this.path.endsWith("/")) 
-                            || (this.path.endsWith("/") && !path.endsWith("/"))) {
+            if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) 
+                            || (this.path.endsWith("/") && !path.endsWith("/")))) {
                 // One and not both ends with slash
                 return false;
             }
@@ -71,10 +71,23 @@ public class SimpleRouteMatcher implements RouteMatcher {
             // check params
             List<String> thisPathList = SparkUtils.convertRouteToList(this.path);
             List<String> pathList = SparkUtils.convertRouteToList(path);
-            if (thisPathList.size() == pathList.size()) {
-                for (int i = 0; i < thisPathList.size(); i++) {
+
+            
+            int thisPathSize = thisPathList.size();
+            int pathSize = pathList.size();
+            
+            if (thisPathSize == pathSize) {
+                for (int i = 0; i < thisPathSize; i++) {
                     String thisPathPart = thisPathList.get(i);
                     String pathPart = pathList.get(i);
+                    
+                    if ((i == thisPathSize -1)) {
+                        if (thisPathPart.equals("*") && this.path.endsWith("*")) {
+                            // wildcard match
+                            return true;
+                        }    
+                    }
+                    
                     if (!thisPathPart.startsWith(":") && !thisPathPart.equals(pathPart)) {
                         return false;
                     }
@@ -83,6 +96,31 @@ public class SimpleRouteMatcher implements RouteMatcher {
                 return true;
             } else {
                 // Number of "path parts" not the same
+                // check wild card:
+                if (pathSize == (thisPathSize - 1) && (path.endsWith("/"))) {
+                    // Hack for making wildcards work with trailing slash
+                    pathList.add("");
+                    pathList.add("");
+                    pathSize += 2;
+                }
+                
+                if (thisPathSize < pathSize) {
+                    for (int i = 0; i < thisPathSize; i++) {
+                        String thisPathPart = thisPathList.get(i);
+                        String pathPart = pathList.get(i);
+                        if (thisPathPart.equals("*") && (i == thisPathSize -1) && this.path.endsWith("*")) {
+                            // wildcard match
+                            return true;
+                        }
+                        if (!thisPathPart.startsWith(":") && !thisPathPart.equals(pathPart)) {
+                            return false;
+                        }
+                    }
+                    // All parts matched
+                    return true;
+                }
+                // End check wild card
+                
                 return false;
             }
         }
@@ -91,28 +129,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
             return httpMethod.name() + ", " + path + ", " + target;
         }
     }
-
-    public static void main(String[] args) {
-
-        SimpleRouteMatcher matcher = new SimpleRouteMatcher();
-        matcher.addRoute(HttpMethod.get, "/hello", new Route("") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                return "Hello World!";
-            }
-        });
-        matcher.addRoute(HttpMethod.get, "/hello/dude", new Route("") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                return "Hello World!";
-            }
-        });
-
-        matcher.findTargetForRequestedRoute(HttpMethod.get, "/hello/dude");
-    }
-
+    
     public SimpleRouteMatcher() {
         routes = new ArrayList<RouteEntry>();
     }
