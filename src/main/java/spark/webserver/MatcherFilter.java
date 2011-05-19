@@ -17,6 +17,7 @@
 package spark.webserver;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -46,125 +47,125 @@ import spark.route.RouteMatcher;
  */
 class MatcherFilter implements Filter {
 
-   private RouteMatcher routeMatcher;
+    private RouteMatcher routeMatcher;
 
-   /** The logger. */
-   private static final Logger LOG = Logger.getLogger(MatcherFilter.class);
+    /** The logger. */
+    private static final Logger LOG = Logger.getLogger(MatcherFilter.class);
 
-   public MatcherFilter(RouteMatcher routeMatcher) {
-      this.routeMatcher = routeMatcher;
-   }
+    public MatcherFilter(RouteMatcher routeMatcher) {
+        this.routeMatcher = routeMatcher;
+    }
 
-   public void init(FilterConfig filterConfig) {
+    public void init(FilterConfig filterConfig) {
 
-   }
+    }
 
-   public void doFilter(ServletRequest servletRequest,
-         ServletResponse servletResponse, FilterChain chain)
-   throws IOException, ServletException {
-      long t0 = System.currentTimeMillis();
-      HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
-      HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
+                    FilterChain chain) throws IOException, ServletException {
+        long t0 = System.currentTimeMillis();
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-      String httpMethod = httpRequest.getMethod().toLowerCase();
-      String uri = httpRequest.getRequestURI().toLowerCase();
+        String httpMethod = httpRequest.getMethod().toLowerCase();
+        String uri = httpRequest.getRequestURI().toLowerCase();
 
-      String bodyContent = null;
+        String bodyContent = null;
 
-      LOG.debug("httpMethod:" + httpMethod + ", uri: " + uri);
-      try {
-         // BEFORE filters
-         boolean cont = true;
-         RouteMatch filterMatch = routeMatcher.findTargetForRequestedRoute(
-               HttpMethod.before, uri);
-         if (filterMatch != null) {
-            Object filterTarget = filterMatch.getTarget();
-            if (filterTarget != null && filterTarget instanceof spark.Filter) {
-               Request request = RequestResponseFactory.create(filterMatch,
-                     httpRequest);
-               Response response = RequestResponseFactory.create(httpResponse);
+        LOG.debug("httpMethod:" + httpMethod + ", uri: " + uri);
+        try {
+            // BEFORE filters
+            List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri);
+            
+            for (RouteMatch filterMatch : matchSet) {
+                Object filterTarget = filterMatch.getTarget();
+                if (filterTarget != null && filterTarget instanceof spark.Filter) {
+                    Request request = RequestResponseFactory.create(filterMatch, httpRequest);
+                    Response response = RequestResponseFactory.create(httpResponse);
 
-               spark.Filter filter = (spark.Filter) filterTarget;
-               cont = filter.handle(request, response);
+                    spark.Filter filter = (spark.Filter) filterTarget;
 
-               String bodyAfterFilter = Access.getBody(response);
-               if (bodyAfterFilter != null) {
-                  bodyContent = bodyAfterFilter;
-               }
+                    filter.handle(request, response);
+
+                    String bodyAfterFilter = Access.getBody(response);
+                    if (bodyAfterFilter != null) {
+                        bodyContent = bodyAfterFilter;
+                    }
+                }   
             }
-         }
+            // BEFORE filters, END
+            
+            RouteMatch match = null;
+            match = routeMatcher.findTargetForRequestedRoute(HttpMethod.valueOf(httpMethod), uri);
 
-         RouteMatch match = null;
-         if (cont) {
-            match = routeMatcher.findTargetForRequestedRoute(
-                  HttpMethod.valueOf(httpMethod), uri);
-         }
-
-         Object target = null;
-         if (match != null) {
-            target = match.getTarget();
-         }
-
-         if (target != null) {
-            try {
-               Object result = null;
-               if (target instanceof Route) {
-                  Route route = ((Route) target);
-                  Request request = RequestResponseFactory.create(match,
-                        httpRequest);
-                  Response response = RequestResponseFactory
-                  .create(httpResponse);
-                  result = route.handle(request, response);
-               }
-               if (result != null) {
-                  bodyContent = result.toString();
-               }
-               long t1 = System.currentTimeMillis() - t0;
-               LOG.debug("Time for request: " + t1);
-            } catch (HaltException hEx) {
-               throw hEx;
-            } catch (Exception e) {
-               LOG.error(e);
-               httpResponse.setStatus(500);
-               bodyContent = INTERNAL_ERROR;
+            Object target = null;
+            if (match != null) {
+                target = match.getTarget();
             }
-         } else {
-            if (bodyContent == null) {
-               httpResponse.setStatus(404);
-               bodyContent = NOT_FOUND;
+
+            if (target != null) {
+                try {
+                    Object result = null;
+                    if (target instanceof Route) {
+                        System.out.println("target: " + target);
+                        Route route = ((Route) target);
+                        Request request = RequestResponseFactory.create(match, httpRequest);
+                        Response response = RequestResponseFactory.create(httpResponse);
+                        result = route.handle(request, response);
+                    }
+                    if (result != null) {
+                        bodyContent = result.toString();
+                    }
+                    long t1 = System.currentTimeMillis() - t0;
+                    LOG.debug("Time for request: " + t1);
+                } catch (HaltException hEx) {
+                    throw hEx;
+                } catch (Exception e) {
+                    LOG.error(e);
+                    httpResponse.setStatus(500);
+                    bodyContent = INTERNAL_ERROR;
+                }
+            } else {
+                if (bodyContent == null) {
+                    httpResponse.setStatus(404);
+                    bodyContent = NOT_FOUND;
+                }
             }
-         }
 
-         // AFTER filters
-         filterMatch = routeMatcher.findTargetForRequestedRoute(
-               HttpMethod.after, uri);
-         if (filterMatch != null) {
-            Object filterTarget = filterMatch.getTarget();
-            if (filterTarget != null && filterTarget instanceof spark.Filter) {
-               Request request = RequestResponseFactory.create(filterMatch,
-                     httpRequest);
-               Response response = RequestResponseFactory.create(httpResponse);
+            // AFTER filters
+            matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.after, uri);
+            
+            for (RouteMatch filterMatch : matchSet) {
+                Object filterTarget = filterMatch.getTarget();
+                if (filterTarget != null && filterTarget instanceof spark.Filter) {
+                    Request request = RequestResponseFactory.create(filterMatch, httpRequest);
+                    Response response = RequestResponseFactory.create(httpResponse);
+                    spark.Filter filter = (spark.Filter) filterTarget;
+                    filter.handle(request, response);
 
-               spark.Filter filter = (spark.Filter) filterTarget;
-               filter.handle(request, response);
+                    String bodyAfterFilter = Access.getBody(response);
+                    if (bodyAfterFilter != null) {
+                        bodyContent = bodyAfterFilter;
+                    }
+                }   
             }
-         }
-      } catch (HaltException hEx) {
-         LOG.debug("halt performed");
-         httpResponse.setStatus(hEx.getStatusCode());
-         if (hEx.getBody() != null) {
-            bodyContent = hEx.getBody();
-         }
-      }
+            // AFTER filters, END
+            
+        } catch (HaltException hEx) {
+            LOG.debug("halt performed");
+            httpResponse.setStatus(hEx.getStatusCode());
+            if (hEx.getBody() != null) {
+                bodyContent = hEx.getBody();
+            }
+        }
 
-      // Write body content
-      httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
-   }
+        // Write body content
+        httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+    }
 
-   public void destroy() {
-      // TODO Auto-generated method stub
-   }
+    public void destroy() {
+        // TODO Auto-generated method stub
+    }
 
-   private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route has not been mapped in Spark</body></html>";
-   private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
+    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route has not been mapped in Spark</body></html>";
+    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
 }

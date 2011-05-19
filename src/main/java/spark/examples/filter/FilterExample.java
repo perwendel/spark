@@ -52,29 +52,25 @@ public class FilterExample {
       usernamePasswords.put("foo", "bar");
       usernamePasswords.put("admin", "admin");
 
-      before(new Filter("/") {
+      before(new Filter() {
          @Override
-         public boolean handle(Request request, Response response) {
+         public void handle(Request request, Response response) {
             String user = request.queryParams("user");
             String password = request.queryParams("password");
 
             String dbPassword = usernamePasswords.get(user);
             if (!(password != null && password.equals(dbPassword))) {
-               response.status(401);
-               response.body("You are not welcome here!!!");
-               return false;
+               halt(401, "You are not welcome here!!!");
             }
-            return true;
          }
       });
-
-      after(new Filter("/") {
-         @Override
-         public boolean handle(Request request, Response response) {
-            response.header("spark", "added by after-filter");
-            return true;
-         }
-      });
+      
+      before(new Filter("/hello") {
+          @Override
+          public void handle(Request request, Response response) {
+              response.header("Foo", "Set by second before filter");
+          }
+       });
 
       get(new Route("/hello") {
          @Override
@@ -83,5 +79,12 @@ public class FilterExample {
          }
       });
 
+      after(new Filter("/hello") {
+          @Override
+          public void handle(Request request, Response response) {
+             response.header("spark", "added by after-filter");
+          }
+       });
+      
    }
 }

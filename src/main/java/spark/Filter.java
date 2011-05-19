@@ -17,6 +17,8 @@
 
 package spark;
 
+import spark.utils.SparkUtils;
+
 
 /**
  * A Filter is built up by a path (for url-matching) and the implementation of the 'handle' method.
@@ -27,6 +29,13 @@ package spark;
 public abstract class Filter extends AbstractRoot {
 
     private String path;
+    
+    /**
+     * Constructs a filter that matches on everything
+     */
+    protected Filter() {
+        this.path = SparkUtils.ALL_PATHS;
+    }
     
     /**
      * Constructor
@@ -42,10 +51,8 @@ public abstract class Filter extends AbstractRoot {
      * 
      * @param request The request object providing information about the HTTP request
      * @param response The response object providing functionality for modifying the response
-     * 
-     * @return If execution should continue
      */
-    public abstract boolean handle(Request request, Response response);
+    public abstract void handle(Request request, Response response);
 
     /**
      * Returns this route's path

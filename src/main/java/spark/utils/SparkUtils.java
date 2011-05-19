@@ -26,6 +26,8 @@ import java.util.List;
  */
 public class SparkUtils {
 
+    public static final String ALL_PATHS = "+/*paths";
+    
     public static List<String> convertRouteToList(String route) {
         String[] pathArray = route.split("/");
         List<String> path = new ArrayList<String>();

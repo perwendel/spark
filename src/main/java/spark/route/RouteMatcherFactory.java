@@ -33,7 +33,8 @@ public class RouteMatcherFactory {
     public static synchronized RouteMatcher get() {
         if (routeMatcher == null) {
             LOG.debug("creates RouteMatcher");
-            routeMatcher = new RouteMatcherImpl();
+            routeMatcher = new SimpleRouteMatcher();
+//            routeMatcher = new RouteMatcherImpl();
         }
         return routeMatcher;
     }

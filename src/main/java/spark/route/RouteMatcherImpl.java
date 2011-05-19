@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
  * Class for matching a request URI to a annotaion "configured" route.
  *
@@ -29,9 +31,6 @@ import org.apache.log4j.Logger;
 class RouteMatcherImpl implements RouteMatcher {
     
     private static Logger LOG = Logger.getLogger(RouteMatcherImpl.class);
-    
-    private static final String ROOT = "/";
-    private static final char SINGLE_QUOTE = '\'';
     
     /* Http method root nodes */
     private Node get;
@@ -171,6 +170,11 @@ class RouteMatcherImpl implements RouteMatcher {
                 break;
         }
         return rootNode;
+    }
+
+    @Override
+    public List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
+        throw new NotImplementedException();
     }
 
 }

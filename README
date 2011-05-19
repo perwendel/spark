@@ -255,7 +255,8 @@ import spark.Route;
  * When requesting the resource with e.g. 
  *     http://localhost:4567/hello?user=foo&password=bar
  * the filter will accept the request and the request will continue to the /hello route.
- *
+ * 
+ * Note: There is a second "before filter" that adds a header to the response
  * Note: There is also an "after filter" that adds a header to the response
  */
 public class FilterExample {
@@ -267,29 +268,25 @@ public class FilterExample {
       usernamePasswords.put("foo", "bar");
       usernamePasswords.put("admin", "admin");
 
-      before(new Filter("/") {
+      before(new Filter() {
          @Override
-         public boolean handle(Request request, Response response) {
+         public void handle(Request request, Response response) {
             String user = request.queryParams("user");
             String password = request.queryParams("password");
 
             String dbPassword = usernamePasswords.get(user);
             if (!(password != null && password.equals(dbPassword))) {
-               response.status(401);
-               response.body("You are not welcome here!!!");
-               return false;
+               halt(401, "You are not welcome here!!!");
             }
-            return true;
          }
       });
-
-      after(new Filter("/") {
-         @Override
-         public boolean handle(Request request, Response response) {
-            response.header("spark", "added by after-filter");
-            return true;
-         }
-      });
+      
+      before(new Filter("/hello") {
+          @Override
+          public void handle(Request request, Response response) {
+              response.header("Foo", "Set by second before filter");
+          }
+       });
 
       get(new Route("/hello") {
          @Override
@@ -298,5 +295,12 @@ public class FilterExample {
          }
       });
 
+      after(new Filter("/hello") {
+          @Override
+          public void handle(Request request, Response response) {
+             response.header("spark", "added by after-filter");
+          }
+       });
+      
    }
 }

@@ -16,12 +16,17 @@
  */
 package spark.route;
 
+import java.util.List;
+
 /**
  * Route matcher
  *
  * @author Per Wendel
  */
 public interface RouteMatcher {
+    
+    public static final String ROOT = "/";
+    public static final char SINGLE_QUOTE = '\'';
     
     /**
      * Parses, validates and adds a route
@@ -39,4 +44,10 @@ public interface RouteMatcher {
      * @return
      */
     RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String route);
+
+
+    /**
+     * Finds the targets for a requested route path (used for filters)
+     */
+    List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path);
 }
