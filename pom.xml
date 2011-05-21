@@ -84,4 +84,11 @@
 		</plugins>
 	</build>
 
+	<distributionManagement>
+		<snapshotRepository>
+			<id>spark</id>
+			<url>http://46.137.105.19:8081/nexus/content/repositories/spark</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 </project>
