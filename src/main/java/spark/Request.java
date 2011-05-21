@@ -77,6 +77,10 @@ public class Request {
     //    request.form_data?        # false
     //    request.referrer          # the referrer of the client or '/'
     
+    protected Request() {
+       // Used by wrapper
+    }
+    
     /**
      * Constructor
      */
@@ -90,7 +94,7 @@ public class Request {
      * Returns the value of the provided route pattern parameter.
      * Example: parameter 'name' from the following pattern: (get '/hello/:name') 
      */
-    public final String params(String param) {
+    public String params(String param) {
         if (param.startsWith(":")) {
             return params.get(param);
         } else {

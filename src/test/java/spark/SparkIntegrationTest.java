@@ -3,6 +3,8 @@ package spark;
 import java.io.FileNotFoundException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 
@@ -23,7 +25,22 @@ public class SparkIntegrationTest {
    @BeforeClass
    public static void setup() {
       Spark.setPort(PORT);
+      
+      Spark.before(new Filter(){
+         @Override
+         public void handle(Request request, Response response) {
+            response.header("FOZ", "BAZ");
+         }
+      });
+      
       Books.main(null);
+      
+      Spark.after(new Filter(){
+         @Override
+         public void handle(Request request, Response response) {
+            response.header("FOO", "BAR");
+         }
+      });
       try {
          Thread.sleep(500);
       } catch (Exception e) {
@@ -72,6 +89,10 @@ public class SparkIntegrationTest {
          Assert.assertEquals(200, response.status);
          Assert.assertTrue(result.contains(AUTHOR));
          Assert.assertTrue(result.contains(TITLE));
+       
+         // verify response header set by filters:
+         Assert.assertTrue(response.headers.get("FOZ").get(0).equals("BAZ"));
+         Assert.assertTrue(response.headers.get("FOO").get(0).equals("BAR"));
       } catch (Throwable e) {
          throw new RuntimeException(e);
       }
@@ -150,10 +171,12 @@ public class SparkIntegrationTest {
       UrlResponse response = new UrlResponse();
       response.body = res;
       response.status = connection.getResponseCode();
+      response.headers = connection.getHeaderFields();
       return response;
    }
 
    private static class UrlResponse {
+      public Map<String, List<String>> headers;
       private String body;
       private int status;
    }

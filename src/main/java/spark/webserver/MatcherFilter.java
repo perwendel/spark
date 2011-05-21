@@ -71,6 +71,9 @@ class MatcherFilter implements Filter {
 
         String bodyContent = null;
 
+        RequestWrapper req = new RequestWrapper();
+        ResponseWrapper res = new ResponseWrapper();
+        
         LOG.debug("httpMethod:" + httpMethod + ", uri: " + uri);
         try {
             // BEFORE filters
@@ -84,7 +87,10 @@ class MatcherFilter implements Filter {
 
                     spark.Filter filter = (spark.Filter) filterTarget;
 
-                    filter.handle(request, response);
+                    req.setDelegate(request);
+                    res.setDelegate(response);
+                    
+                    filter.handle(req, res);
 
                     String bodyAfterFilter = Access.getBody(response);
                     if (bodyAfterFilter != null) {
@@ -110,7 +116,11 @@ class MatcherFilter implements Filter {
                         Route route = ((Route) target);
                         Request request = RequestResponseFactory.create(match, httpRequest);
                         Response response = RequestResponseFactory.create(httpResponse);
-                        result = route.handle(request, response);
+                        
+                        req.setDelegate(request);
+                        res.setDelegate(response);
+                        
+                        result = route.handle(req, res);
                     }
                     if (result != null) {
                         bodyContent = result.toString();
@@ -139,8 +149,12 @@ class MatcherFilter implements Filter {
                 if (filterTarget != null && filterTarget instanceof spark.Filter) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
                     Response response = RequestResponseFactory.create(httpResponse);
+                    
+                    req.setDelegate(request);
+                    res.setDelegate(response);
+                    
                     spark.Filter filter = (spark.Filter) filterTarget;
-                    filter.handle(request, response);
+                    filter.handle(req, res);
 
                     String bodyAfterFilter = Access.getBody(response);
                     if (bodyAfterFilter != null) {
