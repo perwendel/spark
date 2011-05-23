@@ -184,7 +184,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
         entry.httpMethod = method;
         entry.path = url;
         entry.target = target;
-        System.out.println("adds: " + entry);
+        LOG.debug("Adds route: " + entry);
         // Adds to end of list
         routes.add(entry);
     }
