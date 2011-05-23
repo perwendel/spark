@@ -112,7 +112,6 @@ class MatcherFilter implements Filter {
                 try {
                     Object result = null;
                     if (target instanceof Route) {
-                        System.out.println("target: " + target);
                         Route route = ((Route) target);
                         Request request = RequestResponseFactory.create(match, httpRequest);
                         Response response = RequestResponseFactory.create(httpResponse);

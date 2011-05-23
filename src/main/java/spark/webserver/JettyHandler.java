@@ -47,7 +47,7 @@ class JettyHandler extends AbstractHandler {
 
     public boolean handle(String target, HttpServletRequest request, HttpServletResponse response,
                     int arg3) throws IOException, ServletException {
-        Log.info("jettyhandler, handle();");
+        Log.debug("jettyhandler, handle();");
         FilterChain chain = new FilterChainImpl(filters.iterator());
         chain.doFilter(request, response);
         return true;
