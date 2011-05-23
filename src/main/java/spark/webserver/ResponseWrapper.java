@@ -22,46 +22,55 @@ import spark.Response;
 
 class ResponseWrapper extends Response {
 
-   private Response delegate;
+    private Response delegate;
 
-   public void setDelegate(Response delegate) {
-      this.delegate = delegate;
-   }
-   
-   public void status(int statusCode) {
-      delegate.status(statusCode);
-   }
+    public void setDelegate(Response delegate) {
+        this.delegate = delegate;
+    }
 
-   public void body(String body) {
-      delegate.body(body);
-   }
+    @Override
+    public void status(int statusCode) {
+        delegate.status(statusCode);
+    }
 
-   public boolean equals(Object obj) {
-      return delegate.equals(obj);
-   }
+    @Override
+    public void body(String body) {
+        delegate.body(body);
+    }
 
-   public int hashCode() {
-      return delegate.hashCode();
-   }
+    @Override
+    public boolean equals(Object obj) {
+        return delegate.equals(obj);
+    }
 
-   public HttpServletResponse raw() {
-      return delegate.raw();
-   }
+    @Override
+    public int hashCode() {
+        return delegate.hashCode();
+    }
 
-   public void redirect(String location) {
-      delegate.redirect(location);
-   }
+    @Override
+    public HttpServletResponse raw() {
+        return delegate.raw();
+    }
 
-   public void header(String header, String value) {
-      delegate.header(header, value);
-   }
+    @Override
+    public void redirect(String location) {
+        delegate.redirect(location);
+    }
 
-   public String toString() {
-      return delegate.toString();
-   }
+    @Override
+    public void header(String header, String value) {
+        delegate.header(header, value);
+    }
 
-   public void type(String contentType) {
-      delegate.type(contentType);
-   }
-   
+    @Override
+    public String toString() {
+        return delegate.toString();
+    }
+
+    @Override
+    public void type(String contentType) {
+        delegate.type(contentType);
+    }
+
 }

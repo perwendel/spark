@@ -19,6 +19,7 @@ package spark;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -232,6 +233,37 @@ public class Request {
         return servletRequest.getQueryString();
     }
 
+    /**
+     * Sets an attribute on the request (can be fetched in filters/routes later in the chain)
+     * @param attribute The attribute
+     * @param value The attribute value
+     */
+    public void attribute(String attribute, Object value) {
+        servletRequest.setAttribute(attribute, value);
+    }
+    
+    /**
+     * Gets the value of the provided attribute
+     * @param attribute The attribute value or null if not present
+     */
+    public Object attribute(String attribute) {
+        return servletRequest.getAttribute(attribute);
+    }
+    
+    
+    /**
+     * Returns all attributes
+     */
+    @SuppressWarnings("unchecked")
+    public Set<String> attributes() {
+        Set<String> attrList = new HashSet<String>();
+        Enumeration<String> attributes = (Enumeration<String>) servletRequest.getAttributeNames();
+        while (attributes.hasMoreElements()) {
+            attrList.add(attributes.nextElement());
+        }
+        return attrList;
+    }
+    
     /**
      * Gets the raw HttpServletRequest object handed in by Jetty
      */

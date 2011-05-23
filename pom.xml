@@ -4,7 +4,7 @@
 	<groupId>spark</groupId>
 	<artifactId>spark</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9.8-SNAPSHOT</version>
+	<version>0.9.9-SNAPSHOT</version>
 	<name>Spark</name>
 	<url>http://www.sparkjava.com</url>
 	<dependencies>
