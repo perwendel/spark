@@ -1,6 +1,8 @@
 Spark - a Sinatra inspired micro web framework
 ----------------------------------------------
 
+Examples can also be viewed on: http://code.google.com/p/spark-java/
+
 Getting started:
 
 import static spark.Spark.*;
