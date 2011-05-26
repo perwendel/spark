@@ -4,9 +4,14 @@
 	<groupId>spark</groupId>
 	<artifactId>spark</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9.9-SNAPSHOT</version>
+	<version>0.9.9.1-SNAPSHOT</version>
 	<name>Spark</name>
 	<url>http://www.sparkjava.com</url>
+	
+	<properties>
+        <jetty.version>7.3.0.v20110203</jetty.version>
+    </properties>
+	
 	<dependencies>
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>
@@ -21,9 +26,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>jetty</groupId>
-			<artifactId>jetty</artifactId>
-			<version>6.0.0beta6</version>
+			<groupId>org.eclipse.jetty.aggregate</groupId>
+			<artifactId>jetty-webapp</artifactId>
+			<version>${jetty.version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>

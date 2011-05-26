@@ -16,43 +16,99 @@
  */
 package spark;
 
-import org.mortbay.log.Logger;
+import org.eclipse.jetty.util.log.Logger;
 
 /**
- * 
+ * Jetty Logger
  *
  * @author Per Wendel
  */
 public class JettyLogger implements Logger {
 
     private org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("org.mortbay.jetty.JettyLog");
-    
+
     public void debug(String msg, Throwable th) {
         LOG.debug(msg, th);
     }
 
-    public void debug(String msg, Object arg0, Object arg1)  {
-        LOG.debug(msg + ", " + arg0 + ", " + arg1);
-    }
-
-    public Logger getLogger(String arg0) {
+    public Logger getLogger(String arg) {
         return this;
     }
 
-    public void info(String msg, Object arg0, Object arg1) {
-        LOG.info(msg + ", " + arg0 + ", " + arg1);
-    }
-
+    @Override
     public boolean isDebugEnabled() {
         return LOG.isDebugEnabled();
     }
 
+    @Override
     public void warn(String msg, Throwable th) {
         LOG.warn(msg, th);
     }
 
-    public void warn(String msg, Object arg0, Object arg1)  {
-        LOG.warn(msg + ", " + arg0 + ", " + arg1);
+    @Override
+    public void debug(Throwable thrown) {
+        LOG.debug("", thrown);
+
+    }
+
+    @Override
+    public void debug(String msg, Object... args) {
+        StringBuffer log = new StringBuffer(msg);
+        for (Object arg : args) {
+            log.append(", " + arg);
+
+        }
+        LOG.debug(log.toString());
+    }
+
+    @Override
+    public String getName() {
+        return "Spark Jetty Logger";
+    }
+
+    @Override
+    public void ignore(Throwable ignored) {
+        //
+    }
+
+    @Override
+    public void info(Throwable thrown) {
+        LOG.info("", thrown);
+    }
+
+    @Override
+    public void info(String msg, Object... args) {
+        StringBuffer log = new StringBuffer(msg);
+        for (Object arg : args) {
+            log.append(", " + arg);
+
+        }
+        LOG.info(log.toString());
+    }
+
+    @Override
+    public void info(String msg, Throwable thrown) {
+        LOG.info(msg, thrown);
+    }
+
+    @Override
+    public void setDebugEnabled(boolean enabled) {
+        // 
+    }
+
+    @Override
+    public void warn(Throwable thrown) {
+        LOG.warn("", thrown);
+    }
+
+    @Override
+    public void warn(String msg, Object... args) {
+        StringBuffer log = new StringBuffer(msg);
+        for (Object arg : args) {
+            log.append(", " + arg);
+
+        }
+        LOG.warn(log.toString());
     }
 
 }

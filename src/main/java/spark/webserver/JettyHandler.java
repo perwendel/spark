@@ -29,8 +29,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mortbay.jetty.handler.AbstractHandler;
-import org.mortbay.log.Log;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.log.Log;
 
 /**
  * 
@@ -45,12 +46,13 @@ class JettyHandler extends AbstractHandler {
         this.filters = Arrays.asList(filters);
     }
 
-    public boolean handle(String target, HttpServletRequest request, HttpServletResponse response,
-                    int arg3) throws IOException, ServletException {
+    @Override
+    public void handle(String target, Request baseRequest, HttpServletRequest request, 
+                    HttpServletResponse response) throws IOException, ServletException {
         Log.debug("jettyhandler, handle();");
         FilterChain chain = new FilterChainImpl(filters.iterator());
         chain.doFilter(request, response);
-        return true;
+        baseRequest.setHandled(true);
     }
     
     /**
@@ -70,5 +72,7 @@ class JettyHandler extends AbstractHandler {
         }
         
     }
+
+    
 
 }
