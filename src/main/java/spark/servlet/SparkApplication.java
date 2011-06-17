@@ -14,16 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark;
+package spark.servlet;
 
-public class Access {
-   
-   public static String getBody(Response response) {
-      return response.body();
-   }
-   
-   public static void runFromServlet() {
-       Spark.runFromServlet();
-   }
-   
+/**
+ * The application entry point when Spark is run in a servlet context.
+ *
+ * @author Per Wendel
+ */
+public interface SparkApplication {
+    
+    /**
+     * Invoked from the SparkFilter. Add routes here.
+     */
+    void init();
 }

@@ -189,4 +189,9 @@ public class SimpleRouteMatcher implements RouteMatcher {
         routes.add(entry);
     }
 
+    @Override
+    public void clearRoutes() {
+        routes.clear();
+    }
+
 }

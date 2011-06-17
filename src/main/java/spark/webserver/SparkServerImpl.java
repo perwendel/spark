@@ -22,7 +22,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.bio.SocketConnector;
 
 /**
- * 
+ * Spark server implementation
  *
  * @author Per Wendel
  */
@@ -58,7 +58,7 @@ class SparkServerImpl implements SparkServer {
         server.setHandler(handler);
 
         try {
-            System.out.println("== " + NAME + " has taken the stage ...");
+            System.out.println("== " + NAME + " has ignited ...");
             System.out.println(">> Listening on 0.0.0.0:" + port);
 
             server.start();

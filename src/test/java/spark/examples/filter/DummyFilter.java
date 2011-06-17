@@ -14,33 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.utils;
+package spark.examples.filter;
 
-import java.util.ArrayList;
-import java.util.List;
+import static spark.Spark.after;
+import static spark.Spark.before;
+import spark.Filter;
+import spark.Request;
+import spark.Response;
 
-/**
- * Some utility methods
- *
- * @author Per Wendel
- */
-public class SparkUtils {
 
-    public static final String ALL_PATHS = "+/*paths";
-    
-    public static List<String> convertRouteToList(String route) {
-        String[] pathArray = route.split("/");
-        List<String> path = new ArrayList<String>();
-        for (String p : pathArray) {
-            if (p.length() > 0) {
-                path.add(p);
+public class DummyFilter {
+
+    public static void main(String[] args) {
+        before(new Filter() {
+            @Override
+            public void handle(Request request, Response response) {
+                System.out.println("Before");
             }
-        }
-        return path;
+        });
+        
+        after(new Filter() {
+            @Override
+            public void handle(Request request, Response response) {
+                System.out.println("After");
+            }
+        });
     }
     
-    public static boolean isParam(String routePart) {
-        return routePart.startsWith(":");
-    }
- 
 }

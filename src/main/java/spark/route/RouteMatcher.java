@@ -50,4 +50,9 @@ public interface RouteMatcher {
      * Finds the targets for a requested route path (used for filters)
      */
     List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path);
+    
+    /**
+     * Clear all routes
+     */
+    void clearRoutes();
 }

@@ -41,19 +41,27 @@ import spark.route.RouteMatch;
 import spark.route.RouteMatcher;
 
 /**
- * 
+ * Filter for matching of filters and routes.
  * 
  * @author Per Wendel
  */
-class MatcherFilter implements Filter {
+public class MatcherFilter implements Filter {
 
     private RouteMatcher routeMatcher;
+    private boolean isServletContext;
 
     /** The logger. */
     private static final Logger LOG = Logger.getLogger(MatcherFilter.class);
 
-    public MatcherFilter(RouteMatcher routeMatcher) {
+    /**
+     * Constructor
+     * 
+     * @param routeMatcher The route matcher
+     * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
+     */
+    public MatcherFilter(RouteMatcher routeMatcher, boolean isServletContext) {
         this.routeMatcher = routeMatcher;
+        this.isServletContext = isServletContext;
     }
 
     public void init(FilterConfig filterConfig) {
@@ -66,7 +74,7 @@ class MatcherFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-        String httpMethod = httpRequest.getMethod().toLowerCase();
+        String httpMethodStr = httpRequest.getMethod().toLowerCase();
         String uri = httpRequest.getRequestURI().toLowerCase();
 
         String bodyContent = null;
@@ -74,7 +82,7 @@ class MatcherFilter implements Filter {
         RequestWrapper req = new RequestWrapper();
         ResponseWrapper res = new ResponseWrapper();
         
-        LOG.debug("httpMethod:" + httpMethod + ", uri: " + uri);
+        LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
         try {
             // BEFORE filters
             List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri);
@@ -100,12 +108,17 @@ class MatcherFilter implements Filter {
             }
             // BEFORE filters, END
             
+            HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
+            
             RouteMatch match = null;
-            match = routeMatcher.findTargetForRequestedRoute(HttpMethod.valueOf(httpMethod), uri);
-
+            match = routeMatcher.findTargetForRequestedRoute(HttpMethod.valueOf(httpMethodStr), uri);
+            
             Object target = null;
             if (match != null) {
                 target = match.getTarget();
+            } else if (httpMethod == HttpMethod.head && bodyContent == null) {
+                // See if get is mapped to provide default head mapping
+                bodyContent = routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri) != null ? "" : null;
             }
 
             if (target != null) {
@@ -132,11 +145,6 @@ class MatcherFilter implements Filter {
                     LOG.error(e);
                     httpResponse.setStatus(500);
                     bodyContent = INTERNAL_ERROR;
-                }
-            } else {
-                if (bodyContent == null) {
-                    httpResponse.setStatus(404);
-                    bodyContent = NOT_FOUND;
                 }
             }
 
@@ -168,11 +176,25 @@ class MatcherFilter implements Filter {
             httpResponse.setStatus(hEx.getStatusCode());
             if (hEx.getBody() != null) {
                 bodyContent = hEx.getBody();
+            } else {
+                bodyContent = "";
             }
         }
 
-        // Write body content
-        httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+        boolean consumed = bodyContent != null ? true : false;
+        
+        if (!consumed && !isServletContext) {
+            httpResponse.setStatus(404);
+            bodyContent = NOT_FOUND;
+            consumed = true;
+        }
+
+        if (consumed) {
+            // Write body content
+            httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+        } else if (chain != null) {
+            chain.doFilter(httpRequest, httpResponse);
+        }
     }
 
     public void destroy() {

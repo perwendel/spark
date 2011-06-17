@@ -43,6 +43,7 @@ public class JettyLogger implements Logger {
     @Override
     public void warn(String msg, Throwable th) {
         LOG.warn(msg, th);
+        th.printStackTrace();
     }
 
     @Override

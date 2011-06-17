@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import spark.Request;
 
-class RequestWrapper extends Request {
+final class RequestWrapper extends Request {
 
     private Request delegate;
 
@@ -149,5 +149,5 @@ class RequestWrapper extends Request {
     public Set<String> attributes() {
         return delegate.attributes();
     }
-
+    
 }

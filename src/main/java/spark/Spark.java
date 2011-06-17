@@ -166,6 +166,18 @@ public class Spark {
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter);
     }
 
+    synchronized static void runFromServlet() {
+        if (!initialized) {
+            routeMatcher = RouteMatcherFactory.get();
+            initialized = true;
+        }
+    }
+    
+    // WARNING, used for jUnit testing only!!!
+    synchronized static void clearRoutes() {
+        routeMatcher.clearRoutes();
+    }
+    
     private synchronized static final void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
@@ -183,7 +195,6 @@ public class Spark {
     /*
      * TODO: discover new TODOs.
      * 
-     * TODO: Before method for filters...check sinatra page
      * 
      * TODO: Make available as maven dependency, upload on repo etc...
      * TODO: Add *, splat possibility
@@ -197,11 +208,12 @@ public class Spark {
      * advanced TODO list:
      * TODO: sessions? (use session servlet context?)
      * TODO: Add regexp URIs
-     * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ???
      * 
      * Ongoing
      * 
      * Done
+     * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ???
+     * TODO: Before method for filters...check sinatra page
      * TODO: Setting Headers
      * TODO: Do we want get-prefixes for all *getters* or do we want a more ruby like approach??? (Maybe have two choices?)
      * TODO: Setting Body, Status Code

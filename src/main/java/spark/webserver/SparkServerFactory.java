@@ -25,12 +25,8 @@ import spark.route.RouteMatcherFactory;
  */
 public class SparkServerFactory {
 
-    /**
-     * 
-     * @return
-     */
     public static SparkServer create() {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get());
+        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false);
         matcherFilter.init(null);
         JettyHandler handler = new JettyHandler(matcherFilter);
         return new SparkServerImpl(handler);

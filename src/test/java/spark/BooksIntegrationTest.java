@@ -8,24 +8,28 @@ import java.util.Map;
 
 import junit.framework.Assert;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import spark.examples.books.Books;
 import spark.utils.IOUtils;
 
-public class SparkIntegrationTest {
+public class BooksIntegrationTest {
 
-   private static int PORT = 9191;
+   private static int PORT = 4567;
 
    private static String AUTHOR = "FOO";
    private static String TITLE = "BAR";
    private static String NEW_TITLE = "SPARK";
 
+   @AfterClass
+   public static void tearDown() {
+       Spark.clearRoutes();
+   }
+   
    @BeforeClass
    public static void setup() {
-      Spark.setPort(PORT);
-      
       Spark.before(new Filter(){
          @Override
          public void handle(Request request, Response response) {
@@ -69,6 +73,7 @@ public class SparkIntegrationTest {
          UrlResponse response = doMethod("GET", "/books", null);
          Assert.assertNotNull(response);
          String body = response.body.trim();
+         System.out.println("BODY: " + body);
          Assert.assertNotNull(body);
          Assert.assertTrue(Integer.valueOf(body) > 0);
          Assert.assertEquals(200, response.status);
