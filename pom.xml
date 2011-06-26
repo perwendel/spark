@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>spark</groupId>
 	<artifactId>spark</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 	<version>0.9.9.2-SNAPSHOT</version>
 	<name>Spark</name>
 	<url>http://www.sparkjava.com</url>
 
 	<properties>
-		<jetty.version>7.3.0.v20110203</jetty.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
@@ -25,24 +25,6 @@
 			<version>1.2.14</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.eclipse.jetty.aggregate</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>${jetty.version}</version>
-		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>commons-fileupload</groupId>-->
-<!--			<artifactId>commons-fileupload</artifactId>-->
-<!--			<version>1.2.2</version>-->
-<!--		</dependency>-->
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.3.2</version>
-		</dependency>
-
 		<!-- JUNIT DEPENDENCY FOR TESTING -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -53,7 +35,6 @@
 	</dependencies>
 
 	<build>
-
 		<resources>
 			<resource>
 				<filtering>false</filtering>
@@ -76,6 +57,7 @@
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -102,4 +84,7 @@
 		</snapshotRepository>
 	</distributionManagement>
 
+	<modules>
+		<module>spark-core</module>
+	</modules>
 </project>
