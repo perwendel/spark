@@ -198,7 +198,6 @@ public class MatcherFilter implements Filter {
     }
 
     public void destroy() {
-        // TODO Auto-generated method stub
     }
 
     private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route has not been mapped in Spark</body></html>";
