@@ -11,10 +11,6 @@
 	<name>Spark :: Core</name>
 	<url>http://www.sparkjava.com</url>
 
-	<properties>
-		<jetty.version>7.3.0.v20110203</jetty.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jetty.aggregate</groupId>
