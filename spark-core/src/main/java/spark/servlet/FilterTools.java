@@ -9,6 +9,8 @@ class FilterTools {
     private static final String SLASH = "/";
     private static final String FILTER_MAPPING_PARAM = "filterMappingUrlPattern";
     
+    private FilterTools() { }
+
     static String getRelativePath(HttpServletRequest request, String filterPath) {
         String path = request.getRequestURI();
         String contextPath = request.getContextPath();

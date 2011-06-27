@@ -30,7 +30,7 @@ import spark.utils.SparkUtils;
  */
 public class SimpleRouteMatcher implements RouteMatcher {
 
-    private static Logger LOG = Logger.getLogger(SimpleRouteMatcher.class);
+    private static final Logger LOG = Logger.getLogger(SimpleRouteMatcher.class);
 
     private List<RouteEntry> routes;
 

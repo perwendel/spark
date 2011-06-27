@@ -25,7 +25,7 @@ import org.eclipse.jetty.util.log.Logger;
  */
 public class JettyLogger implements Logger {
 
-    private org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("org.mortbay.jetty.JettyLog");
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("org.mortbay.jetty.JettyLog");
 
     public void debug(String msg, Throwable th) {
         LOG.debug(msg, th);
@@ -81,8 +81,8 @@ public class JettyLogger implements Logger {
     public void info(String msg, Object... args) {
         StringBuffer log = new StringBuffer(msg);
         for (Object arg : args) {
-            log.append(", " + arg);
-
+            log.append(", ");
+            log.append(arg);
         }
         LOG.info(log.toString());
     }
@@ -106,8 +106,8 @@ public class JettyLogger implements Logger {
     public void warn(String msg, Object... args) {
         StringBuffer log = new StringBuffer(msg);
         for (Object arg : args) {
-            log.append(", " + arg);
-
+            log.append(", ");
+            log.append(arg);
         }
         LOG.warn(log.toString());
     }

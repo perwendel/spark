@@ -30,6 +30,8 @@ public class RouteMatcherFactory {
 
     private static RouteMatcher routeMatcher = null;
 
+    private RouteMatcherFactory() { }
+
     public static synchronized RouteMatcher get() {
         if (routeMatcher == null) {
             LOG.debug("creates RouteMatcher");

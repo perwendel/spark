@@ -25,6 +25,8 @@ import spark.route.RouteMatcherFactory;
  */
 public class SparkServerFactory {
 
+    private SparkServerFactory() { }
+
     public static SparkServer create() {
         MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false);
         matcherFilter.init(null);

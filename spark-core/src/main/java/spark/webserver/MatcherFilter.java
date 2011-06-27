@@ -89,7 +89,7 @@ public class MatcherFilter implements Filter {
             
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
-                if (filterTarget != null && filterTarget instanceof spark.Filter) {
+                if (isFilter(filterTarget)) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
                     Response response = RequestResponseFactory.create(httpResponse);
 
@@ -153,7 +153,7 @@ public class MatcherFilter implements Filter {
             
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
-                if (filterTarget != null && filterTarget instanceof spark.Filter) {
+                if (isFilter(filterTarget)) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
                     Response response = RequestResponseFactory.create(httpResponse);
                     
@@ -196,6 +196,10 @@ public class MatcherFilter implements Filter {
             chain.doFilter(httpRequest, httpResponse);
         }
     }
+
+	private boolean isFilter(Object filterTarget) {
+		return filterTarget != null && filterTarget instanceof spark.Filter;
+	}
 
     public void destroy() {
     }

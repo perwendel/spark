@@ -41,7 +41,7 @@ import spark.utils.SparkUtils;
  */
 public class Request {
 
-    private static Logger LOG = Logger.getLogger(Request.class);
+    private static final Logger LOG = Logger.getLogger(Request.class);
     
     private static final String USER_AGENT = "user-agent";
     
