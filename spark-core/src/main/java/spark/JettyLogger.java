@@ -56,8 +56,8 @@ public class JettyLogger implements Logger {
     public void debug(String msg, Object... args) {
         StringBuffer log = new StringBuffer(msg);
         for (Object arg : args) {
-            log.append(", " + arg);
-
+            log.append(", ");
+            log.append(arg);
         }
         LOG.debug(log.toString());
     }
