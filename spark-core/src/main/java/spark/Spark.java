@@ -46,13 +46,15 @@ import spark.webserver.SparkServerFactory;
  * 
  * @author Per Wendel
  */
-public class Spark {
+public final class Spark {
 
     private static boolean initialized = false;
 
     private static RouteMatcher routeMatcher;
     private static int port = 4567;
     
+    private Spark() { }
+
     /**
      * Set the port that Spark should listen on. If not called the default port is 4567.
      * This has to be called before any route mapping is done.
