@@ -3,7 +3,7 @@ package spark.servlet;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
-class FilterTools {
+public final class FilterTools {
 
     private static final String SLASH_WILDCARD = "/*";
     private static final String SLASH = "/";

@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author Per Wendel
  */
-public class SparkUtils {
+public final class SparkUtils {
 
     public static final String ALL_PATHS = "+/*paths";
     

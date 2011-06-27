@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
  *
  * @author Per Wendel
  */
-public class RouteMatcherFactory {
+public final class RouteMatcherFactory {
 
     /** The logger. */
     private static final Logger LOG = Logger.getLogger(RouteMatcherFactory.class);

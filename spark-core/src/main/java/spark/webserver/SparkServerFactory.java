@@ -23,7 +23,7 @@ import spark.route.RouteMatcherFactory;
  *
  * @author Per Wendel
  */
-public class SparkServerFactory {
+public final class SparkServerFactory {
 
     private SparkServerFactory() { }
 
