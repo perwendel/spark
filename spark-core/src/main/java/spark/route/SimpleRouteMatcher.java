@@ -41,18 +41,18 @@ public class SimpleRouteMatcher implements RouteMatcher {
         private Object target;
 
         private boolean matches(HttpMethod httpMethod, String path) {
-            if ( (httpMethod == HttpMethod.before || httpMethod == HttpMethod.after)
-                            && (this.httpMethod == httpMethod)
-                            && this.path.equals(SparkUtils.ALL_PATHS)) {
-                // Is filter and matches all
-                return true;
-            }
-            boolean match = false;
-            if (this.httpMethod == httpMethod) {
-                match = matchPath(path);
-            }
-            return match;
+            return isFilter(httpMethod) || (matchMethod(httpMethod) && matchPath(path));
         }
+
+		private boolean isFilter(HttpMethod httpMethod) {
+			return (httpMethod == HttpMethod.before || httpMethod == HttpMethod.after)
+                            && (matchMethod(httpMethod))
+                            && this.path.equals(SparkUtils.ALL_PATHS);
+		}
+
+		private boolean matchMethod(HttpMethod httpMethod) {
+			return this.httpMethod == httpMethod;
+		}
 
         private boolean matchPath(String path) {
             if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) 
