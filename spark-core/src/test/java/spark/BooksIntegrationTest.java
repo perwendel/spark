@@ -14,10 +14,12 @@ import org.junit.Test;
 
 import spark.examples.books.Books;
 import spark.utils.IOUtils;
+import spark.webserver.SparkServer;
+import spark.webserver.SparkServerFactory;
 
 public class BooksIntegrationTest {
 
-   private static int PORT = 4567;
+	private static SparkServer server;
 
    private static String AUTHOR = "FOO";
    private static String TITLE = "BAR";
@@ -26,10 +28,13 @@ public class BooksIntegrationTest {
    @AfterClass
    public static void tearDown() {
        Spark.clearRoutes();
+       server.shutdown();
    }
    
    @BeforeClass
    public static void setup() {
+	   Spark.disableAutostart();
+	   	
       Spark.before(new Filter(){
          @Override
          public void handle(Request request, Response response) {
@@ -45,6 +50,10 @@ public class BooksIntegrationTest {
             response.header("FOO", "BAR");
          }
       });
+      
+      server = SparkServerFactory.create();
+      server.ignite(Spark.getPort());
+      
       try {
          Thread.sleep(500);
       } catch (Exception e) {
@@ -163,7 +172,7 @@ public class BooksIntegrationTest {
    }
 
    private static UrlResponse doMethod(String requestMethod, String path, String body) throws Exception {
-      URL url = new URL("http://localhost:" + PORT + path);
+      URL url = new URL("http://localhost:" + Spark.getPort() + path);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod(requestMethod);
 

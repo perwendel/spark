@@ -4,6 +4,7 @@ import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.post;
+import static spark.Spark.disableAutostart;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,24 +15,29 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import spark.webserver.SparkServer;
+import spark.webserver.SparkServerFactory;
 import testutil.MyTestUtil;
 import testutil.MyTestUtil.UrlResponse;
 
 public class GenericIntegrationTest {
 
     static MyTestUtil testUtil;
+	private static SparkServer server;
     
     @AfterClass
     public static void tearDown() {
         Spark.clearRoutes();
+        server.shutdown();
     }
     
     @BeforeClass
     public static void setup() {
+    	disableAutostart();
+    	
         testUtil = new MyTestUtil(4567);
         
         before(new Filter("/protected/*") {
-
             @Override
             public void handle(Request request, Response response) {
                 halt(401, "Go Away!");
@@ -39,7 +45,6 @@ public class GenericIntegrationTest {
         });
 
         get(new Route("/hi") {
-
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello World!";
@@ -78,6 +83,9 @@ public class GenericIntegrationTest {
             }
         });
 
+        server = SparkServerFactory.create();
+        server.ignite(Spark.getPort());
+        
         try {
             Thread.sleep(500);
         } catch (Exception e) {

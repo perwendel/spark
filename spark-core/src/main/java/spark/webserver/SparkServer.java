@@ -33,4 +33,9 @@ public interface SparkServer {
      * @param port
      */
     void ignite(int port);
+    
+    /**
+     * 
+     */
+    void shutdown();
 }

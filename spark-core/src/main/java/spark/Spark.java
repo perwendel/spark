@@ -16,6 +16,9 @@
  */
 package spark;
 
+import java.io.IOException;
+import java.util.Properties;
+
 import spark.route.HttpMethod;
 import spark.route.RouteMatcher;
 import spark.route.RouteMatcherFactory;
@@ -48,10 +51,18 @@ import spark.webserver.SparkServerFactory;
  */
 public final class Spark {
 
+	public static final int DEFAULT_PORT = 4567;
+	
     private static boolean initialized = false;
 
     private static RouteMatcher routeMatcher;
-    private static int port = 4567;
+    private static int port;
+    private static boolean autostart = true;
+
+    static {
+    	Properties props = System.getProperties();
+    	port = props.containsKey("spark.port") ? (Integer)props.get("spark.port") : DEFAULT_PORT;
+    }
     
     private Spark() { }
 
@@ -179,19 +190,35 @@ public final class Spark {
     synchronized static void clearRoutes() {
         routeMatcher.clearRoutes();
     }
+
+    public static void disableAutostart() {
+    	autostart = false;
+    }
     
     private synchronized static final void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    SparkServer server = SparkServerFactory.create();
-                    server.ignite(port);
-                }
-            }).start();
+            if (autostart)
+	            new Thread(new Runnable() {
+	                @Override
+	                public void run() {
+	                    SparkServer server = SparkServerFactory.create();
+	                    server.ignite(port);
+	                    try {
+							System.in.read();
+							server.shutdown();
+						} catch (IOException e) {
+							e.printStackTrace();
+							System.exit(100);
+						}
+	                }
+	            }).start();
             initialized = true;
         }
+    }
+
+    public static int getPort() {
+    	return port;
     }
     
     /*

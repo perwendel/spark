@@ -33,6 +33,7 @@ class SparkServerImpl implements SparkServer {
     
     private static final String NAME = "Spark";
     private Handler handler;
+	private Server server;
 
     public SparkServerImpl(Handler handler) {
         this.handler = handler;
@@ -46,7 +47,7 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite(int port) {
-        Server server = new Server();
+        server = new Server();
         SocketConnector connector = new SocketConnector();
 
         // Set some timeout options to make debugging easier.
@@ -60,18 +61,22 @@ class SparkServerImpl implements SparkServer {
         try {
             System.out.println("== " + NAME + " has ignited ...");
             System.out.println(">> Listening on 0.0.0.0:" + port);
-
             server.start();
-            System.in.read();
-
-            System.out.println(">>> " + NAME + " shutting down...");
-
-            server.stop();
-            server.join();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(100);
         }
     }
     
+    @Override
+    public void shutdown() {
+        System.out.println(">>> " + NAME + " shutting down...");
+        try {
+			server.stop();
+	        server.join();
+		} catch (Exception e) {
+			e.printStackTrace();
+            System.exit(100);
+		}
+    }
 }
