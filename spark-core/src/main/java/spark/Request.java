@@ -277,7 +277,7 @@ public class Request {
                         + ", matchUri: "
                         + match.getMatchUri());
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<String, String>();
         
         List<String> request = SparkUtils.convertRouteToList(match.getRequestUri());
         List<String> matched = SparkUtils.convertRouteToList(match.getMatchUri());
@@ -289,10 +289,10 @@ public class Request {
                                 + matchedPart
                                 + " = "
                                 + request.get(i));
-                params.put(matchedPart, request.get(i));
+                parameters.put(matchedPart, request.get(i));
             }
         }
-        return Collections.unmodifiableMap(params);
+        return Collections.unmodifiableMap(parameters);
     }
     
 }
