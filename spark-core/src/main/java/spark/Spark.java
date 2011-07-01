@@ -72,7 +72,7 @@ public final class Spark {
      * 
      * @param port The port number
      */
-    public synchronized static void setPort(int port) {
+    public static synchronized void setPort(int port) {
         if (initialized) {
             throw new IllegalStateException("This must be done before route mapping has begun");
         }
@@ -179,7 +179,7 @@ public final class Spark {
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter);
     }
 
-    synchronized static void runFromServlet() {
+    static synchronized void runFromServlet() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             initialized = true;
@@ -187,7 +187,7 @@ public final class Spark {
     }
     
     // WARNING, used for jUnit testing only!!!
-    synchronized static void clearRoutes() {
+    static synchronized void clearRoutes() {
         routeMatcher.clearRoutes();
     }
 
@@ -195,7 +195,7 @@ public final class Spark {
     	autostart = false;
     }
     
-    private synchronized static final void init() {
+    private static synchronized final void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             if (autostart)
