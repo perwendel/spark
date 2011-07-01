@@ -195,7 +195,7 @@ public final class Spark {
     	autostart = false;
     }
     
-    private static synchronized final void init() {
+    private static final synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             if (autostart)
