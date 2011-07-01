@@ -86,27 +86,7 @@ public class MatcherFilter implements Filter {
         try {
             // BEFORE filters
             List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri);
-            
-            for (RouteMatch filterMatch : matchSet) {
-                Object filterTarget = filterMatch.getTarget();
-                if (isFilter(filterTarget)) {
-                    Request request = RequestResponseFactory.create(filterMatch, httpRequest);
-                    Response response = RequestResponseFactory.create(httpResponse);
-
-                    spark.Filter filter = (spark.Filter) filterTarget;
-
-                    req.setDelegate(request);
-                    res.setDelegate(response);
-                    
-                    filter.handle(req, res);
-
-                    String bodyAfterFilter = Access.getBody(response);
-                    if (bodyAfterFilter != null) {
-                        bodyContent = bodyAfterFilter;
-                    }
-                }   
-            }
-            // BEFORE filters, END
+            bodyContent = processFilters(httpRequest, httpResponse, req, res, matchSet);
             
             HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
             
@@ -150,26 +130,10 @@ public class MatcherFilter implements Filter {
 
             // AFTER filters
             matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.after, uri);
-            
-            for (RouteMatch filterMatch : matchSet) {
-                Object filterTarget = filterMatch.getTarget();
-                if (isFilter(filterTarget)) {
-                    Request request = RequestResponseFactory.create(filterMatch, httpRequest);
-                    Response response = RequestResponseFactory.create(httpResponse);
-                    
-                    req.setDelegate(request);
-                    res.setDelegate(response);
-                    
-                    spark.Filter filter = (spark.Filter) filterTarget;
-                    filter.handle(req, res);
-
-                    String bodyAfterFilter = Access.getBody(response);
-                    if (bodyAfterFilter != null) {
-                        bodyContent = bodyAfterFilter;
-                    }
-                }   
+            String bodyAfterFilter = processFilters(httpRequest, httpResponse, req, res, matchSet);
+            if (bodyAfterFilter != null) {
+                bodyContent = bodyAfterFilter;
             }
-            // AFTER filters, END
             
         } catch (HaltException hEx) {
             LOG.debug("halt performed");
@@ -196,6 +160,30 @@ public class MatcherFilter implements Filter {
             chain.doFilter(httpRequest, httpResponse);
         }
     }
+
+	private String processFilters(HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse,
+			RequestWrapper req, ResponseWrapper res, List<RouteMatch> matchSet) {
+
+		for (RouteMatch filterMatch : matchSet) {
+		    Object filterTarget = filterMatch.getTarget();
+		    if (isFilter(filterTarget)) {
+		        Request request = RequestResponseFactory.create(filterMatch, httpRequest);
+		        Response response = RequestResponseFactory.create(httpResponse);
+
+		        spark.Filter filter = (spark.Filter) filterTarget;
+
+		        req.setDelegate(request);
+		        res.setDelegate(response);
+
+		        filter.handle(req, res);
+
+		        String bodyAfterFilter = Access.getBody(response);
+		        return bodyAfterFilter;
+		    }
+		}
+		return null;
+	}
 
 	private boolean isFilter(Object filterTarget) {
 		return filterTarget != null && filterTarget instanceof spark.Filter;
