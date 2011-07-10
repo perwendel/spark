@@ -52,6 +52,7 @@ import spark.webserver.SparkServerFactory;
 public final class Spark {
 
 	public static final int DEFAULT_PORT = 4567;
+	public static final int DEFAULT_SYSTEM_ERROR_CODE = 100;
 	
     private static boolean initialized = false;
 
@@ -209,7 +210,7 @@ public final class Spark {
 							server.shutdown();
 						} catch (IOException e) {
 							e.printStackTrace();
-							System.exit(100);
+							System.exit(DEFAULT_SYSTEM_ERROR_CODE);
 						}
 	                }
 	            }).start();

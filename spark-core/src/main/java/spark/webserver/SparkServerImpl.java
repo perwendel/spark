@@ -30,7 +30,6 @@ import spark.Spark;
  */
 class SparkServerImpl implements SparkServer {
 
-    private static final int DEFAULT_SYSTEM_ERROR_CODE = 100;
 	private static final int DEFAULT_SO_LINGER_TIME = -1;
 	private static final int DEFAULT_MAX_IDLE_TIME = 1000 * 60 * 60;
 
@@ -70,7 +69,7 @@ class SparkServerImpl implements SparkServer {
             server.start();
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(DEFAULT_SYSTEM_ERROR_CODE);
+            System.exit(Spark.DEFAULT_SYSTEM_ERROR_CODE);
         }
     }
     
@@ -82,7 +81,7 @@ class SparkServerImpl implements SparkServer {
 	        server.join();
 		} catch (Exception e) {
 			e.printStackTrace();
-            System.exit(DEFAULT_SYSTEM_ERROR_CODE);
+            System.exit(Spark.DEFAULT_SYSTEM_ERROR_CODE);
 		}
     }
 }
