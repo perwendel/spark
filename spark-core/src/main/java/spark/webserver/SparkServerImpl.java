@@ -28,7 +28,12 @@ import org.eclipse.jetty.server.bio.SocketConnector;
  */
 class SparkServerImpl implements SparkServer {
 
-    /** The logger. */
+    private static final int DEFAULT_SYSTEM_ERROR_CODE = 100;
+	private static final int SO_LINGER_TIME = -1;
+	private static final int MAX_IDLE_TIME = 1000 * 60 * 60;
+	private static final int DEFAULT_PORT = 4567;
+
+	/** The logger. */
     // private static final Logger LOG = Logger.getLogger(Spark.class);
     
     private static final String NAME = "Spark";
@@ -42,7 +47,7 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite() {
-        ignite(4567);
+        ignite(DEFAULT_PORT);
     }
 
     @Override
@@ -51,8 +56,8 @@ class SparkServerImpl implements SparkServer {
         SocketConnector connector = new SocketConnector();
 
         // Set some timeout options to make debugging easier.
-        connector.setMaxIdleTime(1000 * 60 * 60);
-        connector.setSoLingerTime(-1);
+        connector.setMaxIdleTime(MAX_IDLE_TIME);
+        connector.setSoLingerTime(SO_LINGER_TIME);
         connector.setPort(port);
         server.setConnectors(new Connector[] {connector});
 
@@ -64,7 +69,7 @@ class SparkServerImpl implements SparkServer {
             server.start();
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(100);
+            System.exit(DEFAULT_SYSTEM_ERROR_CODE);
         }
     }
     
@@ -76,7 +81,7 @@ class SparkServerImpl implements SparkServer {
 	        server.join();
 		} catch (Exception e) {
 			e.printStackTrace();
-            System.exit(100);
+            System.exit(DEFAULT_SYSTEM_ERROR_CODE);
 		}
     }
 }
