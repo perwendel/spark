@@ -160,8 +160,6 @@ public class MatcherFilter implements Filter, HttpErrorCodes {
 				if (routeProcessingResult != null) {
 					result = routeProcessingResult.toString();
 				}
-			} catch (HaltException hEx) {
-				throw hEx;
 			} catch (Exception e) {
 				LOG.error(e);
 				httpResponse.setStatus(HttpErrorCodes.INTERNAL_SERVER_ERROR);
