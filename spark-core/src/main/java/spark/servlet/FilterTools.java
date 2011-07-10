@@ -21,7 +21,7 @@ public final class FilterTools {
             path = path.substring(1);
         }
 
-        if (!path.startsWith(filterPath) && filterPath.equals(path + SLASH)) {
+        if (shouldAddSlashAtTheEndOfThePath(filterPath, path)) {
             path += SLASH;
         }
         if (path.startsWith(filterPath)) {
@@ -34,6 +34,10 @@ public final class FilterTools {
 
         return path;
     }
+
+	private static boolean shouldAddSlashAtTheEndOfThePath(String filterPath, String path) {
+		return !path.startsWith(filterPath) && filterPath.equals(path + SLASH);
+	}
 
     static String getFilterPath(FilterConfig config) {
         String result = config.getInitParameter(FILTER_MAPPING_PARAM);
