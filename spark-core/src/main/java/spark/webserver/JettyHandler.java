@@ -29,23 +29,24 @@ import org.eclipse.jetty.util.log.Log;
 
 /**
  * Simple Jetty Handler
- *
+ * 
  * @author Per Wendel
  */
 class JettyHandler extends AbstractHandler {
-    
-    private Filter filter;
-    
-    public JettyHandler(Filter filter) {
-        this.filter = filter;
-    }
 
-    @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, 
-                    HttpServletResponse response) throws IOException, ServletException {
-        Log.debug("jettyhandler, handle();");
-        filter.doFilter(request, response, null);
-        baseRequest.setHandled(true);
-    }
+	private Filter filter;
+
+	public JettyHandler(Filter filter) {
+		this.filter = filter;
+	}
+
+	@Override
+	public void handle(String target, Request baseRequest,
+			HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
+		Log.debug("jettyhandler, handle();");
+		filter.doFilter(request, response, null);
+		baseRequest.setHandled(true);
+	}
 
 }
