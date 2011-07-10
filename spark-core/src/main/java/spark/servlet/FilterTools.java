@@ -21,10 +21,8 @@ public final class FilterTools {
             path = path.substring(1);
         }
 
-        if (!path.startsWith(filterPath)) {
-            if (filterPath.equals(path + SLASH)) {
-                path += SLASH;
-            }
+        if (!path.startsWith(filterPath) && filterPath.equals(path + SLASH)) {
+            path += SLASH;
         }
         if (path.startsWith(filterPath)) {
             path = path.substring(filterPath.length());
