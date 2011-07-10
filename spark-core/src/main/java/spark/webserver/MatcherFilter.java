@@ -187,15 +187,14 @@ public class MatcherFilter implements Filter, HttpErrorCodes {
 
 				filter.handle(req, res);
 
-				String bodyAfterFilter = Access.getBody(response);
-				return bodyAfterFilter;
+				return Access.getBody(response);
 			}
 		}
 		return null;
 	}
 
 	private boolean isFilter(Object filterTarget) {
-		return filterTarget != null && filterTarget instanceof spark.Filter;
+		return filterTarget instanceof spark.Filter;
 	}
 
 	public void destroy() {
