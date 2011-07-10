@@ -22,10 +22,10 @@ import spark.Response;
 
 class ResponseWrapper extends Response {
 
-    private Response delegate;
+    private final Response delegate;
 
-    public void setDelegate(Response delegate) {
-        this.delegate = delegate;
+    public ResponseWrapper(Response response) {
+        this.delegate = response;
     }
 
     @Override
