@@ -21,6 +21,8 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.bio.SocketConnector;
 
+import spark.Spark;
+
 /**
  * Spark server implementation
  *
@@ -29,9 +31,8 @@ import org.eclipse.jetty.server.bio.SocketConnector;
 class SparkServerImpl implements SparkServer {
 
     private static final int DEFAULT_SYSTEM_ERROR_CODE = 100;
-	private static final int SO_LINGER_TIME = -1;
-	private static final int MAX_IDLE_TIME = 1000 * 60 * 60;
-	private static final int DEFAULT_PORT = 4567;
+	private static final int DEFAULT_SO_LINGER_TIME = -1;
+	private static final int DEFAULT_MAX_IDLE_TIME = 1000 * 60 * 60;
 
 	/** The logger. */
     // private static final Logger LOG = Logger.getLogger(Spark.class);
@@ -47,7 +48,7 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite() {
-        ignite(DEFAULT_PORT);
+        ignite(Spark.DEFAULT_PORT);
     }
 
     @Override
@@ -56,8 +57,8 @@ class SparkServerImpl implements SparkServer {
         SocketConnector connector = new SocketConnector();
 
         // Set some timeout options to make debugging easier.
-        connector.setMaxIdleTime(MAX_IDLE_TIME);
-        connector.setSoLingerTime(SO_LINGER_TIME);
+        connector.setMaxIdleTime(DEFAULT_MAX_IDLE_TIME);
+        connector.setSoLingerTime(DEFAULT_SO_LINGER_TIME);
         connector.setPort(port);
         server.setConnectors(new Connector[] {connector});
 

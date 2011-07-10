@@ -96,9 +96,12 @@ public final class IOUtils {
      * The system line separator string.
      */
     public static final String LINE_SEPARATOR;
+    
+    private static final int DEFAULT_STRING_BUFFER_SIZE = 4;
+
     static {
         // avoid security issues
-        StringWriter buf = new StringWriter(4);
+        StringWriter buf = new StringWriter(DEFAULT_STRING_BUFFER_SIZE);
         PrintWriter out = new PrintWriter(buf);
         out.println();
         LINE_SEPARATOR = buf.toString();

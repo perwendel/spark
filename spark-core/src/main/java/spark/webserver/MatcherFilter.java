@@ -45,8 +45,7 @@ import spark.route.RouteMatcher;
  * 
  * @author Per Wendel
  */
-public class MatcherFilter implements Filter {
-
+public class MatcherFilter implements Filter, HttpErrorCodes {
 	private RouteMatcher routeMatcher;
 	private boolean isServletContext;
 
@@ -114,7 +113,7 @@ public class MatcherFilter implements Filter {
 		boolean consumed = bodyContent != null ? true : false;
 
 		if (!(consumed || isServletContext)) {
-			httpResponse.setStatus(404);
+			httpResponse.setStatus(HttpErrorCodes.NOT_FOUND);
 			bodyContent = NOT_FOUND;
 			consumed = true;
 		}
@@ -165,7 +164,7 @@ public class MatcherFilter implements Filter {
 				throw hEx;
 			} catch (Exception e) {
 				LOG.error(e);
-				httpResponse.setStatus(500);
+				httpResponse.setStatus(HttpErrorCodes.INTERNAL_SERVER_ERROR);
 				result = INTERNAL_ERROR;
 			}
 		}
