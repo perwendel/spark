@@ -76,7 +76,7 @@ final class RequestWrapper extends Request {
 	}
 
 	@Override
-	public final String params(String param) {
+	public String params(String param) {
 		return delegate.params(param);
 	}
 
