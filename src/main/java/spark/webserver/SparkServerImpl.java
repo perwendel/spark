@@ -80,14 +80,21 @@ class SparkServerImpl implements SparkServer {
                 while (true) {
                   try {
                     waitObj.wait();
-                  } catch (InterruptedException _) {
+                  } catch (InterruptedException interrupt) {
                     /* The thread was interrupted, so unblock */
-                    break;
+                  	System.out.println(">>> " + NAME + " interrupted...");
+                  	
+                  	/* Stop the server */
+                  	server.stop();
+                  	server.join();
+                  	
+                  	/* Stop now */
+                  	System.exit(0);
                   }
                 }
               }
             }
-
+            
             System.out.println(">>> " + NAME + " shutting down...");
 
             server.stop();
