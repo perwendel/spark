@@ -21,6 +21,8 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.bio.SocketConnector;
 
+import java.io.IOException;
+
 /**
  * Spark server implementation
  *
@@ -62,7 +64,29 @@ class SparkServerImpl implements SparkServer {
             System.out.println(">> Listening on 0.0.0.0:" + port);
 
             server.start();
-            System.in.read();
+
+            /* We need to block the thread here */
+            try {
+              /* Try using stdin first */
+              System.in.read();
+            } catch (IOException e) {
+              /* Using stdin did not work */
+              System.out.println(">> Could not block with stdin...");
+
+              /* Try waiting using an object */
+              Object waitObj = new Object();
+              synchronized (waitObj) {
+                /* Keep waiting forever unless we get interrupted */
+                while (true) {
+                  try {
+                    waitObj.wait();
+                  } catch (InterruptedException _) {
+                    /* The thread was interrupted, so unblock */
+                    break;
+                  }
+                }
+              }
+            }
 
             System.out.println(">>> " + NAME + " shutting down...");
 
