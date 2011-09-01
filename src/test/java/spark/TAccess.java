@@ -6,4 +6,8 @@ public class TAccess {
         Spark.clearRoutes();
     }
     
+    public static void stop() {
+    	Spark.stop();
+    }
+    
 }

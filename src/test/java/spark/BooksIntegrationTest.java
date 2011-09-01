@@ -26,6 +26,7 @@ public class BooksIntegrationTest {
    @AfterClass
    public static void tearDown() {
        Spark.clearRoutes();
+       Spark.stop();
    }
    
    @BeforeClass

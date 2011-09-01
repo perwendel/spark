@@ -50,6 +50,7 @@ public class Spark {
 
     private static boolean initialized = false;
 
+    private static SparkServer server;
     private static RouteMatcher routeMatcher;
     private static int port = 4567;
     
@@ -178,13 +179,21 @@ public class Spark {
         routeMatcher.clearRoutes();
     }
     
+    // Used for jUnit testing!
+    synchronized static void stop() {
+    	if (server != null) {
+    		server.stop();
+    		initialized = false;
+    	}
+    }
+    
     private synchronized static final void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             new Thread(new Runnable() {
-                @Override
+				@Override
                 public void run() {
-                    SparkServer server = SparkServerFactory.create();
+                    server = SparkServerFactory.create();
                     server.ignite(port);
                 }
             }).start();

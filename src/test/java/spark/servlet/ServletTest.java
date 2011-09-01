@@ -30,6 +30,7 @@ public class ServletTest {
     @AfterClass
     public static void tearDown() {
         TAccess.clearRoutes();
+        TAccess.stop();
     }
     
     @BeforeClass

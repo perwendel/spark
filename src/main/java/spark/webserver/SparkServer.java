@@ -24,13 +24,19 @@ package spark.webserver;
 public interface SparkServer {
     
     /**
-     * 
+     * ignites the spark server
      */
     void ignite();
     
     /**
+     * Ignites the spark server listening on the provided port
      * 
      * @param port
      */
     void ignite(int port);
+
+    /**
+     * Stops the spark server
+     */
+	void stop();
 }

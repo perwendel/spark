@@ -24,6 +24,7 @@ public class GenericIntegrationTest {
     @AfterClass
     public static void tearDown() {
         Spark.clearRoutes();
+        Spark.stop();
     }
     
     @BeforeClass
