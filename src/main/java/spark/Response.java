@@ -60,7 +60,7 @@ public class Response {
        this.body = body;
     }
     
-    String body() {
+    public String body() {
        return this.body;
     }
     
