@@ -93,13 +93,18 @@ public class Request {
     
     /**
      * Returns the value of the provided route pattern parameter.
-     * Example: parameter 'name' from the following pattern: (get '/hello/:name') 
+     * Example: parameter 'name' from the following pattern: (get '/hello/:name')
+     * @return null if the given param is null or not found 
      */
     public String params(String param) {
-        if (param.startsWith(":")) {
-            return params.get(param);
+      if(null == param) {
+        return null;
+      }
+
+      if (param.startsWith(":")) {
+            return params.get(param.toLowerCase());
         } else {
-            return params.get(":" + param);
+            return params.get(":" + param.toLowerCase());
         }
     }
     

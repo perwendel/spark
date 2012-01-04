@@ -55,6 +55,14 @@ public class GenericIntegrationTest {
             }
         });
 
+        get(new Route("/paramwithmaj/:paramWithMaj") {
+
+          @Override
+          public Object handle(Request request, Response response) {
+              return "echo: " + request.params(":paramWithMaj");
+          }
+      });
+
         get(new Route("/") {
 
             @Override
@@ -145,6 +153,17 @@ public class GenericIntegrationTest {
             UrlResponse response = testUtil.doMethod("GET", "/gunit", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: gunit", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testEchoParamWithMaj() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/paramwithmaj/plop", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("echo: plop", response.body);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
