@@ -157,12 +157,12 @@ public class Spark {
         addFilter(HttpMethod.after.name(), filter);
     }
     
-    private static void addRoute(String httpMethod, Route route) {
+    public static void addRoute(String httpMethod, Route route) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route);
     }
     
-    private static void addFilter(String httpMethod, Filter filter) {
+    public static void addFilter(String httpMethod, Filter filter) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter);
     }
