@@ -16,7 +16,6 @@
  */
 package spark.route;
 
-import org.apache.log4j.Logger;
 
 /**
  * RouteMatcherFactory
@@ -26,7 +25,7 @@ import org.apache.log4j.Logger;
 public class RouteMatcherFactory {
 
     /** The logger. */
-    private static final Logger LOG = Logger.getLogger(RouteMatcherFactory.class);
+    private static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RouteMatcherFactory.class);
 
     private static RouteMatcher routeMatcher = null;
 

@@ -25,8 +25,8 @@ import org.eclipse.jetty.util.log.Logger;
  */
 public class JettyLogger implements Logger {
 
-    private org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger("org.mortbay.jetty.JettyLog");
-
+    private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(getClass());
+    
     public void debug(String msg, Throwable th) {
         LOG.debug(msg, th);
     }

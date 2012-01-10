@@ -19,8 +19,6 @@ package spark.route;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import spark.utils.SparkUtils;
 
 /**
@@ -30,8 +28,8 @@ import spark.utils.SparkUtils;
  */
 public class SimpleRouteMatcher implements RouteMatcher {
 
-    private static Logger LOG = Logger.getLogger(SimpleRouteMatcher.class);
-
+    private static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleRouteMatcher.class);
+    
     private List<RouteEntry> routes;
 
     private static class RouteEntry {

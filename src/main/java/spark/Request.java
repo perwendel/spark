@@ -27,8 +27,6 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.utils.IOUtils;
@@ -41,7 +39,7 @@ import spark.utils.SparkUtils;
  */
 public class Request {
 
-    private static Logger LOG = Logger.getLogger(Request.class);
+    private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(getClass());
     
     private static final String USER_AGENT = "user-agent";
     

@@ -28,8 +28,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import spark.Access;
 import spark.HaltException;
 import spark.Request;
@@ -51,7 +49,7 @@ public class MatcherFilter implements Filter {
     private boolean isServletContext;
 
     /** The logger. */
-    private static final Logger LOG = Logger.getLogger(MatcherFilter.class);
+    private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(getClass());
 
     /**
      * Constructor
@@ -142,7 +140,7 @@ public class MatcherFilter implements Filter {
                 } catch (HaltException hEx) {
                     throw hEx;
                 } catch (Exception e) {
-                    LOG.error(e);
+                    LOG.error("", e);
                     httpResponse.setStatus(500);
                     bodyContent = INTERNAL_ERROR;
                 }

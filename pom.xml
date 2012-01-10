@@ -17,13 +17,21 @@
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.4</version>
 		</dependency>
+
 		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -31,12 +39,6 @@
 			<artifactId>jetty-webapp</artifactId>
 			<version>${jetty.version}</version>
 		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>commons-fileupload</groupId>-->
-<!--			<artifactId>commons-fileupload</artifactId>-->
-<!--			<version>1.2.2</version>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
