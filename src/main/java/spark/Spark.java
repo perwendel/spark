@@ -183,8 +183,8 @@ public class Spark {
     synchronized static void stop() {
     	if (server != null) {
     		server.stop();
-    		initialized = false;
     	}
+    	initialized = false;
     }
     
     private synchronized static final void init() {
