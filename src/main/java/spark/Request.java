@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
@@ -52,6 +53,8 @@ public class Request {
     private String body = null;
     
     private Set<String> headers = null;
+    
+    private Session session = null;
     
     //    request.body              # request body sent by the client (see below), DONE
     //    request.scheme            # "http"                                DONE
@@ -298,5 +301,34 @@ public class Request {
         }
         return Collections.unmodifiableMap(params);
     }
+
+    public Session session() {
+        if (session == null) {
+            session = new Session(servletRequest.getSession());
+        }
+        return session;
+    }
+
+    public Session session(boolean create) {
+        if (session == null) {
+            HttpSession httpSession = servletRequest.getSession(create);
+            if (httpSession != null) {
+                session = new Session(httpSession);
+            }
+        }
+        return session;
+    }
+
+    public <T> T session(String name) {
+        Session session = session(false);
+        if (session != null) {
+            return session.attribute(name);
+        } else {
+            return null;
+        }
+    }
     
+    public void session(String name, Object value) {
+        session().attribute(name, value);
+    }
 }
