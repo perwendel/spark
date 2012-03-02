@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import junit.framework.Assert;
 
@@ -14,6 +15,10 @@ import org.junit.Test;
 
 import spark.examples.books.Books;
 import spark.utils.IOUtils;
+import spark.webserver.Lifecycle;
+import spark.webserver.Lifecycle.Listener;
+import spark.webserver.Lifecycle.Phase;
+import spark.webserver.SparkServer;
 
 public class BooksIntegrationTest {
 
@@ -31,6 +36,16 @@ public class BooksIntegrationTest {
    
    @BeforeClass
    public static void setup() {
+      final CountDownLatch latch = new CountDownLatch(1);
+      Lifecycle.addListener(new Listener() {
+         @Override
+         public void onPhase(Phase phase, SparkServer sparkServer) {
+             System.out.println("BooksIntegrationTest.setup().new Listener() {...}.onPhase(" + phase + ")@" + sparkServer);
+            if(phase==Phase.Started)
+                latch.countDown();
+         }
+      });
+       
       Spark.before(new Filter(){
          @Override
          public void handle(Request request, Response response) {
