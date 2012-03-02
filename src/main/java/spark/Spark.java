@@ -16,6 +16,8 @@
  */
 package spark;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+
 import spark.route.HttpMethod;
 import spark.route.RouteMatcher;
 import spark.route.RouteMatcherFactory;
@@ -53,6 +55,9 @@ public class Spark {
     private static SparkServer server;
     private static RouteMatcher routeMatcher;
     private static int port = 4567;
+    
+    /** The logger. */
+    private static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Spark.class);
     
     /**
      * Set the port that Spark should listen on. If not called the default port is 4567.
@@ -157,6 +162,15 @@ public class Spark {
         addFilter(HttpMethod.after.name(), filter);
     }
     
+    /**
+     * Maps an interceptor to be executed around any matching routes
+     * 
+     * @param interceptor The interceptor
+     */
+    public static void around(Interceptor interceptor) {
+        addInterceptor(HttpMethod.around.name(), interceptor);
+    }
+    
     private static void addRoute(String httpMethod, Route route) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route);
@@ -165,6 +179,11 @@ public class Spark {
     private static void addFilter(String httpMethod, Filter filter) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter);
+    }
+    
+    private static void addInterceptor(String httpMethod, Interceptor interceptor) {
+        init();
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + interceptor.getPath() + "'", interceptor);
     }
 
     synchronized static void runFromServlet() {
@@ -190,13 +209,20 @@ public class Spark {
     private synchronized static final void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
-            new Thread(new Runnable() {
+            Thread thread = new Thread(new Runnable() {
 				@Override
                 public void run() {
                     server = SparkServerFactory.create();
                     server.ignite(port);
                 }
-            }).start();
+            });
+            thread.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    LOG.error("Oops " + t, e);
+                }
+            });
+            thread.start();
             initialized = true;
         }
     }

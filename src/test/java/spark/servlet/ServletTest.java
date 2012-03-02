@@ -1,9 +1,8 @@
 package spark.servlet;
 
-import static testutil.MyTestUtil.sleep;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import junit.framework.Assert;
 
@@ -34,7 +33,7 @@ public class ServletTest {
     }
     
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws InterruptedException {
 		testUtil = new MyTestUtil(PORT);
 		
 		SocketConnector connector = new SocketConnector();
@@ -52,12 +51,14 @@ public class ServletTest {
 		
 		server.setHandler(bb);
 		
+		final CountDownLatch latch = new CountDownLatch(1);
 		new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     System.out.println(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
                     server.start();
+                    latch.countDown();
                     System.in.read();
                     System.out.println(">>> STOPPING EMBEDDED JETTY SERVER"); 
                     server.stop();
@@ -69,72 +70,49 @@ public class ServletTest {
             }
         }).start();
 		
-		sleep(1000);
+        // make sure server is started
+		latch.await();
     }
     
     @Test
-    public void testGetHi() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/hi", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("Hello World!", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetHi() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/hi", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Hello World!", response.body);
     }
     
     @Test
-    public void testHiHead() {
-        try {
-            UrlResponse response = testUtil.doMethod("HEAD", SOMEPATH + "/hi", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testHiHead() throws Exception {
+        UrlResponse response = testUtil.doMethod("HEAD", SOMEPATH + "/hi", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("", response.body);
     }
     
     @Test
-    public void testGetHiAfterFilter() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/hi", null);
-            Assert.assertTrue(response.headers.get("after").contains("foobar"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetHiAfterFilter() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/hi", null);
+        Assert.assertTrue(response.headers.get("after").contains("foobar"));
     }
     
     @Test
-    public void testGetRoot() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("Hello Root!", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetRoot() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Hello Root!", response.body);
     }
     
     @Test
-    public void testEchoParam1() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/shizzy", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("echo: shizzy", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testEchoParam1() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/shizzy", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: shizzy", response.body);
     }
 
     @Test
-    public void testEchoParam2() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/gunit", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("echo: gunit", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testEchoParam2() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/gunit", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: gunit", response.body);
     }
 
     @Test(expected = IOException.class)
@@ -149,22 +127,14 @@ public class ServletTest {
 
     @Test(expected = FileNotFoundException.class)
     public void testNotFound() throws Exception {
-        try {
-            testUtil.doMethod("GET", SOMEPATH + "/no/resource", null);
-        } catch (Exception e) {
-            throw e;
-        }
+        testUtil.doMethod("GET", SOMEPATH + "/no/resource", null);
     }
     
     @Test
-    public void testPost() {
-        try {
-            UrlResponse response = testUtil.doMethod("POST", SOMEPATH + "/poster", "Fo shizzy");
-            System.out.println(response.body);
-            Assert.assertEquals(201, response.status);
-            Assert.assertTrue(response.body.contains("Fo shizzy"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testPost() throws Exception {
+        UrlResponse response = testUtil.doMethod("POST", SOMEPATH + "/poster", "Fo shizzy");
+        System.out.println(response.body);
+        Assert.assertEquals(201, response.status);
+        Assert.assertTrue(response.body.contains("Fo shizzy"));
     }
 }

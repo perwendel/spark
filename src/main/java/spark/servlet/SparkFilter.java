@@ -39,7 +39,6 @@ import spark.webserver.MatcherFilter;
  * @author Per Wendel
  */
 public class SparkFilter implements Filter {
-    private static final long serialVersionUID = 1L;
     
     private static final String APPLICATION_CLASS_PARAM = "applicationClass";
 

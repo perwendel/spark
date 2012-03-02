@@ -43,7 +43,7 @@ class JettyHandler extends AbstractHandler {
     @Override
     public void handle(String target, Request baseRequest, HttpServletRequest request, 
                     HttpServletResponse response) throws IOException, ServletException {
-        Log.debug("jettyhandler, handle();");
+        Log.info("jettyhandler, handle();");
         filter.doFilter(request, response, null);
         baseRequest.setHandled(true);
     }

@@ -48,6 +48,7 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite(int port) {
+        Lifecycle.serverStarting(this);
         Server server = new Server();
         SocketConnector connector = new SocketConnector();
 
@@ -65,6 +66,8 @@ class SparkServerImpl implements SparkServer {
 
             server.start();
             
+            Lifecycle.serverStarted(this);
+            
             synchronized (lock) {
             	while (!stopped) {
             		try {
@@ -76,8 +79,11 @@ class SparkServerImpl implements SparkServer {
             
             System.out.println(">>> " + NAME + " shutting down...");
 
+            Lifecycle.serverStopping(this);
             server.stop();
             server.join();
+            Lifecycle.serverStopped(this);
+
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(100);
