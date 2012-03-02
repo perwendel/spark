@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import spark.Access;
+import spark.HaltException;
 import spark.InterceptorChain;
 import spark.Request;
 import spark.RequestResponseFactory;
@@ -36,22 +37,31 @@ public class SimpleInterceptorChain implements InterceptorChain {
 
     @Override
     public void invokeNext() {
-        if (index == interceptors.size()) {
-            LOG.debug("Final link in the chain: invoking target");
-            invokeTarget();
-            return;
-        }
-
         try {
-            RouteMatch interceptor = interceptors.get(index++);
-            invokeInterceptor(interceptor);
-        } finally {
-            index--;
+            if (index == interceptors.size()) {
+                LOG.debug("Final link in the chain: invoking target");
+                invokeTarget();
+                return;
+            }
+    
+            try {
+                RouteMatch interceptor = interceptors.get(index++);
+                invokeInterceptor(interceptor);
+            } finally {
+                index--;
+            }
+        }
+        catch(HaltException he) {
+            throw he;
+        }
+        catch(RuntimeException re) {
+            LOG.error("Oops", re);
+            throw re;
         }
     }
 
     private void invokeTarget() {
-        targetInvocation.invokeTargetMethod(bodyContent);
+        bodyContent = targetInvocation.invokeTargetMethod(bodyContent);
     }
 
     private void invokeInterceptor(RouteMatch match) {

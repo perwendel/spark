@@ -28,6 +28,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.util.log.Log;
+
 import spark.Access;
 import spark.HaltException;
 import spark.Request;
@@ -82,7 +84,7 @@ public class MatcherFilter implements Filter {
             bodyContent = invokeTargetMethod(httpRequest, httpResponse, uri, bodyContent);
 
             long t1 = System.currentTimeMillis() - t0;
-            LOG.debug("Time for request: " + t1);
+            LOG.debug("Time for request: " + t1 + "ms");
             bodyContent = invokeAfterFilters(httpRequest, httpResponse, uri, bodyContent);
         } catch (HaltException hEx) {
             LOG.debug("halt performed");
@@ -95,7 +97,9 @@ public class MatcherFilter implements Filter {
         }
 
         boolean consumed = bodyContent != null ? true : false;
-        
+
+        LOG.debug("consumed: {}, bodyContent: {}", consumed, bodyContent);
+
         if (!consumed && !isServletContext) {
             httpResponse.setStatus(404);
             bodyContent = NOT_FOUND;
@@ -107,6 +111,8 @@ public class MatcherFilter implements Filter {
             httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
+        } else {
+            Log.warn("No bodyContent available");
         }
     }
 

@@ -3,6 +3,9 @@ package spark.webserver;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import spark.HaltException;
 import spark.Request;
 import spark.RequestResponseFactory;
@@ -13,6 +16,7 @@ import spark.route.RouteMatch;
 import spark.route.RouteMatcher;
 
 public class TargetInvocation {
+    private static final Logger LOG = LoggerFactory.getLogger(TargetInvocation.class);
     
     private HttpServletRequest httpRequest;
     private HttpServletResponse httpResponse; 
@@ -29,6 +33,7 @@ public class TargetInvocation {
     }
 
     protected String invokeTargetMethod(String bodyContent) {
+        LOG.debug("Invoking target method");
         
         String httpMethodStr = httpRequest.getMethod().toLowerCase();
         HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
