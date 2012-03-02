@@ -38,6 +38,16 @@ public class BooksIntegrationTest {
          }
       });
       
+      Spark.around(new Interceptor() {
+          @Override
+          public void handle(Request request, Response response, InterceptorChain chain) {
+              long t0 = System.currentTimeMillis();
+              chain.invokeNext();
+              long t1 = System.currentTimeMillis();
+              System.out.println("BooksIntegrationTest.setup().new Interceptor() {...}.handle() in " + (t1-t0) + "ms");
+          }
+      });
+      
       Books.main(null);
       
       Spark.after(new Filter(){

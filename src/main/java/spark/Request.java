@@ -180,6 +180,7 @@ public class Request {
             try {
                 body = IOUtils.toString(servletRequest.getInputStream());
             } catch (Exception e) {
+                LOG.debug("Failed to retrieve request body", e);
             }
         }
         return body;
