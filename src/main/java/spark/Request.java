@@ -333,17 +333,4 @@ public class Request {
         }
         return session;
     }
-
-    public <T> T session(String name) {
-        Session session = session(false);
-        if (session != null) {
-            return session.attribute(name);
-        } else {
-            return null;
-        }
-    }
-    
-    public void session(String name, Object value) {
-        session().attribute(name, value);
-    }
 }

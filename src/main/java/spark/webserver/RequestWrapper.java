@@ -160,15 +160,5 @@ final class RequestWrapper extends Request {
     public Session session(boolean create) {
         return delegate.session(create);
     }
-
-    @Override
-    public <T> T session(String name) {
-        return delegate.session(name);
-    }
-
-    @Override
-    public void session(String name, Object value) {
-        delegate.session(name, value);
-    }
     
 }

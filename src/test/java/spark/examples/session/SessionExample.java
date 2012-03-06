@@ -13,7 +13,7 @@ public class SessionExample {
         get(new Route("/") {
             @Override
             public Object handle(Request request, Response response) {
-                String name = request.session(SESSION_NAME);
+                String name = request.session().attribute(SESSION_NAME);
                 if (name == null) {
                     return "<html><body>What's your name?: <form action=\"/entry\" method=\"POST\"><input type=\"text\" name=\"name\"/><input type=\"submit\" value=\"go\"/></form></body></html>";
                 } else {
@@ -27,7 +27,7 @@ public class SessionExample {
             public Object handle(Request request, Response response) {
                 String name = request.queryParams("name");
                 if (name != null) {
-                    request.session(SESSION_NAME, name);
+                    request.session().attribute(SESSION_NAME, name);
                 }
                 response.redirect("/");
                 return null;
