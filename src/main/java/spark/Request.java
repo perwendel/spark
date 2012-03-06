@@ -302,6 +302,12 @@ public class Request {
         return Collections.unmodifiableMap(params);
     }
 
+    /**
+     * Returns the current session associated with this request, 
+     * or if the request does not have a session, creates one.
+     *  
+     * @return the session associated with this request
+     */
     public Session session() {
         if (session == null) {
             session = new Session(servletRequest.getSession());
@@ -309,6 +315,15 @@ public class Request {
         return session;
     }
 
+    /**
+     * Returns the current session associated with this request, or if there is 
+     * no current session and <code>create</code> is true, returns  a new session.
+     * 
+     * @param create <code>true</code> to create a new session for this request if necessary;
+     *              <code>false</code> to return null if there's no current session 
+     * @return the session associated with this request or <code>null</code> if
+     *          <code>create</code> is <code>false</code> and the request has no valid session
+     */
     public Session session(boolean create) {
         if (session == null) {
             HttpSession httpSession = servletRequest.getSession(create);
