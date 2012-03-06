@@ -16,11 +16,11 @@ public class Session {
     /**
      * Creates a session with the <code>HttpSession</code>.
      * @param session
-     * @throws NullPointerException If the session is null.
+     * @throws IllegalArgumentException If the session is null.
      */
-    Session(HttpSession session) throws NullPointerException {
+    Session(HttpSession session) throws IllegalArgumentException {
         if (session == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException("session cannot be null");
         }
         this.session = session;
     }
