@@ -5,4 +5,8 @@ bin
 .project
 .classpath
 .pdm
+.idea
+*.iml
+*.ipr
+*.iws
 reports
