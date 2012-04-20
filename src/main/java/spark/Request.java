@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -40,19 +40,19 @@ import spark.utils.SparkUtils;
 public class Request {
 
     private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(getClass());
-    
+
     private static final String USER_AGENT = "user-agent";
-    
+
     private Map<String, String> params;
-    
+
     private HttpMethod httpMethod;
     private HttpServletRequest servletRequest;
 
     /* Lazy loaded stuff */
     private String body = null;
-    
+
     private Set<String> headers = null;
-    
+
     //    request.body              # request body sent by the client (see below), DONE
     //    request.scheme            # "http"                                DONE
     //    request.path_info         # "/foo",                               DONE
@@ -75,11 +75,11 @@ public class Request {
     //    request.script_name       # "/example"
     //    request.form_data?        # false
     //    request.referrer          # the referrer of the client or '/'
-    
+
     protected Request() {
        // Used by wrapper
     }
-    
+
     /**
      * Constructor
      */
@@ -88,12 +88,12 @@ public class Request {
         this.servletRequest = request;
         params = setParams(match);
     }
-    
+
     /**
      * Returns the value of the provided route pattern parameter.
      * Example: parameter 'name' from the following pattern: (get '/hello/:name')
-     * 
-     * @return null if the given param is null or not found 
+     *
+     * @return null if the given param is null or not found
      */
     public String params(String param) {
         if (param == null) {
@@ -101,12 +101,12 @@ public class Request {
         }
 
         if (param.startsWith(":")) {
-            return params.get(param.toLowerCase());
+            return params.get(param);
         } else {
-            return params.get(":" + param.toLowerCase());
+            return params.get(":" + param);
         }
     }
-    
+
     /**
      * Returns request method e.g. GET, POST, PUT, ...
      */
@@ -120,7 +120,7 @@ public class Request {
     public String scheme() {
         return servletRequest.getScheme();
     }
-    
+
     /**
      * Returns the host
      */
@@ -134,7 +134,7 @@ public class Request {
     public String userAgent() {
         return servletRequest.getHeader(USER_AGENT);
     }
-    
+
     /**
      * Returns the server port
      */
@@ -150,14 +150,14 @@ public class Request {
     public String pathInfo() {
         return servletRequest.getPathInfo();
     }
-    
+
     /**
      * Returns the URL string
      */
     public String url() {
         return scheme() + "://" + host() + pathInfo();
     }
-    
+
     /**
      * Returns the content type of the body
      */
@@ -171,7 +171,7 @@ public class Request {
     public String ip() {
         return servletRequest.getRemoteAddr();
     }
-    
+
     /**
      * Returns the request body sent by the client
      */
@@ -184,7 +184,7 @@ public class Request {
         }
         return body;
     }
-    
+
     /**
      * Returns the length of request.body
      */
@@ -245,7 +245,7 @@ public class Request {
     public void attribute(String attribute, Object value) {
         servletRequest.setAttribute(attribute, value);
     }
-    
+
     /**
      * Gets the value of the provided attribute
      * @param attribute The attribute value or null if not present
@@ -253,8 +253,8 @@ public class Request {
     public Object attribute(String attribute) {
         return servletRequest.getAttribute(attribute);
     }
-    
-    
+
+
     /**
      * Returns all attributes
      */
@@ -267,14 +267,14 @@ public class Request {
         }
         return attrList;
     }
-    
+
     /**
      * Gets the raw HttpServletRequest object handed in by Jetty
      */
     public HttpServletRequest raw() {
         return servletRequest;
     }
-    
+
     private final Map<String, String> setParams(RouteMatch match) {
         LOG.debug("set params for requestUri: "
                         + match.getRequestUri()
@@ -282,7 +282,7 @@ public class Request {
                         + match.getMatchUri());
 
         Map<String, String> params = new HashMap<String, String>();
-        
+
         List<String> request = SparkUtils.convertRouteToList(match.getRequestUri());
         List<String> matched = SparkUtils.convertRouteToList(match.getMatchUri());
 
@@ -298,5 +298,5 @@ public class Request {
         }
         return Collections.unmodifiableMap(params);
     }
-    
+
 }

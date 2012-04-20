@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -29,7 +29,7 @@ import spark.utils.SparkUtils;
 public class SimpleRouteMatcher implements RouteMatcher {
 
     private static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleRouteMatcher.class);
-    
+
     private List<RouteEntry> routes;
 
     private static class RouteEntry {
@@ -53,7 +53,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
         }
 
         private boolean matchPath(String path) {
-            if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) 
+            if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/"))
                             || (this.path.endsWith("/") && !path.endsWith("/")))) {
                 // One and not both ends with slash
                 return false;
@@ -67,22 +67,22 @@ public class SimpleRouteMatcher implements RouteMatcher {
             List<String> thisPathList = SparkUtils.convertRouteToList(this.path);
             List<String> pathList = SparkUtils.convertRouteToList(path);
 
-            
+
             int thisPathSize = thisPathList.size();
             int pathSize = pathList.size();
-            
+
             if (thisPathSize == pathSize) {
                 for (int i = 0; i < thisPathSize; i++) {
                     String thisPathPart = thisPathList.get(i);
                     String pathPart = pathList.get(i);
-                    
+
                     if ((i == thisPathSize -1)) {
                         if (thisPathPart.equals("*") && this.path.endsWith("*")) {
                             // wildcard match
                             return true;
-                        }    
+                        }
                     }
-                    
+
                     if (!thisPathPart.startsWith(":") && !thisPathPart.equals(pathPart)) {
                         return false;
                     }
@@ -125,7 +125,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
             return httpMethod.name() + ", " + path + ", " + target;
         }
     }
-    
+
     public SimpleRouteMatcher() {
         routes = new ArrayList<RouteEntry>();
     }
@@ -139,7 +139,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
         }
         return null;
     }
-    
+
     @Override
     public List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
         List<RouteMatch> matchSet = new ArrayList<RouteMatch>();
@@ -156,7 +156,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
         try {
             int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
             String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase();
-            String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim().toLowerCase();
+            String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim();
 
             // Use special enum stuff to get from value
             HttpMethod method;

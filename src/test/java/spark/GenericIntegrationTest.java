@@ -20,17 +20,17 @@ import testutil.MyTestUtil.UrlResponse;
 public class GenericIntegrationTest {
 
     static MyTestUtil testUtil;
-    
+
     @AfterClass
     public static void tearDown() {
         Spark.clearRoutes();
         Spark.stop();
     }
-    
+
     @BeforeClass
     public static void setup() {
         testUtil = new MyTestUtil(4567);
-        
+
         before(new Filter("/protected/*") {
 
             @Override
@@ -55,13 +55,21 @@ public class GenericIntegrationTest {
             }
         });
 
-        get(new Route("/paramwithmaj/:paramWithMaj") {
+        get(new Route("/paramwithuppercase/:paramWithUpperCase") {
 
           @Override
           public Object handle(Request request, Response response) {
-              return "echo: " + request.params(":paramWithMaj");
+              return "echo: " + request.params(":paramWithUpperCase");
           }
       });
+
+        get(new Route("/routeWithUpperCase/:paramWithUpperCase") {
+
+          @Override
+          public Object handle(Request request, Response response) {
+              return "echo: " + request.params(":paramWithUpperCase");
+          }
+        });
 
         get(new Route("/") {
 
@@ -70,7 +78,7 @@ public class GenericIntegrationTest {
                 return "Hello Root!";
             }
         });
-        
+
         post(new Route("/poster") {
             @Override
             public Object handle(Request request, Response response) {
@@ -79,7 +87,7 @@ public class GenericIntegrationTest {
                 return "Body was: " + body;
             }
         });
-        
+
         after(new Filter("/hi") {
             @Override
             public void handle(Request request, Response response) {
@@ -103,7 +111,7 @@ public class GenericIntegrationTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testHiHead() {
         try {
@@ -114,7 +122,7 @@ public class GenericIntegrationTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testGetHiAfterFilter() {
         try {
@@ -159,11 +167,22 @@ public class GenericIntegrationTest {
     }
 
     @Test
-    public void testEchoParamWithMaj() {
+    public void testEchoParamWithUpperCase() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/paramwithmaj/plop", null);
+            UrlResponse response = testUtil.doMethod("GET", "/paramwithuppercase/thisShouldBeUpperCase", null);
             Assert.assertEquals(200, response.status);
-            Assert.assertEquals("echo: plop", response.body);
+            Assert.assertEquals("echo: thisShouldBeUpperCase", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testEchoRouteWithUpperCase() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/routeWithUpperCase/thisShouldBeUpperCase", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("echo: thisShouldBeUpperCase", response.body);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -187,7 +206,7 @@ public class GenericIntegrationTest {
             throw e;
         }
     }
-    
+
     @Test
     public void testPost() {
         try {
