@@ -3,7 +3,7 @@
 	<groupId>com.aeells</groupId>
 	<artifactId>spark</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9.9.3</version>
+	<version>0.9.9.4-SNAPSHOT</version>
 	<name>Spark</name>
 	<url>http://www.sparkjava.com</url>
 
