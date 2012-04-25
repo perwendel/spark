@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>spark</groupId>
+	<groupId>com.aeells</groupId>
 	<artifactId>spark</artifactId>
 	<packaging>jar</packaging>
 	<version>0.9.9.3-SNAPSHOT</version>
@@ -87,11 +87,23 @@
 		</plugins>
 	</build>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>spark</id>
-			<url>http://46.137.105.19:8081/nexus/content/repositories/spark</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>qmetric-snapshot</name>
+            <url>https://ci.qmetric.co.uk/nexus/content/repositories/qmetric-snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus</id>
+            <name>qmetric-releases</name>
+            <url>https://ci.qmetric.co.uk/nexus/content/repositories/qmetric-releases</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>git://github.com/aeells/spark.git</url>
+        <connection>scm:git:git@github.com:aeells/spark.git</connection>
+        <developerConnection>scm:git:git@github.com:aeells/spark.git</developerConnection>
+    </scm>
 
 </project>
