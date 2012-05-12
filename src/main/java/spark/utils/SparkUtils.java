@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,8 +16,14 @@
  */
 package spark.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Some utility methods
@@ -27,7 +33,7 @@ import java.util.List;
 public class SparkUtils {
 
     public static final String ALL_PATHS = "+/*paths";
-    
+
     public static List<String> convertRouteToList(String route) {
         String[] pathArray = route.split("/");
         List<String> path = new ArrayList<String>();
@@ -38,9 +44,27 @@ public class SparkUtils {
         }
         return path;
     }
-    
+
     public static boolean isParam(String routePart) {
         return routePart.startsWith(":");
     }
- 
+
+    public Map<String, String> unpackPostBody(final String postBody) throws URLDecodingException
+    {
+        try
+        {
+            final Map<String, String> keyValuePairs = new HashMap<String, String>();
+
+            for (final String keyValuePair : StringUtils.split(URLDecoder.decode(postBody, "UTF-8"), "&"))
+            {
+                keyValuePairs.put(StringUtils.substringBefore(keyValuePair, "="), StringUtils.substringAfter(keyValuePair, "="));
+            }
+
+            return keyValuePairs;
+        }
+        catch (final UnsupportedEncodingException e)
+        {
+            throw new URLDecodingException("unable to parse request body: " + postBody);
+        }
+    }
 }
