@@ -12,7 +12,7 @@ public final class SparkUtilsTest
     private final SparkUtils sparkUtils = new SparkUtils();
 
     @Test
-    public void simpleUnpackPostBody() throws URLDecodingException
+    public void simpleUnpackPostBody() throws URLEncodingException
     {
         final Map<String, String> keyValuePairs = sparkUtils.unpackPostBody("abc=123&xyz=789");
 
@@ -21,7 +21,7 @@ public final class SparkUtilsTest
     }
 
     @Test
-    public void ensureEncodedBodyParametersDecoded() throws URLDecodingException
+    public void ensureEncodedBodyParametersDecoded() throws URLEncodingException
     {
         final Map<String, String> keyValuePairs = sparkUtils.unpackPostBody("abc=1%201&xyz=1%251");
 

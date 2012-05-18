@@ -49,7 +49,7 @@ public class SparkUtils {
         return routePart.startsWith(":");
     }
 
-    public Map<String, String> unpackPostBody(final String postBody) throws URLDecodingException
+    public Map<String, String> unpackPostBody(final String postBody) throws URLEncodingException
     {
         try
         {
@@ -64,7 +64,7 @@ public class SparkUtils {
         }
         catch (final UnsupportedEncodingException e)
         {
-            throw new URLDecodingException("unable to parse request body: " + postBody);
+            throw new URLEncodingException("unable to parse request body: " + postBody);
         }
     }
 }
