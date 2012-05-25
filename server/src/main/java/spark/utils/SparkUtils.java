@@ -16,14 +16,8 @@
  */
 package spark.utils;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Some utility methods
@@ -47,24 +41,5 @@ public class SparkUtils {
 
     public static boolean isParam(String routePart) {
         return routePart.startsWith(":");
-    }
-
-    public Map<String, String> unpackPostBody(final String postBody) throws URLEncodingException
-    {
-        try
-        {
-            final Map<String, String> keyValuePairs = new HashMap<String, String>();
-
-            for (final String keyValuePair : StringUtils.split(URLDecoder.decode(postBody, "UTF-8"), "&"))
-            {
-                keyValuePairs.put(StringUtils.substringBefore(keyValuePair, "="), StringUtils.substringAfter(keyValuePair, "="));
-            }
-
-            return keyValuePairs;
-        }
-        catch (final UnsupportedEncodingException e)
-        {
-            throw new URLEncodingException("unable to parse request body: " + postBody);
-        }
     }
 }

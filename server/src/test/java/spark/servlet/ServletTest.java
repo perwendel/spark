@@ -24,34 +24,34 @@ public class ServletTest {
     private static final String SOMEPATH = "/somepath";
     private static final int PORT = 9393;
     static final Server server = new Server();
-    
+
     static MyTestUtil testUtil;
-    
+
     @AfterClass
     public static void tearDown() {
         TAccess.clearRoutes();
         TAccess.stop();
     }
-    
+
     @BeforeClass
     public static void setup() {
 		testUtil = new MyTestUtil(PORT);
-		
+
 		SocketConnector connector = new SocketConnector();
-		
+
 		// Set some timeout options to make debugging easier.
 		connector.setMaxIdleTime(1000 * 60 * 60);
 		connector.setSoLingerTime(-1);
 		connector.setPort(PORT);
 		server.setConnectors(new Connector[] { connector });
-		
+
 		WebAppContext bb = new WebAppContext();
 		bb.setServer(server);
 		bb.setContextPath(SOMEPATH);
 		bb.setWar("src/test/webapp");
-		
+
 		server.setHandler(bb);
-		
+
 		new Thread(new Runnable() {
             @Override
             public void run() {
@@ -59,19 +59,19 @@ public class ServletTest {
                     System.out.println(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
                     server.start();
                     System.in.read();
-                    System.out.println(">>> STOPPING EMBEDDED JETTY SERVER"); 
+                    System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
                     server.stop();
                     server.join();
                 } catch (Exception e) {
                     e.printStackTrace();
                     System.exit(100);
-                }        
+                }
             }
         }).start();
-		
+
 		sleep(1000);
     }
-    
+
     @Test
     public void testGetHi() {
         try {
@@ -82,7 +82,7 @@ public class ServletTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testHiHead() {
         try {
@@ -93,7 +93,7 @@ public class ServletTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testGetHiAfterFilter() {
         try {
@@ -103,7 +103,7 @@ public class ServletTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testGetRoot() {
         try {
@@ -114,7 +114,7 @@ public class ServletTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testEchoParam1() {
         try {
@@ -155,7 +155,7 @@ public class ServletTest {
             throw e;
         }
     }
-    
+
     @Test
     public void testPost() {
         try {

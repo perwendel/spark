@@ -1,12 +1,12 @@
-package spark.utils;
+package com.aeells.spark.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-public final class RequestEncodingTransformer
+public final class RequestTransformer
 {
-    public String encode(final String param) throws URLEncodingException
+    public String encode(final String param) throws RequestTransformException
     {
         try
         {
@@ -14,11 +14,11 @@ public final class RequestEncodingTransformer
         }
         catch (final UnsupportedEncodingException e)
         {
-            throw new URLEncodingException("unable to encode request parameter: " + param);
+            throw new RequestTransformException("unable to encode request parameter: " + param);
         }
     }
 
-    public String decode(final String param) throws URLEncodingException
+    public String decode(final String param) throws RequestTransformException
     {
         try
         {
@@ -26,7 +26,7 @@ public final class RequestEncodingTransformer
         }
         catch (final UnsupportedEncodingException e)
         {
-            throw new URLEncodingException("unable to decode request parameter: " + param);
+            throw new RequestTransformException("unable to decode request parameter: " + param);
         }
     }
 }

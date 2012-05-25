@@ -1,4 +1,4 @@
-package spark.utils;
+package com.aeells.spark.utils;
 
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ public final class SparkUtilsTest
     private final SparkUtils sparkUtils = new SparkUtils();
 
     @Test
-    public void simpleUnpackPostBody() throws URLEncodingException
+    public void simpleUnpackPostBody() throws RequestTransformException
     {
         final Map<String, String> keyValuePairs = sparkUtils.unpackPostBody("abc=123&xyz=789");
 
@@ -21,7 +21,7 @@ public final class SparkUtilsTest
     }
 
     @Test
-    public void ensureEncodedBodyParametersDecoded() throws URLEncodingException
+    public void ensureEncodedBodyParametersDecoded() throws RequestTransformException
     {
         final Map<String, String> keyValuePairs = sparkUtils.unpackPostBody("abc=1%201&xyz=1%251");
 
