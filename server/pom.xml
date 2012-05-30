@@ -18,6 +18,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>com.yammer.metrics</groupId>
+            <artifactId>metrics-servlet</artifactId>
+            <version>${yammer-metrics.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.eclipse.jetty.aggregate</groupId>
             <artifactId>jetty-webapp</artifactId>
             <version>${jetty.version}</version>

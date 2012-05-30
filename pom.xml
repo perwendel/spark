@@ -24,6 +24,7 @@
         <resty.version>0.3.1</resty.version>
         <servlet-api.version>2.5</servlet-api.version>
         <springframework.version>3.0.5.RELEASE</springframework.version>
+        <yammer-metrics.version>2.1.2</yammer-metrics.version>
     </properties>
 
     <dependencies>
