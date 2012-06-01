@@ -53,6 +53,9 @@ public class Spark {
     private static SparkServer server;
     private static RouteMatcher routeMatcher;
     private static int port = 4567;
+    private static String staticResourceBase = "static";
+    private static String staticVirtualDirectory = "/static";
+    private static boolean allowDirectoryListings = false;
     
     /**
      * Set the port that Spark should listen on. If not called the default port is 4567.
@@ -65,6 +68,42 @@ public class Spark {
             throw new IllegalStateException("This must be done before route mapping has begun");
         }
         Spark.port = port;
+    }
+
+    /**
+     * Enable directory listings when serving static paths *
+     */
+    public synchronized static void enableDirectoryListings() {
+        allowDirectoryListings = true;
+    }
+
+    /**
+     * Disables the serving of static resources
+     */
+    public synchronized static void disableStaticResources() {
+        staticResourceBase = null;
+        staticVirtualDirectory = null;
+        allowDirectoryListings = false;
+    }
+
+    /**
+    * Set the virtual directory which will map to static resources
+    * 
+    * @param path
+    *            Base virtual directory
+    */
+    public synchronized static void setStaticVirtualDirectory(String path) {
+        staticVirtualDirectory = path;
+    }
+
+    /**
+    * Set the base directory where static resources will reside
+    * 
+    * @param path
+    *            Path to directory containing static resources
+    */
+    public synchronized static void setStaticResourceBase(String path) {
+        staticResourceBase = path;
     }
 
     /**
@@ -193,7 +232,8 @@ public class Spark {
             new Thread(new Runnable() {
 				@Override
                 public void run() {
-                    server = SparkServerFactory.create();
+                    server = SparkServerFactory.create(staticResourceBase, 
+                                 staticVirtualDirectory, allowDirectoryListings);
                     server.ignite(port);
                 }
             }).start();

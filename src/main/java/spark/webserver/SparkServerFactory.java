@@ -16,6 +16,12 @@
  */
 package spark.webserver;
 
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.resource.Resource;
+
 import spark.route.RouteMatcherFactory;
 
 /**
@@ -25,11 +31,44 @@ import spark.route.RouteMatcherFactory;
  */
 public class SparkServerFactory {
 
-    public static SparkServer create() {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false);
+    public static SparkServer create(String staticResourceBase,
+            String staticVirtualDirectory, boolean allowDirectoryListings) {
+        MatcherFilter matcherFilter = new MatcherFilter(
+                RouteMatcherFactory.get(), false);
         matcherFilter.init(null);
-        JettyHandler handler = new JettyHandler(matcherFilter);
-        return new SparkServerImpl(handler);
+        JettyHandler sparkHandler = new JettyHandler(matcherFilter);
+        if (staticVirtualDirectory != null && exists(staticResourceBase)) {
+            // Configure a handler for serving static files and merge it with
+            // the sparkHandler
+            HandlerList handlers = new HandlerList();
+            ServletContextHandler staticContextHandler = new ServletContextHandler(
+                    handlers, staticVirtualDirectory);
+            ServletHolder staticServlet = new ServletHolder(
+                    new DefaultServlet());
+            staticContextHandler.setErrorHandler(new StaticErrorHandler());
+            staticServlet.setInitParameter("dirAllowed",
+                    Boolean.valueOf(allowDirectoryListings).toString());
+            staticServlet.setInitParameter("resourceBase",
+                    getAbsoluteUrl(staticResourceBase));
+            staticContextHandler.addServlet(staticServlet, "/");
+            handlers.addHandler(staticContextHandler);
+            handlers.addHandler(sparkHandler);
+            return new SparkServerImpl(handlers);
+        }
+        return new SparkServerImpl(sparkHandler);
     }
-    
+
+    private static boolean exists(String staticResourceBase) {
+        try {
+            return Resource.newResource(getAbsoluteUrl(staticResourceBase))
+                .exists();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static String getAbsoluteUrl(String relativeUrl) {
+        return Thread.currentThread().getContextClassLoader()
+            .getResource(relativeUrl).toString();
+    }   
 }
