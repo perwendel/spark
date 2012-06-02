@@ -18,6 +18,7 @@ package spark.webserver;
 
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
@@ -31,7 +32,8 @@ import spark.route.RouteMatcherFactory;
 public class SparkServerFactory {
 
     public static SparkServer create(String staticResourceBase,
-            String staticVirtualDirectory, boolean allowDirectoryListings) {
+            String staticVirtualDirectory, boolean allowDirectoryListings,
+            String defaultCharset) {
         MatcherFilter matcherFilter = new MatcherFilter(
                 RouteMatcherFactory.get(), false);
         matcherFilter.init(null);
@@ -42,19 +44,21 @@ public class SparkServerFactory {
             HandlerList handlers = new HandlerList();
             ServletContextHandler staticContextHandler = new ServletContextHandler(
                     0);
-            staticContextHandler.setContextPath(staticVirtualDirectory);            
-            staticContextHandler.addServlet(DefaultServlet.class, "/");            
-            // Jetty was sending text files as ISO-8859-1 even when the file
-            // was encoded as utf-8, this is done to fix that.
-            staticContextHandler.addFilter(CharsetFilter.class, "/*", 1);
+            staticContextHandler.setContextPath(staticVirtualDirectory);
             ServletHolder staticServlet = new ServletHolder(
                     new DefaultServlet());
-            staticContextHandler.setErrorHandler(new StaticErrorHandler());
             staticServlet.setInitParameter("dirAllowed",
                     Boolean.valueOf(allowDirectoryListings).toString());
             staticServlet.setInitParameter("resourceBase",
                     getAbsoluteUrl(staticResourceBase));
             staticContextHandler.addServlet(staticServlet, "/");
+            if (defaultCharset != null)
+                // Jetty was sending text files as ISO-8859-1 even when the file
+                // was encoded as utf-8, this will force jetty to treat all
+                // static text files as having the 'defaultCharset' encoding
+                staticContextHandler.addFilter(new FilterHolder(
+                        new CharsetFilter(defaultCharset)), "/*", 1);
+            staticContextHandler.setErrorHandler(new StaticErrorHandler());
             handlers.addHandler(staticContextHandler);
             handlers.addHandler(sparkHandler);
             return new SparkServerImpl(handlers);

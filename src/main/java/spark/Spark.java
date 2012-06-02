@@ -23,7 +23,8 @@ import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
 /**
- * The main building block of a Spark application is a set of routes. A route is made up of three simple pieces:
+ * The main building block of a Spark application is a set of routes. A route is
+ * made up of three simple pieces:
  * 
  * <ul>
  * <li>A verb (get, post, put, delete, head, trace, connect, options)</li>
@@ -32,6 +33,7 @@ import spark.webserver.SparkServerFactory;
  * </ul>
  * 
  * Example:
+ * 
  * <pre>
  * {@code
  * Spark.get(new Route("/hello") {
@@ -39,8 +41,9 @@ import spark.webserver.SparkServerFactory;
  *       return "Hello World!";
  *    }
  * });
- * </pre> 
-  <code>
+ * </pre>
+ * 
+ * <code>
       
    </code>
  * 
@@ -56,16 +59,19 @@ public class Spark {
     private static String staticResourceBase = "static";
     private static String staticVirtualDirectory = "/static";
     private static boolean allowDirectoryListings = false;
-    
+    private static String defaultCharset = null;
+
     /**
-     * Set the port that Spark should listen on. If not called the default port is 4567.
-     * This has to be called before any route mapping is done.
+     * Set the port that Spark should listen on. If not called the default port
+     * is 4567. This has to be called before any route mapping is done.
      * 
-     * @param port The port number
+     * @param port
+     *            The port number
      */
     public synchronized static void setPort(int port) {
         if (initialized) {
-            throw new IllegalStateException("This must be done before route mapping has begun");
+            throw new IllegalStateException(
+                    "This must be done before route mapping has begun");
         }
         Spark.port = port;
     }
@@ -87,29 +93,41 @@ public class Spark {
     }
 
     /**
-    * Set the virtual directory which will map to static resources
-    * 
-    * @param path
-    *            Base virtual directory
-    */
+     * Set the virtual directory which will map to static resources
+     * 
+     * @param path
+     *            Base virtual directory
+     */
     public synchronized static void setStaticVirtualDirectory(String path) {
         staticVirtualDirectory = path;
     }
 
     /**
-    * Set the base directory where static resources will reside
-    * 
-    * @param path
-    *            Path to directory containing static resources
-    */
+     * Set the base directory where static resources will reside
+     * 
+     * @param path
+     *            Path to directory containing static resources
+     */
     public synchronized static void setStaticResourceBase(String path) {
         staticResourceBase = path;
     }
 
     /**
+     * Configures the server to send all static text files as having the
+     * specified encoding
+     * 
+     * @param charset
+     *            Path to directory containing static resources
+     */
+    public synchronized static void setDefaultCharset(String charset) {
+        defaultCharset = charset;
+    }
+
+    /**
      * Map the route for HTTP GET requests
      * 
-     * @param route The route
+     * @param route
+     *            The route
      */
     public static void get(Route route) {
         addRoute(HttpMethod.get.name(), route);
@@ -118,7 +136,8 @@ public class Spark {
     /**
      * Map the route for HTTP POST requests
      * 
-     * @param route The route
+     * @param route
+     *            The route
      */
     public static void post(Route route) {
         addRoute(HttpMethod.post.name(), route);
@@ -127,7 +146,8 @@ public class Spark {
     /**
      * Map the route for HTTP PUT requests
      * 
-     * @param route The route
+     * @param route
+     *            The route
      */
     public static void put(Route route) {
         addRoute(HttpMethod.put.name(), route);
@@ -136,7 +156,8 @@ public class Spark {
     /**
      * Map the route for HTTP DELETE requests
      * 
-     * @param route The route
+     * @param route
+     *            The route
      */
     public static void delete(Route route) {
         addRoute(HttpMethod.delete.name(), route);
@@ -145,7 +166,8 @@ public class Spark {
     /**
      * Map the route for HTTP HEAD requests
      * 
-     * @param route The route
+     * @param route
+     *            The route
      */
     public static void head(Route route) {
         addRoute(HttpMethod.head.name(), route);
@@ -154,7 +176,8 @@ public class Spark {
     /**
      * Map the route for HTTP TRACE requests
      * 
-     * @param route The route
+     * @param route
+     *            The route
      */
     public static void trace(Route route) {
         addRoute(HttpMethod.trace.name(), route);
@@ -163,47 +186,53 @@ public class Spark {
     /**
      * Map the route for HTTP CONNECT requests
      * 
-     * @param route The route
+     * @param route
+     *            The route
      */
     public static void connect(Route route) {
         addRoute(HttpMethod.connect.name(), route);
     }
-    
+
     /**
      * Map the route for HTTP OPTIONS requests
      * 
-     * @param route The route
+     * @param route
+     *            The route
      */
     public static void options(Route route) {
         addRoute(HttpMethod.options.name(), route);
     }
-    
+
     /**
      * Maps a filter to be executed before any matching routes
      * 
-     * @param filter The filter
+     * @param filter
+     *            The filter
      */
     public static void before(Filter filter) {
         addFilter(HttpMethod.before.name(), filter);
     }
-    
+
     /**
      * Maps a filter to be executed after any matching routes
      * 
-     * @param filter The filter
+     * @param filter
+     *            The filter
      */
     public static void after(Filter filter) {
         addFilter(HttpMethod.after.name(), filter);
     }
-    
+
     private static void addRoute(String httpMethod, Route route) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route);
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
+                + "'", route);
     }
-    
+
     private static void addFilter(String httpMethod, Filter filter) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter);
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
+                + "'", filter);
     }
 
     synchronized static void runFromServlet() {
@@ -212,68 +241,64 @@ public class Spark {
             initialized = true;
         }
     }
-    
+
     // WARNING, used for jUnit testing only!!!
     synchronized static void clearRoutes() {
         routeMatcher.clearRoutes();
     }
-    
+
     // Used for jUnit testing!
     synchronized static void stop() {
-    	if (server != null) {
-    		server.stop();
-    	}
-    	initialized = false;
+        if (server != null) {
+            server.stop();
+        }
+        initialized = false;
     }
-    
+
     private synchronized static final void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             new Thread(new Runnable() {
-				@Override
+                @Override
                 public void run() {
-                    server = SparkServerFactory.create(staticResourceBase, 
-                                 staticVirtualDirectory, allowDirectoryListings);
+                    server = SparkServerFactory.create(staticResourceBase,
+                            staticVirtualDirectory, allowDirectoryListings,
+                            defaultCharset);
                     server.ignite(port);
                 }
             }).start();
             initialized = true;
         }
     }
-    
+
     /*
      * TODO: discover new TODOs.
      * 
      * 
-     * TODO: Make available as maven dependency, upload on repo etc...
-     * TODO: Add *, splat possibility
-     * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static, ONGOING
+     * TODO: Make available as maven dependency, upload on repo etc... TODO: Add
+     * *, splat possibility TODO: Add validation of routes, invalid characters
+     * and stuff, also validate parameters, check static, ONGOING
      * 
      * TODO: Javadoc
      * 
-     * TODO: Create maven archetype, "ONGOING"
-     * TODO: Add cache-control helpers
+     * TODO: Create maven archetype, "ONGOING" TODO: Add cache-control helpers
      * 
-     * advanced TODO list:
-     * TODO: sessions? (use session servlet context?)
-     * TODO: Add regexp URIs
+     * advanced TODO list: TODO: sessions? (use session servlet context?) TODO:
+     * Add regexp URIs
      * 
      * Ongoing
      * 
-     * Done
-     * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ???
-     * TODO: Before method for filters...check sinatra page
-     * TODO: Setting Headers
-     * TODO: Do we want get-prefixes for all *getters* or do we want a more ruby like approach??? (Maybe have two choices?)
-     * TODO: Setting Body, Status Code
-     * TODO: Add possibility to set content type on return, DONE
-     * TODO: Add possibility to access HttpServletContext in method impl, DONE
-     * TODO: Redirect func in web context, DONE
-     * TODO: Refactor, extract interfaces, DONE
-     * TODO: Figure out a nice name, DONE - SPARK
-     * TODO: Add /uri/{param} possibility, DONE
-     * TODO: Tweak log4j config, DONE
-     * TODO: Query string in web context, DONE
-     * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc, AND headers, DONE
+     * Done TODO: Routes are matched in the order they are defined. The rirst
+     * route that matches the request is invoked. ??? TODO: Before method for
+     * filters...check sinatra page TODO: Setting Headers TODO: Do we want
+     * get-prefixes for all *getters* or do we want a more ruby like approach???
+     * (Maybe have two choices?) TODO: Setting Body, Status Code TODO: Add
+     * possibility to set content type on return, DONE TODO: Add possibility to
+     * access HttpServletContext in method impl, DONE TODO: Redirect func in web
+     * context, DONE TODO: Refactor, extract interfaces, DONE TODO: Figure out a
+     * nice name, DONE - SPARK TODO: Add /uri/{param} possibility, DONE TODO:
+     * Tweak log4j config, DONE TODO: Query string in web context, DONE TODO:
+     * Add URI-param fetching from webcontext ie. ?param=value&param2=...etc,
+     * AND headers, DONE
      */
 }

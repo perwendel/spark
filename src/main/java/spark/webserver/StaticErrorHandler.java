@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.eclipse.jetty.server.handler.ErrorHandler;
 
-public class StaticErrorHandler extends ErrorHandler {
+class StaticErrorHandler extends ErrorHandler {
 
     private static final String FORBIDDEN = "<html><body><h2>403 Forbidden</h2>You don't have permission to access this resource</body></html>";
     private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>Spark could not find the requested file</body></html>";

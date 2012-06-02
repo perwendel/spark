@@ -12,20 +12,33 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-public class CharsetFilter implements Filter {
+/**
+ * Workaround for <a
+ * href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=347090">this bug</a>
+ * 
+ */
+class CharsetFilter implements Filter {
 
     /** The logger. */
     private org.slf4j.Logger LOG = org.slf4j.LoggerFactory
             .getLogger(getClass());
 
-    private static final String defaultCharset = "utf-8";
-    private Set<String> textfileExtensions;
+    private String defaultCharset;
+    private Set<String> filenameExtensions;
+
+    public CharsetFilter(String charset) {
+        assert charset != null;
+        defaultCharset = charset;
+        filenameExtensions = new HashSet<String>();
+        filenameExtensions.add(".css");
+        filenameExtensions.add(".js");
+        filenameExtensions.add(".html");
+        filenameExtensions.add(".htm");
+        filenameExtensions.add(".xml");
+    }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        textfileExtensions = new HashSet<String>();
-        textfileExtensions.add(".css");
-        textfileExtensions.add(".js");
     }
 
     @Override
@@ -35,8 +48,9 @@ public class CharsetFilter implements Filter {
                 .toLowerCase();
         int extIndex = requestUri.lastIndexOf('.');
         if (extIndex != -1
-                && textfileExtensions.contains(requestUri.substring(extIndex))) {
-            LOG.debug("Setting character encoding to " + defaultCharset);
+                && filenameExtensions.contains(requestUri.substring(extIndex))) {
+            LOG.debug(String.format("Forcing character encoding of '%s' to %s",
+                    requestUri, defaultCharset));
             response.setCharacterEncoding(defaultCharset);
         }
         chain.doFilter(request, response);
@@ -44,6 +58,5 @@ public class CharsetFilter implements Filter {
 
     @Override
     public void destroy() {
-
     }
 }
