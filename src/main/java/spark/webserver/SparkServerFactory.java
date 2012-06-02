@@ -26,7 +26,6 @@ import spark.route.RouteMatcherFactory;
 
 /**
  * 
- *
  * @author Per Wendel
  */
 public class SparkServerFactory {
@@ -42,7 +41,12 @@ public class SparkServerFactory {
             // the sparkHandler
             HandlerList handlers = new HandlerList();
             ServletContextHandler staticContextHandler = new ServletContextHandler(
-                    handlers, staticVirtualDirectory);
+                    0);
+            staticContextHandler.setContextPath(staticVirtualDirectory);            
+            staticContextHandler.addServlet(DefaultServlet.class, "/");            
+            // Jetty was sending text files as ISO-8859-1 even when the file
+            // was encoded as utf-8, this is done to fix that.
+            staticContextHandler.addFilter(CharsetFilter.class, "/*", 1);
             ServletHolder staticServlet = new ServletHolder(
                     new DefaultServlet());
             staticContextHandler.setErrorHandler(new StaticErrorHandler());
@@ -61,7 +65,7 @@ public class SparkServerFactory {
     private static boolean exists(String staticResourceBase) {
         try {
             return Resource.newResource(getAbsoluteUrl(staticResourceBase))
-                .exists();
+                    .exists();
         } catch (Exception e) {
             return false;
         }
@@ -69,6 +73,6 @@ public class SparkServerFactory {
 
     private static String getAbsoluteUrl(String relativeUrl) {
         return Thread.currentThread().getContextClassLoader()
-            .getResource(relativeUrl).toString();
-    }   
+                .getResource(relativeUrl).toString();
+    }
 }
