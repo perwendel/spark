@@ -47,6 +47,7 @@ public class MatcherFilter implements Filter {
 
     private RouteMatcher routeMatcher;
     private boolean isServletContext;
+    private String defaultCharset;
 
     /** The logger. */
     private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(getClass());
@@ -57,9 +58,10 @@ public class MatcherFilter implements Filter {
      * @param routeMatcher The route matcher
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      */
-    public MatcherFilter(RouteMatcher routeMatcher, boolean isServletContext) {
+    public MatcherFilter(RouteMatcher routeMatcher, boolean isServletContext, String charset) {
         this.routeMatcher = routeMatcher;
         this.isServletContext = isServletContext;
+        this.defaultCharset = charset;
     }
 
     public void init(FilterConfig filterConfig) {
@@ -188,8 +190,9 @@ public class MatcherFilter implements Filter {
         }
 
         if (consumed) {
+            httpResponse.setCharacterEncoding(defaultCharset);
             // Write body content
-            httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+            httpResponse.getOutputStream().write(bodyContent.getBytes(defaultCharset));
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
         }

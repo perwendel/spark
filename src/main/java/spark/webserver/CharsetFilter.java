@@ -26,8 +26,7 @@ class CharsetFilter implements Filter {
     private String defaultCharset;
     private Set<String> filenameExtensions;
 
-    public CharsetFilter(String charset) {
-        assert charset != null;
+    public CharsetFilter(String charset) {        
         defaultCharset = charset;
         filenameExtensions = new HashSet<String>();
         filenameExtensions.add(".css");

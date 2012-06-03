@@ -16,6 +16,8 @@
  */
 package spark;
 
+import java.nio.charset.Charset;
+
 import spark.route.HttpMethod;
 import spark.route.RouteMatcher;
 import spark.route.RouteMatcherFactory;
@@ -59,7 +61,7 @@ public class Spark {
     private static String staticResourceBase = "static";
     private static String staticVirtualDirectory = "/static";
     private static boolean allowDirectoryListings = false;
-    private static String defaultCharset = null;
+    private static String defaultCharset = "utf-8";
 
     /**
      * Set the port that Spark should listen on. If not called the default port
@@ -113,13 +115,14 @@ public class Spark {
     }
 
     /**
-     * Configures the server to send all static text files as having the
-     * specified encoding
+     * Configures the server to send all text responses as having the specified
+     * encoding
      * 
      * @param charset
      *            Path to directory containing static resources
      */
-    public synchronized static void setDefaultCharset(String charset) {
+    public synchronized static void setDefaultCharset(String charset) {      
+        Charset.forName(charset);
         defaultCharset = charset;
     }
 

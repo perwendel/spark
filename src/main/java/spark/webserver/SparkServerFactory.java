@@ -35,7 +35,7 @@ public class SparkServerFactory {
             String staticVirtualDirectory, boolean allowDirectoryListings,
             String defaultCharset) {
         MatcherFilter matcherFilter = new MatcherFilter(
-                RouteMatcherFactory.get(), false);
+                RouteMatcherFactory.get(), false, defaultCharset);
         matcherFilter.init(null);
         JettyHandler sparkHandler = new JettyHandler(matcherFilter);
         if (staticVirtualDirectory != null && exists(staticResourceBase)) {
@@ -52,12 +52,11 @@ public class SparkServerFactory {
             staticServlet.setInitParameter("resourceBase",
                     getAbsoluteUrl(staticResourceBase));
             staticContextHandler.addServlet(staticServlet, "/");
-            if (defaultCharset != null)
-                // Jetty was sending text files as ISO-8859-1 even when the file
-                // was encoded as utf-8, this will force jetty to treat all
-                // static text files as having the 'defaultCharset' encoding
-                staticContextHandler.addFilter(new FilterHolder(
-                        new CharsetFilter(defaultCharset)), "/*", 1);
+            // Jetty was sending text files as ISO-8859-1 even when the file
+            // was encoded as utf-8, this will force jetty to treat all
+            // static text files as having the 'defaultCharset' encoding
+            staticContextHandler.addFilter(new FilterHolder(new CharsetFilter(
+                    defaultCharset)), "/*", 1);
             staticContextHandler.setErrorHandler(new StaticErrorHandler());
             handlers.addHandler(staticContextHandler);
             handlers.addHandler(sparkHandler);
