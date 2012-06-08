@@ -1,3 +1,13 @@
+/*
+ ---
+
+ name: Metrics-Skin
+
+ description: custom theme/skin
+
+ ...
+ */
+
 Highcharts.setOptions({
     global: {
         useUTC: false

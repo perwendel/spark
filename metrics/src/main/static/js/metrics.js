@@ -1,4 +1,29 @@
-(function() {
+/*
+ ---
+
+ name: Metrics
+
+ description: provides an example interface for spark and HighCharts
+
+ authors: Dimitar Christoff, QMetric Group Ltd.
+
+ license: MIT-style license.
+
+ version: 1.08
+
+ requires:
+ - Core/String
+ - Core/Event
+ - Core/Element
+ - Core/Array
+ - Core/Class
+ - Core/Request
+
+ provides: Metrics
+
+ ...
+ */
+;(function() {
 
 	var Metrics = this.Metrics = new Class({
 	

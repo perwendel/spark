@@ -1,14 +1,32 @@
-canvas.metrics {
-    margin: 5px;
-    border: 1px solid #000;
+body {
+    background-color: #9FAAB7;
+    color: #9FAAB7;
+    text-shadow: 1px 1px 0 #272C30;
+    font-family: "Helvetica Neue",Helvetica,"Droid Sans",sans-serif;
 }
-div.canvas {
-    width: 330px;
+div.metrics {
+    width: 600px;
     float: left;
+    margin: 5px;
 }
 
-div.canvas div.label {
-    font-family: arial;
-    font-size: 10px;
-
+div.warning {
+    width: 590px;
+    margin: 5px;
+    padding: 10px;
+    background-image: linear-gradient(left center , #272C30, #3E454C);
+    background-image: -moz-linear-gradient(left center , #272C30, #3E454C);
+    border-radius: 3px 3px 3px 3px;
+    background: -webkit-linear-gradient(left center , #272C30, #3E454C) no-repeat center #F5FBFF;
+    background: -o-linear-gradient(left center , #272C30, #3E454C) no-repeat center #F5FBFF;
+    background: -ms-linear-gradient(left center , #272C30, #3E454C) no-repeat center #F5FBFF;
+    color: #ffffaf;
+    font-size: 12px;
 }
+
+div.warning a {
+    color: yellow;
+}
+
+
+
