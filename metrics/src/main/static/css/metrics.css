@@ -14,12 +14,13 @@ div.warning {
     width: 590px;
     margin: 5px;
     padding: 10px;
+    background-color: #272C30;
     background-image: linear-gradient(left center , #272C30, #3E454C);
     background-image: -moz-linear-gradient(left center , #272C30, #3E454C);
+    background-image: -webkit-gradient(left center , #272C30, #3E454C);
+    background-image: -ms-linear-gradient(left center , #272C30, #3E454C);
+    background-image: -o-linear-gradient(left center , #272C30, #3E454C);
     border-radius: 3px 3px 3px 3px;
-    background: -webkit-linear-gradient(left center , #272C30, #3E454C) no-repeat center #F5FBFF;
-    background: -o-linear-gradient(left center , #272C30, #3E454C) no-repeat center #F5FBFF;
-    background: -ms-linear-gradient(left center , #272C30, #3E454C) no-repeat center #F5FBFF;
     color: #ffffaf;
     font-size: 12px;
 }
