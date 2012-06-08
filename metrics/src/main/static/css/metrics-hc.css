@@ -1,0 +1,16 @@
+body {
+    background: #666;
+    color: white;
+    text-shadow: 1px 1px 1px #000;
+}
+div.metrics {
+    width: 600px;
+    float: left;
+    margin: 5px;
+}
+
+div.canvas div.label {
+    font-family: arial;
+    font-size: 10px;
+
+}

@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.aeells.spark</groupId>
-    <artifactId>server</artifactId>
+    <artifactId>metrics</artifactId>
     <packaging>jar</packaging>
     <version>1.1.1-SNAPSHOT</version>
 
-    <name>server</name>
+    <name>metrics</name>
 
     <parent>
         <groupId>com.aeells</groupId>
@@ -18,36 +18,31 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.yammer.metrics</groupId>
-            <artifactId>metrics-servlet</artifactId>
-            <version>${yammer-metrics.version}</version>
+            <groupId>com.aeells.spark</groupId>
+            <artifactId>server</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-webapp</artifactId>
-            <version>${jetty.version}</version>
+            <groupId>com.aeells.spark</groupId>
+            <artifactId>utils</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.mortbay.jetty</groupId>
-            <artifactId>jsp-2.1-glassfish</artifactId>
-            <version>2.1.v20091210</version>
-            <scope>provided</scope>
-        </dependency>
+        <!-- test scoped dependencies -->
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

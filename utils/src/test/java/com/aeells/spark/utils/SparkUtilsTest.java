@@ -1,11 +1,14 @@
 package com.aeells.spark.utils;
 
 import org.junit.Test;
+import spark.Response;
 
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public final class SparkUtilsTest
 {
@@ -27,5 +30,15 @@ public final class SparkUtilsTest
 
         assertThat(keyValuePairs.get("abc"), equalTo("1 1"));
         assertThat(keyValuePairs.get("xyz"), equalTo("1%1"));
+    }
+
+    @Test
+    public void makeJsonResponseType()
+    {
+        final Response response = mock(Response.class);
+
+        sparkUtils.makeJsonResponseType(response);
+
+        verify(response).type("application/json; charset=utf-8");
     }
 }

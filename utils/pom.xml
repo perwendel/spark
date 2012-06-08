@@ -18,6 +18,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>com.aeells.spark</groupId>
+            <artifactId>server</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang.version}</version>

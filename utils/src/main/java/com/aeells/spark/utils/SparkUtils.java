@@ -1,6 +1,7 @@
 package com.aeells.spark.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import spark.Response;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -26,5 +27,10 @@ public final class SparkUtils
         {
             throw new RequestTransformException("unable to parse request body: " + postBody);
         }
+    }
+
+    public void makeJsonResponseType(final Response response)
+    {
+        response.type("application/json; charset=utf-8");
     }
 }

@@ -1,0 +1,14 @@
+canvas.metrics {
+    margin: 5px;
+    border: 1px solid #000;
+}
+div.canvas {
+    width: 330px;
+    float: left;
+}
+
+div.canvas div.label {
+    font-family: arial;
+    font-size: 10px;
+
+}

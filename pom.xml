@@ -10,6 +10,7 @@
     <url>http://www.sparkjava.com</url>
 
     <modules>
+        <module>metrics</module>
         <module>server</module>
         <module>utils</module>
     </modules>
@@ -23,6 +24,7 @@
         <mockito.version>1.8.5</mockito.version>
         <resty.version>0.3.1</resty.version>
         <servlet-api.version>2.5</servlet-api.version>
+        <slf4j.version>1.6.4</slf4j.version>
         <springframework.version>3.0.5.RELEASE</springframework.version>
         <yammer-metrics.version>2.1.2</yammer-metrics.version>
     </properties>
@@ -44,6 +46,13 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
             <version>${hamcrest.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
