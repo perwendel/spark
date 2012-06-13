@@ -19,7 +19,14 @@ package spark.webserver;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.session.HashSessionIdManager;
+import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
+
+import javax.servlet.ServletContext;
 
 /**
  * Spark server implementation
@@ -57,7 +64,19 @@ class SparkServerImpl implements SparkServer {
         connector.setPort(port);
         server.setConnectors(new Connector[] {connector});
 
-        server.setHandler(handler);
+        ContextHandler context = new ContextHandler();
+        context.setContextPath("/");
+        final ServletContext servletContext = context.getServletContext();
+        server.setHandler(context);
+
+        SessionHandler sessionHandler = new SessionHandler();
+        SessionManager sessionManager = new HashSessionManager();
+        sessionManager.setIdManager(new HashSessionIdManager());
+        sessionHandler.setSessionManager(sessionManager);
+        sessionHandler.setHandler(handler);
+
+        context.setHandler(handler);
+        server.setHandler(sessionHandler);
 
         try {
             System.out.println("== " + NAME + " has ignited ...");

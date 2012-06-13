@@ -26,11 +26,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.utils.IOUtils;
 import spark.utils.SparkUtils;
+import spark.webserver.RequestWrapper;
 
 /**
  * Provides information about the HTTP request
@@ -274,7 +276,22 @@ public class Request {
     public HttpServletRequest raw() {
         return servletRequest;
     }
-    
+
+    public Session session() {
+        HttpServletRequest servletRequest = raw();
+
+        if (servletRequest == null) {
+            servletRequest = ((RequestWrapper) this).getDelegate().raw();
+        }
+
+        HttpSession session = null;
+        session = servletRequest.getSession();
+        if (session == null) {
+            session = servletRequest.getSession(true);
+        }
+        return new Session(session);
+    }
+
     private final Map<String, String> setParams(RouteMatch match) {
         LOG.debug("set params for requestUri: "
                         + match.getRequestUri()
