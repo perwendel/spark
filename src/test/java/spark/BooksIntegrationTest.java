@@ -88,6 +88,9 @@ public class BooksIntegrationTest {
    @Test
    public void testGetBook() {
       try {
+		 // ensure there is a book
+		 testCreateBook();
+		 
          UrlResponse response = doMethod("GET", "/books/" + id, null);
          String result = response.body;
          Assert.assertNotNull(response);
@@ -99,6 +102,9 @@ public class BooksIntegrationTest {
          // verify response header set by filters:
          Assert.assertTrue(response.headers.get("FOZ").get(0).equals("BAZ"));
          Assert.assertTrue(response.headers.get("FOO").get(0).equals("BAR"));
+		 
+		 // delete the book again
+		 testDeleteBook();
       } catch (Throwable e) {
          throw new RuntimeException(e);
       }
