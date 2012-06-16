@@ -16,14 +16,7 @@
  */
 package spark;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -297,6 +290,24 @@ public class Request {
             }
         }
         return Collections.unmodifiableMap(params);
+    }
+    
+    private QueryParamsMap queryMap;
+
+    public QueryParamsMap queryMap() {
+        initQueryMap();
+        
+        return queryMap;
+    }
+    
+    public QueryParamsMap queryMap(String key) {
+        return queryMap().queryMap(key);
+    }
+
+    private void initQueryMap() {
+        if (queryMap == null) {
+            queryMap = new QueryParamsMap(servletRequest.getParameterMap());
+        }
     }
     
 }
