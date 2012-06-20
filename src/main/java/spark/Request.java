@@ -37,6 +37,7 @@ public class Request {
     private static final String USER_AGENT = "user-agent";
     
     private Map<String, String> params;
+    private QueryParamsMap queryMap;
     
     private HttpMethod httpMethod;
     private HttpServletRequest servletRequest;
@@ -292,8 +293,6 @@ public class Request {
         return Collections.unmodifiableMap(params);
     }
     
-    private QueryParamsMap queryMap;
-
     public QueryParamsMap queryMap() {
         initQueryMap();
         
@@ -301,12 +300,12 @@ public class Request {
     }
     
     public QueryParamsMap queryMap(String key) {
-        return queryMap().queryMap(key);
+        return queryMap().get(key);
     }
 
     private void initQueryMap() {
         if (queryMap == null) {
-            queryMap = new QueryParamsMap(servletRequest.getParameterMap());
+            queryMap = new QueryParamsMap(raw());
         }
     }
     
