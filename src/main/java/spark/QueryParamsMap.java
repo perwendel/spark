@@ -2,6 +2,7 @@ package spark;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
  * 
  * <br><br>
  * 
- * It is null safe, meaning that if a key does not exist, it does not throw <code>NullPointerExcetpion</code>, it just returns <code>null</code>
+ * It is null safe, meaning that if a key does not exist, it does not throw <code>NullPointerExcetpion</code>, it just returns <code>null</code>.
  * @author fddayan
  *
  */
@@ -40,9 +41,16 @@ public class QueryParamsMap {
     
     private static QueryParamsMap NULL = new NullQueryParamsMap();
 
+    /** Holds the nested keys */
     protected Map<String,QueryParamsMap> queryMap = new HashMap<String,QueryParamsMap>();
+    
+    /** Value(s) for this key */
     protected String[] values;
+    
+    /** Name of this key */
     protected String name;
+    
+    private Pattern p = Pattern.compile("\\A[\\[\\]]*([^\\[\\]]+)\\]*");
 
     /**
      * Creates a new QueryParamsMap from and HttpServletRequest.
@@ -55,12 +63,12 @@ public class QueryParamsMap {
      */
     public QueryParamsMap(HttpServletRequest request) {
         if (request == null) throw new IllegalArgumentException("HttpServletRequest cannot be null.");
-        load(request.getParameterMap());
+        loadQueryString(request.getParameterMap());
     }
 
     
     //Just for testing
-    QueryParamsMap() {
+    protected QueryParamsMap() {
     }
 
     protected QueryParamsMap(String name){
@@ -76,56 +84,88 @@ public class QueryParamsMap {
      * @param values
      */
     protected QueryParamsMap(String key, String...values) {
-        keyToMap(this,key,values);
+        loadKeys(key,values);
     }
 
     protected QueryParamsMap(Map<String,String[]> params) {
-        load(params);
+        loadQueryString(params);
     }
 
-    private void load(Map<String, String[]> params) {
+    protected void loadQueryString(Map<String, String[]> params) {
         for (Map.Entry<String,String[]> param : params.entrySet()) {
-            keyToMap(this,param.getKey(),param.getValue());
+            loadKeys(param.getKey(),param.getValue());
         }
     }
-
-    protected void keyToMap(QueryParamsMap queryMap,String key,String[] value) {
+    
+    protected void loadKeys(String key, String[] value) {
         String[] parsed = parseKey(key);
+        
+        if (parsed == null) return;
 
-        if (!queryMap.queryMap.containsKey(parsed[0]))
-            queryMap.queryMap.put(parsed[0],new QueryParamsMap(parsed[0]));
+        if (!queryMap.containsKey(parsed[0]))
+            queryMap.put(parsed[0],new QueryParamsMap(parsed[0]));
 
         if (!parsed[1].isEmpty())
-            keyToMap(queryMap.queryMap.get(parsed[0]),parsed[1],value);
+            queryMap.get(parsed[0]).loadKeys(parsed[1],value);
         else
-            queryMap.queryMap.get(parsed[0]).values = value; 
+            queryMap.get(parsed[0]).values = value; 
     }
 
     protected String[] parseKey(String key) {
-        Pattern p = Pattern.compile("\\A[\\[\\]]*([^\\[\\]]+)\\]*");
         Matcher m = p.matcher(key);
 
         if (m.find())
-            return new String[] {clean(m.group()),key.substring(m.end())};
+            return new String[] {cleanKey(m.group()),key.substring(m.end())};
         else
             return null;
     }
 
-    protected String clean(String group) {
+    protected String cleanKey(String group) {
         if (group.startsWith("["))
             return group.substring(1,group.length()-1);
         else 
             return group;
     }
 
-    public QueryParamsMap get(String key) {
-        if (queryMap.containsKey(key)) {
-            return queryMap.get(key);
-        } else {
-            return NULL;
+    /**
+     * Retruns and element fro the specified key.
+     * <br>
+     * For querystring: <br><br>
+     * <code>
+     * user[name]=fede
+     * <br>
+     * <br>
+     * get("user").get("name").value() #  fede
+     * <br>
+     * or
+     * <br>
+     * get("user","name").value() #  fede
+     * 
+     * </code>
+     * 
+     * @param key The paramater nested key
+     * @return
+     */
+    public QueryParamsMap get(String...keys) {
+        QueryParamsMap ret = this;
+        for (String key : keys) {
+            if (ret.queryMap.containsKey(key)) {
+                ret = ret.queryMap.get(key);
+            } else {
+                ret = NULL;
+            }            
         }
+        
+        return ret;
     }
 
+    /**
+     * Returns the value for this key.
+     * <br>
+     * If this key has nested elements and does not have a value returns null.
+     * 
+     * @return
+     */
     public String value() {
         if (hasValue())
             return values[0];
@@ -133,11 +173,20 @@ public class QueryParamsMap {
             return null;
     }
 
-    public String value(String key) {
-        if (queryMap.containsKey(key))
-            return queryMap.get(key).value();
-        else
-            return null;
+    /**
+     * Returns the value for that key.
+     * <br>
+     * 
+     * It is a shortcut for: <br><br>
+     * <code>
+     * get("user").get("name").value()
+     * get("user").value("name")
+     * </code>
+     * @param key
+     * @return
+     */
+    public String value(String...keys) {
+        return get(keys).value();
     }
     
     public boolean hasKeys() {
@@ -176,6 +225,16 @@ public class QueryParamsMap {
         public NullQueryParamsMap() {
             super("null");
         } 
+    }
+
+    public Map<String, String[]> toMap() {
+        Map<String,String[]> map = new HashMap<String,String[]>();
+        
+        for (Entry<String, QueryParamsMap> key : this.queryMap.entrySet()) {
+            map.put(key.getKey(),key.getValue().values);
+        }
+        
+        return map;
     }
 }
 

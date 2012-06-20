@@ -20,14 +20,15 @@ public class QueryParamsMapTest {
         QueryParamsMap queryMap = new QueryParamsMap(params);
         
         assertEquals("fede",queryMap.get("user").get("info").get("name").value());
+        assertEquals("fede",queryMap.get("user","info","name").value());
     }
     
     @Test
     public void keyToMap() {
         QueryParamsMap queryMap = new QueryParamsMap();
         
-        queryMap.keyToMap(queryMap,"user[info][first_name]",new String[] {"federico"});
-        queryMap.keyToMap(queryMap,"user[info][last_name]",new String[] {"dayan"});
+        queryMap.loadKeys("user[info][first_name]",new String[] {"federico"});
+        queryMap.loadKeys("user[info][last_name]",new String[] {"dayan"});
 
         assertFalse(queryMap.queryMap.isEmpty());
         assertFalse(queryMap.queryMap.get("user").queryMap.isEmpty());
@@ -44,8 +45,8 @@ public class QueryParamsMapTest {
     public void testDifferentTypesForValue() {
         QueryParamsMap queryMap = new QueryParamsMap();
         
-        queryMap.keyToMap(queryMap,"user[age]",new String[] {"10"});
-        queryMap.keyToMap(queryMap,"user[agrees]",new String[] {"true"});
+        queryMap.loadKeys("user[age]",new String[] {"10"});
+        queryMap.loadKeys("user[agrees]",new String[] {"true"});
 
         assertEquals(new Integer(10),queryMap.get("user").get("age").integerValue());
         assertEquals(new Float(10),queryMap.get("user").get("age").floatValue());
@@ -97,7 +98,20 @@ public class QueryParamsMapTest {
     }
     
     @Test
-    public void testDecode() {
-        //text=Hello+G%FCnter
+    public void testToMap() {
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        
+        params.put("user[info][name]",new String[] {"fede"});
+        params.put("user[info][last]",new String[] {"dayan"});
+        
+        QueryParamsMap queryMap = new QueryParamsMap(params);
+        
+        Map<String,String[]> map = queryMap.get("user","info").toMap();
+        
+        assertEquals(2,map.size());
+        assertEquals("fede",map.get("name")[0]);
+        assertEquals("dayan",map.get("last")[0]);
     }
+    
+    
 }
