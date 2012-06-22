@@ -17,7 +17,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import spark.route.HttpMethod;
@@ -31,9 +30,9 @@ public class RequestTest {
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {
-        Map<String,String> params = new HashMap<String,String>();
+        Map<String,String[]> params = new HashMap<String,String[]>();
         
-        params.put("name","Federico");
+        params.put("name",new String[] {"Federico"});
         
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
         
@@ -46,9 +45,9 @@ public class RequestTest {
     
     @Test
     public void queryParamShouldBeParsedAsHashMap() {
-        Map<String,String> params = new HashMap<String,String>();
+        Map<String,String[]> params = new HashMap<String,String[]>();
         
-        params.put("user[name]","Federico");
+        params.put("user[name]",new String[] {"Federico"});
         
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
         
@@ -63,9 +62,9 @@ public class RequestTest {
     
     public static class MockedHttpServletRequest implements HttpServletRequest {
 
-        private Map<String, String> params;
+        private Map params;
 
-        public MockedHttpServletRequest(Map<String, String> params) {
+        public MockedHttpServletRequest(Map params) {
             this.params = params;
         }
 
@@ -265,7 +264,7 @@ public class RequestTest {
 
         @Override
         public String getParameter(String name) {
-            return this.params.get(name);
+            return ((String[])this.params.get(name))[0];
         }
 
         @Override
