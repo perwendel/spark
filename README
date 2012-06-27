@@ -1,7 +1,7 @@
 mods [aeells]:
-case-sensitive URL's - pull request also made to per wendel parent project
-addition on codahale metrics servlets
-released from SNAPSHOT
+case-sensitive URL's - pull request also made to per wendel's parent project - https://github.com/perwendel/spark/pull/17
+addition of codahale metrics servlets - http://metrics.codahale.com/
+project released from SNAPSHOT so it can be used as a dependency by maven
 
 
 Spark - a Sinatra inspired micro web framework
