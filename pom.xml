@@ -1,97 +1,80 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>spark</groupId>
-	<artifactId>spark</artifactId>
-	<packaging>jar</packaging>
-	<version>0.9.9.3-SNAPSHOT</version>
-	<name>Spark</name>
-	<url>http://www.sparkjava.com</url>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<properties>
-		<jetty.version>7.3.0.v20110203</jetty.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <modelVersion>4.0.0</modelVersion>
 
-	<dependencies>
-		<!-- LOGGING DEPENDENCIES - LOG4J -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
-		</dependency>
+    <groupId>com.aeells</groupId>
+    <artifactId>spark</artifactId>
+    <packaging>pom</packaging>
+    <version>1.1.2-SNAPSHOT</version>
+    <name>spark</name>
+    <url>http://www.sparkjava.com</url>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.6.4</version>
-            <scope>provided</scope>
-		</dependency>
+    <modules>
+        <module>metrics</module>
+        <module>server</module>
+        <module>utils</module>
+    </modules>
 
-		<dependency>
-			<groupId>org.eclipse.jetty.aggregate</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>${jetty.version}</version>
-		</dependency>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<!-- JUNIT DEPENDENCY FOR TESTING -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+        <commons-lang.version>3.1</commons-lang.version>
+        <hamcrest.version>1.1</hamcrest.version>
+        <jetty.version>7.3.0.v20110203</jetty.version>
+        <mockito.version>1.8.5</mockito.version>
+        <resty.version>0.3.1</resty.version>
+        <servlet-api.version>2.5</servlet-api.version>
+        <slf4j.version>1.6.4</slf4j.version>
+        <springframework.version>3.0.5.RELEASE</springframework.version>
+        <yammer-metrics.version>2.1.2</yammer-metrics.version>
+    </properties>
 
-	<build>
+    <dependencies>
 
-		<resources>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**</include>
-				</includes>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
+        <!-- shared dependencies -->
 
-		<plugins>
-			<plugin>
-				<inherited>true</inherited>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-					<optimize>true</optimize>
-					<debug>true</debug>
-				</configuration>
-			</plugin>
+        <!-- test dependencies -->
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.8</version>
-				<configuration>
-				</configuration>
-			</plugin>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
 
-		</plugins>
-	</build>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>${hamcrest.version}</version>
+            <scope>test</scope>
+        </dependency>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>spark</id>
-			<url>http://46.137.105.19:8081/nexus/content/repositories/spark</url>
-		</snapshotRepository>
-	</distributionManagement>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>qmetric-snapshot</name>
+            <url>https://ci.qmetric.co.uk/nexus/content/repositories/qmetric-snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus</id>
+            <name>qmetric-releases</name>
+            <url>https://ci.qmetric.co.uk/nexus/content/repositories/qmetric-releases</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>git://github.com/aeells/spark.git</url>
+        <connection>scm:git:git@github.com:aeells/spark.git</connection>
+        <developerConnection>scm:git:git@github.com:aeells/spark.git</developerConnection>
+    </scm>
 
 </project>

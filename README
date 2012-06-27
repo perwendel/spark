@@ -1,3 +1,9 @@
+mods [aeells]:
+case-sensitive URL's - pull request also made to per wendel parent project
+addition on codahale metrics servlets
+released from SNAPSHOT
+
+
 Spark - a Sinatra inspired micro web framework
 ----------------------------------------------
 
