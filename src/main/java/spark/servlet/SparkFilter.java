@@ -42,7 +42,7 @@ public class SparkFilter implements Filter {
     private static final long serialVersionUID = 1L;
     
     private static final String APPLICATION_CLASS_PARAM = "applicationClass";
-
+    private static final String DEFAULT_CHARSET = "defaultCharset";
     private String filterPath;
 
     private MatcherFilter matcherFilter;
@@ -53,13 +53,16 @@ public class SparkFilter implements Filter {
             filterPath = FilterTools.getFilterPath(filterConfig);
             
             String applicationClassName = filterConfig.getInitParameter(APPLICATION_CLASS_PARAM);
+            String defaultCharset = filterConfig.getInitParameter(DEFAULT_CHARSET);
+            if(defaultCharset == null)
+                defaultCharset = "utf-8";
             Class<?> applicationClass = Class.forName(applicationClassName);
             SparkApplication application = (SparkApplication) applicationClass.newInstance();
             Access.runFromServlet();
 
             application.init();
 
-            matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true);
+            matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true, defaultCharset);
         } catch (Exception e) {
             throw new ServletException(e);
         }

@@ -36,6 +36,7 @@ public class Response {
     
     Response(HttpServletResponse response) {
         this.response = response;
+        response.setContentType("text/html"); //default response type
     }
     
     
