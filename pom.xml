@@ -19,8 +19,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <commons-lang.version>3.1</commons-lang.version>
+        <gson.version>2.1</gson.version>
         <hamcrest.version>1.1</hamcrest.version>
         <jetty.version>7.3.0.v20110203</jetty.version>
+        <joda-time.version>1.6</joda-time.version>
         <mockito.version>1.8.5</mockito.version>
         <resty.version>0.3.1</resty.version>
         <servlet-api.version>2.5</servlet-api.version>
