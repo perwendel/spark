@@ -5,14 +5,14 @@
     <groupId>com.aeells.spark</groupId>
     <artifactId>utils</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.3</version>
+    <version>1.1.4-SNAPSHOT</version>
 
     <name>utils</name>
 
     <parent>
         <groupId>com.aeells</groupId>
         <artifactId>spark</artifactId>
-        <version>1.1.3</version>
+        <version>1.1.4-SNAPSHOT</version>
     </parent>
 
     <dependencies>

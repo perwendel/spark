@@ -5,7 +5,7 @@
     <groupId>com.aeells</groupId>
     <artifactId>spark</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.3</version>
+    <version>1.1.4-SNAPSHOT</version>
     <name>spark</name>
     <url>http://www.sparkjava.com</url>
 
