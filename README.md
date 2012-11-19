@@ -39,10 +39,10 @@ github run:
 
 The result is put in /target/site/apidocs
 
-Examples:
+Examples
 ---------
 
-Simple example showing some basic functionality:
+Simple example showing some basic functionality
 
 ```java
 import static spark.Spark.*;
@@ -126,7 +126,7 @@ public class SimpleExample {
 
 -------------------------------
 
-A simple RESTful example showing howto create, get, update and delete book resources:
+A simple RESTful example showing howto create, get, update and delete book resources
 
 ```java
 import static spark.Spark.*;
@@ -241,7 +241,7 @@ public class Books {
 
 ---------------------------------
 
-Example showing a very simple (and stupid) autentication filter that is executed before all other resources:
+Example showing a very simple (and stupid) autentication filter that is executed before all other resources
 
 ```java
 import static spark.Spark.*;
@@ -318,7 +318,7 @@ public class FilterExample {
 
 ---------------------------------
 
-Example showing how to use attributes:
+Example showing how to use attributes
 
 ```java
 import static spark.Spark.after;
