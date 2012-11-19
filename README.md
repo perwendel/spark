@@ -1,10 +1,12 @@
 Spark - a Sinatra inspired micro web framework
-----------------------------------------------
+==============================================
 
 Examples can also be viewed on: http://code.google.com/p/spark-java/
 
-Getting started:
+Getting started
+---------------
 
+```java
 import static spark.Spark.*;
 
 import spark.*;
@@ -23,6 +25,7 @@ public class HelloWorld {
    }
 
 }
+```
 
 View at: http://localhost:4567/hello
 
@@ -32,15 +35,16 @@ Check out and try the examples in the source code.
 You can also check out the javadoc. After getting the source from
 github run: 
 
-mvn javadoc:javadoc
+    mvn javadoc:javadoc
 
 The result is put in /target/site/apidocs
 
-Examples:
+Examples
 ---------
 
-Simple example showing some basic functionality:
+Simple example showing some basic functionality
 
+```java
 import static spark.Spark.*;
 
 import spark.Request;
@@ -118,11 +122,13 @@ public class SimpleExample {
         
     }
 }
+```
 
 -------------------------------
 
-A simple RESTful example showing howto create, get, update and delete book resources:
+A simple RESTful example showing howto create, get, update and delete book resources
 
+```java
 import static spark.Spark.*;
 
 import java.util.HashMap;
@@ -231,11 +237,13 @@ public class Books {
     }
     
 }
+```
 
 ---------------------------------
 
-Example showing a very simple (and stupid) autentication filter that is executed before all other resources:
+Example showing a very simple (and stupid) autentication filter that is executed before all other resources
 
+```java
 import static spark.Spark.*;
 
 import java.util.HashMap;
@@ -306,11 +314,13 @@ public class FilterExample {
       
    }
 }
+```
 
 ---------------------------------
 
-Example showing how to use attributes:
+Example showing how to use attributes
 
+```java
 import static spark.Spark.after;
 import static spark.Spark.get;
 import spark.Filter;
@@ -355,3 +365,4 @@ public class FilterExampleAttributes {
     }
     
 }
+```
