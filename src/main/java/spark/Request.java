@@ -16,14 +16,7 @@
  */
 package spark;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,6 +37,7 @@ public class Request {
     private static final String USER_AGENT = "user-agent";
     
     private Map<String, String> params;
+    private QueryParamsMap queryMap;
     
     private HttpMethod httpMethod;
     private HttpServletRequest servletRequest;
@@ -297,6 +291,22 @@ public class Request {
             }
         }
         return Collections.unmodifiableMap(params);
+    }
+    
+    public QueryParamsMap queryMap() {
+        initQueryMap();
+        
+        return queryMap;
+    }
+    
+    public QueryParamsMap queryMap(String key) {
+        return queryMap().get(key);
+    }
+
+    private void initQueryMap() {
+        if (queryMap == null) {
+            queryMap = new QueryParamsMap(raw());
+        }
     }
     
 }
