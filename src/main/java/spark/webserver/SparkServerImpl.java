@@ -30,12 +30,11 @@ class SparkServerImpl implements SparkServer {
 
     /** The logger. */
     // private static final Logger LOG = Logger.getLogger(Spark.class);
-    
+
     private static final String NAME = "Spark";
     private Handler handler;
-    private Object lock = new Object();
-    private boolean stopped = false;
-    
+    private Server server = new Server();
+
     public SparkServerImpl(Handler handler) {
         this.handler = handler;
         System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
@@ -48,7 +47,6 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite(int port) {
-        Server server = new Server();
         SocketConnector connector = new SocketConnector();
 
         // Set some timeout options to make debugging easier.
@@ -64,32 +62,23 @@ class SparkServerImpl implements SparkServer {
             System.out.println(">> Listening on 0.0.0.0:" + port);
 
             server.start();
-            
-            synchronized (lock) {
-            	while (!stopped) {
-            		try {
-            			lock.wait();
-            			//					System.in.read();	
-            		} catch (Exception e) {}
-            	}
-            }
-            
-            System.out.println(">>> " + NAME + " shutting down...");
-
-            server.stop();
             server.join();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(100);
         }
     }
-    
+
     @Override
     public void stop() {
-    	synchronized (lock) {
-    		stopped = true;
-    		lock.notifyAll();
-		}
+        System.out.print(">>> " + NAME + " shutting down...");
+        try {
+            server.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(100);
+        }
+        System.out.println("done");
     }
-    
+
 }
