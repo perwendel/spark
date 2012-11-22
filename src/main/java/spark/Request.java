@@ -16,9 +16,17 @@
  */
 package spark;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
@@ -42,6 +50,8 @@ public class Request {
     private HttpMethod httpMethod;
     private HttpServletRequest servletRequest;
 
+    private Session session = null;
+    
     /* Lazy loaded stuff */
     private String body = null;
     
@@ -307,6 +317,38 @@ public class Request {
         if (queryMap == null) {
             queryMap = new QueryParamsMap(raw());
         }
+    }
+    
+    /**
+     * Returns the current session associated with this request, 
+     * or if the request does not have a session, creates one.
+     *  
+     * @return the session associated with this request
+     */
+    public Session session() {
+        if (session == null) {
+            session = new Session(servletRequest.getSession());
+        }
+        return session;
+    }
+
+    /**
+     * Returns the current session associated with this request, or if there is 
+     * no current session and <code>create</code> is true, returns  a new session.
+     * 
+     * @param create <code>true</code> to create a new session for this request if necessary;
+     *              <code>false</code> to return null if there's no current session 
+     * @return the session associated with this request or <code>null</code> if
+     *          <code>create</code> is <code>false</code> and the request has no valid session
+     */
+    public Session session(boolean create) {
+        if (session == null) {
+            HttpSession httpSession = servletRequest.getSession(create);
+            if (httpSession != null) {
+                session = new Session(httpSession);
+            }
+        }
+        return session;
     }
     
 }

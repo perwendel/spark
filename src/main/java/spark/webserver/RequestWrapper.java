@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import spark.Request;
+import spark.Session;
 
 final class RequestWrapper extends Request {
 
@@ -149,5 +150,15 @@ final class RequestWrapper extends Request {
     public Set<String> attributes() {
         return delegate.attributes();
     }
-    
+
+    @Override
+    public Session session() {
+        return delegate.session();
+    }
+    @Override
+    public Session session(boolean create) {
+        return delegate.session(create);
+    }
+
+
 }

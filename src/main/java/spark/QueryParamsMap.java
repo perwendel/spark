@@ -61,6 +61,7 @@ public class QueryParamsMap {
      * 
      * @param request
      */
+    @SuppressWarnings("unchecked")
     public QueryParamsMap(HttpServletRequest request) {
         if (request == null) throw new IllegalArgumentException("HttpServletRequest cannot be null.");
         loadQueryString(request.getParameterMap());
