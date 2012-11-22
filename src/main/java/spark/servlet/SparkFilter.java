@@ -39,9 +39,8 @@ import spark.webserver.MatcherFilter;
  * @author Per Wendel
  */
 public class SparkFilter implements Filter {
-    private static final long serialVersionUID = 1L;
-    
-    private static final String APPLICATION_CLASS_PARAM = "applicationClass";
+
+    public static final String APPLICATION_CLASS_PARAM = "applicationClass";
 
     private String filterPath;
 
@@ -49,17 +48,30 @@ public class SparkFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        Access.runFromServlet();
+
+        final SparkApplication application = getApplication(filterConfig);
+        application.init();
+
+        filterPath = FilterTools.getFilterPath(filterConfig);
+        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true);
+    }
+
+    /**
+     * Returns an instance of {@link SparkApplication} which on which {@link SparkApplication#init() init()} will be called.
+     * Default implementation looks up the class name in the filterConfig using the key {@link #APPLICATION_CLASS_PARAM}.
+     * Subclasses can override this method to use different techniques to obtain an instance (i.e. dependency injection).
+     *
+     * @param filterConfig the filter configuration for retrieving parameters passed to this filter.
+     * @return the spark application containing the configuration.
+     * @throws ServletException if anything went wrong.
+     */
+    protected SparkApplication getApplication(FilterConfig filterConfig) throws ServletException {
         try {
-            filterPath = FilterTools.getFilterPath(filterConfig);
-            
             String applicationClassName = filterConfig.getInitParameter(APPLICATION_CLASS_PARAM);
             Class<?> applicationClass = Class.forName(applicationClassName);
             SparkApplication application = (SparkApplication) applicationClass.newInstance();
-            Access.runFromServlet();
-
-            application.init();
-
-            matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true);
+            return application;
         } catch (Exception e) {
             throw new ServletException(e);
         }
