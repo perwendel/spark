@@ -22,12 +22,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import spark.Request;
 
-final class RequestWrapper extends Request {
+public final class RequestWrapper extends Request {
 
     private Request delegate;
 
     public void setDelegate(Request delegate) {
         this.delegate = delegate;
+    }
+
+    public Request getDelegate() {
+        return delegate;
     }
 
     @Override
