@@ -75,7 +75,7 @@ public class Request {
     //    request.get?              # true (similar methods for other verbs)
     //    request.secure?           # false (would be true over ssl)
     //    request.forwarded?        # true (if running behind a reverse proxy)
-    //    request.cookies           # hash of browser cookies
+    //    request.cookies           # hash of browser cookies,              DONE
     //    request.xhr?              # is this an ajax request?
     //    request.script_name       # "/example"
     //    request.form_data?        # false
