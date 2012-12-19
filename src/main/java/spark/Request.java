@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.servlet.http.Cookie;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -351,4 +352,34 @@ public class Request {
         return session;
     }
     
+    /**
+     * @return request cookies (or empty Map if cookies dosn't present)
+     */
+    public Map<String, String> cookies() {
+        Map<String, String> result = new HashMap<String, String>();
+        Cookie[] cookies = servletRequest.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                result.put(cookie.getName(), cookie.getValue());
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Gets cookie by name.
+     * @param name name of the cookie
+     * @return cookie value or null if the cookie was not found
+     */
+    public String cookie(String name) {
+        Cookie[] cookies = servletRequest.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(name)) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
 }
