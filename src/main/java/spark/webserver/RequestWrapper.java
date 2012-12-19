@@ -16,9 +16,11 @@
  */
 package spark.webserver;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import spark.QueryParamsMap;
 
 import spark.Request;
 import spark.Session;
@@ -160,5 +162,23 @@ final class RequestWrapper extends Request {
         return delegate.session(create);
     }
 
+    @Override
+    public QueryParamsMap queryMap() {
+        return delegate.queryMap();
+    }
 
+    @Override
+    public QueryParamsMap queryMap(String key) {
+        return delegate.queryMap(key);
+    }
+
+    @Override
+    public Map<String, String> cookies() {
+        return delegate.cookies();
+    }
+
+    @Override
+    public String cookie(String name) {
+        return delegate.cookie(name);
+    }
 }

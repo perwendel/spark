@@ -73,4 +73,18 @@ class ResponseWrapper extends Response {
         delegate.type(contentType);
     }
 
+    @Override
+    public void addCookie(String name, String value) {
+        delegate.addCookie(name, value);
+    }
+
+    @Override
+    public void addCookie(String name, String value, int maxAge) {
+        delegate.addCookie(name, value, maxAge);
+    }
+
+    @Override
+    public void removeCookie(String name) {
+        delegate.removeCookie(name);
+    }
 }
