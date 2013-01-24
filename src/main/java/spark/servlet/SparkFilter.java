@@ -27,6 +27,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import spark.Access;
 import spark.route.RouteMatcherFactory;
 import spark.webserver.MatcherFilter;
@@ -42,6 +45,8 @@ public class SparkFilter implements Filter {
 
     public static final String APPLICATION_CLASS_PARAM = "applicationClass";
 
+    private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
+    
     private String filterPath;
 
     private MatcherFilter matcherFilter;
@@ -83,7 +88,7 @@ public class SparkFilter implements Filter {
         
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
         
-        System.out.println(relativePath);
+        LOG.debug(relativePath);
         
         HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override
