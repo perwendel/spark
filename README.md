@@ -241,7 +241,7 @@ public class Books {
 
 ---------------------------------
 
-Example showing a very simple (and stupid) autentication filter that is executed before all other resources
+Example showing a very simple (and stupid) authentication filter that is executed before all other resources
 
 ```java
 import static spark.Spark.*;
