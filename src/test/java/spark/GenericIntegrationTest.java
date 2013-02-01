@@ -14,12 +14,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import testutil.MyTestUtil;
-import testutil.MyTestUtil.UrlResponse;
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
 
 public class GenericIntegrationTest {
 
-    static MyTestUtil testUtil;
+    static SparkTestUtil testUtil;
     
     @AfterClass
     public static void tearDown() {
@@ -29,7 +29,7 @@ public class GenericIntegrationTest {
     
     @BeforeClass
     public static void setup() {
-        testUtil = new MyTestUtil(4567);
+        testUtil = new SparkTestUtil(4567);
         
         before(new Filter("/protected/*") {
 

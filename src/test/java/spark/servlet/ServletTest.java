@@ -1,6 +1,6 @@
 package spark.servlet;
 
-import static testutil.MyTestUtil.sleep;
+import static spark.util.SparkTestUtil.sleep;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -16,8 +16,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import spark.TAccess;
-import testutil.MyTestUtil;
-import testutil.MyTestUtil.UrlResponse;
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
 
 public class ServletTest {
 
@@ -25,7 +25,7 @@ public class ServletTest {
     private static final int PORT = 9393;
     static final Server server = new Server();
     
-    static MyTestUtil testUtil;
+    static SparkTestUtil testUtil;
     
     @AfterClass
     public static void tearDown() {
@@ -35,7 +35,7 @@ public class ServletTest {
     
     @BeforeClass
     public static void setup() {
-		testUtil = new MyTestUtil(PORT);
+		testUtil = new SparkTestUtil(PORT);
 		
 		SocketConnector connector = new SocketConnector();
 		
