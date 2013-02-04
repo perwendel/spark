@@ -38,7 +38,7 @@ public class CookiesIntegrationTest {
 
             @Override
             public Object handle(Request request, Response response) {
-                response.addCookie(request.queryParams("cookieName"), request.queryParams("cookieValue"));
+                response.cookie(request.queryParams("cookieName"), request.queryParams("cookieValue"));
                 return "";
             }
         });
