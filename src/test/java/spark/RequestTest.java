@@ -22,8 +22,6 @@ import org.junit.Test;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 
-
-
 public class RequestTest {
     
     RouteMatch match =  new RouteMatch(HttpMethod.get,null,"/hi","/hi"); 
@@ -31,40 +29,27 @@ public class RequestTest {
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {
         Map<String,String[]> params = new HashMap<String,String[]>();
-        
         params.put("name",new String[] {"Federico"});
-        
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
-        
         Request request = new Request(match,servletRequest);
-        
         String name = request.queryParams("name");
-        
         assertEquals("Invalid name in query string","Federico",name);
     }
     
     @Test
     public void queryParamShouldBeParsedAsHashMap() {
         Map<String,String[]> params = new HashMap<String,String[]>();
-        
         params.put("user[name]",new String[] {"Federico"});
-        
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
-        
         Request request = new Request(match,servletRequest);
-        
         String name = request.queryMap("user").value("name");
-        
         assertEquals("Invalid name in query string","Federico",name);
     }
     
-    
-    
     public static class MockedHttpServletRequest implements HttpServletRequest {
+        private Map<String, String[]> params;
 
-        private Map params;
-
-        public MockedHttpServletRequest(Map params) {
+        public MockedHttpServletRequest(Map<String, String[]> params) {
             this.params = params;
         }
 
@@ -94,12 +79,12 @@ public class RequestTest {
         }
 
         @Override
-        public Enumeration getHeaderNames() {
+        public Enumeration<?> getHeaderNames() {
             return null;
         }
 
         @Override
-        public Enumeration getHeaders(String name) {
+        public Enumeration<?> getHeaders(String name) {
             return null;
         }
 
@@ -203,7 +188,7 @@ public class RequestTest {
         }
 
         @Override
-        public Enumeration getAttributeNames() {
+        public Enumeration<?> getAttributeNames() {
             // TODO Auto-generated method stub
             return null;
         }
@@ -257,23 +242,23 @@ public class RequestTest {
         }
 
         @Override
-        public Enumeration getLocales() {
+        public Enumeration<?> getLocales() {
             // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public String getParameter(String name) {
-            return ((String[])this.params.get(name))[0];
+            return this.params.get(name)[0];
         }
 
         @Override
-        public Map getParameterMap() {
+        public Map<String, String[]> getParameterMap() {
             return this.params;
         }
 
         @Override
-        public Enumeration getParameterNames() {
+        public Enumeration<?> getParameterNames() {
             // TODO Auto-generated method stub
             return null;
         }
