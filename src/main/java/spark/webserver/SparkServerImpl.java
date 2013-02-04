@@ -44,14 +44,25 @@ class SparkServerImpl implements SparkServer {
     public void ignite() {
         ignite(4567);
     }
-
+    
     @Override
     public void ignite(int port) {
+        ignite("0.0.0.0", port);
+    }
+    
+    @Override
+    public void ignite(String host) {
+        ignite(host, 4567);
+    }
+
+    @Override
+    public void ignite(String host, int port) {
         SocketConnector connector = new SocketConnector();
 
         // Set some timeout options to make debugging easier.
         connector.setMaxIdleTime(1000 * 60 * 60);
         connector.setSoLingerTime(-1);
+        connector.setHost(host);
         connector.setPort(port);
         server.setConnectors(new Connector[] {connector});
 
@@ -59,7 +70,7 @@ class SparkServerImpl implements SparkServer {
 
         try {
             System.out.println("== " + NAME + " has ignited ...");
-            System.out.println(">> Listening on 0.0.0.0:" + port);
+			System.out.println(">> Listening on " + host + ":" + port);
 
             server.start();
             server.join();

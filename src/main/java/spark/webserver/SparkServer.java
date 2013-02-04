@@ -34,6 +34,20 @@ public interface SparkServer {
      * @param port
      */
     void ignite(int port);
+    
+    /**
+     * Ignites the spark server listening on the provided address
+     * 
+     * @param port
+     */
+    void ignite(String host);
+    
+    /**
+     * Ignites the spark server listening on the provided address and port
+     * 
+     * @param port
+     */
+    void ignite(String host, int port);
 
     /**
      * Stops the spark server
