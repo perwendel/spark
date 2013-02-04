@@ -1,4 +1,4 @@
-package testutil;
+package spark.util;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -7,11 +7,11 @@ import java.util.Map;
 
 import spark.utils.IOUtils;
 
-public class MyTestUtil {
+public class SparkTestUtil {
 
     private int port;
     
-    public MyTestUtil(int port) {
+    public SparkTestUtil(int port) {
         this.port = port;
     }
     
