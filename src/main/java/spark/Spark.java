@@ -52,7 +52,21 @@ public class Spark {
 
     private static SparkServer server;
     private static RouteMatcher routeMatcher;
+    private static String ipAddress = "0.0.0.0";
     private static int port = 4567;
+    
+    /**
+     * Set the IP address that Spark should listen on. If not called the default address is '0.0.0.0'.
+     * This has to be called before any route mapping is done.
+     * 
+     * @param port The port number
+     */
+    public synchronized static void setIpAddress(String ipAddress) {
+        if (initialized) {
+            throw new IllegalStateException("This must be done before route mapping has begun");
+        }
+        Spark.ipAddress = ipAddress;
+    }
     
     /**
      * Set the port that Spark should listen on. If not called the default port is 4567.
@@ -194,7 +208,7 @@ public class Spark {
 				@Override
                 public void run() {
                     server = SparkServerFactory.create();
-                    server.ignite(port);
+                    server.ignite(ipAddress, port);
                 }
             }).start();
             initialized = true;
