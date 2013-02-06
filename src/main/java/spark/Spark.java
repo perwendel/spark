@@ -59,7 +59,7 @@ public class Spark {
      * Set the IP address that Spark should listen on. If not called the default address is '0.0.0.0'.
      * This has to be called before any route mapping is done.
      * 
-     * @param port The port number
+     * @param port The ipAddress
      */
     public synchronized static void setIpAddress(String ipAddress) {
         if (initialized) {
