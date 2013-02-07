@@ -1,12 +1,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+        <parent>
+          <groupId>org.sonatype.oss</groupId>
+          <artifactId>oss-parent</artifactId>
+          <version>7</version>
+        </parent>
 	<groupId>com.sparkjava</groupId>
 	<artifactId>spark</artifactId>
 	<packaging>jar</packaging>
 	<version>0.9.9.4-SNAPSHOT</version>
 	<name>Spark</name>
+        <description>A Sinatra inspired micro web framework</description>
 	<url>http://www.sparkjava.com</url>
+        <licenses>
+          <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+          </license>
+        </licenses>
+        <scm>
+          <connection>scm:git:git@github.com:perwendel/spark.git</connection>
+          <developerConnection>scm:git:git@github.com:perwendel/spark.git</developerConnection>
+          <url>scm:git:git@github.com:perwendel/spark.git</url>
+        </scm>
+        <developers>
+        </developers>
 
 	<properties>
 		<jetty.version>7.3.0.v20110203</jetty.version>
@@ -91,13 +111,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>spark</id>
-			<url>http://46.137.105.19:8081/nexus/content/repositories/spark</url>
-		</snapshotRepository>
-	</distributionManagement>
-
-	
 </project>
