@@ -1,4 +1,4 @@
-Spark - a Sinatra inspired micro web framework
+Spark - a Sinatra inspired web framework
 ==============================================
 
 Examples can also be viewed on: http://code.google.com/p/spark-java/
