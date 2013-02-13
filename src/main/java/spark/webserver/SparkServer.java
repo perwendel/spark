@@ -51,6 +51,19 @@ public interface SparkServer {
     void ignite(String host, int port);
 
     /**
+     * Ignites the spark server, listening on the specified port, running SSL secured with the specified keystore
+     * and truststore.  If truststore is null, keystore is reused.
+     *
+     * @param host The address to listen on
+     * @param port - the port
+     * @param keystoreFile       - The keystore file location as string
+     * @param keystorePassword   - the password for the keystore
+     * @param truststoreFile     - the truststore file location as string, leave null to reuse keystore
+     * @param truststorePassword - the trust store password
+     */
+    void ignite(String host, int port, String keystoreFile, String keystorePassword, String truststoreFile, String truststorePassword);
+
+    /**
      * Stops the spark server
      */
 	void stop();

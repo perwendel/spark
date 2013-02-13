@@ -16,10 +16,12 @@
  */
 package spark.webserver;
 
+import org.eclipse.jetty.http.ssl.SslContextFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.ssl.SslSocketConnector;
 
 /**
  * Spark server implementation
@@ -57,24 +59,37 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite(String host, int port) {
-        SocketConnector connector = new SocketConnector();
+       ignite(host,port,null,null,null,null);
+    }
+
+
+    @Override
+    public void ignite(String host, int port, String keystoreFile, String keystorePassword, String truststoreFile,
+                       String truststorePassword)
+    {
+        SocketConnector connector = keystoreFile == null ? createSocketConnector() :
+                                    createSecureSocketConnector(keystoreFile, keystorePassword, truststoreFile,
+                                                                truststorePassword);
 
         // Set some timeout options to make debugging easier.
         connector.setMaxIdleTime(1000 * 60 * 60);
         connector.setSoLingerTime(-1);
         connector.setHost(host);
         connector.setPort(port);
-        server.setConnectors(new Connector[] {connector});
+        server.setConnectors(new Connector[]{connector});
 
         server.setHandler(handler);
 
-        try {
+        try
+        {
             System.out.println("== " + NAME + " has ignited ...");
-			System.out.println(">> Listening on " + host + ":" + port);
+            System.out.println(">> Listening on " + host + ":" + port);
 
             server.start();
             server.join();
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
             System.exit(100);
         }
@@ -91,5 +106,47 @@ class SparkServerImpl implements SparkServer {
         }
         System.out.println("done");
     }
+
+    /**
+     * Creates a secure jetty socket connector.  Keystore required, truststore optional. If truststore not specifed
+     * keystore will be reused.
+     *
+     * @param keystoreFile       - The keystore file location as string
+     * @param keystorePassword   - the password for the keystore
+     * @param truststoreFile     - the truststore file location as string, leave null to reuse keystore
+     * @param truststorePassword - the trust store password
+     *
+     * @return a secure socket connector
+     */
+    private SocketConnector createSecureSocketConnector(String keystoreFile, String keystorePassword,
+                                                        String truststoreFile, String truststorePassword)
+    {
+        SslContextFactory sslContextFactory = new SslContextFactory(keystoreFile);
+
+        if (keystorePassword != null)
+        {
+            sslContextFactory.setKeyStorePassword(keystorePassword);
+        }
+        if (truststoreFile != null)
+        {
+            sslContextFactory.setTrustStore(truststoreFile);
+        }
+        if (truststorePassword != null)
+        {
+            sslContextFactory.setTrustStorePassword(truststorePassword);
+        }
+
+        return new SslSocketConnector(sslContextFactory);
+    }
+
+    /**
+     * Creates an ordinary, non-secured Jetty socket connector.
+     * @return - a socket connector
+     */
+    private SocketConnector createSocketConnector()
+    {
+        return new SocketConnector();
+    }
+
 
 }
