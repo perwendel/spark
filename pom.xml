@@ -29,7 +29,7 @@
         </developers>
 
 	<properties>
-		<jetty.version>7.3.0.v20110203</jetty.version>
+		<jetty.version>8.1.9.v20130131</jetty.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -61,12 +61,12 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-                <dependency>
-                	<groupId>org.apache.httpcomponents</groupId>
-                    	<artifactId>httpclient</artifactId>
-                    	<version>4.2.2</version>
-                    	<scope>test</scope>
-                </dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.2</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
