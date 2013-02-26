@@ -366,3 +366,29 @@ public class FilterExampleAttributes {
     
 }
 ```
+
+
+---------------------------------
+
+Example showing how to serve static resources
+
+```java
+import static spark.Spark.*;
+import spark.*;
+
+public class StaticResources {
+
+    public static void main(String[] args) {
+
+        // Will serve all static file are under "/public" in classpath if the route isn't consumed by others routes.
+        staticFileRoute("/public");
+
+        get(new Route("/hello") {
+            @Override
+            public Object handle(Request request, Response response) {
+                return "Hello World!";
+            }
+        });
+    }
+}
+```

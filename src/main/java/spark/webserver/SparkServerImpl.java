@@ -20,6 +20,9 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
 
 /**
  * Spark server implementation
@@ -57,6 +60,11 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite(String host, int port) {
+        ignite(host, port, null);
+    }
+
+    @Override
+    public void ignite(String host, int port, String staticFilesRoute) {
         SocketConnector connector = new SocketConnector();
 
         // Set some timeout options to make debugging easier.
@@ -66,7 +74,17 @@ class SparkServerImpl implements SparkServer {
         connector.setPort(port);
         server.setConnectors(new Connector[] {connector});
 
-        server.setHandler(handler);
+        if (staticFilesRoute == null) {
+            server.setHandler(handler);
+        } else {
+            ResourceHandler resourceHandler = new ResourceHandler();
+            Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
+            resourceHandler.setBaseResource(staticResources);
+            resourceHandler.setWelcomeFiles(new String[]{"index.html"});
+            HandlerList handlers = new HandlerList();
+            handlers.setHandlers(new Handler[]{handler, resourceHandler});
+            server.setHandler(handlers);
+        }
 
         try {
             System.out.println("== " + NAME + " has ignited ...");
