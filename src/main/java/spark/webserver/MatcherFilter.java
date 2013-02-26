@@ -28,12 +28,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spark.Access;
-import spark.HaltException;
-import spark.Request;
-import spark.RequestResponseFactory;
-import spark.Response;
-import spark.Route;
+import spark.*;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.RouteMatcher;
@@ -47,6 +42,7 @@ public class MatcherFilter implements Filter {
 
     private RouteMatcher routeMatcher;
     private boolean isServletContext;
+    private boolean haveOthersHandlers;
 
     /** The logger. */
     private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(getClass());
@@ -56,10 +52,12 @@ public class MatcherFilter implements Filter {
      * 
      * @param routeMatcher The route matcher
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
+     * @param haveOthersHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(RouteMatcher routeMatcher, boolean isServletContext) {
+    public MatcherFilter(RouteMatcher routeMatcher, boolean isServletContext, boolean haveOthersHandlers) {
         this.routeMatcher = routeMatcher;
         this.isServletContext = isServletContext;
+        this.haveOthersHandlers = haveOthersHandlers;
     }
 
     public void init(FilterConfig filterConfig) {
@@ -179,8 +177,12 @@ public class MatcherFilter implements Filter {
             }
         }
 
-        boolean consumed = bodyContent != null ? true : false;
-        
+        boolean consumed = bodyContent != null;
+
+        if (!consumed && haveOthersHandlers) {
+            throw new NotConsumedException();
+        }
+
         if (!consumed && !isServletContext) {
             httpResponse.setStatus(404);
             bodyContent = NOT_FOUND;

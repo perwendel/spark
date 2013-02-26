@@ -1,10 +1,5 @@
 package spark;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.get;
-import static spark.Spark.post;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -16,6 +11,8 @@ import org.junit.Test;
 
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import static spark.Spark.*;
 
 public class GenericIntegrationTest {
 
@@ -30,6 +27,8 @@ public class GenericIntegrationTest {
     @BeforeClass
     public static void setup() {
         testUtil = new SparkTestUtil(4567);
+
+        staticFileRoute("/public");
         
         before(new Filter("/protected/*") {
 
@@ -47,7 +46,7 @@ public class GenericIntegrationTest {
             }
         });
 
-        get(new Route("/:param") {
+        get(new Route("/param/:param") {
 
             @Override
             public Object handle(Request request, Response response) {
@@ -139,7 +138,7 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParam1() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/shizzy", null);
+            UrlResponse response = testUtil.doMethod("GET", "/param/shizzy", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: shizzy", response.body);
         } catch (Throwable e) {
@@ -150,7 +149,7 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParam2() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/gunit", null);
+            UrlResponse response = testUtil.doMethod("GET", "/param/gunit", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: gunit", response.body);
         } catch (Throwable e) {
@@ -198,6 +197,13 @@ public class GenericIntegrationTest {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void testStaticFile() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/static.html", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Content of html file", response.body);
     }
 
 }

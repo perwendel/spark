@@ -51,6 +51,15 @@ public interface SparkServer {
     void ignite(String host, int port);
 
     /**
+     * Ignites the spark server listening on the provided address and port and serve static files.
+     *
+     * @param host The address to listen on
+     * @param port The port to listen on
+     * @param staticFileRoute the route to static files in classPath
+     */
+    void ignite(String host, int port, String staticFileRoute);
+
+    /**
      * Stops the spark server
      */
 	void stop();

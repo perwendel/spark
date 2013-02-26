@@ -54,6 +54,7 @@ public class Spark {
     private static RouteMatcher routeMatcher;
     private static String ipAddress = "0.0.0.0";
     private static int port = 4567;
+    private static String staticFileRoute = null;
     
     /**
      * Set the IP address that Spark should listen on. If not called the default address is '0.0.0.0'.
@@ -79,6 +80,18 @@ public class Spark {
             throw new IllegalStateException("This must be done before route mapping has begun");
         }
         Spark.port = port;
+    }
+
+    /**
+     * Assign a route in classpath for static file.
+     * <b>Careful : this method must be called before all others method.</b>
+     * @param route the route in classpath.
+     */
+    public static void staticFileRoute(String route) {
+        if (initialized) {
+            throw new IllegalStateException("This must be done before route mapping has begun");
+        }
+        staticFileRoute = route;
     }
 
     /**
@@ -207,8 +220,8 @@ public class Spark {
             new Thread(new Runnable() {
 				@Override
                 public void run() {
-                    server = SparkServerFactory.create();
-                    server.ignite(ipAddress, port);
+                    server = SparkServerFactory.create(staticFileRoute != null);
+                    server.ignite(ipAddress, port, staticFileRoute);
                 }
             }).start();
             initialized = true;

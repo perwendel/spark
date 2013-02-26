@@ -59,7 +59,7 @@ public class SparkFilter implements Filter {
         application.init();
 
         filterPath = FilterTools.getFilterPath(filterConfig);
-        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true);
+        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true, false);
     }
 
     /**

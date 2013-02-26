@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.log.Log;
+import spark.NotConsumedException;
 
 /**
  * Simple Jetty Handler
@@ -44,8 +45,13 @@ class JettyHandler extends SessionHandler  {
     public void doHandle(String target, Request baseRequest, HttpServletRequest request, 
                     HttpServletResponse response) throws IOException, ServletException {
         Log.debug("jettyhandler, handle();");
-        filter.doFilter(request, response, null);
-        baseRequest.setHandled(true);
+        try {
+            filter.doFilter(request, response, null);
+            baseRequest.setHandled(true);
+        } catch (NotConsumedException ignore){
+            // TODO : Not use an exception in order to be faster.
+            baseRequest.setHandled(false);
+        }
     }
 
 }
