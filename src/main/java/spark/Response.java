@@ -84,6 +84,18 @@ public class Response {
             e.printStackTrace();
         }
     }
+
+    /**
+     *  Trigger a browser Permanent redirect
+     *  HTTP 301
+     *
+     * @param location Where to redirect permanently
+     */
+    public void redirectPermanent(String location) {
+        response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+        response.setHeader("Location", location);
+        response.setHeader("Connection", "close");
+    }
     
     /**
      * Adds/Sets a response header
