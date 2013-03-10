@@ -16,6 +16,7 @@
  */
 package spark.webserver;
 
+import java.io.OutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -189,7 +190,12 @@ public class MatcherFilter implements Filter {
 
         if (consumed) {
             // Write body content
-            httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+            final byte[] bodyBytes = bodyContent.getBytes("utf-8");
+            final int bodyLength = bodyBytes.length;
+            final OutputStream os = httpResponse.getOutputStream();
+            for (int start = 0; start < bodyBytes.length; start += 65536) {
+              os.write(bodyBytes, start, Math.min(65536, bodyLength - start));
+            }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
         }
