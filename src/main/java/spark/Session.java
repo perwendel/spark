@@ -57,7 +57,6 @@ public class Session {
      * Returns an <code>Enumeration</code> of <code>String</code> objects
      * containing the names of all the objects bound to this session. 
      */
-    @SuppressWarnings("unchecked")
     public Set<String> attributes() {
         TreeSet<String> attributes = new TreeSet<String>();
         Enumeration<String> enumeration = session.getAttributeNames();

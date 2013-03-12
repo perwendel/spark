@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.log.Log;
+import org.eclipse.jetty.util.log.Logger;
 
 /**
  * Simple Jetty Handler
@@ -34,6 +35,8 @@ import org.eclipse.jetty.util.log.Log;
  */
 class JettyHandler extends SessionHandler  {
     
+	private static final Logger LOG = Log.getLogger(JettyHandler.class);
+	
     private Filter filter;
     
     public JettyHandler(Filter filter) {
@@ -43,7 +46,7 @@ class JettyHandler extends SessionHandler  {
     @Override
     public void doHandle(String target, Request baseRequest, HttpServletRequest request, 
                     HttpServletResponse response) throws IOException, ServletException {
-        Log.debug("jettyhandler, handle();");
+        LOG.debug("jettyhandler, handle();");
         filter.doFilter(request, response, null);
         baseRequest.setHandled(true);
     }

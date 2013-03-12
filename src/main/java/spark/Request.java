@@ -215,7 +215,6 @@ public class Request {
     /**
      * Returns all query parameters
      */
-    @SuppressWarnings("unchecked")
     public Set<String> queryParams() {
         return servletRequest.getParameterMap().keySet();
     }
@@ -223,7 +222,6 @@ public class Request {
     /**
      * Returns all headers
      */
-    @SuppressWarnings("unchecked")
     public Set<String> headers() {
         if (headers == null) {
             headers = new TreeSet<String>();
@@ -263,7 +261,6 @@ public class Request {
     /**
      * Returns all attributes
      */
-    @SuppressWarnings("unchecked")
     public Set<String> attributes() {
         Set<String> attrList = new HashSet<String>();
         Enumeration<String> attributes = (Enumeration<String>) servletRequest.getAttributeNames();

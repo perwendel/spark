@@ -19,7 +19,7 @@ package spark.webserver;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.ServerConnector;
 
 /**
  * Spark server implementation
@@ -57,10 +57,11 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite(String host, int port) {
-        SocketConnector connector = new SocketConnector();
+    	Server server = new Server();
+        ServerConnector connector = new ServerConnector(server);
 
         // Set some timeout options to make debugging easier.
-        connector.setMaxIdleTime(1000 * 60 * 60);
+        connector.setIdleTimeout(1000 * 60 * 60);
         connector.setSoLingerTime(-1);
         connector.setHost(host);
         connector.setPort(port);

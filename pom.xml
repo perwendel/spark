@@ -29,12 +29,12 @@
         </developers>
 
 	<properties>
-		<jetty.version>7.3.0.v20110203</jetty.version>
+		<jetty.version>9.0.0.v20130308</jetty.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
-		<!-- LOGGING DEPENDENCIES - LOG4J -->
+		<!-- LOGGING DEPENDENCIES -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -48,8 +48,15 @@
             <scope>provided</scope>
 		</dependency>
 
+		<!-- JETTY DEPENDENCIES -->
 		<dependency>
-			<groupId>org.eclipse.jetty.aggregate</groupId>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
 			<version>${jetty.version}</version>
 		</dependency>
@@ -61,12 +68,12 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-                <dependency>
-                	<groupId>org.apache.httpcomponents</groupId>
-                    	<artifactId>httpclient</artifactId>
-                    	<version>4.2.2</version>
-                    	<scope>test</scope>
-                </dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.2.2</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -90,15 +97,23 @@
 
 		<plugins>
 			<plugin>
-				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<optimize>true</optimize>
 					<debug>true</debug>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.14</version>
+				<configuration>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
 
