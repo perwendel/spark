@@ -48,6 +48,7 @@
             <scope>provided</scope>
 		</dependency>
 
+		<!-- JETTY DEPENDENCIES -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
