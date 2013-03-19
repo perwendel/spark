@@ -54,12 +54,20 @@ public class Spark {
     private static RouteMatcher routeMatcher;
     private static String ipAddress = "0.0.0.0";
     private static int port = 4567;
+
+    private static String keystoreFile;
+
+    private static String keystorePassword;
+
+    private static String truststoreFile;
+
+    private static String truststorePassword;
     
     /**
      * Set the IP address that Spark should listen on. If not called the default address is '0.0.0.0'.
      * This has to be called before any route mapping is done.
      * 
-     * @param port The ipAddress
+     * @param ipAddress The ipAddress
      */
     public synchronized static void setIpAddress(String ipAddress) {
         if (initialized) {
@@ -80,6 +88,42 @@ public class Spark {
         }
         Spark.port = port;
     }
+
+
+    /**
+     * Set the connection to be secure, using the specified keystore and
+     * truststore. This has to be called before any route mapping is done. You
+     * have to supply a keystore file, truststore file is optional (keystore
+     * will be reused).
+     * 
+     * This method is only relevant when using embedded Jetty servers. It should
+     * not be used if you are using Servlets, where you will need to secure the
+     * connection in the servlet container
+     * 
+     * @param keystoreFile The keystore file location as string
+     * @param keystorePassword the password for the keystore
+     * @param truststoreFile the truststore file location as string, leave null to reuse keystore
+     * @param truststorePassword the trust store password
+     */
+    public synchronized static void setSecure(String keystoreFile,
+            String keystorePassword, String truststoreFile,
+            String truststorePassword) {
+        if (initialized) {
+            throw new IllegalStateException(
+                    "This must be done before route mapping has begun");
+        }
+
+        if (keystoreFile == null) {
+            throw new IllegalArgumentException(
+                    "Must provide a keystore file to run secured");
+        }
+
+        Spark.keystoreFile = keystoreFile;
+        Spark.keystorePassword = keystorePassword;
+        Spark.truststoreFile = truststoreFile;
+        Spark.truststorePassword = truststorePassword;
+    }
+
 
     /**
      * Map the route for HTTP GET requests
@@ -200,16 +244,16 @@ public class Spark {
     	}
     	initialized = false;
     }
-    
+
     private synchronized static final void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             new Thread(new Runnable() {
-				@Override
+                @Override
                 public void run() {
                     server = SparkServerFactory.create();
-                    server.ignite(ipAddress, port);
-                }
+                    server.ignite(ipAddress, port, keystoreFile, keystorePassword, truststoreFile, truststorePassword);
+            }
             }).start();
             initialized = true;
         }
