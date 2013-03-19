@@ -16,6 +16,9 @@
  */
 package spark;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import javax.servlet.http.Cookie;
 
@@ -27,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author Per Wendel
  */
 public class Response {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Response.class);
 
     private HttpServletResponse response;
     private String body;
@@ -78,11 +83,25 @@ public class Response {
      * @param location Where to redirect
      */
     public void redirect(String location) {
+        LOG.debug("Redirecting (http 301) to {}", location);
         try {
             response.sendRedirect(location);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ioException) {
+            LOG.error("Redirection Error:", ioException);
         }
+    }
+
+    /**
+     *  Trigger a browser Permanent redirect
+     *  HTTP 301
+     *
+     * @param location Where to redirect permanently
+     */
+    public void redirectPermanent(String location) {
+        LOG.debug("Redirecting (http 302) to {}", location);
+        response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+        response.setHeader("Location", location);
+        response.setHeader("Connection", "close");
     }
     
     /**
@@ -100,7 +119,7 @@ public class Response {
      * @param value value of the cookie
      */
     public void cookie(String name, String value) {
-        cookie(name, value, -1);
+        cookie(name, value, -1, false);
     }
     
     /**
@@ -108,12 +127,26 @@ public class Response {
      * 
      * @param name name of the cookie
      * @param value value of the cookie
-     * @param maxAge max age of the cookie in seconds (negative for the not persistent cookie, 
+     * @param maxAge max age of the cookie in seconds (negative for the not persistent cookie,
      * zero - deletes the cookie)
      */
     public void cookie(String name, String value, int maxAge) {
+        cookie(name, value, maxAge, false);
+    }
+
+    /**
+     * Adds cookie to the response. Can be invoked multiple times to insert more than one cookie.
+     *
+     * @param name name of the cookie
+     * @param value value of the cookie
+     * @param maxAge max age of the cookie in seconds (negative for the not persistent cookie, zero - deletes the cookie)
+     * @param secured if true : cookie will be secured
+     * zero - deletes the cookie)
+     */
+    public void cookie(String name, String value, int maxAge, boolean secured) {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(maxAge);
+        cookie.setSecure(secured);
         response.addCookie(cookie);
     }
     
