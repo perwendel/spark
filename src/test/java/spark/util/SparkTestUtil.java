@@ -6,6 +6,8 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -105,7 +107,7 @@ public class SparkTestUtil {
      */
     public static String getKeyStoreLocation() {
         String keyStoreLoc = System.getProperty("javax.net.ssl.keyStore");
-        return keyStoreLoc == null ? "./resources/keystore.jks" : keyStoreLoc;
+        return keyStoreLoc == null ? "./src/test/resources/keystore.jks" : keyStoreLoc;
     }
 
     /**
