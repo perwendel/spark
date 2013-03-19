@@ -49,14 +49,16 @@ import spark.webserver.SparkServerFactory;
  * 
  * @author Per Wendel
  */
-public class Spark {
+public final class Spark {
+
+    private static final int SPARK_DEFAULT_PORT = 4567;
 
     private static boolean initialized = false;
 
     private static SparkServer server;
     private static RouteMatcher routeMatcher;
     private static String ipAddress = "0.0.0.0";
-    private static int port = 4567;
+    private static int port = SPARK_DEFAULT_PORT;
 
     private static String keystoreFile;
     private static String keystorePassword;
@@ -65,6 +67,9 @@ public class Spark {
 
     private static String staticFileRoute = null;
 
+    // Hide constructor
+    private Spark() {}
+    
     /**
      * Set the IP address that Spark should listen on. If not called the default
      * address is '0.0.0.0'. This has to be called before any route mapping is
@@ -73,10 +78,9 @@ public class Spark {
      * @param ipAddress
      *            The ipAddress
      */
-    public synchronized static void setIpAddress(String ipAddress) {
+    public static synchronized void setIpAddress(String ipAddress) {
         if (initialized) {
-            throw new IllegalStateException(
-                    "This must be done before route mapping has begun");
+            throwBeforeRouteMappingException();
         }
         Spark.ipAddress = ipAddress;
     }
@@ -88,10 +92,9 @@ public class Spark {
      * @param port
      *            The port number
      */
-    public synchronized static void setPort(int port) {
+    public static synchronized void setPort(int port) {
         if (initialized) {
-            throw new IllegalStateException(
-                    "This must be done before route mapping has begun");
+            throwBeforeRouteMappingException();
         }
         Spark.port = port;
     }
@@ -116,12 +119,11 @@ public class Spark {
      * @param truststorePassword
      *            the trust store password
      */
-    public synchronized static void setSecure(String keystoreFile,
+    public static synchronized void setSecure(String keystoreFile,
             String keystorePassword, String truststoreFile,
             String truststorePassword) {
         if (initialized) {
-            throw new IllegalStateException(
-                    "This must be done before route mapping has begun");
+            throwBeforeRouteMappingException();
         }
 
         if (keystoreFile == null) {
@@ -142,10 +144,9 @@ public class Spark {
      * @param route
      *            the route in classpath.
      */
-    public static void staticFileRoute(String route) {
+    public static synchronized void staticFileRoute(String route) {
         if (initialized) {
-            throw new IllegalStateException(
-                    "This must be done before route mapping has begun");
+            throwBeforeRouteMappingException();
         }
         staticFileRoute = route;
     }
@@ -156,7 +157,7 @@ public class Spark {
      * @param route
      *            The route
      */
-    public static void get(Route route) {
+    public static synchronized void get(Route route) {
         addRoute(HttpMethod.get.name(), route);
     }
 
@@ -166,7 +167,7 @@ public class Spark {
      * @param route
      *            The route
      */
-    public static void post(Route route) {
+    public static synchronized void post(Route route) {
         addRoute(HttpMethod.post.name(), route);
     }
 
@@ -176,7 +177,7 @@ public class Spark {
      * @param route
      *            The route
      */
-    public static void put(Route route) {
+    public static synchronized void put(Route route) {
         addRoute(HttpMethod.put.name(), route);
     }
 
@@ -186,7 +187,7 @@ public class Spark {
      * @param route
      *            The route
      */
-    public static void delete(Route route) {
+    public static synchronized void delete(Route route) {
         addRoute(HttpMethod.delete.name(), route);
     }
 
@@ -196,7 +197,7 @@ public class Spark {
      * @param route
      *            The route
      */
-    public static void head(Route route) {
+    public static synchronized void head(Route route) {
         addRoute(HttpMethod.head.name(), route);
     }
 
@@ -206,7 +207,7 @@ public class Spark {
      * @param route
      *            The route
      */
-    public static void trace(Route route) {
+    public static synchronized void trace(Route route) {
         addRoute(HttpMethod.trace.name(), route);
     }
 
@@ -216,7 +217,7 @@ public class Spark {
      * @param route
      *            The route
      */
-    public static void connect(Route route) {
+    public static synchronized void connect(Route route) {
         addRoute(HttpMethod.connect.name(), route);
     }
 
@@ -226,7 +227,7 @@ public class Spark {
      * @param route
      *            The route
      */
-    public static void options(Route route) {
+    public static synchronized void options(Route route) {
         addRoute(HttpMethod.options.name(), route);
     }
 
@@ -236,7 +237,7 @@ public class Spark {
      * @param filter
      *            The filter
      */
-    public static void before(Filter filter) {
+    public static synchronized void before(Filter filter) {
         addFilter(HttpMethod.before.name(), filter);
     }
 
@@ -246,8 +247,28 @@ public class Spark {
      * @param filter
      *            The filter
      */
-    public static void after(Filter filter) {
+    public static synchronized void after(Filter filter) {
         addFilter(HttpMethod.after.name(), filter);
+    }
+
+    static synchronized void runFromServlet() {
+        if (!initialized) {
+            routeMatcher = RouteMatcherFactory.get();
+            initialized = true;
+        }
+    }
+
+    // WARNING, used for jUnit testing only!!!
+    static synchronized void clearRoutes() {
+        routeMatcher.clearRoutes();
+    }
+
+    // Used for jUnit testing!
+    static synchronized void stop() {
+        if (server != null) {
+            server.stop();
+        }
+        initialized = false;
     }
 
     private static void addRoute(String httpMethod, Route route) {
@@ -261,28 +282,8 @@ public class Spark {
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
                 + "'", filter);
     }
-
-    synchronized static void runFromServlet() {
-        if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
-            initialized = true;
-        }
-    }
-
-    // WARNING, used for jUnit testing only!!!
-    synchronized static void clearRoutes() {
-        routeMatcher.clearRoutes();
-    }
-
-    // Used for jUnit testing!
-    synchronized static void stop() {
-        if (server != null) {
-            server.stop();
-        }
-        initialized = false;
-    }
-
-    private synchronized static final void init() {
+    
+    private static synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             new Thread(new Runnable() {
@@ -303,34 +304,45 @@ public class Spark {
         }
     }
 
+    private static void throwBeforeRouteMappingException() {
+        throw new IllegalStateException(
+                "This must be done before route mapping has begun");
+    }
+    
     /*
      * TODO: discover new TODOs.
      * 
      * 
-     * TODO: Make available as maven dependency, upload on repo etc... TODO: Add
-     * *, splat possibility TODO: Add validation of routes, invalid characters
-     * and stuff, also validate parameters, check static, ONGOING
+     * TODO: Make available as maven dependency, upload on repo etc... 
+     * TODO: Add *, splat possibility 
+     * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static, ONGOING
      * 
      * TODO: Javadoc
      * 
-     * TODO: Create maven archetype, "ONGOING" TODO: Add cache-control helpers
+     * TODO: Create maven archetype, "ONGOING" 
+     * TODO: Add cache-control helpers
      * 
-     * advanced TODO list: TODO: sessions? (use session servlet context?) TODO:
-     * Add regexp URIs
+     * advanced TODO list: 
+     * TODO: Add regexp URIs
      * 
      * Ongoing
      * 
-     * Done TODO: Routes are matched in the order they are defined. The rirst
-     * route that matches the request is invoked. ??? TODO: Before method for
-     * filters...check sinatra page TODO: Setting Headers TODO: Do we want
-     * get-prefixes for all *getters* or do we want a more ruby like approach???
-     * (Maybe have two choices?) TODO: Setting Body, Status Code TODO: Add
-     * possibility to set content type on return, DONE TODO: Add possibility to
-     * access HttpServletContext in method impl, DONE TODO: Redirect func in web
-     * context, DONE TODO: Refactor, extract interfaces, DONE TODO: Figure out a
-     * nice name, DONE - SPARK TODO: Add /uri/{param} possibility, DONE TODO:
-     * Tweak log4j config, DONE TODO: Query string in web context, DONE TODO:
-     * Add URI-param fetching from webcontext ie. ?param=value&param2=...etc,
-     * AND headers, DONE
+     * Done 
+     * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ??? 
+     * TODO: Before method for filters...check sinatra page 
+     * TODO: Setting Headers 
+     * TODO: Do we want get-prefixes for all *getters* or do we want a more ruby like approach???
+     * (Maybe have two choices?) 
+     * TODO: Setting Body, Status Code 
+     * TODO: Add possibility to set content type on return, DONE 
+     * TODO: Add possibility to access HttpServletContext in method impl, DONE 
+     * TODO: Redirect func in web context, DONE 
+     * TODO: Refactor, extract interfaces, DONE 
+     * TODO: Figure out a nice name, DONE - SPARK 
+     * TODO: Add /uri/{param} possibility, DONE 
+     * TODO: Tweak log4j config, DONE 
+     * TODO: Query string in web context, DONE 
+     * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc, AND headers, DONE
+     * TODO: sessions? (use session servlet context?) DONE
      */
 }

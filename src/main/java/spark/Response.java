@@ -17,8 +17,8 @@
 package spark;
 
 import java.io.IOException;
-import javax.servlet.http.Cookie;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -28,6 +28,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Response {
 
+    /** The logger. */
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Response.class);
+    
     private HttpServletResponse response;
     private String body;
     
@@ -81,7 +84,7 @@ public class Response {
         try {
             response.sendRedirect(location);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.warn("Redirect failure", e);
         }
     }
     

@@ -28,7 +28,7 @@ import spark.utils.SparkUtils;
  */
 public class SimpleRouteMatcher implements RouteMatcher {
 
-    private static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleRouteMatcher.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleRouteMatcher.class);
     
     private List<RouteEntry> routes;
 

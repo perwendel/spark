@@ -21,8 +21,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import spark.route.RouteMatch;
 
-public class RequestResponseFactory {
+public final class RequestResponseFactory {
 
+    private RequestResponseFactory() {}
+    
     public static Request create(RouteMatch match, HttpServletRequest request) {
         return new Request(match, request);
     }

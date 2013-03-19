@@ -30,15 +30,15 @@ public class QueryParamsMapTest {
         queryMap.loadKeys("user[info][first_name]",new String[] {"federico"});
         queryMap.loadKeys("user[info][last_name]",new String[] {"dayan"});
 
-        assertFalse(queryMap.queryMap.isEmpty());
-        assertFalse(queryMap.queryMap.get("user").queryMap.isEmpty());
-        assertFalse(queryMap.queryMap.get("user").queryMap.get("info").queryMap.isEmpty());
-        assertEquals("federico",queryMap.queryMap.get("user").queryMap.get("info").queryMap.get("first_name").values[0]);
-        assertEquals("dayan",queryMap.queryMap.get("user").queryMap.get("info").queryMap.get("last_name").values[0]);
+        assertFalse(queryMap.getQueryMap().isEmpty());
+        assertFalse(queryMap.getQueryMap().get("user").getQueryMap().isEmpty());
+        assertFalse(queryMap.getQueryMap().get("user").getQueryMap().get("info").getQueryMap().isEmpty());
+        assertEquals("federico",queryMap.getQueryMap().get("user").getQueryMap().get("info").getQueryMap().get("first_name").getValues()[0]);
+        assertEquals("dayan",queryMap.getQueryMap().get("user").getQueryMap().get("info").getQueryMap().get("last_name").getValues()[0]);
         
         assertTrue(queryMap.hasKeys());
         assertFalse(queryMap.hasValue());
-        assertTrue(queryMap.queryMap.get("user").queryMap.get("info").queryMap.get("last_name").hasValue());
+        assertTrue(queryMap.getQueryMap().get("user").getQueryMap().get("info").getQueryMap().get("last_name").hasValue());
     }
     
     @Test
@@ -91,10 +91,10 @@ public class QueryParamsMapTest {
     public void testConstructor() {
         QueryParamsMap queryMap = new QueryParamsMap("user[name][more]","fede");
 
-        assertFalse(queryMap.queryMap.isEmpty());
-        assertFalse(queryMap.queryMap.get("user").queryMap.isEmpty());
-        assertFalse(queryMap.queryMap.get("user").queryMap.get("name").queryMap.isEmpty());
-        assertEquals("fede",queryMap.queryMap.get("user").queryMap.get("name").queryMap.get("more").values[0]);
+        assertFalse(queryMap.getQueryMap().isEmpty());
+        assertFalse(queryMap.getQueryMap().get("user").getQueryMap().isEmpty());
+        assertFalse(queryMap.getQueryMap().get("user").getQueryMap().get("name").getQueryMap().isEmpty());
+        assertEquals("fede",queryMap.getQueryMap().get("user").getQueryMap().get("name").getQueryMap().get("more").getValues()[0]);
     }
     
     @Test

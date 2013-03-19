@@ -32,9 +32,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  */
 class SparkServerImpl implements SparkServer {
 
-    /** The logger. */
-    // private static final Logger LOG = Logger.getLogger(Spark.class);
-
     private static final String NAME = "Spark";
     private Handler handler;
     private Server server;
@@ -81,27 +78,27 @@ class SparkServerImpl implements SparkServer {
         
         
         try {
-            System.out.println("== " + NAME + " has ignited ...");
-            System.out.println(">> Listening on " + host + ":" + port);
+            System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
+            System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
 
             server.start();
             server.join();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(100);
+            e.printStackTrace(); // NOSONAR
+            System.exit(100); // NOSONAR
         }
     }
 
     @Override
     public void stop() {
-        System.out.print(">>> " + NAME + " shutting down...");
+        System.out.print(">>> " + NAME + " shutting down..."); // NOSONAR
         try {
             server.stop();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(100);
+            e.printStackTrace(); // NOSONAR
+            System.exit(100); // NOSONAR
         }
-        System.out.println("done");
+        System.out.println("done"); // NOSONAR
     }
 
     /**

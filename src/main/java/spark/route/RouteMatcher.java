@@ -25,8 +25,8 @@ import java.util.List;
  */
 public interface RouteMatcher {
     
-    public static final String ROOT = "/";
-    public static final char SINGLE_QUOTE = '\'';
+    static final String ROOT = "/";
+    static final char SINGLE_QUOTE = '\'';
     
     /**
      * Parses, validates and adds a route
