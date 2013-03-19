@@ -24,33 +24,6 @@ package spark.webserver;
 public interface SparkServer {
     
     /**
-     * ignites the spark server
-     */
-    void ignite();
-    
-    /**
-     * Ignites the spark server listening on the provided port
-     * 
-     * @param port The port to listen on
-     */
-    void ignite(int port);
-    
-    /**
-     * Ignites the spark server listening on the provided address
-     * 
-     * @param host The address to listen on
-     */
-    void ignite(String host);
-    
-    /**
-     * Ignites the spark server listening on the provided address and port
-     * 
-     * @param host The address to listen on
-     * @param port The port to listen on
-     */
-    void ignite(String host, int port);
-
-    /**
      * Ignites the spark server, listening on the specified port, running SSL secured with the specified keystore
      * and truststore.  If truststore is null, keystore is reused.
      *
@@ -60,9 +33,17 @@ public interface SparkServer {
      * @param keystorePassword   - the password for the keystore
      * @param truststoreFile     - the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword - the trust store password
+     * @param staticFileRoute    - the route to static files in classPath
      */
-    void ignite(String host, int port, String keystoreFile, String keystorePassword, String truststoreFile, String truststorePassword);
-
+    void ignite(
+            String host, 
+            int port, 
+            String keystoreFile, 
+            String keystorePassword, 
+            String truststoreFile, 
+            String truststorePassword,
+            String staticFilesRoute);
+    
     /**
      * Stops the spark server
      */

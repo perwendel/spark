@@ -16,20 +16,11 @@
  */
 package spark.webserver;
 
-import spark.route.RouteMatcherFactory;
-
 /**
- * 
+ * Exception used for stopping the execution
  *
- * @author Per Wendel
+ * @author Yan Bonnel
  */
-public class SparkServerFactory {
-
-    public static SparkServer create(boolean hasMultipleHandler) {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
-        matcherFilter.init(null);
-        JettyHandler handler = new JettyHandler(matcherFilter);
-        return new SparkServerImpl(handler);
-    }
-    
+public class NotConsumedException extends RuntimeException {
+    private static final long serialVersionUID = 6748899505989134484L;
 }

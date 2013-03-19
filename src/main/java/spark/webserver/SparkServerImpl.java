@@ -20,6 +20,9 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
@@ -42,29 +45,9 @@ class SparkServerImpl implements SparkServer {
     }
 
     @Override
-    public void ignite() {
-        ignite(4567);
-    }
-
-    @Override
-    public void ignite(int port) {
-        ignite("0.0.0.0", port);
-    }
-
-    @Override
-    public void ignite(String host) {
-        ignite(host, 4567);
-    }
-
-    @Override
-    public void ignite(String host, int port) {
-        ignite(host, port, null, null, null, null);
-    }
-
-    @Override
     public void ignite(String host, int port, String keystoreFile,
             String keystorePassword, String truststoreFile,
-            String truststorePassword) {
+            String truststorePassword, String staticFilesRoute) {
         
         ServerConnector connector;
         
@@ -84,8 +67,19 @@ class SparkServerImpl implements SparkServer {
         server = connector.getServer();
         server.setConnectors(new Connector[] { connector });
 
-        server.setHandler(handler);
-
+        if (staticFilesRoute == null) {
+            server.setHandler(handler);
+        } else {
+            ResourceHandler resourceHandler = new ResourceHandler();
+            Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
+            resourceHandler.setBaseResource(staticResources);
+            resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+            HandlerList handlers = new HandlerList();
+            handlers.setHandlers(new Handler[] { handler, resourceHandler });
+            server.setHandler(handlers);
+        }
+        
+        
         try {
             System.out.println("== " + NAME + " has ignited ...");
             System.out.println(">> Listening on " + host + ":" + port);

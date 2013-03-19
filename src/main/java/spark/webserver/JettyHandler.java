@@ -44,11 +44,19 @@ class JettyHandler extends SessionHandler  {
     }
 
     @Override
-    public void doHandle(String target, Request baseRequest, HttpServletRequest request, 
-                    HttpServletResponse response) throws IOException, ServletException {
+    public void doHandle(
+            String target, 
+            Request baseRequest, 
+            HttpServletRequest request,
+            HttpServletResponse response) throws IOException, ServletException {
         LOG.debug("jettyhandler, handle();");
-        filter.doFilter(request, response, null);
-        baseRequest.setHandled(true);
+        try {
+            filter.doFilter(request, response, null);
+            baseRequest.setHandled(true);
+        } catch (NotConsumedException ignore){
+            // TODO : Not use an exception in order to be faster.
+            baseRequest.setHandled(false);
+        }
     }
 
 }
