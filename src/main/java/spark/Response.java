@@ -16,12 +16,13 @@
  */
 package spark;
 
+import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import javax.servlet.http.Cookie;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Response {
 
+    /** The logger. */
     private static final Logger LOG = LoggerFactory.getLogger(Response.class);
 
     private HttpServletResponse response;
@@ -83,23 +85,23 @@ public class Response {
      * @param location Where to redirect
      */
     public void redirect(String location) {
-        LOG.debug("Redirecting (http 301) to {}", location);
+        LOG.debug("Redirecting http_302 to {}", location);
         try {
             response.sendRedirect(location);
-        } catch (IOException ioException) {
-            LOG.error("Redirection Error:", ioException);
+        } catch (IOException e) {
+            LOG.warn("Redirect failure", e);
         }
     }
 
     /**
-     *  Trigger a browser Permanent redirect
-     *  HTTP 301
+     *  Trigger a browser redirect with specific http 3XX status code.
      *
      * @param location Where to redirect permanently
+     * @param httpStatusCode http status code
      */
-    public void redirectPermanent(String location) {
-        LOG.debug("Redirecting (http 302) to {}", location);
-        response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+    public void redirect(String location, HttpStatus.Code httpStatusCode) {
+        LOG.debug("Redirecting {} to {}",httpStatusCode.getCode(), location);
+        response.setStatus(httpStatusCode.getCode());
         response.setHeader("Location", location);
         response.setHeader("Connection", "close");
     }

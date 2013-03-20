@@ -38,8 +38,7 @@ public class FilterConfigWrapper implements FilterConfig {
      * @return
      * @see javax.servlet.FilterConfig#getInitParameterNames()
      */
-    @SuppressWarnings({ "rawtypes" })
-    public Enumeration getInitParameterNames() {
+    public Enumeration<String> getInitParameterNames() {
         return delegate.getInitParameterNames();
     }
 

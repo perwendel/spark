@@ -23,10 +23,12 @@ import spark.route.RouteMatcherFactory;
  *
  * @author Per Wendel
  */
-public class SparkServerFactory {
+public final class SparkServerFactory {
 
-    public static SparkServer create() {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false);
+    private SparkServerFactory() {}
+    
+    public static SparkServer create(boolean hasMultipleHandler) {
+        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
         matcherFilter.init(null);
         JettyHandler handler = new JettyHandler(matcherFilter);
         return new SparkServerImpl(handler);

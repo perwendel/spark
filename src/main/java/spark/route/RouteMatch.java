@@ -26,14 +26,14 @@ public class RouteMatch {
     private HttpMethod httpMethod;
     private Object target;
     private String matchUri;
-    private String requestUri;
+    private String requestURI;
     
     public RouteMatch(HttpMethod httpMethod, Object target, String matchUri, String requestUri) {
         super();
         this.httpMethod = httpMethod;
         this.target = target;
         this.matchUri = matchUri;
-        this.requestUri = requestUri;
+        this.requestURI = requestUri;
     }
 
     
@@ -63,8 +63,8 @@ public class RouteMatch {
     /**
      * @return the requestUri
      */
-    public String getRequestUri() {
-        return requestUri;
+    public String getRequestURI() {
+        return requestURI;
     }
     
     

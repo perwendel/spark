@@ -47,19 +47,22 @@ public class MatcherFilter implements Filter {
 
     private RouteMatcher routeMatcher;
     private boolean isServletContext;
+    private boolean hasOtherHandlers;
 
     /** The logger. */
-    private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(getClass());
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MatcherFilter.class);
 
     /**
      * Constructor
      * 
      * @param routeMatcher The route matcher
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
+     * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(RouteMatcher routeMatcher, boolean isServletContext) {
+    public MatcherFilter(RouteMatcher routeMatcher, boolean isServletContext, boolean hasOtherHandlers) {
         this.routeMatcher = routeMatcher;
         this.isServletContext = isServletContext;
+        this.hasOtherHandlers = hasOtherHandlers;
     }
 
     public void init(FilterConfig filterConfig) {
@@ -69,7 +72,7 @@ public class MatcherFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
                     FilterChain chain) throws IOException, ServletException {
         long t0 = System.currentTimeMillis();
-        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest; // NOSONAR
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
         String httpMethodStr = httpRequest.getMethod().toLowerCase();
@@ -87,7 +90,7 @@ public class MatcherFilter implements Filter {
             
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
-                if (filterTarget != null && filterTarget instanceof spark.Filter) {
+                if (filterTarget instanceof spark.Filter) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
                     Response response = RequestResponseFactory.create(httpResponse);
 
@@ -141,7 +144,7 @@ public class MatcherFilter implements Filter {
                     throw hEx;
                 } catch (Exception e) {
                     LOG.error("", e);
-                    httpResponse.setStatus(500);
+                    httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     bodyContent = INTERNAL_ERROR;
                 }
             }
@@ -151,7 +154,7 @@ public class MatcherFilter implements Filter {
             
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
-                if (filterTarget != null && filterTarget instanceof spark.Filter) {
+                if (filterTarget instanceof spark.Filter) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
                     Response response = RequestResponseFactory.create(httpResponse);
                     
@@ -179,10 +182,14 @@ public class MatcherFilter implements Filter {
             }
         }
 
-        boolean consumed = bodyContent != null ? true : false;
+        boolean consumed = bodyContent != null;
+
+        if (!consumed && hasOtherHandlers) {
+            throw new NotConsumedException();
+        }
         
         if (!consumed && !isServletContext) {
-            httpResponse.setStatus(404);
+            httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
             bodyContent = NOT_FOUND;
             consumed = true;
         }

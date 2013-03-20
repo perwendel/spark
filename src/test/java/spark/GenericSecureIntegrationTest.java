@@ -1,35 +1,38 @@
 package spark;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import junit.framework.Assert;
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import spark.util.SparkTestUtil;
-import spark.util.SparkTestUtil.UrlResponse;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static spark.Spark.*;
 
-public class GenericIntegrationTest {
+public class GenericSecureIntegrationTest {
 
     static SparkTestUtil testUtil;
-    
+
     @AfterClass
     public static void tearDown() {
         Spark.clearRoutes();
         Spark.stop();
     }
-    
+
     @BeforeClass
     public static void setup() {
         testUtil = new SparkTestUtil(4567);
 
-        staticFileRoute("/public");
-        
+        // note that the keystore stuff is retrieved from SparkTestUtil which
+        // respects JVM params for keystore, password
+        // but offers a default included store if not.
+        Spark.setSecure(SparkTestUtil.getKeyStoreLocation(),
+                SparkTestUtil.getKeystorePassword(), null, null);
+
         before(new Filter("/protected/*") {
 
             @Override
@@ -46,7 +49,7 @@ public class GenericIntegrationTest {
             }
         });
 
-        get(new Route("/param/:param") {
+        get(new Route("/:param") {
 
             @Override
             public Object handle(Request request, Response response) {
@@ -56,11 +59,11 @@ public class GenericIntegrationTest {
 
         get(new Route("/paramwithmaj/:paramWithMaj") {
 
-          @Override
-          public Object handle(Request request, Response response) {
-              return "echo: " + request.params(":paramWithMaj");
-          }
-      });
+            @Override
+            public Object handle(Request request, Response response) {
+                return "echo: " + request.params(":paramWithMaj");
+            }
+        });
 
         get(new Route("/") {
 
@@ -69,7 +72,7 @@ public class GenericIntegrationTest {
                 return "Hello Root!";
             }
         });
-        
+
         post(new Route("/poster") {
             @Override
             public Object handle(Request request, Response response) {
@@ -78,7 +81,7 @@ public class GenericIntegrationTest {
                 return "Body was: " + body;
             }
         });
-        
+
         after(new Filter("/hi") {
             @Override
             public void handle(Request request, Response response) {
@@ -95,29 +98,30 @@ public class GenericIntegrationTest {
     @Test
     public void testGetHi() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+            SparkTestUtil.UrlResponse response = testUtil.doMethodSecure("GET",
+                    "/hi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("Hello World!", response.body);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testHiHead() {
         try {
-            UrlResponse response = testUtil.doMethod("HEAD", "/hi", null);
+            UrlResponse response = testUtil.doMethodSecure("HEAD", "/hi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("", response.body);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testGetHiAfterFilter() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+            UrlResponse response = testUtil.doMethodSecure("GET", "/hi", null);
             Assert.assertTrue(response.headers.get("after").contains("foobar"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -127,7 +131,7 @@ public class GenericIntegrationTest {
     @Test
     public void testGetRoot() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/", null);
+            UrlResponse response = testUtil.doMethodSecure("GET", "/", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("Hello Root!", response.body);
         } catch (Throwable e) {
@@ -138,7 +142,8 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParam1() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/param/shizzy", null);
+            UrlResponse response = testUtil.doMethodSecure("GET", "/shizzy",
+                    null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: shizzy", response.body);
         } catch (Throwable e) {
@@ -149,7 +154,8 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParam2() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/param/gunit", null);
+            UrlResponse response = testUtil.doMethodSecure("GET", "/gunit",
+                    null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: gunit", response.body);
         } catch (Throwable e) {
@@ -160,7 +166,8 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParamWithMaj() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/paramwithmaj/plop", null);
+            UrlResponse response = testUtil.doMethodSecure("GET",
+                    "/paramwithmaj/plop", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: plop", response.body);
         } catch (Throwable e) {
@@ -171,7 +178,7 @@ public class GenericIntegrationTest {
     @Test(expected = IOException.class)
     public void testUnauthorized() throws Exception {
         try {
-            testUtil.doMethod("GET", "/protected/resource", null);
+            testUtil.doMethodSecure("GET", "/protected/resource", null);
         } catch (Exception e) {
             Assert.assertTrue(e.getMessage().contains("401"));
             throw e;
@@ -181,29 +188,23 @@ public class GenericIntegrationTest {
     @Test(expected = FileNotFoundException.class)
     public void testNotFound() throws Exception {
         try {
-            testUtil.doMethod("GET", "/no/resource", null);
+            testUtil.doMethodSecure("GET", "/no/resource", null);
         } catch (Exception e) {
             throw e;
         }
     }
-    
+
     @Test
     public void testPost() {
         try {
-            UrlResponse response = testUtil.doMethod("POST", "/poster", "Fo shizzy");
+            UrlResponse response = testUtil.doMethodSecure("POST", "/poster",
+                    "Fo shizzy");
             System.out.println(response.body);
             Assert.assertEquals(201, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Test
-    public void testStaticFile() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/static.html", null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("Content of html file", response.body);
     }
 
 }

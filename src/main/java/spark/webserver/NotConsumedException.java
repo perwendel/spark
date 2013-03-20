@@ -14,28 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.route;
-
+package spark.webserver;
 
 /**
- * RouteMatcherFactory
+ * Exception used for stopping the execution
  *
- * @author Per Wendel
+ * @author Yan Bonnel
  */
-public final class RouteMatcherFactory {
-    /** The logger. */
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RouteMatcherFactory.class);
-
-    private static RouteMatcher routeMatcher = null;
-
-    private RouteMatcherFactory() {}
-    
-    public static synchronized RouteMatcher get() {
-        if (routeMatcher == null) {
-            LOG.debug("creates RouteMatcher");
-            routeMatcher = new SimpleRouteMatcher();
-        }
-        return routeMatcher;
-    }
-
+public class NotConsumedException extends RuntimeException {
+    private static final long serialVersionUID = 6748899505989134484L;
 }

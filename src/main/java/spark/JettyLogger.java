@@ -25,10 +25,10 @@ import org.eclipse.jetty.util.log.Logger;
  */
 public class JettyLogger implements Logger {
 
-    private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(getClass());
+    private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
     
     public void debug(String msg, Throwable th) {
-        LOG.debug(msg, th);
+        logger.debug(msg, th);
     }
 
     public Logger getLogger(String arg) {
@@ -37,18 +37,17 @@ public class JettyLogger implements Logger {
 
     @Override
     public boolean isDebugEnabled() {
-        return LOG.isDebugEnabled();
+        return logger.isDebugEnabled();
     }
 
     @Override
     public void warn(String msg, Throwable th) {
-        LOG.warn(msg, th);
-        th.printStackTrace();
+        logger.warn(msg, th);
     }
 
     @Override
     public void debug(Throwable thrown) {
-        LOG.debug("", thrown);
+        logger.debug("", thrown);
 
     }
 
@@ -56,10 +55,10 @@ public class JettyLogger implements Logger {
     public void debug(String msg, Object... args) {
         StringBuffer log = new StringBuffer(msg);
         for (Object arg : args) {
-            log.append(", " + arg);
-
+            log.append(", ");
+            log.append(arg);
         }
-        LOG.debug(log.toString());
+        logger.debug(log.toString());
     }
 
     @Override
@@ -74,22 +73,22 @@ public class JettyLogger implements Logger {
 
     @Override
     public void info(Throwable thrown) {
-        LOG.info("", thrown);
+        logger.info("", thrown);
     }
 
     @Override
     public void info(String msg, Object... args) {
         StringBuffer log = new StringBuffer(msg);
         for (Object arg : args) {
-            log.append(", " + arg);
-
+            log.append(", ");
+            log.append(arg);
         }
-        LOG.info(log.toString());
+        logger.info(log.toString());
     }
 
     @Override
     public void info(String msg, Throwable thrown) {
-        LOG.info(msg, thrown);
+        logger.info(msg, thrown);
     }
 
     @Override
@@ -99,17 +98,17 @@ public class JettyLogger implements Logger {
 
     @Override
     public void warn(Throwable thrown) {
-        LOG.warn("", thrown);
+        logger.warn("", thrown);
     }
 
     @Override
     public void warn(String msg, Object... args) {
         StringBuffer log = new StringBuffer(msg);
         for (Object arg : args) {
-            log.append(", " + arg);
-
+            log.append(", ");
+            log.append(arg);
         }
-        LOG.warn(log.toString());
+        logger.warn(log.toString());
     }
 
 }

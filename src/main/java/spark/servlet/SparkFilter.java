@@ -59,7 +59,7 @@ public class SparkFilter implements Filter {
         application.init();
 
         filterPath = FilterTools.getFilterPath(filterConfig);
-        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true);
+        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true, false);
     }
 
     /**
@@ -75,8 +75,7 @@ public class SparkFilter implements Filter {
         try {
             String applicationClassName = filterConfig.getInitParameter(APPLICATION_CLASS_PARAM);
             Class<?> applicationClass = Class.forName(applicationClassName);
-            SparkApplication application = (SparkApplication) applicationClass.newInstance();
-            return application;
+            return (SparkApplication) applicationClass.newInstance();
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -84,7 +83,7 @@ public class SparkFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletRequest httpRequest = (HttpServletRequest) request; // NOSONAR
         
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
         

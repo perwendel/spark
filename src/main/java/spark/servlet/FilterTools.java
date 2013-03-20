@@ -3,11 +3,13 @@ package spark.servlet;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
-class FilterTools {
+final class FilterTools {
 
     private static final String SLASH_WILDCARD = "/*";
     private static final String SLASH = "/";
     private static final String FILTER_MAPPING_PARAM = "filterMappingUrlPattern";
+    
+    private FilterTools() {}
     
     static String getRelativePath(HttpServletRequest request, String filterPath) {
         String path = request.getRequestURI();

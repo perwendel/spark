@@ -41,7 +41,7 @@ import spark.utils.SparkUtils;
  */
 public class Request {
 
-    private org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(getClass());
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Request.class);
     
     private static final String USER_AGENT = "user-agent";
     
@@ -215,7 +215,6 @@ public class Request {
     /**
      * Returns all query parameters
      */
-    @SuppressWarnings("unchecked")
     public Set<String> queryParams() {
         return servletRequest.getParameterMap().keySet();
     }
@@ -223,7 +222,6 @@ public class Request {
     /**
      * Returns all headers
      */
-    @SuppressWarnings("unchecked")
     public Set<String> headers() {
         if (headers == null) {
             headers = new TreeSet<String>();
@@ -263,7 +261,6 @@ public class Request {
     /**
      * Returns all attributes
      */
-    @SuppressWarnings("unchecked")
     public Set<String> attributes() {
         Set<String> attrList = new HashSet<String>();
         Enumeration<String> attributes = (Enumeration<String>) servletRequest.getAttributeNames();
@@ -278,30 +275,6 @@ public class Request {
      */
     public HttpServletRequest raw() {
         return servletRequest;
-    }
-    
-    private final Map<String, String> setParams(RouteMatch match) {
-        LOG.debug("set params for requestUri: "
-                        + match.getRequestUri()
-                        + ", matchUri: "
-                        + match.getMatchUri());
-
-        Map<String, String> params = new HashMap<String, String>();
-        
-        List<String> request = SparkUtils.convertRouteToList(match.getRequestUri());
-        List<String> matched = SparkUtils.convertRouteToList(match.getMatchUri());
-
-        for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
-            String matchedPart = matched.get(i);
-            if (SparkUtils.isParam(matchedPart)) {
-                LOG.debug("matchedPart: "
-                                + matchedPart
-                                + " = "
-                                + request.get(i));
-                params.put(matchedPart, request.get(i));
-            }
-        }
-        return Collections.unmodifiableMap(params);
     }
     
     public QueryParamsMap queryMap() {
@@ -381,5 +354,29 @@ public class Request {
             }
         }
         return null;
+    }
+    
+    private Map<String, String> setParams(RouteMatch match) {
+        LOG.debug("set params for requestUri: "
+                        + match.getRequestURI()
+                        + ", matchUri: "
+                        + match.getMatchUri());
+
+        Map<String, String> params = new HashMap<String, String>();
+        
+        List<String> request = SparkUtils.convertRouteToList(match.getRequestURI());
+        List<String> matched = SparkUtils.convertRouteToList(match.getMatchUri());
+
+        for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
+            String matchedPart = matched.get(i);
+            if (SparkUtils.isParam(matchedPart)) {
+                LOG.debug("matchedPart: "
+                                + matchedPart
+                                + " = "
+                                + request.get(i));
+                params.put(matchedPart, request.get(i));
+            }
+        }
+        return Collections.unmodifiableMap(params);
     }
 }
