@@ -16,9 +16,10 @@
  */
 package spark;
 
-import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.http.HttpRedirectStatus;
+import spark.http.HttpStatus;
 
 import java.io.IOException;
 
@@ -85,11 +86,11 @@ public class Response {
      * @param location Where to redirect
      */
     public void redirect(String location) {
-        LOG.debug("Redirecting http_302 to {}", location);
+        LOG.debug("Redirecting ({} {} to {}", HttpRedirectStatus.FOUND.getMessage(), HttpRedirectStatus.FOUND.getCode(), location);
         try {
             response.sendRedirect(location);
-        } catch (IOException e) {
-            LOG.warn("Redirect failure", e);
+        } catch (IOException ioException) {
+            LOG.warn("Redirect failure", ioException);
         }
     }
 
@@ -99,8 +100,8 @@ public class Response {
      * @param location Where to redirect permanently
      * @param httpStatusCode http status code
      */
-    public void redirect(String location, HttpStatus.Code httpStatusCode) {
-        LOG.debug("Redirecting {} to {}",httpStatusCode.getCode(), location);
+    public void redirect(String location, HttpStatus httpStatusCode) {
+        LOG.debug("Redirecting ({} {} to {}", httpStatusCode.getMessage(), httpStatusCode.getCode(), location);
         response.setStatus(httpStatusCode.getCode());
         response.setHeader("Location", location);
         response.setHeader("Connection", "close");
