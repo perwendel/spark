@@ -160,7 +160,7 @@ public class Request {
      * Returns the URL string
      */
     public String url() {
-        return scheme() + "://" + host() + pathInfo();
+    	return servletRequest.getRequestURL().toString();
     }
     
     /**
