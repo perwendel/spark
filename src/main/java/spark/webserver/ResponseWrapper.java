@@ -19,6 +19,7 @@ package spark.webserver;
 import javax.servlet.http.HttpServletResponse;
 
 import spark.Response;
+import spark.http.HttpStatus;
 
 class ResponseWrapper extends Response {
 
@@ -59,6 +60,11 @@ class ResponseWrapper extends Response {
     }
 
     @Override
+    public void redirect(String location, HttpStatus httpStatusCode) {
+        delegate.redirect(location, httpStatusCode);
+    }
+
+    @Override
     public void header(String header, String value) {
         delegate.header(header, value);
     }
@@ -81,6 +87,11 @@ class ResponseWrapper extends Response {
     @Override
     public void cookie(String name, String value, int maxAge) {
         delegate.cookie(name, value, maxAge);
+    }
+
+    @Override
+    public void cookie(String name, String value, int maxAge, boolean secured) {
+        delegate.cookie(name, value, maxAge, secured);
     }
 
     @Override
