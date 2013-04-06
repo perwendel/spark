@@ -1,14 +1,9 @@
 package spark;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import junit.framework.Assert;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -17,19 +12,19 @@ import static spark.Spark.*;
 public class GenericIntegrationTest {
 
     static SparkTestUtil testUtil;
-    
+
     @AfterClass
     public static void tearDown() {
         Spark.clearRoutes();
         Spark.stop();
     }
-    
+
     @BeforeClass
     public static void setup() {
         testUtil = new SparkTestUtil(4567);
 
         staticFileRoute("/public");
-        
+
         before(new Filter("/protected/*") {
 
             @Override
@@ -56,11 +51,11 @@ public class GenericIntegrationTest {
 
         get(new Route("/paramwithmaj/:paramWithMaj") {
 
-          @Override
-          public Object handle(Request request, Response response) {
-              return "echo: " + request.params(":paramWithMaj");
-          }
-      });
+            @Override
+            public Object handle(Request request, Response response) {
+                return "echo: " + request.params(":paramWithMaj");
+            }
+        });
 
         get(new Route("/") {
 
@@ -69,7 +64,7 @@ public class GenericIntegrationTest {
                 return "Hello Root!";
             }
         });
-        
+
         post(new Route("/poster") {
             @Override
             public Object handle(Request request, Response response) {
@@ -78,7 +73,16 @@ public class GenericIntegrationTest {
                 return "Body was: " + body;
             }
         });
-        
+
+        patch(new Route("/patcher") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String body = request.body();
+                response.status(200);
+                return "Body was: " + body;
+            }
+        });
+
         after(new Filter("/hi") {
             @Override
             public void handle(Request request, Response response) {
@@ -102,7 +106,7 @@ public class GenericIntegrationTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testHiHead() {
         try {
@@ -113,7 +117,7 @@ public class GenericIntegrationTest {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testGetHiAfterFilter() {
         try {
@@ -168,31 +172,44 @@ public class GenericIntegrationTest {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testUnauthorized() throws Exception {
         try {
-            testUtil.doMethod("GET", "/protected/resource", null);
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("401"));
-            throw e;
+            UrlResponse response = testUtil.doMethod("GET", "/protected/resource", null);
+            Assert.assertTrue(response.status == 401);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test
     public void testNotFound() throws Exception {
         try {
-            testUtil.doMethod("GET", "/no/resource", null);
-        } catch (Exception e) {
-            throw e;
+            UrlResponse response = testUtil.doMethod("GET", "/no/resource", null);
+            Assert.assertTrue(response.status == 404);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
-    
+
     @Test
     public void testPost() {
         try {
             UrlResponse response = testUtil.doMethod("POST", "/poster", "Fo shizzy");
             System.out.println(response.body);
             Assert.assertEquals(201, response.status);
+            Assert.assertTrue(response.body.contains("Fo shizzy"));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testPatch() {
+        try {
+            UrlResponse response = testUtil.doMethod("PATCH", "/patcher", "Fo shizzy");
+            System.out.println(response.body);
+            Assert.assertEquals(200, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
