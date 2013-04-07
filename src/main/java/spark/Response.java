@@ -16,15 +16,13 @@
  */
 package spark;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import spark.http.HttpRedirectStatus;
-import spark.http.HttpStatus;
-
 import java.io.IOException;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides functionality for modifying the response
@@ -81,12 +79,14 @@ public class Response {
     }
 
     /**
-     *  Trigger a browser redirect
+     * Trigger a browser redirect
      * 
      * @param location Where to redirect
      */
     public void redirect(String location) {
-        LOG.debug("Redirecting ({} {} to {}", HttpRedirectStatus.FOUND.getMessage(), HttpRedirectStatus.FOUND.getCode(), location);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Redirecting ({} {} to {}", "Found", HttpServletResponse.SC_FOUND, location);
+        }
         try {
             response.sendRedirect(location);
         } catch (IOException ioException) {
@@ -95,16 +95,23 @@ public class Response {
     }
 
     /**
-     *  Trigger a browser redirect with specific http 3XX status code.
+     * Trigger a browser redirect with specific http 3XX status code.
      *
      * @param location Where to redirect permanently
-     * @param httpStatusCode http status code
+     * @param httpStatusCode the http status code
      */
-    public void redirect(String location, HttpStatus httpStatusCode) {
-        LOG.debug("Redirecting ({} {} to {}", httpStatusCode.getMessage(), httpStatusCode.getCode(), location);
-        response.setStatus(httpStatusCode.getCode());
+    public void redirect(String location, int httpStatusCode) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Redirecting ({} to {}", httpStatusCode, location);    
+        }
+        response.setStatus(httpStatusCode);
         response.setHeader("Location", location);
         response.setHeader("Connection", "close");
+        try {
+            response.sendError(httpStatusCode);
+        } catch (IOException e) {
+            LOG.warn("Exception when trying to redirect permanently", e);
+        }
     }
     
     /**

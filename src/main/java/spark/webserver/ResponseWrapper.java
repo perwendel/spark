@@ -19,7 +19,6 @@ package spark.webserver;
 import javax.servlet.http.HttpServletResponse;
 
 import spark.Response;
-import spark.http.HttpStatus;
 
 class ResponseWrapper extends Response {
 
@@ -60,7 +59,7 @@ class ResponseWrapper extends Response {
     }
 
     @Override
-    public void redirect(String location, HttpStatus httpStatusCode) {
+    public void redirect(String location, int httpStatusCode) {
         delegate.redirect(location, httpStatusCode);
     }
 

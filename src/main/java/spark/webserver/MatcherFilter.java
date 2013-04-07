@@ -183,7 +183,7 @@ public class MatcherFilter implements Filter {
         }
 
         boolean consumed = bodyContent != null;
-
+        
         if (!consumed && hasOtherHandlers) {
             throw new NotConsumedException();
         }
@@ -196,7 +196,9 @@ public class MatcherFilter implements Filter {
 
         if (consumed) {
             // Write body content
-            httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+            if (!httpResponse.isCommitted()) {
+                httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+            }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
         }
