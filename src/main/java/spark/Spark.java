@@ -25,15 +25,15 @@ import spark.webserver.SparkServerFactory;
 /**
  * The main building block of a Spark application is a set of routes. A route is
  * made up of three simple pieces:
- * 
+ * <p/>
  * <ul>
  * <li>A verb (get, post, put, delete, head, trace, connect, options)</li>
  * <li>A path (/hello, /users/:name)</li>
  * <li>A callback ( handle(Request request, Response response) )</li>
  * </ul>
- * 
+ * <p/>
  * Example:
- * 
+ * <p/>
  * <pre>
  * {@code
  * Spark.get(new Route("/hello") {
@@ -42,11 +42,11 @@ import spark.webserver.SparkServerFactory;
  *    }
  * });
  * </pre>
- * 
+ * <p/>
  * <code>
-      
-   </code>
- * 
+ * <p/>
+ * </code>
+ *
  * @author Per Wendel
  */
 public final class Spark {
@@ -68,15 +68,15 @@ public final class Spark {
     private static String staticFileRoute = null;
 
     // Hide constructor
-    private Spark() {}
-    
+    private Spark() {
+    }
+
     /**
      * Set the IP address that Spark should listen on. If not called the default
      * address is '0.0.0.0'. This has to be called before any route mapping is
      * done.
-     * 
-     * @param ipAddress
-     *            The ipAddress
+     *
+     * @param ipAddress The ipAddress
      */
     public static synchronized void setIpAddress(String ipAddress) {
         if (initialized) {
@@ -88,9 +88,8 @@ public final class Spark {
     /**
      * Set the port that Spark should listen on. If not called the default port
      * is 4567. This has to be called before any route mapping is done.
-     * 
-     * @param port
-     *            The port number
+     *
+     * @param port The port number
      */
     public static synchronized void setPort(int port) {
         if (initialized) {
@@ -104,24 +103,20 @@ public final class Spark {
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore
      * will be reused).
-     * 
+     * <p/>
      * This method is only relevant when using embedded Jetty servers. It should
      * not be used if you are using Servlets, where you will need to secure the
      * connection in the servlet container
-     * 
-     * @param keystoreFile
-     *            The keystore file location as string
-     * @param keystorePassword
-     *            the password for the keystore
-     * @param truststoreFile
-     *            the truststore file location as string, leave null to reuse
-     *            keystore
-     * @param truststorePassword
-     *            the trust store password
+     *
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param truststoreFile     the truststore file location as string, leave null to reuse
+     *                           keystore
+     * @param truststorePassword the trust store password
      */
     public static synchronized void setSecure(String keystoreFile,
-            String keystorePassword, String truststoreFile,
-            String truststorePassword) {
+                                              String keystorePassword, String truststoreFile,
+                                              String truststorePassword) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -140,9 +135,8 @@ public final class Spark {
     /**
      * Assign a route in classpath for static file. <b>Careful : this method
      * must be called before all others method.</b>
-     * 
-     * @param route
-     *            the route in classpath.
+     *
+     * @param route the route in classpath.
      */
     public static synchronized void staticFileRoute(String route) {
         if (initialized) {
@@ -153,9 +147,8 @@ public final class Spark {
 
     /**
      * Map the route for HTTP GET requests
-     * 
-     * @param route
-     *            The route
+     *
+     * @param route The route
      */
     public static synchronized void get(Route route) {
         addRoute(HttpMethod.get.name(), route);
@@ -163,9 +156,8 @@ public final class Spark {
 
     /**
      * Map the route for HTTP POST requests
-     * 
-     * @param route
-     *            The route
+     *
+     * @param route The route
      */
     public static synchronized void post(Route route) {
         addRoute(HttpMethod.post.name(), route);
@@ -173,19 +165,26 @@ public final class Spark {
 
     /**
      * Map the route for HTTP PUT requests
-     * 
-     * @param route
-     *            The route
+     *
+     * @param route The route
      */
     public static synchronized void put(Route route) {
         addRoute(HttpMethod.put.name(), route);
     }
 
     /**
+     * Map the route for HTTP PATCH requests
+     *
+     * @param route The route
+     */
+    public static synchronized void patch(Route route) {
+        addRoute(HttpMethod.patch.name(), route);
+    }
+
+    /**
      * Map the route for HTTP DELETE requests
-     * 
-     * @param route
-     *            The route
+     *
+     * @param route The route
      */
     public static synchronized void delete(Route route) {
         addRoute(HttpMethod.delete.name(), route);
@@ -193,9 +192,8 @@ public final class Spark {
 
     /**
      * Map the route for HTTP HEAD requests
-     * 
-     * @param route
-     *            The route
+     *
+     * @param route The route
      */
     public static synchronized void head(Route route) {
         addRoute(HttpMethod.head.name(), route);
@@ -203,9 +201,8 @@ public final class Spark {
 
     /**
      * Map the route for HTTP TRACE requests
-     * 
-     * @param route
-     *            The route
+     *
+     * @param route The route
      */
     public static synchronized void trace(Route route) {
         addRoute(HttpMethod.trace.name(), route);
@@ -213,9 +210,8 @@ public final class Spark {
 
     /**
      * Map the route for HTTP CONNECT requests
-     * 
-     * @param route
-     *            The route
+     *
+     * @param route The route
      */
     public static synchronized void connect(Route route) {
         addRoute(HttpMethod.connect.name(), route);
@@ -223,9 +219,8 @@ public final class Spark {
 
     /**
      * Map the route for HTTP OPTIONS requests
-     * 
-     * @param route
-     *            The route
+     *
+     * @param route The route
      */
     public static synchronized void options(Route route) {
         addRoute(HttpMethod.options.name(), route);
@@ -233,9 +228,8 @@ public final class Spark {
 
     /**
      * Maps a filter to be executed before any matching routes
-     * 
-     * @param filter
-     *            The filter
+     *
+     * @param filter The filter
      */
     public static synchronized void before(Filter filter) {
         addFilter(HttpMethod.before.name(), filter);
@@ -243,9 +237,8 @@ public final class Spark {
 
     /**
      * Maps a filter to be executed after any matching routes
-     * 
-     * @param filter
-     *            The filter
+     *
+     * @param filter The filter
      */
     public static synchronized void after(Filter filter) {
         addFilter(HttpMethod.after.name(), filter);
@@ -282,7 +275,7 @@ public final class Spark {
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
                 + "'", filter);
     }
-    
+
     private static synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
@@ -291,12 +284,12 @@ public final class Spark {
                 public void run() {
                     server = SparkServerFactory.create(staticFileRoute != null);
                     server.ignite(
-                            ipAddress, 
-                            port, 
+                            ipAddress,
+                            port,
                             keystoreFile,
-                            keystorePassword, 
+                            keystorePassword,
                             truststoreFile,
-                            truststorePassword, 
+                            truststorePassword,
                             staticFileRoute);
                 }
             }).start();
