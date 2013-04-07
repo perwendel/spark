@@ -1,15 +1,11 @@
 package spark;
 
 import junit.framework.Assert;
-import spark.util.SparkTestUtil;
-import spark.util.SparkTestUtil.UrlResponse;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
 
 import static spark.Spark.*;
 
@@ -78,6 +74,15 @@ public class GenericSecureIntegrationTest {
             public Object handle(Request request, Response response) {
                 String body = request.body();
                 response.status(201); // created
+                return "Body was: " + body;
+            }
+        });
+
+        patch(new Route("/patcher") {
+            @Override
+            public Object handle(Request request, Response response) {
+                String body = request.body();
+                response.status(200);
                 return "Body was: " + body;
             }
         });
@@ -175,22 +180,23 @@ public class GenericSecureIntegrationTest {
         }
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void testUnauthorized() throws Exception {
         try {
-            testUtil.doMethodSecure("GET", "/protected/resource", null);
-        } catch (Exception e) {
-            Assert.assertTrue(e.getMessage().contains("401"));
-            throw e;
+            UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/protected/resource", null);
+            Assert.assertTrue(urlResponse.status == 401);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test
     public void testNotFound() throws Exception {
         try {
-            testUtil.doMethodSecure("GET", "/no/resource", null);
-        } catch (Exception e) {
-            throw e;
+            UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/no/resource", null);
+            Assert.assertTrue(urlResponse.status == 404);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -201,6 +207,19 @@ public class GenericSecureIntegrationTest {
                     "Fo shizzy");
             System.out.println(response.body);
             Assert.assertEquals(201, response.status);
+            Assert.assertTrue(response.body.contains("Fo shizzy"));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testPatch() {
+        try {
+            UrlResponse response = testUtil.doMethodSecure("PATCH", "/patcher",
+                    "Fo shizzy");
+            System.out.println(response.body);
+            Assert.assertEquals(200, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
