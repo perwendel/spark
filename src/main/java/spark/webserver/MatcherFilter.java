@@ -69,14 +69,14 @@ public class MatcherFilter implements Filter {
 
     }
 
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
-                    FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, // NOSONAR
+                    FilterChain chain) throws IOException, ServletException { // NOSONAR
         long t0 = System.currentTimeMillis();
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest; // NOSONAR
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-        String httpMethodStr = httpRequest.getMethod().toLowerCase();
-        String uri = httpRequest.getRequestURI().toLowerCase();
+        String httpMethodStr = httpRequest.getMethod().toLowerCase(); // NOSONAR
+        String uri = httpRequest.getRequestURI().toLowerCase(); // NOSONAR
 
         String bodyContent = null;
 
@@ -140,8 +140,8 @@ public class MatcherFilter implements Filter {
                     }
                     long t1 = System.currentTimeMillis() - t0;
                     LOG.debug("Time for request: " + t1);
-                } catch (HaltException hEx) {
-                    throw hEx;
+                } catch (HaltException hEx) { // NOSONAR
+                    throw hEx; // NOSONAR
                 } catch (Exception e) {
                     LOG.error("", e);
                     httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

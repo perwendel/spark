@@ -98,7 +98,7 @@ public final class IOUtils {
     public static final String LINE_SEPARATOR;
     static {
         // avoid security issues
-        StringWriter buf = new StringWriter(4);
+        StringWriter buf = new StringWriter(4); // NOSONAR
         PrintWriter out = new PrintWriter(buf);
         out.println();
         LINE_SEPARATOR = buf.toString();
@@ -148,7 +148,7 @@ public final class IOUtils {
      */
     public static void copy(InputStream input, Writer output)
             throws IOException {
-        InputStreamReader in = new InputStreamReader(input);
+        InputStreamReader in = new InputStreamReader(input); // NOSONAR
         copy(in, output);
     }
 

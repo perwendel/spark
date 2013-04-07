@@ -91,7 +91,7 @@ public class Request {
     Request(RouteMatch match, HttpServletRequest request) {
         this.httpMethod = match.getHttpMethod();
         this.servletRequest = request;
-        params = setParams(match);
+        params = getParams(match);
     }
     
     /**
@@ -106,9 +106,9 @@ public class Request {
         }
 
         if (param.startsWith(":")) {
-            return params.get(param.toLowerCase());
+            return params.get(param.toLowerCase()); // NOSONAR
         } else {
-            return params.get(":" + param.toLowerCase());
+            return params.get(":" + param.toLowerCase()); // NOSONAR
         }
     }
     
@@ -185,6 +185,7 @@ public class Request {
             try {
                 body = IOUtils.toString(servletRequest.getInputStream());
             } catch (Exception e) {
+                LOG.warn("Exception when reading body", e);
             }
         }
         return body;
@@ -356,13 +357,13 @@ public class Request {
         return null;
     }
     
-    private Map<String, String> setParams(RouteMatch match) {
+    private Map<String, String> getParams(RouteMatch match) {
         LOG.debug("set params for requestUri: "
                         + match.getRequestURI()
                         + ", matchUri: "
                         + match.getMatchUri());
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> paramsToSet = new HashMap<String, String>();
         
         List<String> request = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matched = SparkUtils.convertRouteToList(match.getMatchUri());
@@ -374,9 +375,9 @@ public class Request {
                                 + matchedPart
                                 + " = "
                                 + request.get(i));
-                params.put(matchedPart, request.get(i));
+                paramsToSet.put(matchedPart, request.get(i));
             }
         }
-        return Collections.unmodifiableMap(params);
+        return Collections.unmodifiableMap(paramsToSet);
     }
 }

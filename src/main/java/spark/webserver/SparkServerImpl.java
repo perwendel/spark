@@ -16,6 +16,8 @@
  */
 package spark.webserver;
 
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -56,7 +58,7 @@ class SparkServerImpl implements SparkServer {
         }
 
         // Set some timeout options to make debugging easier.
-        connector.setIdleTimeout(1000 * 60 * 60);
+        connector.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
         connector.setSoLingerTime(-1);
         connector.setHost(host);
         connector.setPort(port);
@@ -93,7 +95,9 @@ class SparkServerImpl implements SparkServer {
     public void stop() {
         System.out.print(">>> " + NAME + " shutting down..."); // NOSONAR
         try {
-            server.stop();
+            if (server != null) {
+                server.stop();
+            }
         } catch (Exception e) {
             e.printStackTrace(); // NOSONAR
             System.exit(100); // NOSONAR

@@ -52,9 +52,9 @@ public class SimpleRouteMatcher implements RouteMatcher {
             return match;
         }
 
-        private boolean matchPath(String path) {
-            if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) 
-                            || (this.path.endsWith("/") && !path.endsWith("/")))) {
+        private boolean matchPath(String path) { // NOSONAR
+            if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) // NOSONAR
+                            || (this.path.endsWith("/") && !path.endsWith("/")))) { 
                 // One and not both ends with slash
                 return false;
             }
@@ -76,11 +76,9 @@ public class SimpleRouteMatcher implements RouteMatcher {
                     String thisPathPart = thisPathList.get(i);
                     String pathPart = pathList.get(i);
                     
-                    if ((i == thisPathSize -1)) {
-                        if (thisPathPart.equals("*") && this.path.endsWith("*")) {
-                            // wildcard match
-                            return true;
-                        }    
+                    if ((i == thisPathSize -1) && (thisPathPart.equals("*") && this.path.endsWith("*"))) {
+                        // wildcard match
+                        return true;
                     }
                     
                     if (!thisPathPart.startsWith(":") && !thisPathPart.equals(pathPart)) {
@@ -155,8 +153,8 @@ public class SimpleRouteMatcher implements RouteMatcher {
     public void parseValidateAddRoute(String route, Object target) {
         try {
             int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
-            String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase();
-            String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim().toLowerCase();
+            String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase(); // NOSONAR
+            String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim().toLowerCase(); // NOSONAR
 
             // Use special enum stuff to get from value
             HttpMethod method;
