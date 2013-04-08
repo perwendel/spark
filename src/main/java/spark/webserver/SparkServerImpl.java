@@ -18,7 +18,6 @@ package spark.webserver;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -72,30 +71,19 @@ class SparkServerImpl implements SparkServer {
         server = connector.getServer();
         server.setConnectors(new Connector[] { connector });
 
+        // Handle static file routes
         if (staticFilesRoute == null && externalFilesRoute == null) {
             server.setHandler(handler);
         } else {
             List<Handler> handlersInList = new ArrayList<>();
             handlersInList.add(handler);
-            if (staticFilesRoute != null) {
-                ResourceHandler resourceHandler = new ResourceHandler();
-                Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
-                resourceHandler.setBaseResource(staticResources);
-                resourceHandler.setWelcomeFiles(new String[] { "index.html" });
-                handlersInList.add(resourceHandler);
-            }
-            if (externalFilesRoute != null) {
-                try {
-                    ResourceHandler externalResourceHandler = new ResourceHandler();
-                    Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
-                    externalResourceHandler.setBaseResource(externalStaticResources);
-                    externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
-                    handlersInList.add(externalResourceHandler);
-                } catch (IOException exception) {
-                    exception.printStackTrace(); // NOSONAR
-                    System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
-                }
-            }
+            
+            // Set static file route
+            setStaticFileRouteIfPresent(staticFilesRoute, handlersInList);
+            
+            // Set external static file route
+            setExternalStaticFileRouteIfPresent(externalFilesRoute, handlersInList);
+
             HandlerList handlers = new HandlerList();
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
@@ -167,4 +155,35 @@ class SparkServerImpl implements SparkServer {
         return new ServerConnector(new Server());
     }
 
+    /**
+     * Sets static file route if present
+     */
+    private void setStaticFileRouteIfPresent(String staticFilesRoute, List<Handler> handlersInList) {
+        if (staticFilesRoute != null) {
+            ResourceHandler resourceHandler = new ResourceHandler();
+            Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
+            resourceHandler.setBaseResource(staticResources);
+            resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+            handlersInList.add(resourceHandler);
+        }
+    }
+    
+    /**
+     * Sets external static file route if present
+     */
+    private void setExternalStaticFileRouteIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
+        if (externalFilesRoute != null) {
+            try {
+                ResourceHandler externalResourceHandler = new ResourceHandler();
+                Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
+                externalResourceHandler.setBaseResource(externalStaticResources);
+                externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
+                handlersInList.add(externalResourceHandler);
+            } catch (IOException exception) {
+                exception.printStackTrace(); // NOSONAR
+                System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
+            }
+        }
+    }
+    
 }

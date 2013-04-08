@@ -134,8 +134,8 @@ public final class Spark {
     }
 
     /**
-     * Assign a route in classpath for static file. <b>Careful : this method
-     * must be called before all others method.</b>
+     * Assign a route in classpath for static files. <b>Observe: this method
+     * must be called before all other methods.</b>
      *
      * @param route the route in classpath.
      */
@@ -146,6 +146,12 @@ public final class Spark {
         staticFileRoute = route;
     }
 
+    /**
+     * Assign an external route for static files. <b>Observe: this method
+     * must be called before all other methods.</b>
+     *
+     * @param route the route in classpath.
+     */
     public static synchronized void externalStaticFileRoute(String externalRoute) {
         if (initialized) {
             throwBeforeRouteMappingException();
