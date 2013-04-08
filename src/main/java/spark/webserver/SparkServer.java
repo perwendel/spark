@@ -33,7 +33,8 @@ public interface SparkServer {
      * @param keystorePassword   - the password for the keystore
      * @param truststoreFile     - the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword - the trust store password
-     * @param staticFileRoute    - the route to static files in classPath
+     * @param staticFilesRoute    - the route to static files in classPath
+     * @param externalFilesRoute    - the route to static files external to classPath.
      */
     void ignite(
             String host, 
@@ -42,7 +43,8 @@ public interface SparkServer {
             String keystorePassword, 
             String truststoreFile, 
             String truststorePassword,
-            String staticFilesRoute);
+            String staticFilesRoute,
+            String externalFilesRoute);
     
     /**
      * Stops the spark server

@@ -16,6 +16,11 @@
  */
 package spark.webserver;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Connector;
@@ -46,7 +51,8 @@ class SparkServerImpl implements SparkServer {
     @Override
     public void ignite(String host, int port, String keystoreFile,
             String keystorePassword, String truststoreFile,
-            String truststorePassword, String staticFilesRoute) {
+            String truststorePassword, String staticFilesRoute,
+            String externalFilesRoute) {
         
         ServerConnector connector;
         
@@ -66,15 +72,32 @@ class SparkServerImpl implements SparkServer {
         server = connector.getServer();
         server.setConnectors(new Connector[] { connector });
 
-        if (staticFilesRoute == null) {
+        if (staticFilesRoute == null && externalFilesRoute == null) {
             server.setHandler(handler);
         } else {
-            ResourceHandler resourceHandler = new ResourceHandler();
-            Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
-            resourceHandler.setBaseResource(staticResources);
-            resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+            List<Handler> handlersInList = new ArrayList<>();
+            handlersInList.add(handler);
+            if (staticFilesRoute != null) {
+                ResourceHandler resourceHandler = new ResourceHandler();
+                Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
+                resourceHandler.setBaseResource(staticResources);
+                resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+                handlersInList.add(resourceHandler);
+            }
+            if (externalFilesRoute != null) {
+                try {
+                    ResourceHandler externalResourceHandler = new ResourceHandler();
+                    Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
+                    externalResourceHandler.setBaseResource(externalStaticResources);
+                    externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
+                    handlersInList.add(externalResourceHandler);
+                } catch (IOException exception) {
+                    exception.printStackTrace(); // NOSONAR
+                    System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
+                }
+            }
             HandlerList handlers = new HandlerList();
-            handlers.setHandlers(new Handler[] { handler, resourceHandler });
+            handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
         
