@@ -66,6 +66,7 @@ public final class Spark {
     private static String truststorePassword;
 
     private static String staticFileRoute = null;
+    private static String externalStaticFileRoute = null;
 
     // Hide constructor
     private Spark() {
@@ -143,6 +144,13 @@ public final class Spark {
             throwBeforeRouteMappingException();
         }
         staticFileRoute = route;
+    }
+
+    public static synchronized void externalStaticFileRoute(String externalRoute) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        externalStaticFileRoute = externalRoute;
     }
 
     /**
@@ -276,13 +284,17 @@ public final class Spark {
                 + "'", filter);
     }
 
+    private static boolean hasMultipleHandlers() {
+        return staticFileRoute != null || externalStaticFileRoute != null;
+    }
+
     private static synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    server = SparkServerFactory.create(staticFileRoute != null);
+                    server = SparkServerFactory.create(hasMultipleHandlers());
                     server.ignite(
                             ipAddress,
                             port,
@@ -290,7 +302,8 @@ public final class Spark {
                             keystorePassword,
                             truststoreFile,
                             truststorePassword,
-                            staticFileRoute);
+                            staticFileRoute,
+                            externalStaticFileRoute);
                 }
             }).start();
             initialized = true;

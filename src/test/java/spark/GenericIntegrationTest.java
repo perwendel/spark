@@ -7,23 +7,39 @@ import org.junit.Test;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import static spark.Spark.*;
 
 public class GenericIntegrationTest {
 
     static SparkTestUtil testUtil;
+    static File tmpExternalFile;
 
     @AfterClass
     public static void tearDown() {
         Spark.clearRoutes();
         Spark.stop();
+        if (tmpExternalFile != null) {
+            tmpExternalFile.delete();
+        }
     }
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws IOException {
         testUtil = new SparkTestUtil(4567);
 
+        tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
+
+        FileWriter writer = new FileWriter(tmpExternalFile);
+        writer.write("Content of external file");
+        writer.flush();
+        writer.close();
+
         staticFileRoute("/public");
+        externalStaticFileRoute(System.getProperty("java.io.tmpdir"));
 
         before(new Filter("/protected/*") {
 
@@ -221,6 +237,13 @@ public class GenericIntegrationTest {
         UrlResponse response = testUtil.doMethod("GET", "/static.html", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of html file", response.body);
+    }
+
+    @Test
+    public void testExternalStaticFile() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/externalFile.html", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Content of external file", response.body);
     }
 
 }
