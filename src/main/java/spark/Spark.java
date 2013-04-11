@@ -65,8 +65,8 @@ public final class Spark {
     private static String truststoreFile;
     private static String truststorePassword;
 
-    private static String staticFileRoute = null;
-    private static String externalStaticFileRoute = null;
+    private static String staticFileFolder = null;
+    private static String externalStaticFileFolder = null;
 
     // Hide constructor
     private Spark() {
@@ -134,29 +134,29 @@ public final class Spark {
     }
 
     /**
-     * Assign a route in classpath for static files. <b>Observe: this method
+     * Sets the folder in classpath serving static files. <b>Observe: this method
      * must be called before all other methods.</b>
      *
-     * @param route the route in classpath.
+     * @param folder the folder in classpath.
      */
-    public static synchronized void staticFileRoute(String route) {
+    public static synchronized void staticFileLocation(String folder) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        staticFileRoute = route;
+        staticFileFolder = folder;
     }
 
     /**
-     * Assign an external route for static files. <b>Observe: this method
+     * Sets the external folder serving static files. <b>Observe: this method
      * must be called before all other methods.</b>
      *
-     * @param route the route in classpath.
+     * @param externalFolder the external folder serving static files.
      */
-    public static synchronized void externalStaticFileRoute(String externalRoute) {
+    public static synchronized void externalStaticFileLocation(String externalFolder) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        externalStaticFileRoute = externalRoute;
+        externalStaticFileFolder = externalFolder;
     }
 
     /**
@@ -291,7 +291,7 @@ public final class Spark {
     }
 
     private static boolean hasMultipleHandlers() {
-        return staticFileRoute != null || externalStaticFileRoute != null;
+        return staticFileFolder != null || externalStaticFileFolder != null;
     }
 
     private static synchronized void init() {
@@ -308,8 +308,8 @@ public final class Spark {
                             keystorePassword,
                             truststoreFile,
                             truststorePassword,
-                            staticFileRoute,
-                            externalStaticFileRoute);
+                            staticFileFolder,
+                            externalStaticFileFolder);
                 }
             }).start();
             initialized = true;

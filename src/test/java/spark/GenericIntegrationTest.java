@@ -38,8 +38,8 @@ public class GenericIntegrationTest {
         writer.flush();
         writer.close();
 
-        staticFileRoute("/public");
-        externalStaticFileRoute(System.getProperty("java.io.tmpdir"));
+        staticFileLocation("/public");
+        externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
 
         before(new Filter("/protected/*") {
 
@@ -252,9 +252,9 @@ public class GenericIntegrationTest {
 
     @Test
     public void testStaticFile() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/static.html", null);
+        UrlResponse response = testUtil.doMethod("GET", "/css/style.css", null);
         Assert.assertEquals(200, response.status);
-        Assert.assertEquals("Content of html file", response.body);
+        Assert.assertEquals("Content of css file", response.body);
     }
 
     @Test

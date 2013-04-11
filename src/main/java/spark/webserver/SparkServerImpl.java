@@ -50,8 +50,8 @@ class SparkServerImpl implements SparkServer {
     @Override
     public void ignite(String host, int port, String keystoreFile,
             String keystorePassword, String truststoreFile,
-            String truststorePassword, String staticFilesRoute,
-            String externalFilesRoute) {
+            String truststorePassword, String staticFilesFolder,
+            String externalFilesFolder) {
         
         ServerConnector connector;
         
@@ -72,17 +72,17 @@ class SparkServerImpl implements SparkServer {
         server.setConnectors(new Connector[] { connector });
 
         // Handle static file routes
-        if (staticFilesRoute == null && externalFilesRoute == null) {
+        if (staticFilesFolder == null && externalFilesFolder == null) {
             server.setHandler(handler);
         } else {
             List<Handler> handlersInList = new ArrayList<>();
             handlersInList.add(handler);
             
-            // Set static file route
-            setStaticFileRouteIfPresent(staticFilesRoute, handlersInList);
+            // Set static file location
+            setStaticFileLocationIfPresent(staticFilesFolder, handlersInList);
             
-            // Set external static file route
-            setExternalStaticFileRouteIfPresent(externalFilesRoute, handlersInList);
+            // Set external static file location
+            setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
 
             HandlerList handlers = new HandlerList();
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
@@ -156,9 +156,9 @@ class SparkServerImpl implements SparkServer {
     }
 
     /**
-     * Sets static file route if present
+     * Sets static file location if present
      */
-    private void setStaticFileRouteIfPresent(String staticFilesRoute, List<Handler> handlersInList) {
+    private void setStaticFileLocationIfPresent(String staticFilesRoute, List<Handler> handlersInList) {
         if (staticFilesRoute != null) {
             ResourceHandler resourceHandler = new ResourceHandler();
             Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
@@ -169,9 +169,9 @@ class SparkServerImpl implements SparkServer {
     }
     
     /**
-     * Sets external static file route if present
+     * Sets external static file location if present
      */
-    private void setExternalStaticFileRouteIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
+    private void setExternalStaticFileLocationIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
         if (externalFilesRoute != null) {
             try {
                 ResourceHandler externalResourceHandler = new ResourceHandler();
