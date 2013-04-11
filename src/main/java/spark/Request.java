@@ -375,7 +375,7 @@ public class Request {
                                 + matchedPart
                                 + " = "
                                 + request.get(i));
-                paramsToSet.put(matchedPart, request.get(i));
+                paramsToSet.put(matchedPart.toLowerCase(), request.get(i));
             }
         }
         return Collections.unmodifiableMap(paramsToSet);
