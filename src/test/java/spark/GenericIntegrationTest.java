@@ -178,6 +178,50 @@ public class GenericIntegrationTest {
     }
 
     @Test
+    public void testEchoParamWithUpperCaseInValue() {
+        final String camelCased = "ThisIsAValueAndSparkShouldRetainItsUpperCasedCharacters";
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/param/" + camelCased, null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("echo: " + camelCased, response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testTwoRoutesWithDifferentCaseButSameName() {
+        String lowerCasedRoutePart = "param";
+        String uppperCasedRoutePart = "PARAM";
+
+        registerEchoRoute(lowerCasedRoutePart);
+        registerEchoRoute(uppperCasedRoutePart);
+        try {
+            assertEchoRoute(lowerCasedRoutePart);
+            assertEchoRoute(uppperCasedRoutePart);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void registerEchoRoute(final String routePart) {
+        get(new Route("/tworoutes/" + routePart + "/:param") {
+            @Override
+            public Object handle(Request request, Response response) {
+                return routePart + " route: " + request.params(":param");
+            }
+        });
+    }
+
+    private void assertEchoRoute(String routePart) throws Exception {
+        final String expected = "expected";
+        UrlResponse response = testUtil.doMethod("GET", "/tworoutes/" + routePart + "/" + expected, null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals(routePart + " route: " + expected, response.body);
+    }
+
+
+    @Test
     public void testEchoParamWithMaj() {
         try {
             UrlResponse response = testUtil.doMethod("GET", "/paramwithmaj/plop", null);

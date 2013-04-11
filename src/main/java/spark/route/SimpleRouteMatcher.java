@@ -154,7 +154,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
         try {
             int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
             String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase(); // NOSONAR
-            String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim().toLowerCase(); // NOSONAR
+            String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim(); // NOSONAR
 
             // Use special enum stuff to get from value
             HttpMethod method;

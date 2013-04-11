@@ -76,7 +76,7 @@ public class MatcherFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
         String httpMethodStr = httpRequest.getMethod().toLowerCase(); // NOSONAR
-        String uri = httpRequest.getRequestURI().toLowerCase(); // NOSONAR
+        String uri = httpRequest.getRequestURI(); // NOSONAR
 
         String bodyContent = null;
 
