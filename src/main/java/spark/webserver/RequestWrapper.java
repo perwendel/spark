@@ -16,7 +16,6 @@
  */
 package spark.webserver;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -85,7 +84,7 @@ final class RequestWrapper extends Request {
     }
     
     @Override
-    public List<String> splat() {
+    public String[] splat() {
         return delegate.splat();
     }
 

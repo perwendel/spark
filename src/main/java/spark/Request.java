@@ -120,10 +120,10 @@ public class Request {
     }
     
     /**
-     * Returns a list of the splat (wildcard) parameters 
+     * Returns an arrat containing the splat (wildcard) parameters 
      */
-    public List<String> splat() {
-        return splat;
+    public String[] splat() {
+        return splat.toArray(new String[splat.size()]);
     }
     
     /**

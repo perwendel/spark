@@ -68,7 +68,7 @@ public class GenericIntegrationTest {
         get(new Route("/paramandwild/:param/stuff/*") {
             @Override
             public Object handle(Request request, Response response) {
-                return "paramandwild: " + request.params(":param") + request.splat().get(0);
+                return "paramandwild: " + request.params(":param") + request.splat()[0];
             }
         });
 
