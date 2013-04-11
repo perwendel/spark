@@ -64,6 +64,13 @@ public class GenericIntegrationTest {
                 return "echo: " + request.params(":param");
             }
         });
+        
+        get(new Route("/paramandwild/:param/stuff/*") {
+            @Override
+            public Object handle(Request request, Response response) {
+                return "paramandwild: " + request.params(":param") + request.splat().get(0);
+            }
+        });
 
         get(new Route("/paramwithmaj/:paramWithMaj") {
 
@@ -155,6 +162,17 @@ public class GenericIntegrationTest {
         }
     }
 
+    @Test
+    public void testParamAndWild() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/paramandwild/thedude/stuff/andits", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("paramandwild: thedudeandits", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
     @Test
     public void testEchoParam1() {
         try {

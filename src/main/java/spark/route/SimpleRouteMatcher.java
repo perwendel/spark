@@ -81,7 +81,9 @@ public class SimpleRouteMatcher implements RouteMatcher {
                         return true;
                     }
                     
-                    if (!thisPathPart.startsWith(":") && !thisPathPart.equals(pathPart)) {
+                    if ((!thisPathPart.startsWith(":")) 
+                            && !thisPathPart.equals(pathPart)
+                            && !thisPathPart.equals("*")) {
                         return false;
                     }
                 }
@@ -106,7 +108,9 @@ public class SimpleRouteMatcher implements RouteMatcher {
                                 // wildcard match
                                 return true;
                             }
-                            if (!thisPathPart.startsWith(":") && !thisPathPart.equals(pathPart)) {
+                            if (!thisPathPart.startsWith(":") 
+                                    && !thisPathPart.equals(pathPart)
+                                    && !thisPathPart.equals("*")) {
                                 return false;
                             }
                         }

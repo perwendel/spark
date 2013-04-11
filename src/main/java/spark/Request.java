@@ -16,6 +16,7 @@
  */
 package spark;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -24,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import javax.servlet.http.Cookie;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -46,6 +47,7 @@ public class Request {
     private static final String USER_AGENT = "user-agent";
     
     private Map<String, String> params;
+    private List<String> splat;
     private QueryParamsMap queryMap;
     
     private HttpMethod httpMethod;
@@ -91,7 +93,12 @@ public class Request {
     Request(RouteMatch match, HttpServletRequest request) {
         this.httpMethod = match.getHttpMethod();
         this.servletRequest = request;
-        params = getParams(match);
+        
+        List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
+        List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
+        
+        params = getParams(requestList, matchedList);
+        splat = getSplat(requestList, matchedList);
     }
     
     /**
@@ -110,6 +117,13 @@ public class Request {
         } else {
             return params.get(":" + param.toLowerCase()); // NOSONAR
         }
+    }
+    
+    /**
+     * Returns a list of the splat (wildcard) parameters 
+     */
+    public List<String> splat() {
+        return splat;
     }
     
     /**
@@ -357,16 +371,10 @@ public class Request {
         return null;
     }
     
-    private Map<String, String> getParams(RouteMatch match) {
-        LOG.debug("set params for requestUri: "
-                        + match.getRequestURI()
-                        + ", matchUri: "
-                        + match.getMatchUri());
+    private Map<String, String> getParams(List<String> request, List<String> matched) {
+        LOG.debug("get params");
 
-        Map<String, String> paramsToSet = new HashMap<String, String>();
-        
-        List<String> request = SparkUtils.convertRouteToList(match.getRequestURI());
-        List<String> matched = SparkUtils.convertRouteToList(match.getMatchUri());
+        Map<String, String> params = new HashMap<String, String>();
 
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
@@ -375,9 +383,38 @@ public class Request {
                                 + matchedPart
                                 + " = "
                                 + request.get(i));
-                paramsToSet.put(matchedPart, request.get(i));
+                params.put(matchedPart, request.get(i));
             }
         }
-        return Collections.unmodifiableMap(paramsToSet);
+        return Collections.unmodifiableMap(params);
     }
+    
+    private List<String> getSplat(List<String> request, List<String> matched) {
+        LOG.debug("get splat");
+
+        int nbrOfRequestParts = request.size();
+        int nbrOfMatchedParts = matched.size();
+        
+        boolean sameLength = (nbrOfRequestParts == nbrOfMatchedParts);
+        
+        List<String> splat = new ArrayList<String>();
+        
+        for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
+            String matchedPart = matched.get(i);
+            
+            if (SparkUtils.isSplat(matchedPart)) {
+                
+                StringBuilder splatParam = new StringBuilder(request.get(i));
+                if (!sameLength && (i == (nbrOfMatchedParts -1))) {
+                    for (int j = i + 1; j < nbrOfRequestParts; j++) {
+                        splatParam.append("/");
+                        splatParam.append(request.get(j));
+                    }
+                }
+                splat.add(splatParam.toString());
+            }
+        }
+        return Collections.unmodifiableList(splat);
+    }
+    
 }

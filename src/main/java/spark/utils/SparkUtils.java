@@ -44,5 +44,9 @@ public final class SparkUtils {
     public static boolean isParam(String routePart) {
         return routePart.startsWith(":");
     }
- 
+
+    public static boolean isSplat(String routePart) {
+        return routePart.equals("*");
+    }
+    
 }

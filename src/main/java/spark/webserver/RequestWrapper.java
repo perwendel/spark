@@ -16,12 +16,13 @@
  */
 package spark.webserver;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import spark.QueryParamsMap;
 
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Session;
 
@@ -81,6 +82,11 @@ final class RequestWrapper extends Request {
     @Override
     public String params(String param) {
         return delegate.params(param);
+    }
+    
+    @Override
+    public List<String> splat() {
+        return delegate.splat();
     }
 
     @Override
