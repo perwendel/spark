@@ -66,7 +66,7 @@ public class MatcherFilter implements Filter {
     }
 
     public void init(FilterConfig filterConfig) {
-
+        //
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, // NOSONAR

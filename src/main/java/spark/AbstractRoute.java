@@ -21,14 +21,14 @@ package spark;
  *
  * @author Per Wendel
  */
-public abstract class AbstractRoot {
+public abstract class AbstractRoute {
 
     /**
      * Immediately stops a request within a filter or route
      * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
      * halt will not work
      */
-    protected final void halt() {
+    protected static final void halt() {
         throw new HaltException();
     }
     
@@ -39,7 +39,7 @@ public abstract class AbstractRoot {
      * 
      * @param status the status code
      */
-    protected final void halt(int status) {
+    protected static final void halt(int status) {
         throw new HaltException(status);
     }
     
@@ -50,7 +50,7 @@ public abstract class AbstractRoot {
      * 
      * @param body The body content
      */
-    protected final void halt(String body) {
+    protected static final void halt(String body) {
         throw new HaltException(body);
     }
     
@@ -62,7 +62,7 @@ public abstract class AbstractRoot {
      * @param status The status code
      * @param body The body content
      */
-    protected final void halt(int status, String body) {
+    protected static final void halt(int status, String body) {
         throw new HaltException(status, body);
     }
     

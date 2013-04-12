@@ -24,7 +24,7 @@ package spark;
  *
  * @author Per Wendel
  */
-public abstract class Route extends AbstractRoot {
+public abstract class Route extends AbstractRoute {
 
     private String path;
     

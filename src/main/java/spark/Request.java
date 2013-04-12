@@ -371,7 +371,7 @@ public class Request {
         return null;
     }
     
-    private Map<String, String> getParams(List<String> request, List<String> matched) {
+    private static Map<String, String> getParams(List<String> request, List<String> matched) {
         LOG.debug("get params");
 
         Map<String, String> params = new HashMap<String, String>();
@@ -389,7 +389,7 @@ public class Request {
         return Collections.unmodifiableMap(params);
     }
     
-    private List<String> getSplat(List<String> request, List<String> matched) {
+    private static List<String> getSplat(List<String> request, List<String> matched) {
         LOG.debug("get splat");
 
         int nbrOfRequestParts = request.size();

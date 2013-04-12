@@ -121,7 +121,7 @@ public class QueryParamsMap {
         }
     }
 
-    protected final String cleanKey(String group) {
+    protected static final String cleanKey(String group) {
         if (group.startsWith("[")) {
             return group.substring(1, group.length() - 1);
         } else {

@@ -75,7 +75,7 @@ class SparkServerImpl implements SparkServer {
         if (staticFilesFolder == null && externalFilesFolder == null) {
             server.setHandler(handler);
         } else {
-            List<Handler> handlersInList = new ArrayList<>();
+            List<Handler> handlersInList = new ArrayList<Handler>();
             handlersInList.add(handler);
             
             // Set static file location
@@ -127,7 +127,7 @@ class SparkServerImpl implements SparkServer {
      * 
      * @return a secure socket connector
      */
-    private ServerConnector createSecureSocketConnector(String keystoreFile,
+    private static ServerConnector createSecureSocketConnector(String keystoreFile,
             String keystorePassword, String truststoreFile,
             String truststorePassword) {
 
@@ -151,14 +151,14 @@ class SparkServerImpl implements SparkServer {
      * 
      * @return - a server connector
      */
-    private ServerConnector createSocketConnector() {
+    private static ServerConnector createSocketConnector() {
         return new ServerConnector(new Server());
     }
 
     /**
      * Sets static file location if present
      */
-    private void setStaticFileLocationIfPresent(String staticFilesRoute, List<Handler> handlersInList) {
+    private static void setStaticFileLocationIfPresent(String staticFilesRoute, List<Handler> handlersInList) {
         if (staticFilesRoute != null) {
             ResourceHandler resourceHandler = new ResourceHandler();
             Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
@@ -171,7 +171,7 @@ class SparkServerImpl implements SparkServer {
     /**
      * Sets external static file location if present
      */
-    private void setExternalStaticFileLocationIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
+    private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
         if (externalFilesRoute != null) {
             try {
                 ResourceHandler externalResourceHandler = new ResourceHandler();

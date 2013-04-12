@@ -26,7 +26,7 @@ import spark.utils.SparkUtils;
  *
  * @author Per Wendel
  */
-public abstract class Filter extends AbstractRoot {
+public abstract class Filter extends AbstractRoute {
 
     private String path;
     

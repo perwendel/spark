@@ -99,6 +99,8 @@ public class SparkFilter implements Filter {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        // ignore
+    }
 
 }
