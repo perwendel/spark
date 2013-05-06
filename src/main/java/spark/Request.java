@@ -375,7 +375,7 @@ public class Request {
         LOG.debug("get params");
 
         Map<String, String> params = new HashMap<String, String>();
-
+        
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
             if (SparkUtils.isParam(matchedPart)) {
@@ -383,7 +383,7 @@ public class Request {
                                 + matchedPart
                                 + " = "
                                 + request.get(i));
-                params.put(matchedPart, request.get(i));
+                params.put(matchedPart.toLowerCase(), request.get(i));
             }
         }
         return Collections.unmodifiableMap(params);
