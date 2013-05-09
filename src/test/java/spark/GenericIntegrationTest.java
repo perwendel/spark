@@ -49,6 +49,23 @@ public class GenericIntegrationTest {
             }
         });
 
+        before(new Filter("/protected/*", "application/json") {
+
+            @Override
+            public void handle(Request request, Response response) {
+                halt(401, "{\"message\": \"Go Away!\"}");
+            }
+        });
+        
+        get(new Route("/hi", "application/json") {
+
+			@Override
+			public Object handle(Request request, Response response) {
+				return "{\"message\": \"Hello World\"}";
+			}
+        	
+        });
+        
         get(new Route("/hi") {
 
             @Override
@@ -119,6 +136,24 @@ public class GenericIntegrationTest {
         }
     }
 
+    @Test
+    public void filters_should_be_accept_type_aware() throws Exception {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/protected/resource", null, "application/json");
+            Assert.assertTrue(response.status == 401);
+            Assert.assertEquals("{\"message\": \"Go Away!\"}", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    @Test
+    public void routes_should_be_accept_type_aware() throws Exception {
+    	 UrlResponse response = testUtil.doMethod("GET", "/hi", null, "application/json");
+    	 Assert.assertEquals(200, response.status);
+         Assert.assertEquals("{\"message\": \"Hello World\"}", response.body);
+    }
+    
     @Test
     public void testGetHi() {
         try {

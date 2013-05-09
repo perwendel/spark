@@ -281,15 +281,15 @@ public final class Spark {
     private static void addRoute(String httpMethod, Route route) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
-                + "'", route);
+                + "'", route.getAcceptType(), route);
     }
 
     private static void addFilter(String httpMethod, Filter filter) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
-                + "'", filter);
+                + "'", filter.getAcceptType(), filter);
     }
-
+    
     private static boolean hasMultipleHandlers() {
         return staticFileFolder != null || externalStaticFileFolder != null;
     }

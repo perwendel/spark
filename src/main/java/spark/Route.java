@@ -26,7 +26,10 @@ package spark;
  */
 public abstract class Route extends AbstractRoute {
 
-    private String path;
+    private static final String DEFAULT_ACCEPT_TYPE = "text/html";
+    
+	private String path;
+    private String acceptType;
     
     /**
      * Constructor
@@ -34,7 +37,18 @@ public abstract class Route extends AbstractRoute {
      * @param path The route path which is used for matching. (e.g. /hello, users/:name) 
      */
     protected Route(String path) {
-        this.path = path;
+        this(path, DEFAULT_ACCEPT_TYPE);
+    }
+    
+    /**
+     * Constructor
+     * 
+     * @param path The route path which is used for matching. (e.g. /hello, users/:name) 
+     * @param acceptType The accept type which is used for matching.
+     */
+    protected Route(String path, String acceptType) {
+    	this.path = path;
+    	this.acceptType = acceptType;
     }
     
     /**
@@ -47,6 +61,10 @@ public abstract class Route extends AbstractRoute {
      */
     public abstract Object handle(Request request, Response response);
 
+    public String getAcceptType() {
+		return acceptType;
+	}
+    
     /**
      * Returns this route's path
      */

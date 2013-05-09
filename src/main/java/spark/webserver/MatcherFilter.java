@@ -45,7 +45,8 @@ import spark.route.RouteMatcher;
  */
 public class MatcherFilter implements Filter {
 
-    private RouteMatcher routeMatcher;
+    private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
+	private RouteMatcher routeMatcher;
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
@@ -77,7 +78,8 @@ public class MatcherFilter implements Filter {
 
         String httpMethodStr = httpRequest.getMethod().toLowerCase(); // NOSONAR
         String uri = httpRequest.getRequestURI().toLowerCase(); // NOSONAR
-
+        String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
+        
         String bodyContent = null;
 
         RequestWrapper req = new RequestWrapper();
@@ -86,7 +88,7 @@ public class MatcherFilter implements Filter {
         LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
         try {
             // BEFORE filters
-            List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri);
+            List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri, acceptType);
             
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
@@ -112,14 +114,14 @@ public class MatcherFilter implements Filter {
             HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
             
             RouteMatch match = null;
-            match = routeMatcher.findTargetForRequestedRoute(HttpMethod.valueOf(httpMethodStr), uri);
+            match = routeMatcher.findTargetForRequestedRoute(HttpMethod.valueOf(httpMethodStr), uri, acceptType);
             
             Object target = null;
             if (match != null) {
                 target = match.getTarget();
             } else if (httpMethod == HttpMethod.head && bodyContent == null) {
                 // See if get is mapped to provide default head mapping
-                bodyContent = routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri) != null ? "" : null;
+                bodyContent = routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri, acceptType) != null ? "" : null;
             }
 
             if (target != null) {
@@ -150,7 +152,7 @@ public class MatcherFilter implements Filter {
             }
 
             // AFTER filters
-            matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.after, uri);
+            matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.after, uri, acceptType);
             
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
@@ -197,6 +199,7 @@ public class MatcherFilter implements Filter {
         if (consumed) {
             // Write body content
             if (!httpResponse.isCommitted()) {
+            	httpResponse.addHeader("Content-Type", acceptType);
                 httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
             }
         } else if (chain != null) {

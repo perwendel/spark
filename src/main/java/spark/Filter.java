@@ -28,13 +28,16 @@ import spark.utils.SparkUtils;
  */
 public abstract class Filter extends AbstractRoute {
 
+	private static final String DEFAUT_CONTENT_TYPE = "text/html";
+	
     private String path;
+    private String acceptType;
     
     /**
      * Constructs a filter that matches on everything
      */
     protected Filter() {
-        this.path = SparkUtils.ALL_PATHS;
+        this(SparkUtils.ALL_PATHS);
     }
     
     /**
@@ -43,7 +46,12 @@ public abstract class Filter extends AbstractRoute {
      * @param path The filter path which is used for matching. (e.g. /hello, users/:name) 
      */
     protected Filter(String path) {
-        this.path = path;
+        this(path, DEFAUT_CONTENT_TYPE);
+    }
+    
+    protected Filter(String path, String acceptType) {
+    	this.path = path;
+    	this.acceptType = acceptType;
     }
     
     /**
@@ -54,6 +62,10 @@ public abstract class Filter extends AbstractRoute {
      */
     public abstract void handle(Request request, Response response);
 
+    public String getAcceptType() {
+		return acceptType;
+	}
+    
     /**
      * Returns this route's path
      */

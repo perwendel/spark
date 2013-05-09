@@ -33,7 +33,7 @@ import spark.route.RouteMatch;
 
 public class RequestTest {
     
-    RouteMatch match =  new RouteMatch(HttpMethod.get,null,"/hi","/hi"); 
+    RouteMatch match =  new RouteMatch(HttpMethod.get,null,"/hi","/hi", "text/html"); 
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {
