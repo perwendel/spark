@@ -16,6 +16,8 @@
  */
 package spark;
 
+import spark.utils.SparkUtils;
+
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -27,7 +29,7 @@ public class HaltException extends RuntimeException {
     private static final long serialVersionUID = 1L;
     
     private int statusCode = HttpServletResponse.SC_OK;
-    private String body = null;
+    private byte[] body = null;
     
     HaltException() {
         super();
@@ -38,12 +40,12 @@ public class HaltException extends RuntimeException {
     }
     
     HaltException(String body) {
-        this.body = body;
+        this.body = SparkUtils.stringToBytes(body);
     }
     
     HaltException(int statusCode, String body) {
         this.statusCode = statusCode;
-        this.body = body;
+        this.body = SparkUtils.stringToBytes(body);
     }
 
     /**
@@ -55,10 +57,17 @@ public class HaltException extends RuntimeException {
 
     
     /**
-     * @return the body
+     * @return the body bytes
      */
-    public String getBody() {
+    public byte[] getBodyBytes() {
         return body;
     }
-    
+
+	/**
+	 * @return the body string
+	 */
+	public String getBody() {
+		return SparkUtils.bytesToString(body);
+	}
+
 }

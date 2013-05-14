@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.utils.SparkUtils;
 
 /**
  * Provides functionality for modifying the response
@@ -35,7 +36,7 @@ public class Response {
     private static final Logger LOG = LoggerFactory.getLogger(Response.class);
 
     private HttpServletResponse response;
-    private String body;
+    private byte[] body;
     
     protected Response() {
        // Used by wrapper
@@ -64,13 +65,24 @@ public class Response {
      * Sets the body
      */
     public void body(String body) {
-       this.body = body;
+       this.body = SparkUtils.stringToBytes(body);
     }
-    
+
+	/**
+	 * Sets the raw body
+	 */
+	public void bodyBytes(byte[] body) {
+		this.body = body;
+	}
+
     public String body() {
-       return this.body;
+       return SparkUtils.bytesToString(this.body);
     }
-    
+
+	public byte[] bodyBytes() {
+		return this.body;
+	}
+
     /**
      * Gets the raw response object handed in by Jetty
      */

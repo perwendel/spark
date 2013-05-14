@@ -56,7 +56,7 @@ public class Request {
     private Session session = null;
     
     /* Lazy loaded stuff */
-    private String body = null;
+    private byte[] body = null;
     
     private Set<String> headers = null;
     
@@ -195,16 +195,25 @@ public class Request {
      * Returns the request body sent by the client
      */
     public String body() {
-        if (body == null) {
-            try {
-                body = IOUtils.toString(servletRequest.getInputStream());
-            } catch (Exception e) {
-                LOG.warn("Exception when reading body", e);
-            }
-        }
-        return body;
+		if (body == null)
+			bodyBytes();
+		return body != null ? SparkUtils.bytesToString(body) : null;
     }
-    
+
+	/**
+	 * Returns the raw request body sent by the client
+	 */
+	public byte[] bodyBytes() {
+		if (body == null) {
+			try {
+				body = IOUtils.toByteArray(servletRequest.getInputStream());
+			} catch (Exception e) {
+				LOG.warn("Exception when reading body", e);
+			}
+		}
+		return body;
+	}
+
     /**
      * Returns the length of request.body
      */
@@ -375,7 +384,7 @@ public class Request {
         LOG.debug("get params");
 
         Map<String, String> params = new HashMap<String, String>();
-        
+
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
             if (SparkUtils.isParam(matchedPart)) {

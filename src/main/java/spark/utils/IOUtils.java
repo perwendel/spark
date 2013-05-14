@@ -24,6 +24,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.io.ByteArrayOutputStream;
 
 
 /**
@@ -204,5 +205,17 @@ public final class IOUtils {
         }
         return count;
     }
+
+	public static byte[] toByteArray(InputStream istream) throws IOException {
+		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+		ByteArrayOutputStream result = new ByteArrayOutputStream(istream.available());
+		while (true) {
+			int n = istream.read(buffer, 0, buffer.length);
+			if (n == -1)
+				break;
+			result.write(buffer, 0, n);
+		}
+		return result.toByteArray();
+	}
 
 }

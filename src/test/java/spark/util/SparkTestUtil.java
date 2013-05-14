@@ -9,10 +9,13 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+import spark.utils.IOUtils;
+import spark.utils.SparkUtils;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -45,13 +48,28 @@ public class SparkTestUtil {
         return doMethod(requestMethod, path, body, true);
     }
 
+	public UrlResponse doMethodSecureBytes(String requestMethod, String path,
+									  byte[] body) throws Exception {
+		return doMethodBytes(requestMethod, path, body, true);
+	}
+
     public UrlResponse doMethod(String requestMethod, String path, String body)
             throws Exception {
         return doMethod(requestMethod, path, body, false);
     }
 
-    private UrlResponse doMethod(String requestMethod, String path,
-                                 String body, boolean secureConnection) throws Exception {
+	public UrlResponse doMethodBytes(String requestMethod, String path, byte[] body)
+			throws Exception {
+		return doMethodBytes(requestMethod, path, body, false);
+	}
+
+	private UrlResponse doMethod(String requestMethod, String path,
+								 String body, boolean secureConnection) throws Exception {
+		return doMethodBytes(requestMethod, path, body != null ? body.getBytes() : null, secureConnection);
+	}
+
+    private UrlResponse doMethodBytes(String requestMethod, String path,
+								 byte[] body, boolean secureConnection) throws Exception {
 
         HttpUriRequest httpRequest = getHttpRequest(requestMethod, path, body, secureConnection);
         HttpResponse httpResponse = httpClient.execute(httpRequest);
@@ -60,9 +78,11 @@ public class SparkTestUtil {
         urlResponse.status = httpResponse.getStatusLine().getStatusCode();
         HttpEntity entity = httpResponse.getEntity();
         if (entity != null) {
-            urlResponse.body = EntityUtils.toString(entity);
+			urlResponse.bodyBytes = IOUtils.toByteArray(entity.getContent());
+            urlResponse.body = new String(urlResponse.bodyBytes);
         } else {
-            urlResponse.body = "";
+			urlResponse.bodyBytes = new byte[0];
+			urlResponse.body = "";
         }
         Map<String, String> headers = new HashMap<>();
         Header[] allHeaders = httpResponse.getAllHeaders();
@@ -73,41 +93,36 @@ public class SparkTestUtil {
         return urlResponse;
     }
 
-    private HttpUriRequest getHttpRequest(String requestMethod, String path, String body, boolean secureConnection) {
-        try {
-            String protocol = secureConnection ? "https" : "http";
-            String uri = protocol + "://localhost:" + port + path;
-            //get, post, put, patch, delete, head, trace, connect, options
-            switch (requestMethod) {
-                case "GET":
-                    return new HttpGet(uri);
-                case "POST":
-                    HttpPost httpPost = new HttpPost(uri);
-                    httpPost.setEntity(new StringEntity(body));
-                    return httpPost;
-                case "PUT":
-                    HttpPut httpPut = new HttpPut(uri);
-                    httpPut.setEntity(new StringEntity(body));
-                    return httpPut;
-                case "PATCH":
-                    HttpPatch httpPatch = new HttpPatch(uri);
-                    httpPatch.setEntity(new StringEntity(body));
-                    return httpPatch;
-                case "DELETE":
-                    return new HttpDelete(uri);
-                case "HEAD":
-                    return new HttpHead(uri);
-                case "TRACE":
-                    return new HttpTrace(uri);
-                case "OPTIONS":
-                    return new HttpOptions(uri);
-                default:
-                    throw new IllegalArgumentException("Unknown method " + requestMethod);
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
+    private HttpUriRequest getHttpRequest(String requestMethod, String path, byte[] body, boolean secureConnection) {
+		String protocol = secureConnection ? "https" : "http";
+		String uri = protocol + "://localhost:" + port + path;
+		//get, post, put, patch, delete, head, trace, connect, options
+		switch (requestMethod) {
+			case "GET":
+				return new HttpGet(uri);
+			case "POST":
+				HttpPost httpPost = new HttpPost(uri);
+				httpPost.setEntity(new ByteArrayEntity(body));
+				return httpPost;
+			case "PUT":
+				HttpPut httpPut = new HttpPut(uri);
+				httpPut.setEntity(new ByteArrayEntity(body));
+				return httpPut;
+			case "PATCH":
+				HttpPatch httpPatch = new HttpPatch(uri);
+				httpPatch.setEntity(new ByteArrayEntity(body));
+				return httpPatch;
+			case "DELETE":
+				return new HttpDelete(uri);
+			case "HEAD":
+				return new HttpHead(uri);
+			case "TRACE":
+				return new HttpTrace(uri);
+			case "OPTIONS":
+				return new HttpOptions(uri);
+			default:
+				throw new IllegalArgumentException("Unknown method " + requestMethod);
+		}
     }
 
     public int getPort() {
@@ -195,8 +210,9 @@ public class SparkTestUtil {
     public static class UrlResponse {
 
         public Map<String, String> headers;
-        public String body;
-        public int status;
+		public String body;
+		public byte[] bodyBytes;
+		public int status;
     }
 
     public static void sleep(long time) {
