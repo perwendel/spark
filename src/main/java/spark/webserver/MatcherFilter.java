@@ -37,6 +37,7 @@ import spark.Route;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.RouteMatcher;
+import spark.utils.SparkUtils;
 
 /**
  * Filter for matching of filters and routes.
@@ -49,10 +50,12 @@ public class MatcherFilter implements Filter {
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
-    /** The logger. */
+	private static final Class byteArrayClass = (new byte[0]).getClass();
+
+	/** The logger. */
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MatcherFilter.class);
 
-    /**
+	/**
      * Constructor
      * 
      * @param routeMatcher The route matcher
@@ -78,7 +81,7 @@ public class MatcherFilter implements Filter {
         String httpMethodStr = httpRequest.getMethod().toLowerCase(); // NOSONAR
         String uri = httpRequest.getRequestURI(); // NOSONAR
 
-        String bodyContent = null;
+        byte[] bodyContent = null;
 
         RequestWrapper req = new RequestWrapper();
         ResponseWrapper res = new ResponseWrapper();
@@ -101,7 +104,7 @@ public class MatcherFilter implements Filter {
                     
                     filter.handle(req, res);
 
-                    String bodyAfterFilter = Access.getBody(response);
+                    byte[] bodyAfterFilter = Access.getBodyBytes(response);
                     if (bodyAfterFilter != null) {
                         bodyContent = bodyAfterFilter;
                     }
@@ -119,7 +122,7 @@ public class MatcherFilter implements Filter {
                 target = match.getTarget();
             } else if (httpMethod == HttpMethod.head && bodyContent == null) {
                 // See if get is mapped to provide default head mapping
-                bodyContent = routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri) != null ? "" : null;
+                bodyContent = routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri) != null ? new byte[0] : null;
             }
 
             if (target != null) {
@@ -136,7 +139,7 @@ public class MatcherFilter implements Filter {
                         result = route.handle(req, res);
                     }
                     if (result != null) {
-                        bodyContent = result.toString();
+                        bodyContent = anyToByteArray(result);
                     }
                     long t1 = System.currentTimeMillis() - t0;
                     LOG.debug("Time for request: " + t1);
@@ -145,7 +148,7 @@ public class MatcherFilter implements Filter {
                 } catch (Exception e) {
                     LOG.error("", e);
                     httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    bodyContent = INTERNAL_ERROR;
+                    bodyContent = anyToByteArray(INTERNAL_ERROR);
                 }
             }
 
@@ -164,7 +167,7 @@ public class MatcherFilter implements Filter {
                     spark.Filter filter = (spark.Filter) filterTarget;
                     filter.handle(req, res);
 
-                    String bodyAfterFilter = Access.getBody(response);
+                    byte[] bodyAfterFilter = Access.getBodyBytes(response);
                     if (bodyAfterFilter != null) {
                         bodyContent = bodyAfterFilter;
                     }
@@ -176,9 +179,9 @@ public class MatcherFilter implements Filter {
             LOG.debug("halt performed");
             httpResponse.setStatus(hEx.getStatusCode());
             if (hEx.getBody() != null) {
-                bodyContent = hEx.getBody();
+                bodyContent = hEx.getBodyBytes();
             } else {
-                bodyContent = "";
+                bodyContent = new byte[0];
             }
         }
 
@@ -190,14 +193,14 @@ public class MatcherFilter implements Filter {
         
         if (!consumed && !isServletContext) {
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            bodyContent = NOT_FOUND;
+            bodyContent = anyToByteArray(NOT_FOUND);
             consumed = true;
         }
 
         if (consumed) {
             // Write body content
             if (!httpResponse.isCommitted()) {
-                httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+                httpResponse.getOutputStream().write(anyToByteArray(bodyContent));
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
@@ -208,6 +211,19 @@ public class MatcherFilter implements Filter {
         // TODO Auto-generated method stub
     }
 
-    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route has not been mapped in Spark</body></html>";
+	private static byte[] anyToByteArray(Object any) {
+		try {
+			if (any.getClass() == String.class)
+				return SparkUtils.stringToBytes((String) any);
+			else if (any.getClass() == byteArrayClass)
+				return (byte[]) any;
+			else
+				return ("Unsupported result type " + any.getClass() + ". Must be String or byte[]").getBytes();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route has not been mapped in Spark</body></html>";
     private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
 }

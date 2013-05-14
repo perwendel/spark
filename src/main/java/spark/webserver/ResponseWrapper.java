@@ -38,6 +38,11 @@ class ResponseWrapper extends Response {
         delegate.body(body);
     }
 
+	@Override
+	public void bodyBytes(byte[] body) {
+		delegate.bodyBytes(body);
+	}
+
     @Override
     public boolean equals(Object obj) {
         return delegate.equals(obj);

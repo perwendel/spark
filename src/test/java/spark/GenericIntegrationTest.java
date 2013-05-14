@@ -106,6 +106,21 @@ public class GenericIntegrationTest {
             }
         });
 
+		post(new Route("/binio") {
+			@Override
+			public Object handle(Request request, Response response) {
+				byte[] input = request.bodyBytes();
+				byte[] result = new byte[input.length + 2];
+				for (int i = 0; i < input.length; i++)
+					result[i] = input[i];
+				// Use an explicitly illegal UTF-16 surrogate pair
+				result[input.length] = (byte) 0xd8;
+				result[input.length + 1] = (byte) 0x00;
+				response.status(200);
+				return result;
+			}
+		});
+
         after(new Filter("/hi") {
             @Override
             public void handle(Request request, Response response) {
@@ -292,6 +307,26 @@ public class GenericIntegrationTest {
             throw new RuntimeException(e);
         }
     }
+
+	@Test
+	public void testBinIO() {
+		try {
+			byte[] input = new byte[3];
+			input[0] = (byte) 0xd1;
+			input[1] = (byte) 0x00;
+			input[2] = (byte) 0xff;
+			UrlResponse response = testUtil.doMethodBytes("POST", "/binio", input);
+			System.out.println("Response length " + response.bodyBytes.length);
+			Assert.assertEquals(200, response.status);
+			Assert.assertEquals(response.bodyBytes.length, input.length + 2);
+			for (int i = 0; i < input.length; i++)
+				Assert.assertEquals(response.bodyBytes[i], input[i]);
+			Assert.assertEquals(response.bodyBytes[input.length], (byte) 0xd8);
+			Assert.assertEquals(response.bodyBytes[input.length + 1], (byte) 0x00);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
 
     @Test
     public void testStaticFile() throws Exception {

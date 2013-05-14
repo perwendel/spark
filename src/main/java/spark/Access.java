@@ -20,8 +20,8 @@ public final class Access {
 
     private Access() {}
     
-    public static String getBody(Response response) {
-        return response.body();
+    public static byte[] getBodyBytes(Response response) {
+        return response.bodyBytes();
     }
 
     public static void runFromServlet() {

@@ -16,6 +16,7 @@
  */
 package spark.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,5 +49,28 @@ public final class SparkUtils {
     public static boolean isSplat(String routePart) {
         return routePart.equals("*");
     }
-    
+
+	/**
+	 * Define this in a single place, so that we aren't subject to the system-dependent local character set.
+	 * This also wraps the exception, which we can reasonably expect to never be thrown.
+	 */
+	public static byte[] stringToBytes(String str) {
+		try {
+			return str.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return ("Spark: utf-8 not supported (string to bytes)").getBytes();
+		}
+	}
+
+	/**
+	 * This is the converse of stringToBytes.
+	 */
+	public static String bytesToString(byte[] bytes) {
+		try {
+			return new String(bytes, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return "Spark: utf-8 not supported (bytes to string)";
+		}
+	}
+
 }
