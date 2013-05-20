@@ -126,7 +126,7 @@ public class MatcherFilter implements Filter {
 
             if (target != null) {
                 try {
-                    Object result = null;
+                    String result = null;
                     if (target instanceof Route) {
                         Route route = ((Route) target);
                         Request request = RequestResponseFactory.create(match, httpRequest);
@@ -135,10 +135,11 @@ public class MatcherFilter implements Filter {
                         req.setDelegate(request);
                         res.setDelegate(response);
                         
-                        result = route.handle(req, res);
+                        Object element = route.handle(req, res);
+                        result = route.render(element);
                     }
                     if (result != null) {
-                        bodyContent = result.toString();
+                        bodyContent = result;
                     }
                     long t1 = System.currentTimeMillis() - t0;
                     LOG.debug("Time for request: " + t1);

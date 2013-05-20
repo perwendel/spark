@@ -61,6 +61,22 @@ public abstract class Route extends AbstractRoute {
      */
     public abstract Object handle(Request request, Response response);
 
+    /**
+     * This method should render the given element into something that can be send through Response element.
+     * By default this method returns the result of calling toString method in given element, but can be overridden.
+     * 
+     * @param element to be rendered.
+     * @return body content.
+     */
+    //TODO change String return type to Stream. It should be done in another issue.
+    public String render(Object element) {
+    	if(element != null) {
+    		return element.toString();    		
+    	} else {
+    		return null;
+    	}
+    }
+    
     public String getAcceptType() {
 		return acceptType;
 	}

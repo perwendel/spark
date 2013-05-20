@@ -250,7 +250,9 @@ public class SimpleRouteMatcher implements RouteMatcher {
     	Map<String, RouteEntry> acceptedTypes = new HashMap<>();
     	
     	for (RouteEntry routeEntry : routes) {
-    		acceptedTypes.put(routeEntry.acceptedType, routeEntry);
+    		if(!acceptedTypes.containsKey(routeEntry.acceptedType)) {
+    			acceptedTypes.put(routeEntry.acceptedType, routeEntry);
+    		}
 		}
     	
     	return acceptedTypes;
