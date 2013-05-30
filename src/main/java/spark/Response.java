@@ -154,12 +154,27 @@ public class Response {
      * zero - deletes the cookie)
      */
     public void cookie(String name, String value, int maxAge, boolean secured) {
+        cookie("", name, value, maxAge, secured);
+    }
+    
+    /**
+     * Adds cookie to the response. Can be invoked multiple times to insert more than one cookie.
+     *
+     * @param path path of the cookie
+     * @param name name of the cookie
+     * @param value value of the cookie
+     * @param maxAge max age of the cookie in seconds (negative for the not persistent cookie, zero - deletes the cookie)
+     * @param secured if true : cookie will be secured
+     * zero - deletes the cookie)
+     */
+    public void cookie(String path, String name, String value, int maxAge, boolean secured) {
         Cookie cookie = new Cookie(name, value);
+        cookie.setPath(path);
         cookie.setMaxAge(maxAge);
         cookie.setSecure(secured);
         response.addCookie(cookie);
     }
-    
+
     /**
      * Removes the cookie.
      * 
