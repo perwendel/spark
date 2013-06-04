@@ -26,7 +26,7 @@ package spark;
  */
 public abstract class Route extends AbstractRoute {
 
-    private static final String DEFAULT_ACCEPT_TYPE = "text/html";
+    private static final String DEFAULT_ACCEPT_TYPE = "*/*";
     
 	private String path;
     private String acceptType;
