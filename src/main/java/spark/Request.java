@@ -120,6 +120,16 @@ public class Request {
     }
     
     /**
+     * Returns a map of the parameter names.
+     * Example: ':name' => 'value' in /hello/value for the route /hello/:name
+     * 
+     * @return null if there are no parameters.
+     */
+    public String params() {
+        return params;
+    }
+    
+    /**
      * Returns an arrat containing the splat (wildcard) parameters 
      */
     public String[] splat() {
