@@ -1,6 +1,6 @@
 package spark;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import spark.route.RouteMatch;
 
 public class RequestTest {
     
-    RouteMatch match =  new RouteMatch(HttpMethod.get,null,"/hi","/hi"); 
+    RouteMatch match =  new RouteMatch(HttpMethod.get,null,"/hi","/hi", "text/html"); 
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {

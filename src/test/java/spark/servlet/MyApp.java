@@ -8,7 +8,6 @@ import spark.Filter;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import spark.servlet.SparkApplication;
 
 public class MyApp implements SparkApplication {
 

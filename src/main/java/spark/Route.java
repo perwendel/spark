@@ -26,7 +26,10 @@ package spark;
  */
 public abstract class Route extends AbstractRoute {
 
-    private String path;
+    private static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    
+	private String path;
+    private String acceptType;
     
     /**
      * Constructor
@@ -34,7 +37,18 @@ public abstract class Route extends AbstractRoute {
      * @param path The route path which is used for matching. (e.g. /hello, users/:name) 
      */
     protected Route(String path) {
-        this.path = path;
+        this(path, DEFAULT_ACCEPT_TYPE);
+    }
+    
+    /**
+     * Constructor
+     * 
+     * @param path The route path which is used for matching. (e.g. /hello, users/:name) 
+     * @param acceptType The accept type which is used for matching.
+     */
+    protected Route(String path, String acceptType) {
+    	this.path = path;
+    	this.acceptType = acceptType;
     }
     
     /**
@@ -47,6 +61,26 @@ public abstract class Route extends AbstractRoute {
      */
     public abstract Object handle(Request request, Response response);
 
+    /**
+     * This method should render the given element into something that can be send through Response element.
+     * By default this method returns the result of calling toString method in given element, but can be overridden.
+     * 
+     * @param element to be rendered.
+     * @return body content.
+     */
+    //TODO change String return type to Stream. It should be done in another issue.
+    public String render(Object element) {
+    	if(element != null) {
+    		return element.toString();    		
+    	} else {
+    		return null;
+    	}
+    }
+    
+    public String getAcceptType() {
+		return acceptType;
+	}
+    
     /**
      * Returns this route's path
      */

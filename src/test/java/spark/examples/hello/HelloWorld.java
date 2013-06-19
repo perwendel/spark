@@ -16,9 +16,10 @@
  */
 package spark.examples.hello;
 
-import static spark.Spark.*;
-
-import spark.*;
+import static spark.Spark.get;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
 public class HelloWorld {
 

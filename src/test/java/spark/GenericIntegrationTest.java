@@ -1,17 +1,25 @@
 package spark;
 
-import junit.framework.Assert;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import spark.util.SparkTestUtil;
-import spark.util.SparkTestUtil.UrlResponse;
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.externalStaticFileLocation;
+import static spark.Spark.get;
+import static spark.Spark.patch;
+import static spark.Spark.post;
+import static spark.Spark.staticFileLocation;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static spark.Spark.*;
+import junit.framework.Assert;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
 
 public class GenericIntegrationTest {
 
@@ -49,6 +57,23 @@ public class GenericIntegrationTest {
             }
         });
 
+        before(new Filter("/protected/*", "application/json") {
+
+            @Override
+            public void handle(Request request, Response response) {
+                halt(401, "{\"message\": \"Go Away!\"}");
+            }
+        });
+        
+        get(new Route("/hi", "application/json") {
+
+			@Override
+			public Object handle(Request request, Response response) {
+				return "{\"message\": \"Hello World\"}";
+			}
+        	
+        });
+        
         get(new Route("/hi") {
 
             @Override
@@ -80,6 +105,19 @@ public class GenericIntegrationTest {
             }
         });
 
+        get(new TemplateViewRoute("/templateView") {
+			
+			@Override
+			public String render(ModelAndView modelAndView) {
+				return modelAndView.getModel()+" from "+modelAndView.getViewName();
+			}
+			
+			@Override
+			public ModelAndView handle(Request request, Response response) {
+				return new ModelAndView("Hello", "my view");
+			}
+		});
+        
         get(new Route("/") {
 
             @Override
@@ -119,6 +157,31 @@ public class GenericIntegrationTest {
         }
     }
 
+    @Test
+    public void filters_should_be_accept_type_aware() throws Exception {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/protected/resource", null, "application/json");
+            Assert.assertTrue(response.status == 401);
+            Assert.assertEquals("{\"message\": \"Go Away!\"}", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    @Test
+    public void routes_should_be_accept_type_aware() throws Exception {
+    	 UrlResponse response = testUtil.doMethod("GET", "/hi", null, "application/json");
+    	 Assert.assertEquals(200, response.status);
+         Assert.assertEquals("{\"message\": \"Hello World\"}", response.body);
+    }
+    
+    @Test
+    public void template_view_should_be_rendered_with_given_model_view_object() throws Exception {
+    	 UrlResponse response = testUtil.doMethod("GET", "/templateView", null);
+    	 Assert.assertEquals(200, response.status);
+    	 Assert.assertEquals("Hello from my view", response.body);
+    }
+    
     @Test
     public void testGetHi() {
         try {

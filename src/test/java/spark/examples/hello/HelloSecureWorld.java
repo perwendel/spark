@@ -1,11 +1,10 @@
 package spark.examples.hello;
 
+import static spark.Spark.get;
+import static spark.Spark.setSecure;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import static spark.Spark.get;
-import static spark.Spark.setSecure;
 
 /**
  * You'll need to provide a JKS keystore as arg 0 and its password as arg 1.

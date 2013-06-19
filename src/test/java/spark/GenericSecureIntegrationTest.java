@@ -1,13 +1,18 @@
 package spark;
 
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.get;
+import static spark.Spark.patch;
+import static spark.Spark.post;
 import junit.framework.Assert;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
-
-import static spark.Spark.*;
 
 public class GenericSecureIntegrationTest {
 

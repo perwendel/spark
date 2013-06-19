@@ -1,6 +1,8 @@
 package spark.servlet;
 
+import static spark.util.SparkTestUtil.sleep;
 import junit.framework.Assert;
+
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -8,11 +10,10 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import spark.TAccess;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
-
-import static spark.util.SparkTestUtil.sleep;
 
 public class ServletTest {
 

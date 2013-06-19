@@ -16,7 +16,9 @@
  */
 package spark.examples.filter;
 
-import static spark.Spark.*;
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.get;
 
 import java.util.HashMap;
 import java.util.Map;

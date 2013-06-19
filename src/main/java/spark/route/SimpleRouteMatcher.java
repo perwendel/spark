@@ -17,8 +17,12 @@
 package spark.route;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import spark.utils.MimeParse;
 import spark.utils.SparkUtils;
 
 /**
@@ -36,6 +40,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
 
         private HttpMethod httpMethod;
         private String path;
+        private String acceptedType;
         private Object target;
 
         private boolean matches(HttpMethod httpMethod, String path) {
@@ -131,30 +136,80 @@ public class SimpleRouteMatcher implements RouteMatcher {
     public SimpleRouteMatcher() {
         routes = new ArrayList<RouteEntry>();
     }
-
+    
     @Override
-    public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String path) {
-        for (RouteEntry entry : routes) {
-            if (entry.matches(httpMethod, path)) {
-                return new RouteMatch(httpMethod, entry.target, entry.path, path);
-            }
-        }
-        return null;
+    public List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
+        List<RouteMatch> matchSet = new ArrayList<RouteMatch>();
+       
+        List<RouteEntry> routeEntries =  this.findTargetsForRequestedRoute(httpMethod, path);
+        
+        for (RouteEntry routeEntry : routeEntries) {
+        	
+        	if(acceptType != null) {
+        		String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
+        	
+        		if(routeWithGivenAcceptType(bestMatch)) {
+        			matchSet.add(new RouteMatch(httpMethod, routeEntry.target, routeEntry.path, path, acceptType));
+        		}
+        	} else {
+        		matchSet.add(new RouteMatch(httpMethod, routeEntry.target, routeEntry.path, path, acceptType));
+        	}
+        	
+		}
+        
+        return matchSet;
     }
     
     @Override
-    public List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
-        List<RouteMatch> matchSet = new ArrayList<RouteMatch>();
+    public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
+    	List<RouteEntry> routeEntries =  this.findTargetsForRequestedRoute(httpMethod, path);
+    	RouteEntry entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
+		return entry != null ? new RouteMatch(httpMethod, entry.target, entry.path, path, acceptType) : null;
+    }
+
+    private RouteEntry findTargetWithGivenAcceptType(List<RouteEntry> routeMatchs, String acceptType) {
+    	
+    	if(acceptType != null && routeMatchs.size() > 0) {
+    		
+    		Map<String, RouteEntry> acceptedMimeTypes = getAcceptedMimeTypes(routeMatchs);
+    		String bestMatch = MimeParse.bestMatch(acceptedMimeTypes.keySet(), acceptType);
+    		
+			
+    		if(routeWithGivenAcceptType(bestMatch)) {
+    			return acceptedMimeTypes.get(bestMatch);
+    		} else {
+    			return null;
+    		}
+    		
+    	} else {
+    		
+    		if(routeMatchs.size() > 0) {
+    			return routeMatchs.get(0);
+    		}
+    		
+    	}
+    	
+    	return null;
+    }
+    
+    
+    
+    private boolean routeWithGivenAcceptType(String bestMatch) {
+    	return !MimeParse.NO_MIME_TYPE.equals(bestMatch);
+	}
+
+	private List<RouteEntry> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
+        List<RouteEntry> matchSet = new ArrayList<RouteEntry>();
         for (RouteEntry entry : routes) {
             if (entry.matches(httpMethod, path)) {
-                matchSet.add(new RouteMatch(httpMethod, entry.target, entry.path, path));
+                matchSet.add(entry);
             }
         }
         return matchSet;
     }
 
     @Override
-    public void parseValidateAddRoute(String route, Object target) {
+    public void parseValidateAddRoute(String route, String acceptType, Object target) {
         try {
             int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
             String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase(); // NOSONAR
@@ -172,23 +227,37 @@ public class SimpleRouteMatcher implements RouteMatcher {
                                 + ".");
                 return;
             }
-            addRoute(method, url, target);
+            addRoute(method, url, acceptType, target);
         } catch (Exception e) {
             LOG.error("The @Route value: " + route + " is not in the correct format", e);
         }
 
     }
-
-    private void addRoute(HttpMethod method, String url, Object target) {
+    
+    private void addRoute(HttpMethod method, String url, String acceptedType, Object target) {
         RouteEntry entry = new RouteEntry();
         entry.httpMethod = method;
         entry.path = url;
         entry.target = target;
+        entry.acceptedType = acceptedType;
         LOG.debug("Adds route: " + entry);
         // Adds to end of list
         routes.add(entry);
     }
 
+    //can be cached? I don't think so.
+    private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
+    	Map<String, RouteEntry> acceptedTypes = new HashMap<>();
+    	
+    	for (RouteEntry routeEntry : routes) {
+    		if(!acceptedTypes.containsKey(routeEntry.acceptedType)) {
+    			acceptedTypes.put(routeEntry.acceptedType, routeEntry);
+    		}
+		}
+    	
+    	return acceptedTypes;
+    }
+    
     @Override
     public void clearRoutes() {
         routes.clear();
