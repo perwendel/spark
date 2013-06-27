@@ -44,6 +44,259 @@ package spark;
  * @author Per Wendel
  */
 public final class Spark {
+
+    private static final int SPARK_DEFAULT_PORT = 4567;
+
+    private static boolean initialized = false;
+
+    private static String ipAddress = "0.0.0.0";
+    private static int port = SPARK_DEFAULT_PORT;
+
+    private static boolean hasSslConfig;
+    private static String keystoreFile;
+    private static String keystorePassword;
+    private static String truststoreFile;
+    private static String truststorePassword;
+
+    private static boolean hasStaticConfig;
+    private static String staticFileFolder = null;
+    private static String externalStaticFileFolder = null;
+    private static SparkInstance instance;
+
+    // Hide constructor
+    private Spark() {
+    }
+
+    /**
+     * Set the IP address that Spark should listen on. If not called the default
+     * address is '0.0.0.0'. This has to be called before any route mapping is
+     * done.
+     *
+     * @param ipAddress The ipAddress
+     */
+    public static synchronized void setIpAddress(String ipAddress) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.ipAddress = ipAddress;
+    }
+
+    /**
+     * Set the port that Spark should listen on. If not called the default port
+     * is 4567. This has to be called before any route mapping is done.
+     *
+     * @param port The port number
+     */
+    public static synchronized void setPort(int port) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.port = port;
+    }
+
+    /**
+     * Set the connection to be secure, using the specified keystore and
+     * truststore. This has to be called before any route mapping is done. You
+     * have to supply a keystore file, truststore file is optional (keystore
+     * will be reused).
+     * <p/>
+     * This method is only relevant when using embedded Jetty servers. It should
+     * not be used if you are using Servlets, where you will need to secure the
+     * connection in the servlet container
+     *
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param truststoreFile     the truststore file location as string, leave null to reuse
+     *                           keystore
+     * @param truststorePassword the trust store password
+     */
+    public static synchronized void setSecure(String keystoreFile,
+                                              String keystorePassword, String truststoreFile,
+                                              String truststorePassword) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+
+        if (keystoreFile == null) {
+            throw new IllegalArgumentException(
+                    "Must provide a keystore file to run secured");
+        }
+
+        Spark.keystoreFile = keystoreFile;
+        Spark.keystorePassword = keystorePassword;
+        Spark.truststoreFile = truststoreFile;
+        Spark.truststorePassword = truststorePassword;
+        Spark.hasSslConfig = true;
+    }
+
+    /**
+     * Sets the folder in classpath serving static files. <b>Observe: this method
+     * must be called before all other methods.</b>
+     *
+     * @param folder the folder in classpath.
+     */
+    public static synchronized void staticFileLocation(String folder) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        staticFileFolder = folder;
+        hasStaticConfig = true;
+    }
+
+    /**
+     * Sets the external folder serving static files. <b>Observe: this method
+     * must be called before all other methods.</b>
+     *
+     * @param externalFolder the external folder serving static files.
+     */
+    public static synchronized void externalStaticFileLocation(String externalFolder) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        externalStaticFileFolder = externalFolder;
+        hasStaticConfig = true;
+    }
+
+    /**
+     * Map the route for HTTP GET requests
+     *
+     * @param route The route
+     */
+    public static synchronized void get(Route route) {
+        init();
+        instance.get(route);
+    }
+
+    /**
+     * Map the route for HTTP POST requests
+     *
+     * @param route The route
+     */
+    public static synchronized void post(Route route) {
+        init();
+        instance.post(route);
+    }
+
+    /**
+     * Map the route for HTTP PUT requests
+     *
+     * @param route The route
+     */
+    public static synchronized void put(Route route) {
+        init();
+        instance.put(route);
+    }
+
+    /**
+     * Map the route for HTTP PATCH requests
+     *
+     * @param route The route
+     */
+    public static synchronized void patch(Route route) {
+        init();
+        instance.patch(route);
+    }
+
+    /**
+     * Map the route for HTTP DELETE requests
+     *
+     * @param route The route
+     */
+    public static synchronized void delete(Route route) {
+        init();
+        instance.delete(route);
+    }
+
+    /**
+     * Map the route for HTTP HEAD requests
+     *
+     * @param route The route
+     */
+    public static synchronized void head(Route route) {
+        init();
+        instance.head(route);
+    }
+
+    /**
+     * Map the route for HTTP TRACE requests
+     *
+     * @param route The route
+     */
+    public static synchronized void trace(Route route) {
+        init();
+        instance.trace(route);
+    }
+
+    /**
+     * Map the route for HTTP CONNECT requests
+     *
+     * @param route The route
+     */
+    public static synchronized void connect(Route route) {
+        init();
+        instance.connect(route);
+    }
+
+    /**
+     * Map the route for HTTP OPTIONS requests
+     *
+     * @param route The route
+     */
+    public static synchronized void options(Route route) {
+        init();
+        instance.options(route);
+    }
+
+    /**
+     * Maps a filter to be executed before any matching routes
+     *
+     * @param filter The filter
+     */
+    public static synchronized void before(Filter filter) {
+        init();
+        instance.before(filter);
+    }
+
+    /**
+     * Maps a filter to be executed after any matching routes
+     *
+     * @param filter The filter
+     */
+    public static synchronized void after(Filter filter) {
+        init();
+        instance.after(filter);
+    }
+
+    // WARNING, used for jUnit testing only!!!
+    static synchronized void clearRoutes() {
+        instance.getRouteMatcher().clearRoutes();
+    }
+
+    // Used for jUnit testing!
+    static synchronized void stop() {
+        if (instance != null) {
+            instance.stop();
+        }
+        initialized = false;
+    }
+
+    private static synchronized void init() {
+        if (!initialized) {
+            instance = new SparkInstance(
+                    ipAddress,
+                    port,
+                    hasSslConfig ? new SSLConfig(keystoreFile, keystorePassword, truststoreFile, truststorePassword) : null,
+                    hasStaticConfig ? new StaticFileConfig(staticFileFolder, externalStaticFileFolder) : null);
+            instance.ignite();
+            initialized = true;
+        }
+    }
+
+    private static void throwBeforeRouteMappingException() {
+        throw new IllegalStateException(
+                "This must be done before route mapping has begun");
+    }
+    
     /*
      * TODO: discover new TODOs.
      * 

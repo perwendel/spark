@@ -30,7 +30,7 @@ public final class SparkServerFactory {
     private SparkServerFactory() {}
 
     public static SparkServer create(String ipAddress, int port, SSLConfig sslConfig, StaticFileConfig staticFileConfig, RouteMatcher routeMatcher) {
-        MatcherFilter matcherFilter = new MatcherFilter(routeMatcher, false, staticFileConfig.hasMultipleHandlers());
+        MatcherFilter matcherFilter = new MatcherFilter(routeMatcher, false, staticFileConfig != null && staticFileConfig.hasMultipleHandlers());
         matcherFilter.init(null);
         JettyHandler handler = new JettyHandler(matcherFilter);
         return new SparkServerImpl(handler, ipAddress, port, sslConfig, staticFileConfig);
