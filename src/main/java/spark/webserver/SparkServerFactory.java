@@ -16,7 +16,9 @@
  */
 package spark.webserver;
 
-import spark.route.RouteMatcherFactory;
+import spark.SSLConfig;
+import spark.StaticFileConfig;
+import spark.route.RouteMatcher;
 
 /**
  * 
@@ -26,12 +28,11 @@ import spark.route.RouteMatcherFactory;
 public final class SparkServerFactory {
 
     private SparkServerFactory() {}
-    
-    public static SparkServer create(boolean hasMultipleHandler) {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
+
+    public static SparkServer create(String ipAddress, int port, SSLConfig sslConfig, StaticFileConfig staticFileConfig, RouteMatcher routeMatcher) {
+        MatcherFilter matcherFilter = new MatcherFilter(routeMatcher, false, staticFileConfig.hasMultipleHandlers());
         matcherFilter.init(null);
         JettyHandler handler = new JettyHandler(matcherFilter);
-        return new SparkServerImpl(handler);
+        return new SparkServerImpl(handler, ipAddress, port, sslConfig, staticFileConfig);
     }
-    
 }

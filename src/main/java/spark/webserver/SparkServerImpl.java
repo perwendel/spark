@@ -16,12 +16,6 @@
  */
 package spark.webserver;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -30,6 +24,14 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import spark.SSLConfig;
+import spark.StaticFileConfig;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Spark server implementation
@@ -40,49 +42,52 @@ class SparkServerImpl implements SparkServer {
 
     private static final String NAME = "Spark";
     private Handler handler;
+    private final String ipAddress;
+    private final int port;
+    private final SSLConfig sslConfig;
+    private final StaticFileConfig staticFileConfig;
     private Server server;
 
-    public SparkServerImpl(Handler handler) {
+    public SparkServerImpl(Handler handler, String ipAddress, int port, SSLConfig sslConfig, StaticFileConfig staticFileConfig) {
         this.handler = handler;
+        this.ipAddress = ipAddress;
+        this.port = port;
+        this.sslConfig = sslConfig;
+        this.staticFileConfig = staticFileConfig;
         System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
     }
 
     @Override
-    public void ignite(String host, int port, String keystoreFile,
-            String keystorePassword, String truststoreFile,
-            String truststorePassword, String staticFilesFolder,
-            String externalFilesFolder) {
-        
+    public void ignite() {
         ServerConnector connector;
         
-        if (keystoreFile == null) {
+        if (sslConfig == null) {
             connector = createSocketConnector();
         } else {
-            connector = createSecureSocketConnector(keystoreFile,
-                    keystorePassword, truststoreFile, truststorePassword);
+            connector = createSecureSocketConnector(sslConfig);
         }
 
         // Set some timeout options to make debugging easier.
         connector.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
         connector.setSoLingerTime(-1);
-        connector.setHost(host);
+        connector.setHost(ipAddress);
         connector.setPort(port);
 
         server = connector.getServer();
         server.setConnectors(new Connector[] { connector });
 
         // Handle static file routes
-        if (staticFilesFolder == null && externalFilesFolder == null) {
+        if (staticFileConfig == null) {
             server.setHandler(handler);
         } else {
             List<Handler> handlersInList = new ArrayList<Handler>();
             handlersInList.add(handler);
             
             // Set static file location
-            setStaticFileLocationIfPresent(staticFilesFolder, handlersInList);
+            setStaticFileLocationIfPresent(staticFileConfig.getStaticFileFolder(), handlersInList);
             
             // Set external static file location
-            setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
+            setExternalStaticFileLocationIfPresent(staticFileConfig.getExternalStaticFileFolder(), handlersInList);
 
             HandlerList handlers = new HandlerList();
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
@@ -92,7 +97,7 @@ class SparkServerImpl implements SparkServer {
         
         try {
             System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
-            System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
+            System.out.println(">> Listening on " + ipAddress + ":" + port); // NOSONAR
 
             server.start();
             server.join();
@@ -120,28 +125,23 @@ class SparkServerImpl implements SparkServer {
      * Creates a secure jetty socket connector. Keystore required, truststore
      * optional. If truststore not specifed keystore will be reused.
      * 
-     * @param keystoreFile The keystore file location as string
-     * @param keystorePassword the password for the keystore
-     * @param truststoreFile the truststore file location as string, leave null to reuse keystore
-     * @param truststorePassword the trust store password
+     * @param sslConfig ssl configuration
      * 
      * @return a secure socket connector
      */
-    private static ServerConnector createSecureSocketConnector(String keystoreFile,
-            String keystorePassword, String truststoreFile,
-            String truststorePassword) {
+    private static ServerConnector createSecureSocketConnector(SSLConfig sslConfig) {
 
         SslContextFactory sslContextFactory = new SslContextFactory(
-                keystoreFile);
+                sslConfig.getKeystoreFile());
 
-        if (keystorePassword != null) {
-            sslContextFactory.setKeyStorePassword(keystorePassword);
+        if (sslConfig.getKeystorePassword() != null) {
+            sslContextFactory.setKeyStorePassword(sslConfig.getKeystorePassword());
         }
-        if (truststoreFile != null) {
-            sslContextFactory.setTrustStorePath(truststoreFile);
+        if (sslConfig.getTruststoreFile() != null) {
+            sslContextFactory.setTrustStorePath(sslConfig.getTruststoreFile());
         }
-        if (truststorePassword != null) {
-            sslContextFactory.setTrustStorePassword(truststorePassword);
+        if (sslConfig.getTruststorePassword() != null) {
+            sslContextFactory.setTrustStorePassword(sslConfig.getTruststorePassword());
         }
         return new ServerConnector(new Server(), sslContextFactory);
     }

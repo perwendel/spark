@@ -16,12 +16,7 @@
  */
 package spark.examples.simple;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.Spark.setSecure;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import spark.*;
 
 /**
  * A simple example just showing some basic functionality You'll need to provide
@@ -37,23 +32,24 @@ public class SimpleSecureExample {
         // setPort(5678); <- Uncomment this if you want spark to listen on a
         // port different than 4567.
 
-        setSecure(args[0], args[1], null, null);
+        SSLConfig sslConfig = new SSLConfig(args[0], args[1], null, null);
+        SparkInstance spark = new SparkInstance(SparkInstance.SPARK_DEFAULT_IP, SparkInstance.SPARK_DEFAULT_PORT, sslConfig, null);
 
-        get(new Route("/hello") {
+        spark.get(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello Secure World!";
             }
         });
 
-        post(new Route("/hello") {
+        spark.post(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello Secure World: " + request.body();
             }
         });
 
-        get(new Route("/private") {
+        spark.get(new Route("/private") {
             @Override
             public Object handle(Request request, Response response) {
                 response.status(401);
@@ -61,14 +57,14 @@ public class SimpleSecureExample {
             }
         });
 
-        get(new Route("/users/:name") {
+        spark.get(new Route("/users/:name") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Selected user: " + request.params(":name");
             }
         });
 
-        get(new Route("/news/:section") {
+        spark.get(new Route("/news/:section") {
             @Override
             public Object handle(Request request, Response response) {
                 response.type("text/xml");
@@ -77,7 +73,7 @@ public class SimpleSecureExample {
             }
         });
 
-        get(new Route("/protected") {
+        spark.get(new Route("/protected") {
             @Override
             public Object handle(Request request, Response response) {
                 halt(403, "I don't think so!!!");
@@ -85,7 +81,7 @@ public class SimpleSecureExample {
             }
         });
 
-        get(new Route("/redirect") {
+        spark.get(new Route("/redirect") {
             @Override
             public Object handle(Request request, Response response) {
                 response.redirect("/news/world");
@@ -93,7 +89,7 @@ public class SimpleSecureExample {
             }
         });
 
-        get(new Route("/") {
+        spark.get(new Route("/") {
             @Override
             public Object handle(Request request, Response response) {
                 return "root";
