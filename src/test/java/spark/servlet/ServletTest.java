@@ -1,8 +1,6 @@
 package spark.servlet;
 
-import static spark.util.SparkTestUtil.sleep;
 import junit.framework.Assert;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -10,30 +8,30 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import spark.TAccess;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import static spark.util.SparkTestUtil.sleep;
 
 public class ServletTest {
 
     private static final String SOMEPATH = "/somepath";
     private static final int PORT = 9393;
-    static final Server server = new Server();
+    private static final Server server = new Server();
 
     static SparkTestUtil testUtil;
 
     @AfterClass
-    public static void tearDown() {
-        TAccess.clearRoutes();
-        TAccess.stop();
+    public static void tearDown() throws Exception {
+        System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
+        server.stop();
+        server.join();
     }
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws Exception {
         testUtil = new SparkTestUtil(PORT);
 
-        final Server server = new Server();
         ServerConnector connector = new ServerConnector(server);
 
         // Set some timeout options to make debugging easier.
@@ -49,22 +47,8 @@ public class ServletTest {
 
         server.setHandler(bb);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    System.out.println(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
-                    server.start();
-                    System.in.read();
-                    System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
-                    server.stop();
-                    server.join();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(100);
-                }
-            }
-        }).start();
+        System.out.println(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
+        server.start();
 
         sleep(1000);
     }
