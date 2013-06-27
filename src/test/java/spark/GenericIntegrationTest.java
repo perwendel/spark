@@ -1,35 +1,25 @@
 package spark;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.externalStaticFileLocation;
-import static spark.Spark.get;
-import static spark.Spark.patch;
-import static spark.Spark.post;
-import static spark.Spark.staticFileLocation;
+import junit.framework.Assert;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import junit.framework.Assert;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import spark.util.SparkTestUtil;
-import spark.util.SparkTestUtil.UrlResponse;
-
 public class GenericIntegrationTest {
 
     static SparkTestUtil testUtil;
     static File tmpExternalFile;
+    static SparkInstance spark;
 
     @AfterClass
     public static void tearDown() {
-        Spark.clearRoutes();
-        Spark.stop();
+        spark.stop();
         if (tmpExternalFile != null) {
             tmpExternalFile.delete();
         }
@@ -38,6 +28,8 @@ public class GenericIntegrationTest {
     @BeforeClass
     public static void setup() throws IOException {
         testUtil = new SparkTestUtil(4567);
+        spark = new SparkInstance(SparkInstance.SPARK_DEFAULT_IP, SparkInstance.SPARK_DEFAULT_PORT,
+                null, new StaticFileConfig("/public", System.getProperty("java.io.tmpdir")));
 
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
 
@@ -46,10 +38,7 @@ public class GenericIntegrationTest {
         writer.flush();
         writer.close();
 
-        staticFileLocation("/public");
-        externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
-
-        before(new Filter("/protected/*") {
+        spark.before(new Filter("/protected/*") {
 
             @Override
             public void handle(Request request, Response response) {
@@ -57,15 +46,15 @@ public class GenericIntegrationTest {
             }
         });
 
-        before(new Filter("/protected/*", "application/json") {
+        spark.before(new Filter("/protected/*", "application/json") {
 
             @Override
             public void handle(Request request, Response response) {
                 halt(401, "{\"message\": \"Go Away!\"}");
             }
         });
-        
-        get(new Route("/hi", "application/json") {
+
+        spark.get(new Route("/hi", "application/json") {
 
 			@Override
 			public Object handle(Request request, Response response) {
@@ -73,8 +62,8 @@ public class GenericIntegrationTest {
 			}
         	
         });
-        
-        get(new Route("/hi") {
+
+        spark.get(new Route("/hi") {
 
             @Override
             public Object handle(Request request, Response response) {
@@ -82,22 +71,22 @@ public class GenericIntegrationTest {
             }
         });
 
-        get(new Route("/param/:param") {
+        spark.get(new Route("/param/:param") {
 
             @Override
             public Object handle(Request request, Response response) {
                 return "echo: " + request.params(":param");
             }
         });
-        
-        get(new Route("/paramandwild/:param/stuff/*") {
+
+        spark.get(new Route("/paramandwild/:param/stuff/*") {
             @Override
             public Object handle(Request request, Response response) {
                 return "paramandwild: " + request.params(":param") + request.splat()[0];
             }
         });
 
-        get(new Route("/paramwithmaj/:paramWithMaj") {
+        spark.get(new Route("/paramwithmaj/:paramWithMaj") {
 
             @Override
             public Object handle(Request request, Response response) {
@@ -105,7 +94,7 @@ public class GenericIntegrationTest {
             }
         });
 
-        get(new TemplateViewRoute("/templateView") {
+        spark.get(new TemplateViewRoute("/templateView") {
 			
 			@Override
 			public String render(ModelAndView modelAndView) {
@@ -117,8 +106,8 @@ public class GenericIntegrationTest {
 				return new ModelAndView("Hello", "my view");
 			}
 		});
-        
-        get(new Route("/") {
+
+        spark.get(new Route("/") {
 
             @Override
             public Object handle(Request request, Response response) {
@@ -126,7 +115,7 @@ public class GenericIntegrationTest {
             }
         });
 
-        post(new Route("/poster") {
+        spark.post(new Route("/poster") {
             @Override
             public Object handle(Request request, Response response) {
                 String body = request.body();
@@ -135,7 +124,7 @@ public class GenericIntegrationTest {
             }
         });
 
-        patch(new Route("/patcher") {
+        spark.patch(new Route("/patcher") {
             @Override
             public Object handle(Request request, Response response) {
                 String body = request.body();
@@ -144,12 +133,14 @@ public class GenericIntegrationTest {
             }
         });
 
-        after(new Filter("/hi") {
+        spark.after(new Filter("/hi") {
             @Override
             public void handle(Request request, Response response) {
                 response.header("after", "foobar");
             }
         });
+
+        spark.ignite();
 
         try {
             Thread.sleep(500);
@@ -286,7 +277,7 @@ public class GenericIntegrationTest {
     }
 
     private static void registerEchoRoute(final String routePart) {
-        get(new Route("/tworoutes/" + routePart + "/:param") {
+        spark.get(new Route("/tworoutes/" + routePart + "/:param") {
             @Override
             public Object handle(Request request, Response response) {
                 return routePart + " route: " + request.params(":param");
