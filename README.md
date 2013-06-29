@@ -1,6 +1,16 @@
 Spark - a Sinatra inspired web framework
 ==============================================
 
+NEWS: Spark is now available on Maven central!!! :
+
+```xml
+    <dependency>
+        <groupId>com.sparkjava</groupId>
+        <artifactId>spark-core</artifactId>
+        <version>1.0</version>
+    </dependency>
+```
+
 Examples can also be viewed on: http://code.google.com/p/spark-java/
 
 Getting started
