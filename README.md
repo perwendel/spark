@@ -11,6 +11,9 @@ NEWS: Spark is now available on Maven central!!! :
     </dependency>
 ```
 
+NEWS: Spark google group created:
+https://groups.google.com/d/forum/sparkjava
+
 Examples can also be viewed on: http://code.google.com/p/spark-java/
 
 Getting started
