@@ -16,6 +16,14 @@
  */
 package spark;
 
+import spark.route.HttpMethod;
+import spark.route.RouteMatch;
+import spark.utils.IOUtils;
+import spark.utils.SparkUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -25,15 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import spark.route.HttpMethod;
-import spark.route.RouteMatch;
-import spark.utils.IOUtils;
-import spark.utils.SparkUtils;
 
 /**
  * Provides information about the HTTP request
@@ -63,6 +62,7 @@ public class Request {
     //    request.body              # request body sent by the client (see below), DONE
     //    request.scheme            # "http"                                DONE
     //    request.path_info         # "/foo",                               DONE
+    //    request.context_path      # "/foo",                               DONE
     //    request.port              # 80                                    DONE
     //    request.request_method    # "GET",                                DONE
     //    request.query_string      # "",                                   DONE
@@ -169,8 +169,16 @@ public class Request {
     public String pathInfo() {
         return servletRequest.getPathInfo();
     }
-    
-    /**
+
+	/**
+	 * Returns the context path
+	 * Example return: "/appName"
+	 */
+	 public String contextPath() {
+        return servletRequest.getContextPath();
+	 }
+
+	/**
      * Returns the URL string
      */
     public String url() {
