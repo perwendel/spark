@@ -247,7 +247,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
 
     //can be cached? I don't think so.
     private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
-    	Map<String, RouteEntry> acceptedTypes = new HashMap<>();
+    	Map<String, RouteEntry> acceptedTypes = new HashMap<String, RouteEntry>();
     	
     	for (RouteEntry routeEntry : routes) {
     		if(!acceptedTypes.containsKey(routeEntry.acceptedType)) {
