@@ -46,6 +46,8 @@ import spark.route.RouteMatcher;
 public class MatcherFilter implements Filter {
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
+    private static final String CONTENT_TYPE_RESPONSE_HEADER = "Content-Type";
+
 	private RouteMatcher routeMatcher;
     private boolean isServletContext;
     private boolean hasOtherHandlers;
@@ -200,7 +202,9 @@ public class MatcherFilter implements Filter {
         if (consumed) {
             // Write body content
             if (!httpResponse.isCommitted()) {
-            	httpResponse.addHeader("Content-Type", acceptType);
+                if (httpResponse.getHeader(CONTENT_TYPE_RESPONSE_HEADER) == null) {
+                    httpResponse.setHeader(CONTENT_TYPE_RESPONSE_HEADER, acceptType);
+                }
                 httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
             }
         } else if (chain != null) {
