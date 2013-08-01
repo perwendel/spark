@@ -84,8 +84,16 @@ public abstract class Route extends AbstractRoute {
     /**
      * Returns this route's path
      */
-    String getPath() {
+    public String getPath() {
         return this.path;
     }
-    
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Route{");
+        sb.append("path='").append(path).append('\'');
+        sb.append(", acceptType='").append(acceptType).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

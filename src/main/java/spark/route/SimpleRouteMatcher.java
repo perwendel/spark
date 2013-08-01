@@ -51,13 +51,16 @@ public class SimpleRouteMatcher implements RouteMatcher {
                 return true;
             }
             boolean match = false;
-            if (this.httpMethod == httpMethod) {
+            if (this.httpMethod == httpMethod || httpMethod == null) {
                 match = matchPath(path);
             }
             return match;
         }
 
         private boolean matchPath(String path) { // NOSONAR
+            if (path == null)
+                return true;
+
             if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) // NOSONAR
                             || (this.path.endsWith("/") && !path.endsWith("/")))) { 
                 // One and not both ends with slash
@@ -192,7 +195,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
     	return null;
     }
     
-    
+
     
     private boolean routeWithGivenAcceptType(String bestMatch) {
     	return !MimeParse.NO_MIME_TYPE.equals(bestMatch);
