@@ -169,6 +169,13 @@ public class Request {
     public String pathInfo() {
         return servletRequest.getPathInfo();
     }
+
+    /**
+     * Returns the servlet path
+     */
+    public String servletPath() {
+        return servletRequest.getServletPath();
+    }
     
     /**
      * Returns the URL string
