@@ -54,8 +54,7 @@ final class RequestWrapper extends Request {
     }
 
     @Override
-    public String servletPath()
-    {
+    public String servletPath() {
         return delegate.servletPath();
     }
 

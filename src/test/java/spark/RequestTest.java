@@ -61,14 +61,11 @@ public class RequestTest {
     public void shouldBeAbleToGetTheServletPath() {
         HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<String, String[]>()) {
             @Override
-            public String getServletPath()
-            {
+            public String getServletPath() {
                 return THE_SERVLET_PATH;
             }
         };
-
         Request request = new Request(match, servletRequest);
-
         assertEquals("Should have delegated getting the servlet path", THE_SERVLET_PATH, request.servletPath());
     }
     
