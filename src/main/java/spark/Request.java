@@ -178,6 +178,13 @@ public class Request {
     }
     
     /**
+     * Returns the context path
+     */
+    public String contextPath() {
+        return servletRequest.getContextPath();
+    }
+    
+    /**
      * Returns the URL string
      */
     public String url() {
