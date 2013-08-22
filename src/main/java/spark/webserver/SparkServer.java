@@ -35,6 +35,7 @@ public interface SparkServer {
      * @param truststorePassword - the trust store password
      * @param staticFilesRoute    - the route to static files in classPath
      * @param externalFilesLocation    - the route to static files external to classPath.
+     * @param listExternalDirectories    - the flag to allow external directories to be listed 
      */
     void ignite(
             String host, 
@@ -44,7 +45,8 @@ public interface SparkServer {
             String truststoreFile, 
             String truststorePassword,
             String staticFilesRoute,
-            String externalFilesLocation);
+            String externalFilesLocation,
+            boolean listExternalDirectories);
     
     /**
      * Stops the spark server
