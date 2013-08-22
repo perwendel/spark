@@ -67,6 +67,8 @@ public final class Spark {
 
     private static String staticFileFolder = null;
     private static String externalStaticFileFolder = null;
+    
+    private static boolean listDirectories = false;
 
     // Hide constructor
     private Spark() {
@@ -98,6 +100,22 @@ public final class Spark {
         }
         Spark.port = port;
     }
+    
+    /**
+	 * Set whether external directories shall be listed or not. Note the
+	 * {@link #externalStaticFileLocation(String) externalStaticFileLocation}
+	 * must be set.
+	 * 
+	 * @param value
+	 *            the value as boolean flag
+	 * 
+	 */
+	public static synchronized void setListDirectories(boolean value) {
+		if (initialized) {
+			throwBeforeRouteMappingException();
+		}
+		Spark.listDirectories = value;
+	}
 
     /**
      * Set the connection to be secure, using the specified keystore and
@@ -309,7 +327,8 @@ public final class Spark {
                             truststoreFile,
                             truststorePassword,
                             staticFileFolder,
-                            externalStaticFileFolder);
+                            externalStaticFileFolder,
+                            listDirectories);
                 }
             }).start();
             initialized = true;

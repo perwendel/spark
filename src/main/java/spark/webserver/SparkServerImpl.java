@@ -51,7 +51,8 @@ class SparkServerImpl implements SparkServer {
     public void ignite(String host, int port, String keystoreFile,
             String keystorePassword, String truststoreFile,
             String truststorePassword, String staticFilesFolder,
-            String externalFilesFolder) {
+            String externalFilesFolder,
+            boolean listDirectories) {
         
         ServerConnector connector;
         
@@ -82,7 +83,7 @@ class SparkServerImpl implements SparkServer {
             setStaticFileLocationIfPresent(staticFilesFolder, handlersInList);
             
             // Set external static file location
-            setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
+            setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList, listDirectories);
 
             HandlerList handlers = new HandlerList();
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
@@ -171,13 +172,14 @@ class SparkServerImpl implements SparkServer {
     /**
      * Sets external static file location if present
      */
-    private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
+    private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute, List<Handler> handlersInList, boolean listDirectories) {
         if (externalFilesRoute != null) {
             try {
                 ResourceHandler externalResourceHandler = new ResourceHandler();
                 Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
                 externalResourceHandler.setBaseResource(externalStaticResources);
                 externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
+                externalResourceHandler.setDirectoriesListed(listDirectories);
                 handlersInList.add(externalResourceHandler);
             } catch (IOException exception) {
                 exception.printStackTrace(); // NOSONAR
