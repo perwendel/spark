@@ -26,112 +26,112 @@ public class CookiesIntegrationTest {
 
     @BeforeClass
     public static void initRoutes() throws InterruptedException {
-	post(new Route("/assertNoCookies") {
+        post(new Route("/assertNoCookies") {
 
-	    @Override
-	    public Object handle(Request request, Response response) {
-		if (!request.cookies().isEmpty()) {
-		    halt(500);
-		}
-		return "";
-	    }
-	});
+            @Override
+            public Object handle(Request request, Response response) {
+                if (!request.cookies().isEmpty()) {
+                    halt(500);
+                }
+                return "";
+            }
+        });
 
-	post(new Route("/setCookie") {
+        post(new Route("/setCookie") {
 
-	    @Override
-	    public Object handle(Request request, Response response) {
-		response.cookie(request.queryParams("cookieName"),
-			request.queryParams("cookieValue"));
-		return "";
-	    }
-	});
+            @Override
+            public Object handle(Request request, Response response) {
+                response.cookie(request.queryParams("cookieName"),
+                        request.queryParams("cookieValue"));
+                return "";
+            }
+        });
 
-	post(new Route("/assertHasCookie") {
+        post(new Route("/assertHasCookie") {
 
-	    @Override
-	    public Object handle(Request request, Response response) {
-		String cookieValue = request.cookie(request
-			.queryParams("cookieName"));
-		if (!request.queryParams("cookieValue").equals(cookieValue)) {
-		    halt(500);
-		}
-		return "";
-	    }
-	});
+            @Override
+            public Object handle(Request request, Response response) {
+                String cookieValue = request.cookie(request
+                        .queryParams("cookieName"));
+                if (!request.queryParams("cookieValue").equals(cookieValue)) {
+                    halt(500);
+                }
+                return "";
+            }
+        });
 
-	post(new Route("/removeCookie") {
+        post(new Route("/removeCookie") {
 
-	    @Override
-	    public Object handle(Request request, Response response) {
-		String cookieName = request.queryParams("cookieName");
-		String cookieValue = request.cookie(cookieName);
-		if (!request.queryParams("cookieValue").equals(cookieValue)) {
-		    halt(500);
-		}
-		response.removeCookie(cookieName);
-		return "";
-	    }
-	});
+            @Override
+            public Object handle(Request request, Response response) {
+                String cookieName = request.queryParams("cookieName");
+                String cookieValue = request.cookie(cookieName);
+                if (!request.queryParams("cookieValue").equals(cookieValue)) {
+                    halt(500);
+                }
+                response.removeCookie(cookieName);
+                return "";
+            }
+        });
 
-	Integer lock = new Integer(3);
-	while (lock > 0 && !isReady()) {
-	    try {
-		synchronized (lock) {
-		    lock.wait(2000);
-		}
+        Integer lock = new Integer(3);
+        while (lock > 0 && !isReady()) {
+            try {
+                synchronized (lock) {
+                    lock.wait(2000);
+                }
 
-		lock--;
-	    } catch (InterruptedException e) {
-		throw new RuntimeException(e);
-	    }
-	}
-	if (!isReady()) {
-	    Assert.fail("Spark server still not ready");
-	}
+                lock--;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (!isReady()) {
+            Assert.fail("Spark server still not ready");
+        }
     }
 
     @AfterClass
     public static void stopServer() {
-	Spark.clearRoutes();
-	Spark.stop();
+        Spark.clearRoutes();
+        Spark.stop();
     }
 
     @Test
     public void testEmptyCookies() {
-	httpPost("/assertNoCookies");
+        httpPost("/assertNoCookies");
     }
 
     @Test
     public void testCreateCookie() {
-	String cookieName = "testCookie";
-	String cookieValue = "testCookieValue";
-	httpPost("/setCookie?cookieName=" + cookieName + "&cookieValue="
-		+ cookieValue);
-	httpPost("/assertHasCookie?cookieName=" + cookieName + "&cookieValue="
-		+ cookieValue);
+        String cookieName = "testCookie";
+        String cookieValue = "testCookieValue";
+        httpPost("/setCookie?cookieName=" + cookieName + "&cookieValue="
+                + cookieValue);
+        httpPost("/assertHasCookie?cookieName=" + cookieName + "&cookieValue="
+                + cookieValue);
     }
 
     @Test
     public void testRemoveCookie() {
-	String cookieName = "testCookie";
-	String cookieValue = "testCookieValue";
-	httpPost("/setCookie?cookieName=" + cookieName + "&cookieValue="
-		+ cookieValue);
-	httpPost("/removeCookie?cookieName=" + cookieName + "&cookieValue="
-		+ cookieValue);
-	httpPost("/assertNoCookies");
+        String cookieName = "testCookie";
+        String cookieValue = "testCookieValue";
+        httpPost("/setCookie?cookieName=" + cookieName + "&cookieValue="
+                + cookieValue);
+        httpPost("/removeCookie?cookieName=" + cookieName + "&cookieValue="
+                + cookieValue);
+        httpPost("/assertNoCookies");
     }
 
     private void httpPost(String relativePath) {
-	HttpPost request = new HttpPost(DEFAULT_HOST_URL + relativePath);
-	try {
-	    HttpResponse response = httpClient.execute(request);
-	    assertEquals(200, response.getStatusLine().getStatusCode());
-	} catch (Exception ex) {
-	    fail(ex.toString());
-	} finally {
-	    request.releaseConnection();
-	}
+        HttpPost request = new HttpPost(DEFAULT_HOST_URL + relativePath);
+        try {
+            HttpResponse response = httpClient.execute(request);
+            assertEquals(200, response.getStatusLine().getStatusCode());
+        } catch (Exception ex) {
+            fail(ex.toString());
+        } finally {
+            request.releaseConnection();
+        }
     }
 }

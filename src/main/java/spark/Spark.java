@@ -79,28 +79,26 @@ public final class Spark {
      * address is '0.0.0.0'. This has to be called before any route mapping is
      * done.
      * 
-     * @param ipAddress
-     *            The ipAddress
+     * @param ipAddress The ipAddress
      */
     public static synchronized void setIpAddress(String ipAddress) {
-	if (initialized) {
-	    throwBeforeRouteMappingException();
-	}
-	Spark.ipAddress = ipAddress;
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.ipAddress = ipAddress;
     }
 
     /**
      * Set the port that Spark should listen on. If not called the default port
      * is 4567. This has to be called before any route mapping is done.
      * 
-     * @param port
-     *            The port number
+     * @param port The port number
      */
     public static synchronized void setPort(int port) {
-	if (initialized) {
-	    throwBeforeRouteMappingException();
-	}
-	Spark.port = port;
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.port = port;
     }
 
     /**
@@ -113,264 +111,247 @@ public final class Spark {
      * not be used if you are using Servlets, where you will need to secure the
      * connection in the servlet container
      * 
-     * @param keystoreFile
-     *            The keystore file location as string
-     * @param keystorePassword
-     *            the password for the keystore
-     * @param truststoreFile
-     *            the truststore file location as string, leave null to reuse
-     *            keystore
-     * @param truststorePassword
-     *            the trust store password
+     * @param keystoreFile The keystore file location as string
+     * @param keystorePassword the password for the keystore
+     * @param truststoreFile the truststore file location as string, leave null
+     *            to reuse keystore
+     * @param truststorePassword the trust store password
      */
     public static synchronized void setSecure(String keystoreFile,
-	    String keystorePassword, String truststoreFile,
-	    String truststorePassword) {
-	if (initialized) {
-	    throwBeforeRouteMappingException();
-	}
-	if (keystoreFile == null) {
-	    throw new IllegalArgumentException(
-		    "Must provide a keystore file to run secured");
-	}
-	Spark.keystoreFile = keystoreFile;
-	Spark.keystorePassword = keystorePassword;
-	Spark.truststoreFile = truststoreFile;
-	Spark.truststorePassword = truststorePassword;
+            String keystorePassword, String truststoreFile,
+            String truststorePassword) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        if (keystoreFile == null) {
+            throw new IllegalArgumentException(
+                    "Must provide a keystore file to run secured");
+        }
+        Spark.keystoreFile = keystoreFile;
+        Spark.keystorePassword = keystorePassword;
+        Spark.truststoreFile = truststoreFile;
+        Spark.truststorePassword = truststorePassword;
     }
 
     /**
      * Sets the folder in classpath serving static files. <b>Observe: this
      * method must be called before all other methods.</b>
      * 
-     * @param folder
-     *            the folder in classpath.
+     * @param folder the folder in classpath.
      */
     public static synchronized void staticFileLocation(String folder) {
-	if (initialized) {
-	    throwBeforeRouteMappingException();
-	}
-	staticFileFolder = folder;
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        staticFileFolder = folder;
     }
 
     /**
      * Sets the external folder serving static files. <b>Observe: this method
      * must be called before all other methods.</b>
      * 
-     * @param externalFolder
-     *            the external folder serving static files.
+     * @param externalFolder the external folder serving static files.
      */
     public static synchronized void externalStaticFileLocation(
-	    String externalFolder) {
-	if (initialized) {
-	    throwBeforeRouteMappingException();
-	}
-	externalStaticFileFolder = externalFolder;
+            String externalFolder) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        externalStaticFileFolder = externalFolder;
     }
 
     /**
      * Map the route for HTTP GET requests
      * 
-     * @param route
-     *            The route
+     * @param route The route
      */
     public static synchronized void get(Route route) {
-	addRoute(HttpMethod.get.name(), route);
+        addRoute(HttpMethod.get.name(), route);
     }
 
     /**
      * Map the route for HTTP POST requests
      * 
-     * @param route
-     *            The route
+     * @param route The route
      */
     public static synchronized void post(Route route) {
-	addRoute(HttpMethod.post.name(), route);
+        addRoute(HttpMethod.post.name(), route);
     }
 
     /**
      * Map the route for HTTP PUT requests
      * 
-     * @param route
-     *            The route
+     * @param route The route
      */
     public static synchronized void put(Route route) {
-	addRoute(HttpMethod.put.name(), route);
+        addRoute(HttpMethod.put.name(), route);
     }
 
     /**
      * Map the route for HTTP PATCH requests
      * 
-     * @param route
-     *            The route
+     * @param route The route
      */
     public static synchronized void patch(Route route) {
-	addRoute(HttpMethod.patch.name(), route);
+        addRoute(HttpMethod.patch.name(), route);
     }
 
     /**
      * Map the route for HTTP DELETE requests
      * 
-     * @param route
-     *            The route
+     * @param route The route
      */
     public static synchronized void delete(Route route) {
-	addRoute(HttpMethod.delete.name(), route);
+        addRoute(HttpMethod.delete.name(), route);
     }
 
     /**
      * Map the route for HTTP HEAD requests
      * 
-     * @param route
-     *            The route
+     * @param route The route
      */
     public static synchronized void head(Route route) {
-	addRoute(HttpMethod.head.name(), route);
+        addRoute(HttpMethod.head.name(), route);
     }
 
     /**
      * Map the route for HTTP TRACE requests
      * 
-     * @param route
-     *            The route
+     * @param route The route
      */
     public static synchronized void trace(Route route) {
-	addRoute(HttpMethod.trace.name(), route);
+        addRoute(HttpMethod.trace.name(), route);
     }
 
     /**
      * Map the route for HTTP CONNECT requests
      * 
-     * @param route
-     *            The route
+     * @param route The route
      */
     public static synchronized void connect(Route route) {
-	addRoute(HttpMethod.connect.name(), route);
+        addRoute(HttpMethod.connect.name(), route);
     }
 
     /**
      * Map the route for HTTP OPTIONS requests
      * 
-     * @param route
-     *            The route
+     * @param route The route
      */
     public static synchronized void options(Route route) {
-	addRoute(HttpMethod.options.name(), route);
+        addRoute(HttpMethod.options.name(), route);
     }
 
     /**
      * Maps a filter to be executed before any matching routes
      * 
-     * @param filter
-     *            The filter
+     * @param filter The filter
      */
     public static synchronized void before(Filter filter) {
-	addFilter(HttpMethod.before.name(), filter);
+        addFilter(HttpMethod.before.name(), filter);
     }
 
     /**
      * Maps a filter to be executed after any matching routes
      * 
-     * @param filter
-     *            The filter
+     * @param filter The filter
      */
     public static synchronized void after(Filter filter) {
-	addFilter(HttpMethod.after.name(), filter);
+        addFilter(HttpMethod.after.name(), filter);
     }
 
     static synchronized void runFromServlet() {
-	if (!initialized) {
-	    routeMatcher = RouteMatcherFactory.get();
-	    initialized = true;
-	}
+        if (!initialized) {
+            routeMatcher = RouteMatcherFactory.get();
+            initialized = true;
+        }
     }
 
     // WARNING, used for jUnit testing only!!!
     static synchronized void clearRoutes() {
-	routeMatcher.clearRoutes();
+        routeMatcher.clearRoutes();
     }
 
     // Used for jUnit testing!
     static synchronized void stop() {
-	if (server != null) {
-	    server.stop();
-	}
-	Spark.keystoreFile = null;
-	Spark.keystorePassword = null;
-	Spark.truststoreFile = null;
-	Spark.truststorePassword = null;
-	initialized = false;
-	ready = false;
+        if (server != null) {
+            server.stop();
+        }
+        Spark.keystoreFile = null;
+        Spark.keystorePassword = null;
+        Spark.truststoreFile = null;
+        Spark.truststorePassword = null;
+        initialized = false;
+        ready = false;
     }
 
     private static void addRoute(String httpMethod, Route route) {
-	init();
-	routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
-		+ "'", route.getAcceptType(), route);
+        init();
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
+                + "'", route.getAcceptType(), route);
     }
 
     private static void addFilter(String httpMethod, Filter filter) {
-	init();
-	routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
-		+ "'", filter.getAcceptType(), filter);
+        init();
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
+                + "'", filter.getAcceptType(), filter);
     }
 
     private static boolean hasMultipleHandlers() {
-	return staticFileFolder != null || externalStaticFileFolder != null;
+        return staticFileFolder != null || externalStaticFileFolder != null;
     }
 
     private static synchronized void init() {
-	if (!initialized) {
-	    routeMatcher = RouteMatcherFactory.get();
-	    new Thread(new Runnable() {
-		@Override
-		public void run() {
-		    if (async) {
+        if (!initialized) {
+            routeMatcher = RouteMatcherFactory.get();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (async) {
 
-			server = SparkServerFactory.create(
-				hasMultipleHandlers(), Executors
-					.newFixedThreadPool(Runtime
-						.getRuntime()
-						.availableProcessors()));
-		    } else {
+                        server = SparkServerFactory.create(
+                                hasMultipleHandlers(), Executors
+                                        .newFixedThreadPool(Runtime
+                                                .getRuntime()
+                                                .availableProcessors()));
+                    } else {
 
-			server = SparkServerFactory.create(
-				hasMultipleHandlers(), null);
-		    }
-		    server.ignite(ipAddress, port, keystoreFile,
-			    keystorePassword, truststoreFile,
-			    truststorePassword, staticFileFolder,
-			    externalStaticFileFolder);
-		    ready = true;
-		    System.out.print(">>>  server is ready"); // NOSONAR
-		}
-	    }, "Igniter Thread").start();
-	    initialized = true;
-	}
+                        server = SparkServerFactory.create(
+                                hasMultipleHandlers(), null);
+                    }
+                    server.ignite(ipAddress, port, keystoreFile,
+                            keystorePassword, truststoreFile,
+                            truststorePassword, staticFileFolder,
+                            externalStaticFileFolder);
+                    ready = true;
+                    System.out.print(">>>  server is ready"); // NOSONAR
+                }
+            }, "Igniter Thread").start();
+            initialized = true;
+        }
     }
 
     private static void throwBeforeRouteMappingException() {
-	throw new IllegalStateException(
-		"This must be done before route mapping has begun");
+        throw new IllegalStateException(
+                "This must be done before route mapping has begun");
     }
 
     public static boolean isInitialized() {
-	return initialized;
+        return initialized;
     }
 
     public static boolean isReady() {
-	return ready;
+        return ready;
     }
 
     public static boolean isAsync() {
-	return async;
+        return async;
     }
 
     public static void setAsync(boolean async) {
-	if (initialized) {
-	    throwBeforeRouteMappingException();
-	}
-	Spark.async = async;
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.async = async;
     }
     /*
      * TODO: discover new TODOs.

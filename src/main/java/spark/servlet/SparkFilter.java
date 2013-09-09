@@ -46,7 +46,7 @@ public class SparkFilter implements Filter {
     public static final String APPLICATION_CLASS_PARAM = "applicationClass";
 
     private static final Logger LOG = LoggerFactory
-	    .getLogger(SparkFilter.class);
+            .getLogger(SparkFilter.class);
 
     private String filterPath;
 
@@ -54,14 +54,14 @@ public class SparkFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-	Access.runFromServlet();
+        Access.runFromServlet();
 
-	final SparkApplication application = getApplication(filterConfig);
-	application.init();
+        final SparkApplication application = getApplication(filterConfig);
+        application.init();
 
-	filterPath = FilterTools.getFilterPath(filterConfig);
-	matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true,
-		false);
+        filterPath = FilterTools.getFilterPath(filterConfig);
+        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true,
+                false);
     }
 
     /**
@@ -72,48 +72,46 @@ public class SparkFilter implements Filter {
      * use different techniques to obtain an instance (i.e. dependency
      * injection).
      * 
-     * @param filterConfig
-     *            the filter configuration for retrieving parameters passed to
-     *            this filter.
+     * @param filterConfig the filter configuration for retrieving parameters
+     *            passed to this filter.
      * @return the spark application containing the configuration.
-     * @throws ServletException
-     *             if anything went wrong.
+     * @throws ServletException if anything went wrong.
      */
     protected SparkApplication getApplication(FilterConfig filterConfig)
-	    throws ServletException {
-	try {
-	    String applicationClassName = filterConfig
-		    .getInitParameter(APPLICATION_CLASS_PARAM);
-	    Class<?> applicationClass = Class.forName(applicationClassName);
-	    return (SparkApplication) applicationClass.newInstance();
-	} catch (Exception e) {
-	    throw new ServletException(e);
-	}
+            throws ServletException {
+        try {
+            String applicationClassName = filterConfig
+                    .getInitParameter(APPLICATION_CLASS_PARAM);
+            Class<?> applicationClass = Class.forName(applicationClassName);
+            return (SparkApplication) applicationClass.newInstance();
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
-	    FilterChain chain) throws IOException, ServletException {
-	HttpServletRequest httpRequest = (HttpServletRequest) request; // NOSONAR
+            FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request; // NOSONAR
 
-	final String relativePath = FilterTools.getRelativePath(httpRequest,
-		filterPath);
+        final String relativePath = FilterTools.getRelativePath(httpRequest,
+                filterPath);
 
-	LOG.debug(relativePath);
+        LOG.debug(relativePath);
 
-	HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(
-		httpRequest) {
-	    @Override
-	    public String getRequestURI() {
-		return relativePath;
-	    }
-	};
-	matcherFilter.doFilter(requestWrapper, response, chain);
+        HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(
+                httpRequest) {
+            @Override
+            public String getRequestURI() {
+                return relativePath;
+            }
+        };
+        matcherFilter.doFilter(requestWrapper, response, chain);
     }
 
     @Override
     public void destroy() {
-	// ignore
+        // ignore
     }
 
 }

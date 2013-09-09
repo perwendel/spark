@@ -32,55 +32,55 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
 /**
- * Simple Jetty Handler
+ * Asynchronous version of the JettyHandler
  * 
- * @author Per Wendel
+ * @author Gale Dunkleberger
  */
 class AsyncJettyHandler extends JettyHandler {
     private static final Logger LOG = Log.getLogger(AsyncJettyHandler.class);
     private ExecutorService executorService;
 
     public AsyncJettyHandler(Filter filter, ExecutorService executorService) {
-	super(filter);
-	this.filter = filter;
-	this.executorService = executorService;
+        super(filter);
+        this.filter = filter;
+        this.executorService = executorService;
     }
 
     @Override
     public void doHandle(String target, final Request baseRequest,
-	    final HttpServletRequest request, final HttpServletResponse response)
-	    throws IOException, ServletException {
-	LOG.debug("jettyhandler, handle();");
-	Boolean processed = (Boolean) request.getAttribute("processed");
-	if (processed == null) {
-	    final Continuation continuation = ContinuationSupport
-		    .getContinuation(request);
-	    if (continuation.isExpired()) {
-		baseRequest.setHandled(false);
-		return;
-	    }
-	    continuation.setTimeout(30000);
-	    continuation.suspend();
-	    executorService.submit(new Runnable() {
-		@Override
-		public void run() {
-		    try {
-			filter.doFilter(request, response, null);
-			baseRequest.setHandled(true);
-		    } catch (NotConsumedException ignore) {
-			baseRequest.setHandled(false);
-		    } catch (IOException e) {
-			baseRequest.setHandled(false);
-		    } catch (ServletException e) {
-			baseRequest.setHandled(false);
-		    } finally {
-			synchronized (request) {
-			    request.setAttribute("processed", Boolean.TRUE);
-			    continuation.complete();
-			}
-		    }
-		}
-	    });
-	}
+            final HttpServletRequest request, final HttpServletResponse response)
+            throws IOException, ServletException {
+        LOG.debug("jettyhandler, handle();");
+        Boolean processed = (Boolean) request.getAttribute("processed");
+        if (processed == null) {
+            final Continuation continuation = ContinuationSupport
+                    .getContinuation(request);
+            if (continuation.isExpired()) {
+                baseRequest.setHandled(false);
+                return;
+            }
+            continuation.setTimeout(30000);
+            continuation.suspend();
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        filter.doFilter(request, response, null);
+                        baseRequest.setHandled(true);
+                    } catch (NotConsumedException ignore) {
+                        baseRequest.setHandled(false);
+                    } catch (IOException e) {
+                        baseRequest.setHandled(false);
+                    } catch (ServletException e) {
+                        baseRequest.setHandled(false);
+                    } finally {
+                        synchronized (request) {
+                            request.setAttribute("processed", Boolean.TRUE);
+                            continuation.complete();
+                        }
+                    }
+                }
+            });
+        }
     }
 }
