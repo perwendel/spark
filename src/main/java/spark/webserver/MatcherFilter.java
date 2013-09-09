@@ -202,7 +202,7 @@ public class MatcherFilter implements Filter {
         if (consumed) {
             // Write body content
             if (!httpResponse.isCommitted()) {
-                if (httpResponse.getHeader(CONTENT_TYPE_RESPONSE_HEADER) == null) {
+                if (httpResponse.containsHeader(CONTENT_TYPE_RESPONSE_HEADER)) {
                     httpResponse.setHeader(CONTENT_TYPE_RESPONSE_HEADER, acceptType);
                 }
                 httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
