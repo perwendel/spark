@@ -9,7 +9,7 @@
 	<groupId>com.sparkjava</groupId>
 	<artifactId>spark-core</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>Spark</name>
         <description>A Sinatra inspired java web framework</description>
 	<url>http://www.sparkjava.com</url>
