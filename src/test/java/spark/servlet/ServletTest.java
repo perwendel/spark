@@ -18,8 +18,8 @@ import spark.util.SparkTestUtil.UrlResponse;
 public class ServletTest {
 
     private static final String SOMEPATH = "/somepath";
-    private static final int PORT = 9393;
-    static final Server server = new Server();
+    private static final int PORT = 4567;
+    static Server server;
 
     static SparkTestUtil testUtil;
 
@@ -27,13 +27,19 @@ public class ServletTest {
     public static void tearDown() {
         TAccess.clearRoutes();
         TAccess.stop();
+        try {
+            server.stop();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     @BeforeClass
     public static void setup() {
         testUtil = new SparkTestUtil(PORT);
-
-        final Server server = new Server();
+        server = new Server();
         ServerConnector connector = new ServerConnector(server);
 
         // Set some timeout options to make debugging easier.
@@ -53,15 +59,23 @@ public class ServletTest {
             @Override
             public void run() {
                 try {
-                    System.out.println(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
+                    System.out
+                            .println(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
                     server.start();
                     System.in.read();
                     System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
                     server.stop();
                     server.join();
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(100);
+                    System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
+                    try {
+                        server.stop();
+
+                        System.out.println(">>> DONE");
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        System.exit(100);
+                    }
                 }
             }
         }).start();

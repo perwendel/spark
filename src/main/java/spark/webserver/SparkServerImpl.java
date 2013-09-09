@@ -19,7 +19,10 @@ package spark.webserver;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Connector;
@@ -41,9 +44,12 @@ class SparkServerImpl implements SparkServer {
     private static final String NAME = "Spark";
     private Handler handler;
     private Server server;
-
-    public SparkServerImpl(Handler handler) {
+    private ExecutorService handlerThread;
+    private ExecutorService serverThread;
+   
+    public SparkServerImpl(Handler handler, ExecutorService executorService) {
         this.handler = handler;
+        this.handlerThread = executorService;
         System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
     }
 
@@ -82,24 +88,47 @@ class SparkServerImpl implements SparkServer {
             setStaticFileLocationIfPresent(staticFilesFolder, handlersInList);
             
             // Set external static file location
-            setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
-
-            HandlerList handlers = new HandlerList();
-            handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
+            setExternalStaticFileLocationIfPresent(externalFilesFolder,
+                    handlersInList);
+            HandlerList handlers = null;
+            if (handlerThread == null) {
+                handlers = new HandlerList();
+            } else {
+                handlers = new AsyncHandlerList(handlerThread);
+                // remove the async jetty handler from the list of handlers (if
+                // it exists) and replace with a normal
+                // jetty handler since the handler list will take care of async
+                List<Handler> handlersInListCopy = new ArrayList<Handler>();
+                int idx = 0;
+                for (Iterator<Handler> iterator = handlersInList.iterator(); iterator
+                        .hasNext();) {
+                    Handler h = iterator.next();
+                    if (h instanceof AsyncJettyHandler) {
+                        h = new JettyHandler(((AsyncJettyHandler) h).filter);
+                    }
+                    handlersInListCopy.add(h);
+                }
+                handlersInList = handlersInListCopy;
+            }
+            handlers.setHandlers(handlersInList
+                    .toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
-        
-        
-        try {
-            System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
-            System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
-
-            server.start();
-            server.join();
-        } catch (Exception e) {
-            e.printStackTrace(); // NOSONAR
-            System.exit(100); // NOSONAR
-        }
+        System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
+        System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
+        serverThread = Executors.newSingleThreadExecutor();
+        serverThread.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    server.start();
+                    server.join();
+                } catch (Exception e) {
+                    e.printStackTrace(); // NOSONAR
+                    System.exit(100); // NOSONAR
+                }
+            }
+        });
     }
 
     @Override
@@ -108,6 +137,15 @@ class SparkServerImpl implements SparkServer {
         try {
             if (server != null) {
                 server.stop();
+                System.out.print(">>> " + NAME + " server stopped..."); // NOSONAR
+            }
+            if (serverThread != null) {
+                serverThread.shutdown();
+                System.out.print(">>> " + NAME + " server thread shutdown..."); // NOSONAR
+            }
+            if (handlerThread != null) {
+                handlerThread.shutdown();
+                System.out.print(">>> " + NAME + " handler thread shutdown..."); // NOSONAR
             }
         } catch (Exception e) {
             e.printStackTrace(); // NOSONAR

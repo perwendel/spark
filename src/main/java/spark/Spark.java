@@ -16,6 +16,8 @@
  */
 package spark;
 
+import java.util.concurrent.Executors;
+
 import spark.route.HttpMethod;
 import spark.route.RouteMatcher;
 import spark.route.RouteMatcherFactory;
@@ -54,8 +56,10 @@ public final class Spark {
     private static final int SPARK_DEFAULT_PORT = 4567;
 
     private static boolean initialized = false;
-
+    private static boolean ready = false;
+    private static boolean async = true;
     private static SparkServer server;
+
     private static RouteMatcher routeMatcher;
     private static String ipAddress = "0.0.0.0";
     private static int port = SPARK_DEFAULT_PORT;
@@ -275,7 +279,12 @@ public final class Spark {
         if (server != null) {
             server.stop();
         }
+        Spark.keystoreFile = null;
+        Spark.keystorePassword = null;
+        Spark.truststoreFile = null;
+        Spark.truststorePassword = null;
         initialized = false;
+        ready = false;
     }
 
     private static void addRoute(String httpMethod, Route route) {
@@ -300,18 +309,26 @@ public final class Spark {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    server = SparkServerFactory.create(hasMultipleHandlers());
-                    server.ignite(
-                            ipAddress,
-                            port,
-                            keystoreFile,
-                            keystorePassword,
-                            truststoreFile,
-                            truststorePassword,
-                            staticFileFolder,
+                    if (async) {
+
+                        server = SparkServerFactory.create(
+                                hasMultipleHandlers(), Executors
+                                        .newFixedThreadPool(Runtime
+                                                .getRuntime()
+                                                .availableProcessors()));
+                    } else {
+
+                        server = SparkServerFactory.create(
+                                hasMultipleHandlers(), null);
+                    }
+                    server.ignite(ipAddress, port, keystoreFile,
+                            keystorePassword, truststoreFile,
+                            truststorePassword, staticFileFolder,
                             externalStaticFileFolder);
+                    ready = true;
+                    System.out.print(">>>  server is ready"); // NOSONAR
                 }
-            }).start();
+            }, "Igniter Thread").start();
             initialized = true;
         }
     }
@@ -320,7 +337,25 @@ public final class Spark {
         throw new IllegalStateException(
                 "This must be done before route mapping has begun");
     }
-    
+
+    public static boolean isInitialized() {
+        return initialized;
+    }
+
+    public static boolean isReady() {
+        return ready;
+    }
+
+    public static boolean isAsync() {
+        return async;
+    }
+
+    public static void setAsync(boolean async) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.async = async;
+    }
     /*
      * TODO: discover new TODOs.
      * 
