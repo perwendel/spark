@@ -30,33 +30,31 @@ import org.eclipse.jetty.util.log.Logger;
 
 /**
  * Simple Jetty Handler
- *
+ * 
  * @author Per Wendel
  */
-class JettyHandler extends SessionHandler  {
-    
-	private static final Logger LOG = Log.getLogger(JettyHandler.class);
-	
-    private Filter filter;
-    
+class JettyHandler extends SessionHandler {
+
+    private static final Logger LOG = Log.getLogger(JettyHandler.class);
+
+    protected Filter filter;
+
     public JettyHandler(Filter filter) {
-        this.filter = filter;
+	this.filter = filter;
     }
 
     @Override
-    public void doHandle(
-            String target, 
-            Request baseRequest, 
-            HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
-        LOG.debug("jettyhandler, handle();");
-        try {
-            filter.doFilter(request, response, null);
-            baseRequest.setHandled(true);
-        } catch (NotConsumedException ignore){
-            // TODO : Not use an exception in order to be faster.
-            baseRequest.setHandled(false);
-        }
+    public void doHandle(String target, Request baseRequest,
+	    HttpServletRequest request, HttpServletResponse response)
+	    throws IOException, ServletException {
+	LOG.debug("jettyhandler, handle();");
+	try {
+	    filter.doFilter(request, response, null);
+	    baseRequest.setHandled(true);
+	} catch (NotConsumedException ignore) {
+	    // TODO : Not use an exception in order to be faster.
+	    baseRequest.setHandled(false);
+	}
     }
 
 }
