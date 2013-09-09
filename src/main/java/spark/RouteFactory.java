@@ -3,14 +3,14 @@ package spark;
 public class RouteFactory extends Route {
     private static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
-    private Class<? extends Route> route;
+    private final Class<? extends Route> route;
 
     /**
      * Constructor
      *
      * @param path The route path which is used for matching. (e.g. /hello, users/:name)
      */
-    protected RouteFactory(String path, Class<? extends Route> route) {
+    public RouteFactory(String path, Class<? extends Route> route) {
         this(path, DEFAULT_ACCEPT_TYPE, route);
 
     }
@@ -21,7 +21,7 @@ public class RouteFactory extends Route {
      * @param path The route path which is used for matching. (e.g. /hello, users/:name)
      * @param acceptType The accept type which is used for matching.
      */
-    protected RouteFactory(String path, String acceptType,
+    public RouteFactory(String path, String acceptType,
             Class<? extends Route> route) {
         super(path, acceptType);
         this.route = route;
@@ -35,6 +35,10 @@ public class RouteFactory extends Route {
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Problem instantiating route", e);
         }
+    }
+
+    public Class<? extends Route> getRoute() {
+        return route;
     }
 
 }
