@@ -3,7 +3,7 @@ package spark;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static spark.Spark.post;
-
+import static spark.Spark.isReady;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -68,6 +68,22 @@ public class CookiesIntegrationTest {
                 return "";
             }
         });
+
+        Integer lock = new Integer(3);
+        while (lock > 0 && !isReady()) {
+            try {
+                synchronized (lock) {
+                    lock.wait(2000);
+                }
+
+                lock--;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (!isReady()) {
+            fail("Spark server still not ready");
+        }
     }
     
     @AfterClass

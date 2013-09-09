@@ -6,6 +6,7 @@ import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.get;
 import static spark.Spark.patch;
 import static spark.Spark.post;
+import static spark.Spark.isReady;
 import static spark.Spark.staticFileLocation;
 
 import java.io.File;
@@ -150,10 +151,20 @@ public class GenericIntegrationTest {
                 response.header("after", "foobar");
             }
         });
+        Integer lock = new Integer(3);
+        while (lock > 0 && !isReady()) {
+            try {
+                synchronized (lock) {
+                    lock.wait(2000);
+                }
 
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
+                lock--;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (!isReady()) {
+            Assert.fail("Spark server still not ready");
         }
     }
 

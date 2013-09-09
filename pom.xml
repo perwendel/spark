@@ -86,6 +86,11 @@
     		<version>2.2.4</version>
     		<scope>test</scope>
 		</dependency>
+        <dependency>
+        	<groupId>org.eclipse.jetty</groupId>
+        	<artifactId>jetty-continuation</artifactId>
+        	<version>9.0.2.v20130417</version>
+        </dependency>
 	</dependencies>
 
 	<build>

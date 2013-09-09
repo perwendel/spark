@@ -37,7 +37,7 @@ class JettyHandler extends SessionHandler  {
     
 	private static final Logger LOG = Log.getLogger(JettyHandler.class);
 	
-    private Filter filter;
+    protected Filter filter;
     
     public JettyHandler(Filter filter) {
         this.filter = filter;

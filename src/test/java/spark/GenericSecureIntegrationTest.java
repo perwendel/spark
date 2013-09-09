@@ -3,6 +3,7 @@ package spark;
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.get;
+import static spark.Spark.isReady;
 import static spark.Spark.patch;
 import static spark.Spark.post;
 import junit.framework.Assert;
@@ -99,9 +100,20 @@ public class GenericSecureIntegrationTest {
             }
         });
 
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
+        Integer lock = new Integer(3);
+        while (lock > 0 && !isReady()) {
+            try {
+                synchronized (lock) {
+                    lock.wait(2000);
+                }
+
+                lock--;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (!isReady()) {
+            Assert.fail("Spark server still not ready");
         }
     }
 
