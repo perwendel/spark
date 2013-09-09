@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,7 +26,7 @@ import org.eclipse.jetty.util.log.Logger;
 public class JettyLogger implements Logger {
 
     private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
-    
+
     public void debug(String msg, Throwable th) {
         logger.debug(msg, th);
     }
@@ -93,7 +93,7 @@ public class JettyLogger implements Logger {
 
     @Override
     public void setDebugEnabled(boolean enabled) {
-        // 
+        //
     }
 
     @Override

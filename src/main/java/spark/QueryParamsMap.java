@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  * <code>
  *  user : {name: federico, lastname: dayan}
  * </code>
- * 
+ *
  * <br>
  * <br>
  * That is:<br>
@@ -29,14 +29,14 @@ import javax.servlet.http.HttpServletRequest;
  *  queryParamsMapInstance.get("user).get("name").value(); <br>
  *  queryParamsMapInstance.get("user).get("lastname").value();
  * <code>
- * 
+ *
  * <br><br>
- * 
+ *
  * It is null safe, meaning that if a key does not exist, it does not throw <code>NullPointerExcetpion</code>
  * , it just returns <code>null</code>.
- * 
+ *
  * @author fddayan
- * 
+ *
  */
 public class QueryParamsMap {
 
@@ -54,7 +54,7 @@ public class QueryParamsMap {
      * Creates a new QueryParamsMap from and HttpServletRequest. <br>
      * Parses the parameters from request.getParameterMap() <br>
      * No need to decode, since HttpServletRequest does it for us.
-     * 
+     *
      * @param request
      */
     public QueryParamsMap(HttpServletRequest request) {
@@ -68,13 +68,13 @@ public class QueryParamsMap {
     protected QueryParamsMap() {
     }
 
-    
+
     /**
      * Parses the key and creates the child QueryParamMaps
-     * 
+     *
      * user[info][name] creates 3 nested QueryParamMaps. For user, info and
      * name.
-     * 
+     *
      * @param key
      *            The key in the formar fo key1[key2][key3] (for example:
      *            user[info][name]).
@@ -142,9 +142,9 @@ public class QueryParamsMap {
      * or
      * <br>
      * get("user","name").value() #  fede
-     * 
+     *
      * </code>
-     * 
+     *
      * @param key
      *            The paramater nested key
      * @return
@@ -164,7 +164,7 @@ public class QueryParamsMap {
     /**
      * Returns the value for this key. <br>
      * If this key has nested elements and does not have a value returns null.
-     * 
+     *
      * @return
      */
     public String value() {
@@ -177,14 +177,14 @@ public class QueryParamsMap {
 
     /**
      * Returns the value for that key. <br>
-     * 
+     *
      * It is a shortcut for: <br>
      * <br>
      * <code>
      * get("user").get("name").value()
      * get("user").value("name")
      * </code>
-     * 
+     *
      * @param key
      * @return
      */
@@ -223,14 +223,14 @@ public class QueryParamsMap {
     public String[] values() {
         return this.values.clone();
     }
-    
+
     /**
      * @return the queryMap
      */
     Map<String, QueryParamsMap> getQueryMap() {
         return queryMap;
     }
-    
+
     /**
      * @return the values
      */

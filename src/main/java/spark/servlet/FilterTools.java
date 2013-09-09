@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,9 +24,9 @@ final class FilterTools {
     private static final String SLASH_WILDCARD = "/*";
     private static final String SLASH = "/";
     private static final String FILTER_MAPPING_PARAM = "filterMappingUrlPattern";
-    
+
     private FilterTools() {}
-    
+
     static String getRelativePath(HttpServletRequest request, String filterPath) {
         String path = request.getRequestURI();
         String contextPath = request.getContextPath();
@@ -43,7 +43,7 @@ final class FilterTools {
         if (path.startsWith(filterPath)) {
             path = path.substring(filterPath.length());
         }
-        
+
         if (!path.startsWith(SLASH)) {
             path = SLASH + path;
         }
@@ -60,5 +60,5 @@ final class FilterTools {
         }
         return result.substring(1, result.length() - 1);
     }
-    
+
 }

@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -19,7 +19,7 @@ package spark;
 /**
  * Model And View class is used to set the name of the view and the model object
  * to be rendered.
- * 
+ *
  * @author alex
  */
 public class ModelAndView {
@@ -35,7 +35,7 @@ public class ModelAndView {
 
     /**
      * Constructs an instance with the provided model and view name
-     * 
+     *
      * @param model the model
      * @param viewName the view name
      */

@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -33,7 +33,7 @@ import spark.utils.SparkUtils;
 public class SimpleRouteMatcher implements RouteMatcher {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleRouteMatcher.class);
-    
+
     private List<RouteEntry> routes;
 
     private static class RouteEntry {
@@ -59,7 +59,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
 
         private boolean matchPath(String path) { // NOSONAR
             if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) // NOSONAR
-                            || (this.path.endsWith("/") && !path.endsWith("/")))) { 
+                            || (this.path.endsWith("/") && !path.endsWith("/")))) {
                 // One and not both ends with slash
                 return false;
             }
@@ -72,21 +72,21 @@ public class SimpleRouteMatcher implements RouteMatcher {
             List<String> thisPathList = SparkUtils.convertRouteToList(this.path);
             List<String> pathList = SparkUtils.convertRouteToList(path);
 
-            
+
             int thisPathSize = thisPathList.size();
             int pathSize = pathList.size();
-            
+
             if (thisPathSize == pathSize) {
                 for (int i = 0; i < thisPathSize; i++) {
                     String thisPathPart = thisPathList.get(i);
                     String pathPart = pathList.get(i);
-                    
+
                     if ((i == thisPathSize -1) && (thisPathPart.equals("*") && this.path.endsWith("*"))) {
                         // wildcard match
                         return true;
                     }
-                    
-                    if ((!thisPathPart.startsWith(":")) 
+
+                    if ((!thisPathPart.startsWith(":"))
                             && !thisPathPart.equals(pathPart)
                             && !thisPathPart.equals("*")) {
                         return false;
@@ -113,7 +113,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
                                 // wildcard match
                                 return true;
                             }
-                            if (!thisPathPart.startsWith(":") 
+                            if (!thisPathPart.startsWith(":")
                                     && !thisPathPart.equals(pathPart)
                                     && !thisPathPart.equals("*")) {
                                 return false;
@@ -132,34 +132,34 @@ public class SimpleRouteMatcher implements RouteMatcher {
             return httpMethod.name() + ", " + path + ", " + target;
         }
     }
-    
+
     public SimpleRouteMatcher() {
         routes = new ArrayList<RouteEntry>();
     }
-    
+
     @Override
     public List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteMatch> matchSet = new ArrayList<RouteMatch>();
-       
+
         List<RouteEntry> routeEntries =  this.findTargetsForRequestedRoute(httpMethod, path);
-        
+
         for (RouteEntry routeEntry : routeEntries) {
-        	
+
         	if(acceptType != null) {
         		String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
-        	
+
         		if(routeWithGivenAcceptType(bestMatch)) {
         			matchSet.add(new RouteMatch(httpMethod, routeEntry.target, routeEntry.path, path, acceptType));
         		}
         	} else {
         		matchSet.add(new RouteMatch(httpMethod, routeEntry.target, routeEntry.path, path, acceptType));
         	}
-        	
+
 		}
-        
+
         return matchSet;
     }
-    
+
     @Override
     public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
     	List<RouteEntry> routeEntries =  this.findTargetsForRequestedRoute(httpMethod, path);
@@ -168,32 +168,32 @@ public class SimpleRouteMatcher implements RouteMatcher {
     }
 
     private RouteEntry findTargetWithGivenAcceptType(List<RouteEntry> routeMatchs, String acceptType) {
-    	
+
     	if(acceptType != null && routeMatchs.size() > 0) {
-    		
+
     		Map<String, RouteEntry> acceptedMimeTypes = getAcceptedMimeTypes(routeMatchs);
     		String bestMatch = MimeParse.bestMatch(acceptedMimeTypes.keySet(), acceptType);
-    		
-			
+
+
     		if(routeWithGivenAcceptType(bestMatch)) {
     			return acceptedMimeTypes.get(bestMatch);
     		} else {
     			return null;
     		}
-    		
+
     	} else {
-    		
+
     		if(routeMatchs.size() > 0) {
     			return routeMatchs.get(0);
     		}
-    		
+
     	}
-    	
+
     	return null;
     }
-    
-    
-    
+
+
+
     private boolean routeWithGivenAcceptType(String bestMatch) {
     	return !MimeParse.NO_MIME_TYPE.equals(bestMatch);
 	}
@@ -233,7 +233,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
         }
 
     }
-    
+
     private void addRoute(HttpMethod method, String url, String acceptedType, Object target) {
         RouteEntry entry = new RouteEntry();
         entry.httpMethod = method;
@@ -248,16 +248,16 @@ public class SimpleRouteMatcher implements RouteMatcher {
     //can be cached? I don't think so.
     private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
     	Map<String, RouteEntry> acceptedTypes = new HashMap<>();
-    	
+
     	for (RouteEntry routeEntry : routes) {
     		if(!acceptedTypes.containsKey(routeEntry.acceptedType)) {
     			acceptedTypes.put(routeEntry.acceptedType, routeEntry);
     		}
 		}
-    	
+
     	return acceptedTypes;
     }
-    
+
     @Override
     public void clearRoutes() {
         routes.clear();

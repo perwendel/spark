@@ -35,7 +35,7 @@ public class RequestTest {
 
     private static final String THE_SERVLET_PATH = "/the/servlet/path";
     private static final String THE_CONTEXT_PATH = "/the/context/path";
-    
+
     RouteMatch match =  new RouteMatch(HttpMethod.get,null,"/hi","/hi", "text/html");
 
     @Test
@@ -47,7 +47,7 @@ public class RequestTest {
         String name = request.queryParams("name");
         assertEquals("Invalid name in query string","Federico",name);
     }
-    
+
     @Test
     public void queryParamShouldBeParsedAsHashMap() {
         Map<String,String[]> params = new HashMap<String,String[]>();
@@ -69,7 +69,7 @@ public class RequestTest {
         Request request = new Request(match, servletRequest);
         assertEquals("Should have delegated getting the servlet path", THE_SERVLET_PATH, request.servletPath());
     }
-    
+
     @Test
     public void shouldBeAbleToGetTheContextPath() {
         HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<String, String[]>()) {
@@ -81,7 +81,7 @@ public class RequestTest {
         Request request = new Request(match, servletRequest);
         assertEquals("Should have delegated getting the context path", THE_CONTEXT_PATH, request.contextPath());
     }
-    
+
     public static class MockedHttpServletRequest implements HttpServletRequest {
         private Map<String, String[]> params;
 
@@ -421,6 +421,6 @@ public class RequestTest {
 		public Part getPart(String name) throws IOException, ServletException {
 			return null;
 		}
-        
+
     }
 }

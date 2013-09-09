@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 package spark;
+
+import java.util.concurrent.Executors;
 
 import spark.route.HttpMethod;
 import spark.route.RouteMatcher;
@@ -34,6 +36,7 @@ import spark.webserver.SparkServerFactory;
  * <p/>
  * Example:
  * <p/>
+ *
  * <pre>
  * {@code
  * Spark.get(new Route("/hello") {
@@ -50,21 +53,19 @@ import spark.webserver.SparkServerFactory;
  * @author Per Wendel
  */
 public final class Spark {
-
     private static final int SPARK_DEFAULT_PORT = 4567;
-
     private static boolean initialized = false;
-
+    private static boolean ready = false;
+    private static boolean async = true;
     private static SparkServer server;
+
     private static RouteMatcher routeMatcher;
     private static String ipAddress = "0.0.0.0";
     private static int port = SPARK_DEFAULT_PORT;
-
     private static String keystoreFile;
     private static String keystorePassword;
     private static String truststoreFile;
     private static String truststorePassword;
-
     private static String staticFileFolder = null;
     private static String externalStaticFileFolder = null;
 
@@ -109,24 +110,22 @@ public final class Spark {
      * not be used if you are using Servlets, where you will need to secure the
      * connection in the servlet container
      *
-     * @param keystoreFile       The keystore file location as string
-     * @param keystorePassword   the password for the keystore
-     * @param truststoreFile     the truststore file location as string, leave null to reuse
-     *                           keystore
+     * @param keystoreFile The keystore file location as string
+     * @param keystorePassword the password for the keystore
+     * @param truststoreFile the truststore file location as string, leave null
+     *            to reuse keystore
      * @param truststorePassword the trust store password
      */
     public static synchronized void setSecure(String keystoreFile,
-                                              String keystorePassword, String truststoreFile,
-                                              String truststorePassword) {
+            String keystorePassword, String truststoreFile,
+            String truststorePassword) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-
         if (keystoreFile == null) {
             throw new IllegalArgumentException(
                     "Must provide a keystore file to run secured");
         }
-
         Spark.keystoreFile = keystoreFile;
         Spark.keystorePassword = keystorePassword;
         Spark.truststoreFile = truststoreFile;
@@ -134,8 +133,8 @@ public final class Spark {
     }
 
     /**
-     * Sets the folder in classpath serving static files. <b>Observe: this method
-     * must be called before all other methods.</b>
+     * Sets the folder in classpath serving static files. <b>Observe: this
+     * method must be called before all other methods.</b>
      *
      * @param folder the folder in classpath.
      */
@@ -152,7 +151,8 @@ public final class Spark {
      *
      * @param externalFolder the external folder serving static files.
      */
-    public static synchronized void externalStaticFileLocation(String externalFolder) {
+    public static synchronized void externalStaticFileLocation(
+            String externalFolder) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -167,6 +167,8 @@ public final class Spark {
     public static synchronized void get(Route route) {
         addRoute(HttpMethod.get.name(), route);
     }
+
+
 
     /**
      * Map the route for HTTP POST requests
@@ -275,7 +277,12 @@ public final class Spark {
         if (server != null) {
             server.stop();
         }
+        Spark.keystoreFile = null;
+        Spark.keystorePassword = null;
+        Spark.truststoreFile = null;
+        Spark.truststorePassword = null;
         initialized = false;
+        ready = false;
     }
 
     private static void addRoute(String httpMethod, Route route) {
@@ -289,7 +296,7 @@ public final class Spark {
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
                 + "'", filter.getAcceptType(), filter);
     }
-    
+
     private static boolean hasMultipleHandlers() {
         return staticFileFolder != null || externalStaticFileFolder != null;
     }
@@ -300,18 +307,26 @@ public final class Spark {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    server = SparkServerFactory.create(hasMultipleHandlers());
-                    server.ignite(
-                            ipAddress,
-                            port,
-                            keystoreFile,
-                            keystorePassword,
-                            truststoreFile,
-                            truststorePassword,
-                            staticFileFolder,
+                    if (async) {
+
+                        server = SparkServerFactory.create(
+                                hasMultipleHandlers(), Executors
+                                        .newFixedThreadPool(Runtime
+                                                .getRuntime()
+                                                .availableProcessors()));
+                    } else {
+
+                        server = SparkServerFactory.create(
+                                hasMultipleHandlers(), null);
+                    }
+                    server.ignite(ipAddress, port, keystoreFile,
+                            keystorePassword, truststoreFile,
+                            truststorePassword, staticFileFolder,
                             externalStaticFileFolder);
+                    ready = true;
+                    System.out.print(">>>  server is ready"); // NOSONAR
                 }
-            }).start();
+            }, "Igniter Thread").start();
             initialized = true;
         }
     }
@@ -320,40 +335,58 @@ public final class Spark {
         throw new IllegalStateException(
                 "This must be done before route mapping has begun");
     }
-    
+
+    public static boolean isInitialized() {
+        return initialized;
+    }
+
+    public static boolean isReady() {
+        return ready;
+    }
+
+    public static boolean isAsync() {
+        return async;
+    }
+
+    public static void setAsync(boolean async) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.async = async;
+    }
     /*
      * TODO: discover new TODOs.
-     * 
-     * 
-     * TODO: Make available as maven dependency, upload on repo etc... 
-     * TODO: Add *, splat possibility 
+     *
+     *
+     * TODO: Make available as maven dependency, upload on repo etc...
+     * TODO: Add *, splat possibility
      * TODO: Add validation of routes, invalid characters and stuff, also validate parameters, check static, ONGOING
-     * 
+     *
      * TODO: Javadoc
-     * 
-     * TODO: Create maven archetype, "ONGOING" 
+     *
+     * TODO: Create maven archetype, "ONGOING"
      * TODO: Add cache-control helpers
-     * 
-     * advanced TODO list: 
+     *
+     * advanced TODO list:
      * TODO: Add regexp URIs
-     * 
+     *
      * Ongoing
-     * 
-     * Done 
-     * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ??? 
-     * TODO: Before method for filters...check sinatra page 
-     * TODO: Setting Headers 
+     *
+     * Done
+     * TODO: Routes are matched in the order they are defined. The rirst route that matches the request is invoked. ???
+     * TODO: Before method for filters...check sinatra page
+     * TODO: Setting Headers
      * TODO: Do we want get-prefixes for all *getters* or do we want a more ruby like approach???
-     * (Maybe have two choices?) 
-     * TODO: Setting Body, Status Code 
-     * TODO: Add possibility to set content type on return, DONE 
-     * TODO: Add possibility to access HttpServletContext in method impl, DONE 
-     * TODO: Redirect func in web context, DONE 
-     * TODO: Refactor, extract interfaces, DONE 
-     * TODO: Figure out a nice name, DONE - SPARK 
-     * TODO: Add /uri/{param} possibility, DONE 
-     * TODO: Tweak log4j config, DONE 
-     * TODO: Query string in web context, DONE 
+     * (Maybe have two choices?)
+     * TODO: Setting Body, Status Code
+     * TODO: Add possibility to set content type on return, DONE
+     * TODO: Add possibility to access HttpServletContext in method impl, DONE
+     * TODO: Redirect func in web context, DONE
+     * TODO: Refactor, extract interfaces, DONE
+     * TODO: Figure out a nice name, DONE - SPARK
+     * TODO: Add /uri/{param} possibility, DONE
+     * TODO: Tweak log4j config, DONE
+     * TODO: Query string in web context, DONE
      * TODO: Add URI-param fetching from webcontext ie. ?param=value&param2=...etc, AND headers, DONE
      * TODO: sessions? (use session servlet context?) DONE
      */
