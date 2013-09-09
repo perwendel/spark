@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -24,29 +24,29 @@ import spark.Route;
 
 /**
  * A simple example just showing some basic functionality
- * 
+ *
  * @author Per Wendel
  */
 public class SimpleExample {
-    
+
     public static void main(String[] args) {
-        
+
         //  setPort(5678); <- Uncomment this if you wan't spark to listen on a port different than 4567.
-        
+
         get(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello World!";
             }
         });
-        
+
         post(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello World: " + request.body();
             }
         });
-        
+
         get(new Route("/private") {
             @Override
             public Object handle(Request request, Response response) {
@@ -54,14 +54,14 @@ public class SimpleExample {
                 return "Go Away!!!";
             }
         });
-        
+
         get(new Route("/users/:name") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Selected user: " + request.params(":name");
             }
         });
-        
+
         get(new Route("/news/:section") {
             @Override
             public Object handle(Request request, Response response) {
@@ -69,7 +69,7 @@ public class SimpleExample {
                 return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>" + request.params("section") + "</news>";
             }
         });
-        
+
         get(new Route("/protected") {
             @Override
             public Object handle(Request request, Response response) {
@@ -77,7 +77,7 @@ public class SimpleExample {
                 return null;
             }
         });
-        
+
         get(new Route("/redirect") {
             @Override
             public Object handle(Request request, Response response) {
@@ -85,13 +85,13 @@ public class SimpleExample {
                 return null;
             }
         });
-        
+
         get(new Route("/") {
             @Override
             public Object handle(Request request, Response response) {
                 return "root";
             }
         });
-        
+
     }
 }

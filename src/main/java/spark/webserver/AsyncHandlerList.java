@@ -15,8 +15,8 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 /**
- * HandlerList which processes asynchronously 
- * 
+ * HandlerList which processes asynchronously
+ *
  * @author Galen Dunkleberger
  *
  */

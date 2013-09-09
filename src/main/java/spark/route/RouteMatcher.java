@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -26,13 +26,13 @@ import java.util.List;
  * @author Per Wendel
  */
 public interface RouteMatcher {
-    
+
     String ROOT = "/";
     char SINGLE_QUOTE = '\'';
-    
+
     /**
      * Parses, validates and adds a route
-     * 
+     *
      * @param route
      * @param acceptType
      * @param target
@@ -47,7 +47,7 @@ public interface RouteMatcher {
      * @return
      */
     RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String path, String acceptType);
-    
+
     /**
      * Clear all routes
      */

@@ -1,22 +1,15 @@
 /*
- * Copyright 2011- Per Wendel
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *  
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright 2011- Per Wendel Licensed under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
+ * or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
  */
 package spark;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import spark.route.HttpMethod;
@@ -37,7 +30,7 @@ import spark.webserver.SparkServerFactory;
  * <p/>
  * Example:
  * <p/>
- * 
+ *
  * <pre>
  * {@code
  * Spark.get(new Route("/hello") {
@@ -50,7 +43,7 @@ import spark.webserver.SparkServerFactory;
  * <code>
  * <p/>
  * </code>
- * 
+ *
  * @author Per Wendel
  */
 public final class Spark {
@@ -78,7 +71,7 @@ public final class Spark {
      * Set the IP address that Spark should listen on. If not called the default
      * address is '0.0.0.0'. This has to be called before any route mapping is
      * done.
-     * 
+     *
      * @param ipAddress The ipAddress
      */
     public static synchronized void setIpAddress(String ipAddress) {
@@ -91,7 +84,7 @@ public final class Spark {
     /**
      * Set the port that Spark should listen on. If not called the default port
      * is 4567. This has to be called before any route mapping is done.
-     * 
+     *
      * @param port The port number
      */
     public static synchronized void setPort(int port) {
@@ -110,7 +103,7 @@ public final class Spark {
      * This method is only relevant when using embedded Jetty servers. It should
      * not be used if you are using Servlets, where you will need to secure the
      * connection in the servlet container
-     * 
+     *
      * @param keystoreFile The keystore file location as string
      * @param keystorePassword the password for the keystore
      * @param truststoreFile the truststore file location as string, leave null
@@ -136,7 +129,7 @@ public final class Spark {
     /**
      * Sets the folder in classpath serving static files. <b>Observe: this
      * method must be called before all other methods.</b>
-     * 
+     *
      * @param folder the folder in classpath.
      */
     public static synchronized void staticFileLocation(String folder) {
@@ -149,7 +142,7 @@ public final class Spark {
     /**
      * Sets the external folder serving static files. <b>Observe: this method
      * must be called before all other methods.</b>
-     * 
+     *
      * @param externalFolder the external folder serving static files.
      */
     public static synchronized void externalStaticFileLocation(
@@ -162,7 +155,7 @@ public final class Spark {
 
     /**
      * Map the route for HTTP GET requests
-     * 
+     *
      * @param route The route
      */
     public static synchronized void get(Route route) {
@@ -171,7 +164,7 @@ public final class Spark {
 
     /**
      * Map the route for HTTP POST requests
-     * 
+     *
      * @param route The route
      */
     public static synchronized void post(Route route) {
@@ -180,7 +173,7 @@ public final class Spark {
 
     /**
      * Map the route for HTTP PUT requests
-     * 
+     *
      * @param route The route
      */
     public static synchronized void put(Route route) {
@@ -189,7 +182,7 @@ public final class Spark {
 
     /**
      * Map the route for HTTP PATCH requests
-     * 
+     *
      * @param route The route
      */
     public static synchronized void patch(Route route) {
@@ -198,7 +191,7 @@ public final class Spark {
 
     /**
      * Map the route for HTTP DELETE requests
-     * 
+     *
      * @param route The route
      */
     public static synchronized void delete(Route route) {
@@ -207,7 +200,7 @@ public final class Spark {
 
     /**
      * Map the route for HTTP HEAD requests
-     * 
+     *
      * @param route The route
      */
     public static synchronized void head(Route route) {
@@ -216,7 +209,7 @@ public final class Spark {
 
     /**
      * Map the route for HTTP TRACE requests
-     * 
+     *
      * @param route The route
      */
     public static synchronized void trace(Route route) {
@@ -225,7 +218,7 @@ public final class Spark {
 
     /**
      * Map the route for HTTP CONNECT requests
-     * 
+     *
      * @param route The route
      */
     public static synchronized void connect(Route route) {
@@ -234,7 +227,7 @@ public final class Spark {
 
     /**
      * Map the route for HTTP OPTIONS requests
-     * 
+     *
      * @param route The route
      */
     public static synchronized void options(Route route) {
@@ -243,7 +236,7 @@ public final class Spark {
 
     /**
      * Maps a filter to be executed before any matching routes
-     * 
+     *
      * @param filter The filter
      */
     public static synchronized void before(Filter filter) {
@@ -252,7 +245,7 @@ public final class Spark {
 
     /**
      * Maps a filter to be executed after any matching routes
-     * 
+     *
      * @param filter The filter
      */
     public static synchronized void after(Filter filter) {
@@ -354,24 +347,14 @@ public final class Spark {
         Spark.async = async;
     }
     /*
-     * TODO: discover new TODOs.
-     * 
-     * 
-     * TODO: Make available as maven dependency, upload on repo etc... TODO: Add
-     * *, splat possibility TODO: Add validation of routes, invalid characters
-     * and stuff, also validate parameters, check static, ONGOING
-     * 
-     * TODO: Javadoc
-     * 
-     * TODO: Create maven archetype, "ONGOING" TODO: Add cache-control helpers
-     * 
-     * advanced TODO list: TODO: Add regexp URIs
-     * 
-     * Ongoing
-     * 
-     * Done TODO: Routes are matched in the order they are defined. The rirst
-     * route that matches the request is invoked. ??? TODO: Before method for
-     * filters...check sinatra page TODO: Setting Headers TODO: Do we want
+     * TODO: discover new TODOs. TODO: Make available as maven dependency,
+     * upload on repo etc... TODO: Add *, splat possibility TODO: Add validation
+     * of routes, invalid characters and stuff, also validate parameters, check
+     * static, ONGOING TODO: Javadoc TODO: Create maven archetype, "ONGOING"
+     * TODO: Add cache-control helpers advanced TODO list: TODO: Add regexp URIs
+     * Ongoing Done TODO: Routes are matched in the order they are defined. The
+     * rirst route that matches the request is invoked. ??? TODO: Before method
+     * for filters...check sinatra page TODO: Setting Headers TODO: Do we want
      * get-prefixes for all *getters* or do we want a more ruby like approach???
      * (Maybe have two choices?) TODO: Setting Body, Status Code TODO: Add
      * possibility to set content type on return, DONE TODO: Add possibility to

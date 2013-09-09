@@ -28,7 +28,7 @@
 //       Spark.clearRoutes();
 //       Spark.stop();
 //   }
-//   
+//
 //   @BeforeClass
 //   public static void setup() {
 //      Spark.before(new Filter(){
@@ -37,9 +37,9 @@
 //            response.header("FOZ", "BAZ");
 //         }
 //      });
-//      
+//
 //      Books.main(null);
-//      
+//
 //      Spark.after(new Filter(){
 //         @Override
 //         public void handle(Request request, Response response) {
@@ -90,7 +90,7 @@
 //      try {
 //		 // ensure there is a book
 //		 testCreateBook();
-//		 
+//
 //         UrlResponse response = doMethod("GET", "/books/" + id, null);
 //         String result = response.body;
 //         Assert.assertNotNull(response);
@@ -98,11 +98,11 @@
 //         Assert.assertEquals(200, response.status);
 //         Assert.assertTrue(result.contains(AUTHOR));
 //         Assert.assertTrue(result.contains(TITLE));
-//       
+//
 //         // verify response header set by filters:
 //         Assert.assertTrue(response.headers.get("FOZ").get(0).equals("BAZ"));
 //         Assert.assertTrue(response.headers.get("FOO").get(0).equals("BAR"));
-//		 
+//
 //		 // delete the book again
 //		 //Comment this delete to ensure the running of the tests
 //		 //testDeleteBook();

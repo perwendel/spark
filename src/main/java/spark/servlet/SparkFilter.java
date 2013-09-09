@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -38,7 +38,7 @@ import spark.webserver.MatcherFilter;
  * Filter that can be configured to be used in a web.xml file. Needs the init
  * parameter 'applicationClass' set to the application class where the adding of
  * routes should be made.
- * 
+ *
  * @author Per Wendel
  */
 public class SparkFilter implements Filter {
@@ -71,7 +71,7 @@ public class SparkFilter implements Filter {
      * {@link #APPLICATION_CLASS_PARAM}. Subclasses can override this method to
      * use different techniques to obtain an instance (i.e. dependency
      * injection).
-     * 
+     *
      * @param filterConfig the filter configuration for retrieving parameters
      *            passed to this filter.
      * @return the spark application containing the configuration.

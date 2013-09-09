@@ -16,7 +16,7 @@ import org.junit.Test;
 
 /**
  * System tests for the Cookies support.
- * 
+ *
  * @author dreambrother
  */
 public class CookiesIntegrationTest {

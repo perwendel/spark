@@ -40,7 +40,7 @@ import spark.route.RouteMatcher;
 
 /**
  * Filter for matching of filters and routes.
- * 
+ *
  * @author Per Wendel
  */
 public class MatcherFilter implements Filter {
@@ -58,7 +58,7 @@ public class MatcherFilter implements Filter {
 
     /**
      * Constructor
-     * 
+     *
      * @param routeMatcher The route matcher
      * @param isServletContext If true, chain.doFilter will be invoked if
      *            request is not consumed by Spark.
