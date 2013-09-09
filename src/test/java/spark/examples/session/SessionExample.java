@@ -33,7 +33,7 @@ public class SessionExample {
                 return null;
             }
         });
-
+        
         get(new Route("/clear") {
             @Override
             public Object handle(Request request, Response response) {

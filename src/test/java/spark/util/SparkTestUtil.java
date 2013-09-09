@@ -165,7 +165,7 @@ public class SparkTestUtil {
 	 * -Djavax.net.ssl.trustStorePassword=password SSLApplication
 	 * <p/>
 	 * So these can be used to specify other key/trust stores if required.
-	 *
+	 * 
 	 * @return an SSL Socket Factory using either provided keystore OR the
 	 *         keystore specified in JVM params
 	 */
@@ -191,7 +191,7 @@ public class SparkTestUtil {
 
 	/**
 	 * Return JVM param set keystore or default if not set.
-	 *
+	 * 
 	 * @return Keystore location as string
 	 */
 	public static String getKeyStoreLocation() {
@@ -201,7 +201,7 @@ public class SparkTestUtil {
 
 	/**
 	 * Return JVM param set keystore password or default if not set.
-	 *
+	 * 
 	 * @return Keystore password as string
 	 */
 	public static String getKeystorePassword() {
@@ -212,7 +212,7 @@ public class SparkTestUtil {
 	/**
 	 * Return JVM param set truststore location, or keystore location if not
 	 * set. if keystore not set either, returns default
-	 *
+	 * 
 	 * @return truststore location as string
 	 */
 	public static String getTrustStoreLocation() {
@@ -223,7 +223,7 @@ public class SparkTestUtil {
 	/**
 	 * Return JVM param set truststore password or keystore password if not set.
 	 * If still not set, will return default password
-	 *
+	 * 
 	 * @return truststore password as string
 	 */
 	public static String getTrustStorePassword() {

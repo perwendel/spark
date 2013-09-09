@@ -9,26 +9,26 @@ import java.util.Map;
 
 /**
  * MIME-Type Parser
- *
+ * 
  * This class provides basic functions for handling mime-types. It can handle
  * matching mime-types against a list of media-ranges. See section 14.1 of the
  * HTTP specification [RFC 2616] for a complete explanation.
- *
+ * 
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
- *
+ * 
  * A port to Java of Joe Gregorio's MIME-Type Parser:
- *
+ * 
  * http://code.google.com/p/mimeparse/
- *
+ * 
  * Ported by Tom Zellman <tzellman@gmail.com>.
- *
+ * 
  * Modified by Alex Soto <asotobu@gmail.com> to coform naming conventions and removing unnecessary dependencies.
- *
+ * 
  */
 public class MimeParse {
 
 	public static final String NO_MIME_TYPE = "";
-
+	
 	/**
 	 * Parse results container
 	 */
@@ -51,10 +51,10 @@ public class MimeParse {
 
 	/**
 	 * Carves up a mime-type and returns a ParseResults object
-	 *
+	 * 
 	 * For example, the media range 'application/xhtml;q=0.5' would get parsed
 	 * into:
-	 *
+	 * 
 	 * ('application', 'xhtml', {'q', '0.5'})
 	 */
 	protected static ParseResults parseMimeType(String mimeType) {
@@ -82,15 +82,15 @@ public class MimeParse {
 
 	/**
 	 * Carves up a media range and returns a ParseResults.
-	 *
+	 * 
 	 * For example, the media range 'application/*;q=0.5' would get parsed into:
-	 *
+	 * 
 	 * ('application', '*', {'q', '0.5'})
-	 *
+	 * 
 	 * In addition this function also guarantees that there is a value for 'q'
 	 * in the params dictionary, filling it in with a proper default if
 	 * necessary.
-	 *
+	 * 
 	 * @param range
 	 */
 	protected static ParseResults parseMediaRange(String range) {
@@ -134,7 +134,7 @@ public class MimeParse {
 	 * tuple of the fitness value and the value of the 'q' quality parameter of
 	 * the best match, or (-1, 0) if no match was found. Just as for
 	 * quality_parsed(), 'parsed_ranges' must be a list of parsed media ranges.
-	 *
+	 * 
 	 * @param mimeType
 	 * @param parsedRanges
 	 */
@@ -171,7 +171,7 @@ public class MimeParse {
 	 * parameter of the best match, 0 if no match was found. This function
 	 * bahaves the same as quality() except that 'parsed_ranges' must be a list
 	 * of parsed media ranges.
-	 *
+	 * 
 	 * @param mimeType
 	 * @param parsedRanges
 	 * @return
@@ -183,7 +183,7 @@ public class MimeParse {
 	/**
 	 * Returns the quality 'q' of a mime-type when compared against the
 	 * mediaRanges in ranges. For example:
-	 *
+	 * 
 	 * @param mimeType
 	 * @param parsedRanges
 	 */
@@ -199,10 +199,10 @@ public class MimeParse {
 	 * media-ranges listed in header. The value of header must be a string that
 	 * conforms to the format of the HTTP Accept: header. The value of
 	 * 'supported' is a list of mime-types.
-	 *
+	 * 
 	 * MimeParse.bestMatch(Arrays.asList(new String[]{"application/xbel+xml",
 	 * "text/xml"}), "text/*;q=0.5,*; q=0.1") 'text/xml'
-	 *
+	 * 
 	 * @param supported
 	 * @param header
 	 * @return

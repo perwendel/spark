@@ -34,9 +34,9 @@ public class Session {
 
     /**
      * Returns the object bound with the specified name in this session, or null if no object is bound under the name.
-     *
-     * @param name a string specifying the name of the object
-     * @return the object with the specified name
+     * 
+     * @param name a string specifying the name of the object 
+     * @return the object with the specified name 
      */
     @SuppressWarnings("unchecked")
     public <T> T attribute(String name) {
@@ -45,7 +45,7 @@ public class Session {
 
     /**
      * Binds an object to this session, using the name specified.
-     *
+     * 
      * @param name the name to which the object is bound; cannot be null
      * @param value the object to be bound
      */
@@ -55,7 +55,7 @@ public class Session {
 
     /**
      * Returns an <code>Enumeration</code> of <code>String</code> objects
-     * containing the names of all the objects bound to this session.
+     * containing the names of all the objects bound to this session. 
      */
     public Set<String> attributes() {
         TreeSet<String> attributes = new TreeSet<String>();
@@ -82,7 +82,7 @@ public class Session {
 
     /**
      * Returns the last time the client sent a request associated with this session,
-     * as the number of milliseconds since midnight January 1, 1970 GMT, and marked
+     * as the number of milliseconds since midnight January 1, 1970 GMT, and marked 
      * by the time the container received the request.
      */
     public long lastAccessedTime() {
@@ -90,7 +90,7 @@ public class Session {
     }
 
     /**
-     * Returns the maximum time interval, in seconds, that the container
+     * Returns the maximum time interval, in seconds, that the container 
      * will keep this session open between client accesses.
      */
     public int maxInactiveInterval() {
@@ -99,7 +99,7 @@ public class Session {
 
     /**
      * Specifies the time, in seconds, between client requests the web container will invalidate this session.
-     *
+     * 
      * @param interval
      */
     public void maxInactiveInterval(int interval) {

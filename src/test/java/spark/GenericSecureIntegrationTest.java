@@ -3,7 +3,6 @@ package spark;
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.get;
-import static spark.Spark.isReady;
 import static spark.Spark.patch;
 import static spark.Spark.post;
 import junit.framework.Assert;
@@ -11,7 +10,6 @@ import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
@@ -24,7 +22,6 @@ public class GenericSecureIntegrationTest {
     public static void tearDown() {
         Spark.clearRoutes();
         Spark.stop();
-
     }
 
     @BeforeClass
@@ -102,20 +99,9 @@ public class GenericSecureIntegrationTest {
             }
         });
 
-        Integer lock = new Integer(3);
-        while (lock > 0 && !isReady()) {
-            try {
-                synchronized (lock) {
-                    lock.wait(2000);
-                }
-
-                lock--;
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (!isReady()) {
-            Assert.fail("Spark server still not ready");
+        try {
+            Thread.sleep(500);
+        } catch (Exception e) {
         }
     }
 
@@ -202,8 +188,7 @@ public class GenericSecureIntegrationTest {
     @Test
     public void testUnauthorized() throws Exception {
         try {
-            UrlResponse urlResponse = testUtil.doMethodSecure("GET",
-                    "/protected/resource", null);
+            UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/protected/resource", null);
             Assert.assertTrue(urlResponse.status == 401);
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -213,8 +198,7 @@ public class GenericSecureIntegrationTest {
     @Test
     public void testNotFound() throws Exception {
         try {
-            UrlResponse urlResponse = testUtil.doMethodSecure("GET",
-                    "/no/resource", null);
+            UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/no/resource", null);
             Assert.assertTrue(urlResponse.status == 404);
         } catch (Throwable e) {
             throw new RuntimeException(e);

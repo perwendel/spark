@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *
+ *  
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,15 +22,15 @@ package spark.examples.books;
  * @author Per Wendel
  */
 public class Book {
-
+    
     private String author;
     private String title;
-
+    
     public Book(String author, String title) {
         this.author = author;
         this.title = title;
     }
-
+    
     /**
      * @return the author
      */
@@ -38,14 +38,14 @@ public class Book {
         return author;
     }
 
-
+    
     /**
      * @return the title
      */
     public String getTitle() {
         return title;
     }
-
+    
     /**
      * @param author the author to set
      */
@@ -53,7 +53,7 @@ public class Book {
         this.author = author;
     }
 
-
+    
     /**
      * @param title the title to set
      */

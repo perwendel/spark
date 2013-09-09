@@ -1,32 +1,32 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
+        <parent>
+          <groupId>org.sonatype.oss</groupId>
+          <artifactId>oss-parent</artifactId>
+          <version>7</version>
+        </parent>
 	<groupId>com.sparkjava</groupId>
 	<artifactId>spark-core</artifactId>
 	<packaging>jar</packaging>
-	<version>1.1</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>Spark</name>
-	<description>A Sinatra inspired java web framework</description>
+        <description>A Sinatra inspired java web framework</description>
 	<url>http://www.sparkjava.com</url>
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<scm>
-		<connection>scm:git:git@github.com:perwendel/spark.git</connection>
-		<developerConnection>scm:git:git@github.com:perwendel/spark.git</developerConnection>
-		<url>scm:git:git@github.com:perwendel/spark.git</url>
-	</scm>
-	<developers>
-	</developers>
+        <licenses>
+          <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+          </license>
+        </licenses>
+        <scm>
+          <connection>scm:git:git@github.com:perwendel/spark.git</connection>
+          <developerConnection>scm:git:git@github.com:perwendel/spark.git</developerConnection>
+          <url>scm:git:git@github.com:perwendel/spark.git</url>
+        </scm>
+        <developers>
+        </developers>
 
 	<properties>
 		<jetty.version>9.0.2.v20130417</jetty.version>
@@ -40,16 +40,12 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.2</version>
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-continuation</artifactId>
-			<version>${jetty.version}</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>1.7.2</version>
-			<scope>provided</scope>
+            <scope>provided</scope>
 		</dependency>
 
 		<!-- JETTY DEPENDENCIES -->
@@ -79,16 +75,16 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>2.3.19</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.2.4</version>
-			<scope>test</scope>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.19</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+    		<groupId>com.google.code.gson</groupId>
+    		<artifactId>gson</artifactId>
+    		<version>2.2.4</version>
+    		<scope>test</scope>
 		</dependency>
 	</dependencies>
 

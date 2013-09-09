@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *
+ *  
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -91,6 +91,11 @@ class ResponseWrapper extends Response {
     @Override
     public void cookie(String name, String value, int maxAge, boolean secured) {
         delegate.cookie(name, value, maxAge, secured);
+    }
+
+    @Override
+    public void cookie(String path, String name, String value, int maxAge, boolean secured) {
+        delegate.cookie(path, name, value, maxAge, secured);
     }
 
     @Override

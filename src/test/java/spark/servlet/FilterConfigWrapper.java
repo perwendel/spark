@@ -7,13 +7,13 @@ import javax.servlet.ServletContext;
 
 
 public class FilterConfigWrapper implements FilterConfig {
-
+ 
     private FilterConfig delegate;
 
     public FilterConfigWrapper(FilterConfig delegate) {
         this.delegate = delegate;
     }
-
+    
     /**
      * @return
      * @see javax.servlet.FilterConfig#getFilterName()
@@ -49,5 +49,5 @@ public class FilterConfigWrapper implements FilterConfig {
     public ServletContext getServletContext() {
         return delegate.getServletContext();
     }
-
+    
 }

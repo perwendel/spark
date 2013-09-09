@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *
+ *  
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,7 +17,7 @@
 package spark.route;
 
 /**
- *
+ * 
  *
  * @author Per Wendel
  */
@@ -28,7 +28,7 @@ public class RouteMatch {
     private String matchUri;
     private String requestURI;
     private String acceptType;
-
+    
     public RouteMatch(HttpMethod httpMethod, Object target, String matchUri, String requestUri, String acceptType) {
         super();
         this.httpMethod = httpMethod;
@@ -38,22 +38,22 @@ public class RouteMatch {
         this.acceptType = acceptType;
     }
 
-
+    
     /**
-     *
+     * 
      * @return the accept type
      */
     public String getAcceptType() {
 		return acceptType;
 	}
-
+    
     /**
      * @return the httpMethod
      */
     public HttpMethod getHttpMethod() {
         return httpMethod;
     }
-
+    
     /**
      * @return the target
      */
@@ -61,7 +61,7 @@ public class RouteMatch {
         return target;
     }
 
-
+    
     /**
      * @return the matchUri
      */
@@ -69,13 +69,13 @@ public class RouteMatch {
         return matchUri;
     }
 
-
+    
     /**
      * @return the requestUri
      */
     public String getRequestURI() {
         return requestURI;
     }
-
-
+    
+    
 }
