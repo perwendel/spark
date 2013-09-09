@@ -34,7 +34,7 @@ import org.eclipse.jetty.util.log.Logger;
 /**
  * Asynchronous version of the JettyHandler
  *
- * @author Gale Dunkleberger
+ * @author Galen Dunkleberger
  */
 class AsyncJettyHandler extends JettyHandler {
     private static final Logger LOG = Log.getLogger(AsyncJettyHandler.class);
