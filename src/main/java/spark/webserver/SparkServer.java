@@ -16,6 +16,8 @@
  */
 package spark.webserver;
 
+import org.eclipse.jetty.server.SessionIdManager;
+
 /**
  * 
  *
@@ -44,7 +46,8 @@ public interface SparkServer {
             String truststoreFile, 
             String truststorePassword,
             String staticFilesRoute,
-            String externalFilesLocation);
+            String externalFilesLocation,
+            SessionIdManager sessionIdManager);
     
     /**
      * Stops the spark server

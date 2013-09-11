@@ -16,6 +16,8 @@
  */
 package spark;
 
+import org.eclipse.jetty.server.SessionIdManager;
+
 import spark.route.HttpMethod;
 import spark.route.RouteMatcher;
 import spark.route.RouteMatcherFactory;
@@ -67,11 +69,21 @@ public final class Spark {
 
     private static String staticFileFolder = null;
     private static String externalStaticFileFolder = null;
+    private static SessionIdManager sessionIdManager;
 
     // Hide constructor
     private Spark() {
     }
 
+    /**
+     * Set the SessionIdManager implementation on the underlying server. 
+     */
+    public static synchronized void setSessionIdManager(SessionIdManager sessionIdManager) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.sessionIdManager = sessionIdManager;
+    }
     /**
      * Set the IP address that Spark should listen on. If not called the default
      * address is '0.0.0.0'. This has to be called before any route mapping is
@@ -309,7 +321,8 @@ public final class Spark {
                             truststoreFile,
                             truststorePassword,
                             staticFileFolder,
-                            externalStaticFileFolder);
+                            externalStaticFileFolder,
+                            sessionIdManager);
                 }
             }).start();
             initialized = true;

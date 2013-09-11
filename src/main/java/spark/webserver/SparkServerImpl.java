@@ -26,6 +26,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
@@ -51,7 +52,7 @@ class SparkServerImpl implements SparkServer {
     public void ignite(String host, int port, String keystoreFile,
             String keystorePassword, String truststoreFile,
             String truststorePassword, String staticFilesFolder,
-            String externalFilesFolder) {
+            String externalFilesFolder,SessionIdManager sessionIdManager) {
         
         ServerConnector connector;
         
@@ -70,7 +71,7 @@ class SparkServerImpl implements SparkServer {
 
         server = connector.getServer();
         server.setConnectors(new Connector[] { connector });
-
+        
         // Handle static file routes
         if (staticFilesFolder == null && externalFilesFolder == null) {
             server.setHandler(handler);
@@ -88,7 +89,9 @@ class SparkServerImpl implements SparkServer {
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
-        
+        if(sessionIdManager!=null){
+            server.setSessionIdManager(sessionIdManager);
+        }
         
         try {
             System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
@@ -185,5 +188,7 @@ class SparkServerImpl implements SparkServer {
             }
         }
     }
+
+    
     
 }
