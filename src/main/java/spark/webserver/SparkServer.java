@@ -47,7 +47,7 @@ public interface SparkServer {
             String truststorePassword,
             String staticFilesRoute,
             String externalFilesLocation,
-            SessionIdManager sessionIdManager);
+            SparkSessionIdManager sessionIdManager);
     
     /**
      * Stops the spark server

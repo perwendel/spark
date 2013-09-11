@@ -52,7 +52,7 @@ class SparkServerImpl implements SparkServer {
     public void ignite(String host, int port, String keystoreFile,
             String keystorePassword, String truststoreFile,
             String truststorePassword, String staticFilesFolder,
-            String externalFilesFolder,SessionIdManager sessionIdManager) {
+            String externalFilesFolder,SparkSessionIdManager sessionIdManager) {
         
         ServerConnector connector;
         
@@ -90,7 +90,7 @@ class SparkServerImpl implements SparkServer {
             server.setHandler(handlers);
         }
         if(sessionIdManager!=null){
-            server.setSessionIdManager(sessionIdManager);
+            server.setSessionIdManager(sessionIdManager.getSessionIdManager(server));
         }
         
         try {
