@@ -29,6 +29,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
@@ -52,7 +53,7 @@ class SparkServerImpl implements SparkServer {
     public void ignite(String host, int port, String keystoreFile,
             String keystorePassword, String truststoreFile,
             String truststorePassword, String staticFilesFolder,
-            String externalFilesFolder,SparkSessionIdManager sessionIdManager) {
+            String externalFilesFolder,SparkSessionIdManager sessionIdManager,SparkSessionManager sessionManager) {
         
         ServerConnector connector;
         
@@ -92,7 +93,9 @@ class SparkServerImpl implements SparkServer {
         if(sessionIdManager!=null){
             server.setSessionIdManager(sessionIdManager.getSessionIdManager(server));
         }
-        
+        if(sessionManager!=null){
+            ((SessionHandler)handler).setSessionManager(sessionManager.getSessionManager(server));
+        }
         try {
             System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
             System.out.println(">> Listening on " + host + ":" + port); // NOSONAR

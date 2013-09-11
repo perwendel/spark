@@ -37,6 +37,8 @@ public interface SparkServer {
      * @param truststorePassword - the trust store password
      * @param staticFilesRoute    - the route to static files in classPath
      * @param externalFilesLocation    - the route to static files external to classPath.
+     * @param sessionIdManager - set the session id manager on the underlying server
+     * @param sessionManager - set the session manager on the underlying server
      */
     void ignite(
             String host, 
@@ -47,7 +49,8 @@ public interface SparkServer {
             String truststorePassword,
             String staticFilesRoute,
             String externalFilesLocation,
-            SparkSessionIdManager sessionIdManager);
+            SparkSessionIdManager sessionIdManager,
+            SparkSessionManager sessionManager);
     
     /**
      * Stops the spark server

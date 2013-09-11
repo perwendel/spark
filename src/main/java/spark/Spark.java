@@ -24,6 +24,7 @@ import spark.route.RouteMatcherFactory;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 import spark.webserver.SparkSessionIdManager;
+import spark.webserver.SparkSessionManager;
 
 /**
  * The main building block of a Spark application is a set of routes. A route is
@@ -71,6 +72,7 @@ public final class Spark {
     private static String staticFileFolder = null;
     private static String externalStaticFileFolder = null;
     private static SparkSessionIdManager sessionIdManager;
+    private static SparkSessionManager sessionManager;
 
     // Hide constructor
     private Spark() {
@@ -84,6 +86,16 @@ public final class Spark {
             throwBeforeRouteMappingException();
         }
         Spark.sessionIdManager = sessionIdManager;
+    }
+    
+    /**
+     * Set the SessionManager implementation on the underlying server. 
+     */
+    public static synchronized void setSessionManager(SparkSessionManager sessionManager) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.sessionManager = sessionManager;
     }
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -323,7 +335,8 @@ public final class Spark {
                             truststorePassword,
                             staticFileFolder,
                             externalStaticFileFolder,
-                            sessionIdManager);
+                            sessionIdManager,
+                            sessionManager);
                 }
             }).start();
             initialized = true;
