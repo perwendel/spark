@@ -7,7 +7,7 @@ NEWS: Spark is now available on Maven central!!! :
     <dependency>
         <groupId>com.sparkjava</groupId>
         <artifactId>spark-core</artifactId>
-        <version>1.0</version>
+        <version>1.1.1</version>
     </dependency>
 ```
 
@@ -15,6 +15,8 @@ NEWS: Spark google group created:
 https://groups.google.com/d/forum/sparkjava
 
 Examples can also be viewed on: http://code.google.com/p/spark-java/
+
+Temporary API Docs: http://spark.screenisland.com
 
 Getting started
 ---------------
