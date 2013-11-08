@@ -275,7 +275,7 @@ public class Request {
         return servletRequest;
     }
     
-    private final Map<String, String> setParams(RouteMatch match) {
+    private Map<String, String> setParams(RouteMatch match) {
         LOG.debug("set params for requestUri: "
                         + match.getRequestUri()
                         + ", matchUri: "

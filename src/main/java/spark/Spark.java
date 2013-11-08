@@ -187,7 +187,7 @@ public class Spark {
     	initialized = false;
     }
     
-    private synchronized static final void init() {
+    private synchronized static void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             new Thread(new Runnable() {
