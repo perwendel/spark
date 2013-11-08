@@ -33,7 +33,7 @@ class SparkServerImpl implements SparkServer {
     
     private static final String NAME = "Spark";
     private Handler handler;
-    private Object lock = new Object();
+    private final Object lock = new Object();
     private boolean stopped = false;
     
     public SparkServerImpl(Handler handler) {
