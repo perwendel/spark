@@ -1,10 +1,7 @@
 Spark - a Sinatra inspired web framework
 ==============================================
 
-**Fork Information:**
-
-Route class now has a flag indicating that the writing has already been made
-after the handle method, enabling directly writing to response output stream.
+Fork Information:
 
 ```java
 // Copy file to response OutputStream
