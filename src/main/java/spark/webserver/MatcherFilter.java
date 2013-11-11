@@ -138,6 +138,11 @@ public class MatcherFilter implements Filter {
 
                         Object element = route.handle(req, res);
                         result = route.render(element);
+                        
+                        // Don't continue if the flag is set.
+                        if(route.ignoreAfterHandling()){
+                        	return;
+                        }
                     }
                     if (result != null) {
                         bodyContent = result;

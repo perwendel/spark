@@ -1,6 +1,30 @@
 Spark - a Sinatra inspired web framework
 ==============================================
 
+**Fork Information:**
+
+Route class now has a flag indicating that the writing has already been made
+after the handle method, enabling directly writing to response output stream.
+
+```java
+// Copy file to response OutputStream
+Spark.get(new Route("/testWrite", true) {
+	@Override
+	public Object handle(Request request, Response response) {
+		try {
+			Path fPath = new File("test.txt").toPath();
+			Files.copy(fPath,  response.raw()
+					.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+});
+```
+
+==============================================
+
 NEWS: Spark is now available on Maven central!!! :
 
 ```xml
