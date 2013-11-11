@@ -12,7 +12,7 @@ Spark.get(new Route("/testWrite", true) {
 	@Override
 	public Object handle(Request request, Response response) {
 		try {
-			Path fPath = new File( "pom.xml").toPath();
+			Path fPath = new File("test.txt").toPath();
 			Files.copy(fPath,  response.raw()
 					.getOutputStream());
 		} catch (IOException e) {
