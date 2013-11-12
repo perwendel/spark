@@ -53,7 +53,7 @@ public abstract class Route extends AbstractRoute {
 	 *            The accept type which is used for matching.
 	 */
 	protected Route(String path, String acceptType) {
-		this(path, Route.DEFAULT_ACCEPT_TYPE, false);
+		this(path, acceptType, false);
 	}
 
 	/**
