@@ -3,6 +3,7 @@ Spark - a Sinatra inspired web framework
 
 **Fork Information:**
 
+-------------------------------
 Route class now has a flag indicating that the writing has already been made
 after the handle method, enabling directly writing to response output stream.
 
@@ -20,6 +21,24 @@ Spark.get(new Route("/testWrite", true) {
 		}
 		return null;
 	}
+});
+```
+
+-------------------------------
+Added param escape "/:*" for getting everything after it, ignoring
+the slashes.
+
+
+```java
+// Get everything after after 'filePath/' as parameter. 
+// Ex.: "http://localhost:4567/filePath/folder/subfolder/filetype/file"
+// returns "folder/subfolder/filetype/file"
+Spark.get(new Route("/filePath/:*filePath") {
+
+	@Override
+        public Object handle(Request request, Response response) {
+	        return request.params(":filePath");
+        }
 });
 ```
 

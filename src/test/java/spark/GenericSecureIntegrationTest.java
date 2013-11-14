@@ -65,6 +65,14 @@ public class GenericSecureIntegrationTest {
                 return "echo: " + request.params(":paramWithMaj");
             }
         });
+        
+        get(new Route("/paramwithslash/:*filePath") {
+
+            @Override
+            public Object handle(Request request, Response response) {
+                return "echo: " + request.params(":filePath");
+            }
+        });
 
         get(new Route("/") {
 
@@ -180,6 +188,18 @@ public class GenericSecureIntegrationTest {
                     "/paramwithmaj/plop", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: plop", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    @Test
+    public void testEchoParamWithSlash() {
+        try {
+            UrlResponse response = testUtil.doMethodSecure("GET",
+                    "/paramwithslash/folder/subfolder/filetype/file", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("echo: folder/subfolder/filetype/file", response.body);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
