@@ -28,7 +28,7 @@
         <developers>
         </developers>
 	<properties>
-		<jetty.version>9.0.5.v20130815</jetty.version>
+		<jetty.version>9.1.0.v20131115</jetty.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
    	<dependencies>

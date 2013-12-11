@@ -90,9 +90,7 @@ class SparkServerImpl implements SparkServer {
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
-        if(sessionIdManager!=null){
-            server.setSessionIdManager(sessionIdManager.getSessionIdManager(server));
-        }
+      
         if(sessionManager!=null){
             ((SessionHandler)handler).setSessionManager(sessionManager.getSessionManager(server));
         }
@@ -101,6 +99,11 @@ class SparkServerImpl implements SparkServer {
             System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
 
             server.start();
+            if (sessionIdManager != null) {
+                SessionIdManager wrappedSessionIdManager = sessionIdManager.getSessionIdManager(server);
+                 server.setSessionIdManager(wrappedSessionIdManager);
+                 sessionManager.getSessionManager(server).setSessionIdManager(wrappedSessionIdManager);
+             }
             server.join();
         } catch (Exception e) {
             e.printStackTrace(); // NOSONAR
