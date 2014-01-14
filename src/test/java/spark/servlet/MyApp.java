@@ -1,20 +1,13 @@
 package spark.servlet;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.get;
-import static spark.Spark.post;
-import spark.Filter;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import spark.*;
 
 public class MyApp implements SparkApplication {
 
     @Override
-    public void init() {
+    public void init(SparkInstance spark) {
         System.out.println("HELLO!!!");
-        before(new Filter("/protected/*") {
+        spark.before(new Filter("/protected/*") {
 
             @Override
             public void handle(Request request, Response response) {
@@ -22,7 +15,7 @@ public class MyApp implements SparkApplication {
             }
         });
 
-        get(new Route("/hi") {
+        spark.get(new Route("/hi") {
 
             @Override
             public Object handle(Request request, Response response) {
@@ -30,7 +23,7 @@ public class MyApp implements SparkApplication {
             }
         });
 
-        get(new Route("/:param") {
+        spark.get(new Route("/:param") {
 
             @Override
             public Object handle(Request request, Response response) {
@@ -38,7 +31,7 @@ public class MyApp implements SparkApplication {
             }
         });
 
-        get(new Route("/") {
+        spark.get(new Route("/") {
 
             @Override
             public Object handle(Request request, Response response) {
@@ -46,7 +39,7 @@ public class MyApp implements SparkApplication {
             }
         });
 
-        post(new Route("/poster") {
+        spark.post(new Route("/poster") {
 
             @Override
             public Object handle(Request request, Response response) {
@@ -56,7 +49,7 @@ public class MyApp implements SparkApplication {
             }
         });
 
-        after(new Filter("/hi") {
+        spark.after(new Filter("/hi") {
 
             @Override
             public void handle(Request request, Response response) {

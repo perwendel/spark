@@ -16,14 +16,10 @@
  */
 package spark.route;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import spark.utils.MimeParse;
 import spark.utils.SparkUtils;
+
+import java.util.*;
 
 /**
  * Simple route matcher that is supposed to work exactly as Sinatra's

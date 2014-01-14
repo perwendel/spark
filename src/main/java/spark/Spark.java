@@ -16,12 +16,6 @@
  */
 package spark;
 
-import spark.route.HttpMethod;
-import spark.route.RouteMatcher;
-import spark.route.RouteMatcherFactory;
-import spark.webserver.SparkServer;
-import spark.webserver.SparkServerFactory;
-
 /**
  * The main building block of a Spark application is a set of routes. A route is
  * made up of three simple pieces:
@@ -55,18 +49,19 @@ public final class Spark {
 
     private static boolean initialized = false;
 
-    private static SparkServer server;
-    private static RouteMatcher routeMatcher;
     private static String ipAddress = "0.0.0.0";
     private static int port = SPARK_DEFAULT_PORT;
 
+    private static boolean hasSslConfig;
     private static String keystoreFile;
     private static String keystorePassword;
     private static String truststoreFile;
     private static String truststorePassword;
 
+    private static boolean hasStaticConfig;
     private static String staticFileFolder = null;
     private static String externalStaticFileFolder = null;
+    private static SparkInstance instance;
 
     // Hide constructor
     private Spark() {
@@ -131,6 +126,7 @@ public final class Spark {
         Spark.keystorePassword = keystorePassword;
         Spark.truststoreFile = truststoreFile;
         Spark.truststorePassword = truststorePassword;
+        Spark.hasSslConfig = true;
     }
 
     /**
@@ -144,6 +140,7 @@ public final class Spark {
             throwBeforeRouteMappingException();
         }
         staticFileFolder = folder;
+        hasStaticConfig = true;
     }
 
     /**
@@ -157,6 +154,7 @@ public final class Spark {
             throwBeforeRouteMappingException();
         }
         externalStaticFileFolder = externalFolder;
+        hasStaticConfig = true;
     }
 
     /**
@@ -165,7 +163,8 @@ public final class Spark {
      * @param route The route
      */
     public static synchronized void get(Route route) {
-        addRoute(HttpMethod.get.name(), route);
+        init();
+        instance.get(route);
     }
 
     /**
@@ -174,7 +173,8 @@ public final class Spark {
      * @param route The route
      */
     public static synchronized void post(Route route) {
-        addRoute(HttpMethod.post.name(), route);
+        init();
+        instance.post(route);
     }
 
     /**
@@ -183,7 +183,8 @@ public final class Spark {
      * @param route The route
      */
     public static synchronized void put(Route route) {
-        addRoute(HttpMethod.put.name(), route);
+        init();
+        instance.put(route);
     }
 
     /**
@@ -192,7 +193,8 @@ public final class Spark {
      * @param route The route
      */
     public static synchronized void patch(Route route) {
-        addRoute(HttpMethod.patch.name(), route);
+        init();
+        instance.patch(route);
     }
 
     /**
@@ -201,7 +203,8 @@ public final class Spark {
      * @param route The route
      */
     public static synchronized void delete(Route route) {
-        addRoute(HttpMethod.delete.name(), route);
+        init();
+        instance.delete(route);
     }
 
     /**
@@ -210,7 +213,8 @@ public final class Spark {
      * @param route The route
      */
     public static synchronized void head(Route route) {
-        addRoute(HttpMethod.head.name(), route);
+        init();
+        instance.head(route);
     }
 
     /**
@@ -219,7 +223,8 @@ public final class Spark {
      * @param route The route
      */
     public static synchronized void trace(Route route) {
-        addRoute(HttpMethod.trace.name(), route);
+        init();
+        instance.trace(route);
     }
 
     /**
@@ -228,7 +233,8 @@ public final class Spark {
      * @param route The route
      */
     public static synchronized void connect(Route route) {
-        addRoute(HttpMethod.connect.name(), route);
+        init();
+        instance.connect(route);
     }
 
     /**
@@ -237,7 +243,8 @@ public final class Spark {
      * @param route The route
      */
     public static synchronized void options(Route route) {
-        addRoute(HttpMethod.options.name(), route);
+        init();
+        instance.options(route);
     }
 
     /**
@@ -246,7 +253,8 @@ public final class Spark {
      * @param filter The filter
      */
     public static synchronized void before(Filter filter) {
-        addFilter(HttpMethod.before.name(), filter);
+        init();
+        instance.before(filter);
     }
 
     /**
@@ -255,63 +263,31 @@ public final class Spark {
      * @param filter The filter
      */
     public static synchronized void after(Filter filter) {
-        addFilter(HttpMethod.after.name(), filter);
-    }
-
-    static synchronized void runFromServlet() {
-        if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
-            initialized = true;
-        }
+        init();
+        instance.after(filter);
     }
 
     // WARNING, used for jUnit testing only!!!
     static synchronized void clearRoutes() {
-        routeMatcher.clearRoutes();
+        instance.getRouteMatcher().clearRoutes();
     }
 
     // Used for jUnit testing!
     static synchronized void stop() {
-        if (server != null) {
-            server.stop();
+        if (instance != null) {
+            instance.stop();
         }
         initialized = false;
     }
 
-    private static void addRoute(String httpMethod, Route route) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
-                + "'", route.getAcceptType(), route);
-    }
-
-    private static void addFilter(String httpMethod, Filter filter) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
-                + "'", filter.getAcceptType(), filter);
-    }
-    
-    private static boolean hasMultipleHandlers() {
-        return staticFileFolder != null || externalStaticFileFolder != null;
-    }
-
     private static synchronized void init() {
         if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    server = SparkServerFactory.create(hasMultipleHandlers());
-                    server.ignite(
-                            ipAddress,
-                            port,
-                            keystoreFile,
-                            keystorePassword,
-                            truststoreFile,
-                            truststorePassword,
-                            staticFileFolder,
-                            externalStaticFileFolder);
-                }
-            }).start();
+            instance = new SparkInstance(
+                    ipAddress,
+                    port,
+                    hasSslConfig ? new SSLConfig(keystoreFile, keystorePassword, truststoreFile, truststorePassword) : null,
+                    hasStaticConfig ? new StaticFileConfig(staticFileFolder, externalStaticFileFolder) : null);
+            instance.ignite();
             initialized = true;
         }
     }
