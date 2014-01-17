@@ -8,7 +8,7 @@
         </parent>
 	<groupId>com.sparkjava</groupId>
 	<artifactId>spark-core</artifactId>
-	<packaging>jar</packaging>
+	<packaging>bundle</packaging>
 	<version>1.1.1</version>
 	<name>Spark</name>
         <description>A Sinatra inspired java web framework</description>
@@ -128,7 +128,12 @@
 					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.4.0</version>
+				<extensions>true</extensions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
