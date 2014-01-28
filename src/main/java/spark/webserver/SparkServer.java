@@ -16,6 +16,8 @@
  */
 package spark.webserver;
 
+import org.eclipse.jetty.server.SessionIdManager;
+
 /**
  * 
  *
@@ -35,6 +37,8 @@ public interface SparkServer {
      * @param truststorePassword - the trust store password
      * @param staticFilesRoute    - the route to static files in classPath
      * @param externalFilesLocation    - the route to static files external to classPath.
+     * @param sessionIdManager - set the session id manager on the underlying server
+     * @param sessionManager - set the session manager on the underlying server
      */
     void ignite(
             String host, 
@@ -44,7 +48,9 @@ public interface SparkServer {
             String truststoreFile, 
             String truststorePassword,
             String staticFilesRoute,
-            String externalFilesLocation);
+            String externalFilesLocation,
+            SparkSessionIdManager sessionIdManager,
+            SparkSessionManager sessionManager);
     
     /**
      * Stops the spark server

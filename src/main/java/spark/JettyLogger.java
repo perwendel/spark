@@ -111,4 +111,10 @@ public class JettyLogger implements Logger {
         logger.warn(log.toString());
     }
 
+    @Override
+    public void debug(String msg, long value) {
+        logger.debug(msg,new Long(value));
+        
+    }
+
 }

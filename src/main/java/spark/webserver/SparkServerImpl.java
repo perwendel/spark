@@ -26,8 +26,10 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SessionIdManager;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
@@ -51,7 +53,7 @@ class SparkServerImpl implements SparkServer {
     public void ignite(String host, int port, String keystoreFile,
             String keystorePassword, String truststoreFile,
             String truststorePassword, String staticFilesFolder,
-            String externalFilesFolder) {
+            String externalFilesFolder,SparkSessionIdManager sessionIdManager,SparkSessionManager sessionManager) {
         
         ServerConnector connector;
         
@@ -70,7 +72,7 @@ class SparkServerImpl implements SparkServer {
 
         server = connector.getServer();
         server.setConnectors(new Connector[] { connector });
-
+        
         // Handle static file routes
         if (staticFilesFolder == null && externalFilesFolder == null) {
             server.setHandler(handler);
@@ -88,13 +90,20 @@ class SparkServerImpl implements SparkServer {
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
-        
-        
+      
+        if(sessionManager!=null){
+            ((SessionHandler)handler).setSessionManager(sessionManager.getSessionManager(server));
+        }
         try {
             System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
             System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
 
             server.start();
+            if (sessionIdManager != null) {
+                SessionIdManager wrappedSessionIdManager = sessionIdManager.getSessionIdManager(server);
+                 server.setSessionIdManager(wrappedSessionIdManager);
+                 sessionManager.getSessionManager(server).setSessionIdManager(wrappedSessionIdManager);
+             }
             server.join();
         } catch (Exception e) {
             e.printStackTrace(); // NOSONAR
@@ -173,17 +182,16 @@ class SparkServerImpl implements SparkServer {
      */
     private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
         if (externalFilesRoute != null) {
-            try {
+           
                 ResourceHandler externalResourceHandler = new ResourceHandler();
                 Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
                 externalResourceHandler.setBaseResource(externalStaticResources);
                 externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
                 handlersInList.add(externalResourceHandler);
-            } catch (IOException exception) {
-                exception.printStackTrace(); // NOSONAR
-                System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
-            }
+            
         }
     }
+
+    
     
 }

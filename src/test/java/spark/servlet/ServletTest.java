@@ -66,7 +66,7 @@ public class ServletTest {
             }
         }).start();
 
-        sleep(1000);
+        sleep(5000);
     }
 
     @Test
