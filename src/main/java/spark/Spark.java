@@ -16,6 +16,7 @@
  */
 package spark;
 
+import java.net.ServerSocket;
 import spark.route.HttpMethod;
 import spark.route.RouteMatcher;
 import spark.route.RouteMatcherFactory;
@@ -96,7 +97,13 @@ public final class Spark {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        Spark.port = port;
+        if (port == 0) {
+            ServerSocket s = new ServerSocket(0);
+	        Spark.port = s.getLocalPort();
+	        s.close();
+        } else {
+            Spark.port = port;
+        }
     }
 
     /**
