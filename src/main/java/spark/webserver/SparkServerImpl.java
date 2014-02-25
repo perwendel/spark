@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,7 +17,6 @@
 package spark.webserver;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +32,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
  * Spark server implementation
- * 
+ *
  * @author Per Wendel
  */
 class SparkServerImpl implements SparkServer {
@@ -52,9 +51,9 @@ class SparkServerImpl implements SparkServer {
             String keystorePassword, String truststoreFile,
             String truststorePassword, String staticFilesFolder,
             String externalFilesFolder) {
-        
+
         ServerConnector connector;
-        
+
         if (keystoreFile == null) {
             connector = createSocketConnector();
         } else {
@@ -77,10 +76,10 @@ class SparkServerImpl implements SparkServer {
         } else {
             List<Handler> handlersInList = new ArrayList<Handler>();
             handlersInList.add(handler);
-            
+
             // Set static file location
             setStaticFileLocationIfPresent(staticFilesFolder, handlersInList);
-            
+
             // Set external static file location
             setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
 
@@ -88,8 +87,8 @@ class SparkServerImpl implements SparkServer {
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
-        
-        
+
+
         try {
             System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
             System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
@@ -119,12 +118,12 @@ class SparkServerImpl implements SparkServer {
     /**
      * Creates a secure jetty socket connector. Keystore required, truststore
      * optional. If truststore not specifed keystore will be reused.
-     * 
+     *
      * @param keystoreFile The keystore file location as string
      * @param keystorePassword the password for the keystore
      * @param truststoreFile the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword the trust store password
-     * 
+     *
      * @return a secure socket connector
      */
     private static ServerConnector createSecureSocketConnector(String keystoreFile,
@@ -148,7 +147,7 @@ class SparkServerImpl implements SparkServer {
 
     /**
      * Creates an ordinary, non-secured Jetty server connector.
-     * 
+     *
      * @return - a server connector
      */
     private static ServerConnector createSocketConnector() {
@@ -167,23 +166,18 @@ class SparkServerImpl implements SparkServer {
             handlersInList.add(resourceHandler);
         }
     }
-    
+
     /**
      * Sets external static file location if present
      */
     private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
         if (externalFilesRoute != null) {
-            try {
-                ResourceHandler externalResourceHandler = new ResourceHandler();
-                Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
-                externalResourceHandler.setBaseResource(externalStaticResources);
-                externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
-                handlersInList.add(externalResourceHandler);
-            } catch (IOException exception) {
-                exception.printStackTrace(); // NOSONAR
-                System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
-            }
+            ResourceHandler externalResourceHandler = new ResourceHandler();
+            Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
+            externalResourceHandler.setBaseResource(externalStaticResources);
+            externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
+            handlersInList.add(externalResourceHandler);
         }
     }
-    
+
 }
