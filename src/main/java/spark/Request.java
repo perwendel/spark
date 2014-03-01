@@ -130,7 +130,7 @@ public class Request {
      * Returns request method e.g. GET, POST, PUT, ...
      */
     public String requestMethod() {
-        return httpMethod.name();
+        return servletRequest.getMethod();
     }
 
     /**
