@@ -102,6 +102,15 @@ public class Request {
     }
     
     /**
+     * Returns the map containing all route params
+     * 
+     * @return a map containing all route params
+     */
+    public Map<String, String> params() {
+        return Collections.unmodifiableMap(params);
+    }
+    
+    /**
      * Returns the value of the provided route pattern parameter.
      * Example: parameter 'name' from the following pattern: (get '/hello/:name')
      * 

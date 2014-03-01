@@ -89,6 +89,11 @@ final class RequestWrapper extends Request {
     }
 
     @Override
+    public Map<String, String> params() {
+        return delegate.params();
+    }
+    
+    @Override
     public String params(String param) {
         return delegate.params(param);
     }
