@@ -94,8 +94,8 @@ public class Request {
         this.httpMethod = match.getHttpMethod();
         this.servletRequest = request;
         
-        List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
+        List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI(), matchedList.size());
         
         params = getParams(requestList, matchedList);
         splat = getSplat(requestList, matchedList);

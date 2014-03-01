@@ -70,8 +70,13 @@ public class SimpleRouteMatcher implements RouteMatcher {
 
             // check params
             List<String> thisPathList = SparkUtils.convertRouteToList(this.path);
-            List<String> pathList = SparkUtils.convertRouteToList(path);
-
+            boolean isForceParam = SparkUtils.isForceParam(this.path);
+            List<String> pathList;
+            if(isForceParam){
+            	pathList = SparkUtils.convertRouteToList(path, thisPathList.size());
+            } else {
+                pathList = SparkUtils.convertRouteToList(path);
+            }
             
             int thisPathSize = thisPathList.size();
             int pathSize = pathList.size();
@@ -92,6 +97,7 @@ public class SimpleRouteMatcher implements RouteMatcher {
                         return false;
                     }
                 }
+                
                 // All parts matched
                 return true;
             } else {

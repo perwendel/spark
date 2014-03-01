@@ -104,6 +104,14 @@ public class GenericIntegrationTest {
                 return "echo: " + request.params(":paramWithMaj");
             }
         });
+        
+        get(new Route("/paramwithslash/:*filePath") {
+
+            @Override
+            public Object handle(Request request, Response response) {
+                return "echo: " + request.params(":filePath");
+            }
+        });
 
         get(new TemplateViewRoute("/templateView") {
 			
@@ -307,6 +315,18 @@ public class GenericIntegrationTest {
             UrlResponse response = testUtil.doMethod("GET", "/paramwithmaj/plop", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: plop", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    @Test
+    public void testEchoParamWithSlash() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET",
+                    "/paramwithslash/folder/subfolder/filetype/file", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("echo: folder/subfolder/filetype/file", response.body);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
