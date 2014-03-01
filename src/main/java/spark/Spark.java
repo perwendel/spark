@@ -271,7 +271,7 @@ public final class Spark {
     }
 
     // Used for jUnit testing!
-    static synchronized void stop() {
+    public static synchronized void stop() {
         if (server != null) {
             server.stop();
         }
