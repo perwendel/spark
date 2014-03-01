@@ -16,7 +16,11 @@
  */
 package spark;
 
+import java.util.List;
+
+
 import spark.route.HttpMethod;
+import spark.route.RouteMatch;
 import spark.route.RouteMatcher;
 import spark.route.RouteMatcherFactory;
 import spark.webserver.SparkServer;
@@ -256,6 +260,18 @@ public final class Spark {
      */
     public static synchronized void after(Filter filter) {
         addFilter(HttpMethod.after.name(), filter);
+    }
+
+    /**
+     * Finds all the routes which match the specified request details.
+     *
+     * @param httpMethod the HTTP request method, or null for any method.
+     * @param path the path to the end point, or null for any path.
+     * @param acceptType, the accept type, or null for any accept type.
+     * @return a list of matching routes.
+     */
+    public static synchronized List<RouteMatch> findRoutesMatchingRequest(HttpMethod httpMethod, String path, String acceptType) {
+        return routeMatcher.findTargetsForRequestedRoute(httpMethod, path, acceptType);
     }
 
     static synchronized void runFromServlet() {

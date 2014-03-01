@@ -76,6 +76,16 @@ public class RouteMatch {
     public String getRequestURI() {
         return requestURI;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("RouteMatch{");
+        sb.append("httpMethod=").append(httpMethod);
+        sb.append(", target=").append(target);
+        sb.append(", matchUri='").append(matchUri).append('\'');
+        sb.append(", requestURI='").append(requestURI).append('\'');
+        sb.append(", acceptType='").append(acceptType).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
