@@ -214,6 +214,16 @@ public class GenericIntegrationTest {
     }
 
     @Test
+    public void canAddOptionalTrailingSlash() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/hi/", null);
+            Assert.assertTrue(response.headers.get("after").contains("foobar"));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     public void testGetRoot() {
         try {
             UrlResponse response = testUtil.doMethod("GET", "/", null);
@@ -239,6 +249,17 @@ public class GenericIntegrationTest {
     public void testEchoParam1() {
         try {
             UrlResponse response = testUtil.doMethod("GET", "/param/shizzy", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("echo: shizzy", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void canRoutWithTrailingSlashOnParams() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/param/shizzy/", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: shizzy", response.body);
         } catch (Throwable e) {

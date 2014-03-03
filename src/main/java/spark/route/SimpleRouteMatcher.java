@@ -58,11 +58,8 @@ public class SimpleRouteMatcher implements RouteMatcher {
         }
 
         private boolean matchPath(String path) { // NOSONAR
-            if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) // NOSONAR
-                            || (this.path.endsWith("/") && !path.endsWith("/")))) { 
-                // One and not both ends with slash
-                return false;
-            }
+            path = addEndSlash(path);
+
             if (this.path.equals(path)) {
                 // Paths are the same
                 return true;
@@ -126,6 +123,13 @@ public class SimpleRouteMatcher implements RouteMatcher {
                 }
                 return false;
             }
+        }
+
+        private String addEndSlash(String path) {
+            if(!path.endsWith("/")){
+                return path + "/";
+            }
+            return path;
         }
 
         public String toString() {
