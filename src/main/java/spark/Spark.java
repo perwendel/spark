@@ -49,7 +49,7 @@ import spark.webserver.SparkServerFactory;
  *
  * @author Per Wendel
  */
-public final class Spark {
+public class Spark {
 
     private static final int SPARK_DEFAULT_PORT = 4567;
 
@@ -69,7 +69,8 @@ public final class Spark {
     private static String externalStaticFileFolder = null;
 
     // Hide constructor
-    private Spark() {
+    protected Spark() {
+        throw new IllegalStateException ();
     }
 
     /**
@@ -281,21 +282,13 @@ public final class Spark {
         routeMatcher.clearRoutes();
     }
 
-    // Used for jUnit testing!
-    static synchronized void stop() {
-        if (server != null) {
-            server.stop();
-        }
-        initialized = false;
-    }
-
-    private static void addRoute(String httpMethod, Route route) {
+    protected static void addRoute(String httpMethod, Route route) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
                 + "'", route.getAcceptType(), route);
     }
 
-    private static void addFilter(String httpMethod, Filter filter) {
+    protected static void addFilter(String httpMethod, Filter filter) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
                 + "'", filter.getAcceptType(), filter);
