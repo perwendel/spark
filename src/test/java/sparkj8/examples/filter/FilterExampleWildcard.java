@@ -16,22 +16,13 @@
  */
 package sparkj8.examples.filter;
 
-import spark.Filter;
-import spark.Request;
-import spark.Response;
-
 import static spark.SparkJ8.before;
 
 public class FilterExampleWildcard {
-
     public static void main(String[] args) {
-        before(new Filter("/protected/*") {
-            @Override
-            public void handle(Request request, Response response) {
-                // ... check if authenticated
-                halt(401, "Go Away!");
-            }
+        before("/protected/*", (r, request, response) -> {
+            // ... check if authenticated
+            r.halt(401, "Go Away!");
         });
     }
-
 }

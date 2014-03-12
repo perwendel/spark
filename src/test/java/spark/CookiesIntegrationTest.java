@@ -1,5 +1,9 @@
 package spark;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static spark.Spark.post;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -7,10 +11,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static spark.Spark.post;
 
 /**
  * System tests for the Cookies support.

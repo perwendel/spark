@@ -16,11 +16,6 @@
  */
 package sparkj8.examples.filter;
 
-import spark.Filter;
-import spark.Request;
-import spark.Response;
-import spark.Route;
-
 import static spark.SparkJ8.after;
 import static spark.SparkJ8.get;
 
@@ -32,29 +27,20 @@ import static spark.SparkJ8.get;
 public class FilterExampleAttributes {
 
     public static void main(String[] args) {
-        get(new Route("/hi") {
-            @Override
-            public Object handle(Request request, Response response) {
+        get("/hi", (r, request, response) -> {
                 request.attribute("foo", "bar");
                 return null;
-            }
         });
 
-        after(new Filter("/hi") {
-            @Override
-            public void handle(Request request, Response response) {
+        after("/hi", (r, request, response) -> {
                 for (String attr : request.attributes()) {
                     System.out.println("attr: " + attr);
                 }
-            }
         });
 
-        after(new Filter("/hi") {
-            @Override
-            public void handle(Request request, Response response) {
+        after("/hi", (r, request, response) -> {
                 Object foo = request.attribute("foo");
                 response.body(asXml("foo", foo));
-            }
         });
     }
 

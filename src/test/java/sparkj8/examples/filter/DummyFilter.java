@@ -16,12 +16,12 @@
  */
 package sparkj8.examples.filter;
 
+import static spark.SparkJ8.after;
+import static spark.SparkJ8.before;
+
 import spark.Filter;
 import spark.Request;
 import spark.Response;
-
-import static spark.SparkJ8.after;
-import static spark.SparkJ8.before;
 
 public class DummyFilter {
 
