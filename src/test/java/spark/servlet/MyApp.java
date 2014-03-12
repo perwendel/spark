@@ -1,13 +1,11 @@
 package spark.servlet;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.get;
-import static spark.Spark.post;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
+import static spark.Spark.*;
 
 public class MyApp implements SparkApplication {
 

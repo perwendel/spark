@@ -16,11 +16,12 @@
  */
 package spark.examples.staticresources;
 
-import static spark.Spark.get;
-import static spark.Spark.staticFileLocation;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
+import static spark.Spark.get;
+import static spark.Spark.staticFileLocation;
 
 /**
  * Example showing how serve static resources.

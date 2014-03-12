@@ -19,8 +19,6 @@ package spark;
 import spark.route.HttpMethod;
 import spark.route.RouteMatcher;
 import spark.route.RouteMatcherFactory;
-import spark.utils.Function3;
-import spark.utils.Procedure3;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
@@ -52,50 +50,6 @@ import spark.webserver.SparkServerFactory;
  * @author Per Wendel
  */
 public final class Spark {
-    static class HandlerRoute extends Route {
-        final Function3<Route, Request, Response, Object> mHandler;
-
-        protected HandlerRoute(String path, Function3<Route, Request, Response, Object> aHandler) {
-            super (path, DEFAULT_ACCEPT_TYPE);
-            mHandler = aHandler;
-        }
-
-        protected HandlerRoute(
-            String path, String acceptType, Function3<Route, Request, Response, Object> aHandler) {
-
-            super (path, acceptType);
-            mHandler = aHandler;
-        }
-
-        @Override public Object handle (Request request, Response response) {
-            return mHandler.apply (this, request, response);
-        }
-    }
-
-    static class HandlerFilter extends Filter {
-        final Procedure3<Filter, Request, Response> mHandler;
-
-        protected HandlerFilter(Procedure3<Filter, Request, Response> aHandler) {
-            super (DEFAUT_CONTENT_TYPE);
-            mHandler = aHandler;
-        }
-
-        protected HandlerFilter(String path, Procedure3<Filter, Request, Response> aHandler) {
-            super (path, DEFAUT_CONTENT_TYPE);
-            mHandler = aHandler;
-        }
-
-        protected HandlerFilter(
-            String path, String acceptType, Procedure3<Filter, Request, Response> aHandler) {
-
-            super (path, acceptType);
-            mHandler = aHandler;
-        }
-
-        @Override public void handle (Request request, Response response) {
-            mHandler.apply (this, request, response);
-        }
-    }
 
     private static final int SPARK_DEFAULT_PORT = 4567;
 
@@ -214,18 +168,6 @@ public final class Spark {
         addRoute(HttpMethod.get.name(), route);
     }
 
-    public static synchronized void get(
-        String aPath, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.get.name(), new HandlerRoute (aPath, aHandler));
-    }
-
-    public static synchronized void get(
-        String aPath, String aAcceptType, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.get.name(), new HandlerRoute (aPath, aAcceptType, aHandler));
-    }
-
     /**
      * Map the route for HTTP POST requests
      *
@@ -233,12 +175,6 @@ public final class Spark {
      */
     public static synchronized void post(Route route) {
         addRoute(HttpMethod.post.name(), route);
-    }
-
-    public static synchronized void post(
-        String aPath, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.post.name(), new HandlerRoute (aPath, aHandler));
     }
 
     /**
@@ -250,12 +186,6 @@ public final class Spark {
         addRoute(HttpMethod.put.name(), route);
     }
 
-    public static synchronized void put(
-        String aPath, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.put.name(), new HandlerRoute (aPath, aHandler));
-    }
-
     /**
      * Map the route for HTTP PATCH requests
      *
@@ -263,12 +193,6 @@ public final class Spark {
      */
     public static synchronized void patch(Route route) {
         addRoute(HttpMethod.patch.name(), route);
-    }
-
-    public static synchronized void patch(
-        String aPath, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.patch.name(), new HandlerRoute (aPath, aHandler));
     }
 
     /**
@@ -280,12 +204,6 @@ public final class Spark {
         addRoute(HttpMethod.delete.name(), route);
     }
 
-    public static synchronized void delete(
-        String aPath, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.delete.name(), new HandlerRoute (aPath, aHandler));
-    }
-
     /**
      * Map the route for HTTP HEAD requests
      *
@@ -293,12 +211,6 @@ public final class Spark {
      */
     public static synchronized void head(Route route) {
         addRoute(HttpMethod.head.name(), route);
-    }
-
-    public static synchronized void head(
-        String aPath, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.head.name(), new HandlerRoute (aPath, aHandler));
     }
 
     /**
@@ -310,12 +222,6 @@ public final class Spark {
         addRoute(HttpMethod.trace.name(), route);
     }
 
-    public static synchronized void trace(
-        String aPath, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.trace.name(), new HandlerRoute (aPath, aHandler));
-    }
-
     /**
      * Map the route for HTTP CONNECT requests
      *
@@ -323,12 +229,6 @@ public final class Spark {
      */
     public static synchronized void connect(Route route) {
         addRoute(HttpMethod.connect.name(), route);
-    }
-
-    public static synchronized void connect(
-        String aPath, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.connect.name(), new HandlerRoute (aPath, aHandler));
     }
 
     /**
@@ -340,36 +240,13 @@ public final class Spark {
         addRoute(HttpMethod.options.name(), route);
     }
 
-    public static synchronized void options(
-        String aPath, Function3<Route, Request, Response, Object> aHandler) {
-
-        addRoute(HttpMethod.options.name(), new HandlerRoute (aPath, aHandler));
-    }
-
     /**
      * Maps a filter to be executed before any matching routes
      *
      * @param filter The filter
      */
     public static synchronized void before(Filter filter) {
-        addFilter (HttpMethod.before.name (), filter);
-    }
-
-    public static synchronized void before(
-        Procedure3<Filter, Request, Response> aHandler) {
-        addFilter (HttpMethod.before.name (), new HandlerFilter (aHandler));
-    }
-
-    public static synchronized void before(
-        String aPath, Procedure3<Filter, Request, Response> aHandler) {
-
-        addFilter(HttpMethod.before.name(), new HandlerFilter (aPath, aHandler));
-    }
-
-    public static synchronized void before(
-        String aPath, String aAcceptType, Procedure3<Filter, Request, Response> aHandler) {
-
-        addFilter(HttpMethod.before.name(), new HandlerFilter (aPath, aAcceptType, aHandler));
+        addFilter(HttpMethod.before.name(), filter);
     }
 
     /**
@@ -381,21 +258,15 @@ public final class Spark {
         addFilter(HttpMethod.after.name(), filter);
     }
 
-    public static synchronized void after(
-        Procedure3<Filter, Request, Response> aHandler) {
-        addFilter (HttpMethod.after.name (), new HandlerFilter (aHandler));
-    }
-
-    public static synchronized void after(
-        String aPath, Procedure3<Filter, Request, Response> aHandler) {
-
-        addFilter(HttpMethod.after.name(), new HandlerFilter (aPath, aHandler));
-    }
-
-    public static synchronized void after(
-        String aPath, String aAcceptType, Procedure3<Filter, Request, Response> aHandler) {
-
-        addFilter(HttpMethod.after.name(), new HandlerFilter (aPath, aAcceptType, aHandler));
+    /**
+     * Stops the Spark server and clears all routes
+     */
+    public static synchronized void stop() {
+        if (server != null) {
+            routeMatcher.clearRoutes();
+            server.stop();
+        }
+        initialized = false;
     }
 
     static synchronized void runFromServlet() {

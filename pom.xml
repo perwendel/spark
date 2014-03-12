@@ -1,147 +1,181 @@
 <project
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>9</version>
-  </parent>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
 
-	<groupId>com.sparkjava</groupId>
-	<artifactId>spark-core</artifactId>
-	<version>1.1.1</version>
+    <groupId>com.sparkjava</groupId>
+    <artifactId>spark-core</artifactId>
+    <version>1.1.2</version>
 
-	<name>Spark</name>
-  <description>A Sinatra inspired java web framework</description>
-	<url>http://www.sparkjava.com</url>
+    <name>Spark</name>
+    <description>A Sinatra inspired java web framework</description>
+    <url>http://www.sparkjava.com</url>
 
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-  <scm>
-    <connection>scm:git:git@github.com:perwendel/spark.git</connection>
-    <developerConnection>scm:git:git@github.com:perwendel/spark.git</developerConnection>
-    <url>scm:git:git@github.com:perwendel/spark.git</url>
-  </scm>
+    <scm>
+        <connection>scm:git:git@github.com:perwendel/spark.git</connection>
+        <developerConnection>scm:git:git@github.com:perwendel/spark.git</developerConnection>
+        <url>scm:git:git@github.com:perwendel/spark.git</url>
+    </scm>
 
-  <developers>
-  </developers>
+    <profiles>
+        <profile>
+            <id>optimize</id>
+            <properties>
+                <maven.compiler.optimize>true</maven.compiler.optimize>
+                <maven.compiler.debug>false</maven.compiler.debug>
+            </properties>
+        </profile>
 
-	<properties>
-		<jetty.version>9.1.2.v20140210</jetty.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.source>1.8</maven.compiler.source>
+                <maven.compiler.target>1.8</maven.compiler.target>
+            </properties>
+        </profile>
+    </profiles>
 
-	<dependencies>
-		<!-- LOGGING DEPENDENCIES -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.6</version>
-      <scope>provided</scope>
-		</dependency>
+    <developers>
+        <!-- TODO Add all developers (pull request's authors) -->
+    </developers>
 
-    <!-- Template dependencies -->
-    <!--<dependency>-->
-      <!--<groupId>org.fusesource.scalate</groupId>-->
-      <!--<artifactId>scalate-core_2.10</artifactId>-->
-      <!--<version>1.6.1</version>-->
-    <!--</dependency>-->
+    <properties>
+        <jetty.version>9.1.2.v20140210</jetty.version>
 
-		<!-- JETTY DEPENDENCIES -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>${jetty.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>${jetty.version}</version>
-		</dependency>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<!-- JUNIT DEPENDENCY FOR TESTING -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-      <version>2.3.20</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.gson</groupId>
-      <artifactId>gson</artifactId>
-      <version>2.2.4</version>
-      <scope>test</scope>
-		</dependency>
-	</dependencies>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.optimize>false</maven.compiler.optimize>
+        <maven.compiler.debug>true</maven.compiler.debug>
 
-	<build>
-		<resources>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**</include>
-				</includes>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
+        <forkCount>1</forkCount>
+        <reuseForks>false</reuseForks>
+    </properties>
 
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<optimize>true</optimize>
-					<debug>true</debug>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.16</version>
-				<configuration>
-					<forkCount>1</forkCount>
-					<reuseForks>false</reuseForks>
-				</configuration>
-			</plugin>
+    <dependencies>
+        <!-- LOGGING DEPENDENCIES -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.6</version>
+            <scope>provided</scope>
+        </dependency>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+        <!-- TEMPLATE DEPENDENCIES -->
+        <!--<dependency>-->
+            <!--<groupId>org.fusesource.scalate</groupId>-->
+            <!--<artifactId>scalate-core_2.10</artifactId>-->
+            <!--<version>1.6.1</version>-->
+            <!--<optional>true</optional>-->
+        <!--</dependency>-->
+
+        <!-- JETTY DEPENDENCIES -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+
+        <!-- TESTING DEPENDENCIES -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.20</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- TODO Use Jetty plugin to test servlets -->
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>${jetty.version}</version>
+                <configuration>
+                    <stopKey>stop</stopKey>
+                    <stopPort>1234</stopPort>
+                    <httpConnector>
+                        <port>4040</port>
+                    </httpConnector>
+
+                    <webApp>
+                        <contextPath>/test</contextPath>
+                        <baseResource>src/test/webapp</baseResource>
+                        <descriptor>src/test/webapp/WEB-INF/web.xml</descriptor>
+                    </webApp>
+                    <classesDirectory>${basedir}/target/test-classes</classesDirectory>
+
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <!--<scanTargets>-->
+                        <!--<scanTarget>src/mydir</scanTarget>-->
+                        <!--<scanTarget>src/myfile.txt</scanTarget>-->
+                    <!--</scanTargets>-->
+                    <!--<scanTargetPatterns>-->
+                        <!--<scanTargetPattern>-->
+                            <!--<directory>src/other-resources</directory>-->
+                            <!--<includes>-->
+                                <!--<include>**/*.xml</include>-->
+                                <!--<include>**/*.properties</include>-->
+                            <!--</includes>-->
+                            <!--<excludes>-->
+                                <!--<exclude>**/myspecial.xml</exclude>-->
+                                <!--<exclude>**/myspecial.properties</exclude>-->
+                            <!--</excludes>-->
+                        <!--</scanTargetPattern>-->
+                    <!--</scanTargetPatterns>-->
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

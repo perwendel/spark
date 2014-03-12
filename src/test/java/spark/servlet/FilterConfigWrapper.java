@@ -1,19 +1,17 @@
 package spark.servlet;
 
-import java.util.Enumeration;
-
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
-
+import java.util.Enumeration;
 
 public class FilterConfigWrapper implements FilterConfig {
- 
+
     private FilterConfig delegate;
 
     public FilterConfigWrapper(FilterConfig delegate) {
         this.delegate = delegate;
     }
-    
+
     /**
      * @return
      * @see javax.servlet.FilterConfig#getFilterName()
@@ -25,7 +23,7 @@ public class FilterConfigWrapper implements FilterConfig {
     /**
      * @param name
      * @return
-     * @see javax.servlet.FilterConfig#getInitParameter(java.lang.String)
+     * @see javax.servlet.FilterConfig#getInitParameter(String)
      */
     public String getInitParameter(String name) {
         if (name.equals("applicationClass")) {
@@ -49,5 +47,5 @@ public class FilterConfigWrapper implements FilterConfig {
     public ServletContext getServletContext() {
         return delegate.getServletContext();
     }
-    
+
 }

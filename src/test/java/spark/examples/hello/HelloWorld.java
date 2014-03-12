@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,15 +16,16 @@
  */
 package spark.examples.hello;
 
-import static spark.Spark.get;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import static spark.Spark.get;
+
 public class HelloWorld {
 
    public static void main(String[] args) {
-      
+
       get(new Route("/hello") {
          @Override
          public Object handle(Request request, Response response) {

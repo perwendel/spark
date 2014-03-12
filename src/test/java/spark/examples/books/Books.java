@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,22 +16,19 @@
  */
 package spark.examples.books;
 
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.Spark.put;
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import static spark.Spark.*;
 
 /**
  * A simple RESTful example showing howto create, get, update and delete book resources.
- * 
+ *
  * @author Per Wendel
  */
 public class Books {
@@ -40,9 +37,9 @@ public class Books {
      * Map holding the books
      */
     private static Map<String, Book> books = new HashMap<String, Book>();
-    
+
     public static void main(String[] args) {
-        
+
         // Creates a new book resource, will return the ID to the created resource
         // author and title are sent as query parameters e.g. /books?author=Foo&title=Bar
         post(new Route("/books") {
@@ -51,16 +48,16 @@ public class Books {
             public Object handle(Request request, Response response) {
                 String author = request.queryParams("author");
                 String title = request.queryParams("title");
-                Book book = new Book(author, title);
-                
+                Book book = new Book (author, title);
+
                 int id = random.nextInt(Integer.MAX_VALUE);
                 books.put(String.valueOf(id), book);
-                
+
                 response.status(201); // 201 Created
                 return id;
             }
         });
-        
+
         // Gets the book resource for the provided id
         get(new Route("/books/:id") {
             @Override
@@ -74,7 +71,7 @@ public class Books {
                 }
             }
         });
-        
+
         // Updates the book resource for the provided id with new information
         // author and title are sent as query parameters e.g. /books/<id>?author=Foo&title=Bar
         put(new Route("/books/:id") {
@@ -98,8 +95,8 @@ public class Books {
                 }
             }
         });
-        
-        // Deletes the book resource for the provided id 
+
+        // Deletes the book resource for the provided id
         delete(new Route("/books/:id") {
             @Override
             public Object handle(Request request, Response response) {
@@ -113,19 +110,19 @@ public class Books {
                 }
             }
         });
-        
+
         // Gets all available book resources (id's)
         get(new Route("/books") {
             @Override
             public Object handle(Request request, Response response) {
                 String ids = "";
                 for (String id : books.keySet()) {
-                   ids += id + " "; 
+                   ids += id + " ";
                 }
                 return ids;
             }
         });
-        
+
     }
-    
+
 }

@@ -1,10 +1,11 @@
 package spark.examples.session;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
+import static spark.Spark.get;
+import static spark.Spark.post;
 
 public class SessionExample {
     private static final String SESSION_NAME = "username";
@@ -33,7 +34,7 @@ public class SessionExample {
                 return null;
             }
         });
-        
+
         get(new Route("/clear") {
             @Override
             public Object handle(Request request, Response response) {

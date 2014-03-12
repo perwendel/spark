@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,19 +16,18 @@
  */
 package spark.examples.simple;
 
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.Spark.setSecure;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import static spark.Spark.*;
+
 /**
  * A simple example just showing some basic functionality You'll need to provide
  * a JKS keystore as arg 0 and its password as arg 1.
- * 
+ *
  * @author Peter Nicholls, based on (practically identical to in fact)
- *         {@link spark.examples.simple.SimpleExample} by Per Wendel
+ *         {@link sparkj8.spark.examples.simple.SimpleExample} by Per Wendel
  */
 public class SimpleSecureExample {
 

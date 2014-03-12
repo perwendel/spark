@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,33 +16,31 @@
  */
 package spark.examples.filter;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.get;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import spark.Filter;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static spark.Spark.*;
+
 /**
  * Example showing a very simple (and stupid) autentication filter that is
  * executed before all other resources.
- * 
+ *
  * When requesting the resource with e.g.
  * http://localhost:4567/hello?user=some&password=guy the filter will stop the
  * execution and the client will get a 401 UNAUTHORIZED with the content 'You
  * are not welcome here'
- * 
+ *
  * When requesting the resource with e.g.
  * http://localhost:4567/hello?user=foo&password=bar the filter will accept the
  * request and the request will continue to the /hello route.
- * 
+ *
  * Note: There is also an "after filter" that adds a header to the response
- * 
+ *
  * @author Per Wendel
  */
 public class FilterExample {
@@ -66,7 +64,7 @@ public class FilterExample {
             }
          }
       });
-      
+
       before(new Filter("/hello") {
           @Override
           public void handle(Request request, Response response) {
@@ -87,6 +85,6 @@ public class FilterExample {
              response.header("spark", "added by after-filter");
           }
        });
-      
+
    }
 }

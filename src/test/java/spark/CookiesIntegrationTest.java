@@ -1,9 +1,5 @@
 package spark;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static spark.Spark.post;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -11,6 +7,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static spark.Spark.post;
 
 /**
  * System tests for the Cookies support.
@@ -20,7 +20,7 @@ public class CookiesIntegrationTest {
 
     private static final String DEFAULT_HOST_URL = "http://localhost:4567";
     private HttpClient httpClient = new DefaultHttpClient();
-    
+
     @BeforeClass
     public static void initRoutes() throws InterruptedException {
         post(new Route("/assertNoCookies") {
@@ -33,7 +33,7 @@ public class CookiesIntegrationTest {
                 return "";
             }
         });
-        
+
         post(new Route("/setCookie") {
 
             @Override
@@ -42,7 +42,7 @@ public class CookiesIntegrationTest {
                 return "";
             }
         });
-        
+
         post(new Route("/assertHasCookie") {
 
             @Override
@@ -54,7 +54,7 @@ public class CookiesIntegrationTest {
                 return "";
             }
         });
-        
+
         post(new Route("/removeCookie") {
 
             @Override
@@ -69,18 +69,17 @@ public class CookiesIntegrationTest {
             }
         });
     }
-    
+
     @AfterClass
     public static void stopServer() {
-        Spark.clearRoutes();
         Spark.stop();
     }
-    
+
     @Test
     public void testEmptyCookies() {
         httpPost("/assertNoCookies");
     }
-    
+
     @Test
     public void testCreateCookie() {
         String cookieName = "testCookie";
@@ -88,7 +87,7 @@ public class CookiesIntegrationTest {
         httpPost("/setCookie?cookieName=" + cookieName + "&cookieValue=" + cookieValue);
         httpPost("/assertHasCookie?cookieName=" + cookieName + "&cookieValue=" + cookieValue);
     }
-    
+
     @Test
     public void testRemoveCookie() {
         String cookieName = "testCookie";
@@ -97,7 +96,7 @@ public class CookiesIntegrationTest {
         httpPost("/removeCookie?cookieName=" + cookieName + "&cookieValue=" + cookieValue);
         httpPost("/assertNoCookies");
     }
-    
+
     private void httpPost(String relativePath) {
         HttpPost request = new HttpPost(DEFAULT_HOST_URL + relativePath);
         try {

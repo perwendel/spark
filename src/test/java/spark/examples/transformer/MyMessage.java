@@ -3,7 +3,7 @@ package spark.examples.transformer;
 public class MyMessage {
 
 	private String message;
-	
+
 	public MyMessage(String message) {
 		this.message = message;
 	}
@@ -15,5 +15,5 @@ public class MyMessage {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
+
 }

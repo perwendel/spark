@@ -1,13 +1,13 @@
 package spark.examples.templateview;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
-import spark.ModelAndView;
-import spark.TemplateViewRoute;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import spark.ModelAndView;
+import spark.TemplateViewRoute;
+
+import java.io.IOException;
+import java.io.StringWriter;
 
 public abstract class FreeMarkerTemplateView extends TemplateViewRoute {
 

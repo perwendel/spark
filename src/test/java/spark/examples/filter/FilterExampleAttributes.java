@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,12 +16,13 @@
  */
 package spark.examples.filter;
 
-import static spark.Spark.after;
-import static spark.Spark.get;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+
+import static spark.Spark.after;
+import static spark.Spark.get;
 
 /**
  * Example showing the use of attributes
@@ -38,7 +39,7 @@ public class FilterExampleAttributes {
                 return null;
             }
         });
-        
+
         after(new Filter("/hi") {
             @Override
             public void handle(Request request, Response response) {
@@ -47,7 +48,7 @@ public class FilterExampleAttributes {
                 }
             }
         });
-        
+
         after(new Filter("/hi") {
             @Override
             public void handle(Request request, Response response) {
@@ -56,9 +57,9 @@ public class FilterExampleAttributes {
             }
         });
     }
-    
+
     private static String asXml(String name, Object value) {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + name +">" + value + "</"+ name + ">";
     }
-    
+
 }

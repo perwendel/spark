@@ -1,18 +1,13 @@
 package spark;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.get;
-import static spark.Spark.patch;
-import static spark.Spark.post;
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import static spark.Spark.*;
 
 public class GenericSecureIntegrationTest {
 
@@ -20,19 +15,18 @@ public class GenericSecureIntegrationTest {
 
     @AfterClass
     public static void tearDown() {
-        Spark.clearRoutes();
         Spark.stop();
     }
 
     @BeforeClass
     public static void setup() {
-        testUtil = new SparkTestUtil(4567);
+        testUtil = new SparkTestUtil (4567);
 
         // note that the keystore stuff is retrieved from SparkTestUtil which
         // respects JVM params for keystore, password
         // but offers a default included store if not.
-        Spark.setSecure(SparkTestUtil.getKeyStoreLocation(),
-                SparkTestUtil.getKeystorePassword(), null, null);
+        Spark.setSecure(SparkTestUtil.getKeyStoreLocation (),
+                SparkTestUtil.getKeystorePassword (), null, null);
 
         before(new Filter("/protected/*") {
 
@@ -108,7 +102,7 @@ public class GenericSecureIntegrationTest {
     @Test
     public void testGetHi() {
         try {
-            SparkTestUtil.UrlResponse response = testUtil.doMethodSecure("GET",
+            UrlResponse response = testUtil.doMethodSecure("GET",
                     "/hi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("Hello World!", response.body);

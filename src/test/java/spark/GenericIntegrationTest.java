@@ -1,17 +1,17 @@
 package spark;
 
-import static spark.Spark.*;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import static spark.Spark.*;
 
 public class GenericIntegrationTest {
 
@@ -20,7 +20,6 @@ public class GenericIntegrationTest {
 
     @AfterClass
     public static void tearDown() {
-        Spark.clearRoutes();
         Spark.stop();
         if (tmpExternalFile != null) {
             tmpExternalFile.delete();
@@ -29,7 +28,7 @@ public class GenericIntegrationTest {
 
     @BeforeClass
     public static void setup() throws IOException {
-        testUtil = new SparkTestUtil(4567);
+        testUtil = new SparkTestUtil (4567);
 
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
 
@@ -123,54 +122,6 @@ public class GenericIntegrationTest {
             }
         });
 
-        // JAVA 8
-
-        before("/protected/*", (f, request, response) -> f.halt(401, "Go Away!"));
-
-        before("/protected/*", "application/json", (f, request, response) ->
-            f.halt(401, "{\"message\": \"Go Away!\"}")
-        );
-
-        get("/hi", "application/json", (r, request, response) -> "{\"message\": \"Hello World\"}");
-
-        get("/hi", (r, request, response) -> "Hello World!");
-
-        get("/param/:param", (r, request, response) -> "echo: " + request.params(":param"));
-
-        get("/paramandwild/:param/stuff/*", (r, request, response) ->
-            "paramandwild: " + request.params(":param") + request.splat()[0]
-        );
-
-        get("/paramwithmaj/:paramWithMaj", (r, request, response) ->
-            "echo: " + request.params(":paramWithMaj")
-        );
-
-        get(new TemplateViewRoute("/templateView") {
-            @Override public String render(ModelAndView modelAndView) {
-                return modelAndView.getModel()+" from "+modelAndView.getViewName();
-            }
-
-            @Override public ModelAndView handle(Request request, Response response) {
-                return new ModelAndView("Hello", "my view");
-            }
-        });
-
-        get("/", (r, request, response) -> "Hello Root!");
-
-        post("/poster", (r, request, response) -> {
-            String body = request.body();
-            response.status(201); // created
-            return "Body was: " + body;
-        });
-
-        patch("/patcher", (r, request, response) -> {
-            String body = request.body();
-            response.status(200);
-            return "Body was: " + body;
-        });
-
-        after("/hi", (f, request, response) -> response.header("after", "foobar"));
-
         try {
             Thread.sleep(500);
         } catch (Exception e) {
@@ -214,31 +165,9 @@ public class GenericIntegrationTest {
     }
 
     @Test
-    public void testGetHiFunc() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", "/hifunc", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("Hello World!", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test
     public void testHiHead() {
         try {
             UrlResponse response = testUtil.doMethod("HEAD", "/hi", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test
-    public void testHiHeadFunc() {
-        try {
-            UrlResponse response = testUtil.doMethod("HEAD", "/hifunc", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("", response.body);
         } catch (Throwable e) {
