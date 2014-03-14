@@ -130,7 +130,7 @@
     <build>
         <plugins>
             <!-- TODO Use Jetty plugin to test servlets -->
-            <plugin>
+            <!--<plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
@@ -148,7 +148,7 @@
                     </webApp>
                     <classesDirectory>${basedir}/target/test-classes</classesDirectory>
 
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>-->
                     <!--<scanTargets>-->
                         <!--<scanTarget>src/mydir</scanTarget>-->
                         <!--<scanTarget>src/myfile.txt</scanTarget>-->
@@ -166,7 +166,7 @@
                             <!--</excludes>-->
                         <!--</scanTargetPattern>-->
                     <!--</scanTargetPatterns>-->
-                </configuration>
+                <!--</configuration>
                 <executions>
                     <execution>
                         <phase>verify</phase>
@@ -175,7 +175,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 </project>
