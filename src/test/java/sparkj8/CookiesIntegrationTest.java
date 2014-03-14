@@ -7,9 +7,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import spark.Request;
-import spark.Response;
-import spark.Route;
 import spark.Spark;
 
 import static org.junit.Assert.assertEquals;
@@ -27,50 +24,34 @@ public class CookiesIntegrationTest {
 
     @BeforeClass
     public static void initRoutes() throws InterruptedException {
-        post(new Route("/assertNoCookies") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                if (!request.cookies().isEmpty()) {
-                    halt(500);
-                }
-                return "";
-            }
+        post("/assertNoCookies", (r, request, response) -> {
+			if (!request.cookies().isEmpty()) {
+				r.halt(500);
+			}
+			return "";
         });
 
-        post(new Route("/setCookie") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                response.cookie(request.queryParams("cookieName"), request.queryParams("cookieValue"));
-                return "";
-            }
+        post("/setCookie", (r, request, response) -> {
+			response.cookie(request.queryParams("cookieName"), request.queryParams("cookieValue"));
+			return "";
         });
 
-        post(new Route("/assertHasCookie") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                String cookieValue = request.cookie(request.queryParams("cookieName"));
-                if (!request.queryParams("cookieValue").equals(cookieValue)) {
-                    halt(500);
-                }
-                return "";
-            }
+        post("/assertHasCookie", (r, request, response) -> {
+			String cookieValue = request.cookie(request.queryParams("cookieName"));
+			if (!request.queryParams("cookieValue").equals(cookieValue)) {
+				r.halt(500);
+			}
+			return "";
         });
 
-        post(new Route("/removeCookie") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                String cookieName = request.queryParams("cookieName");
-                String cookieValue = request.cookie(cookieName);
-                if (!request.queryParams("cookieValue").equals(cookieValue)) {
-                    halt(500);
-                }
-                response.removeCookie(cookieName);
-                return "";
-            }
+        post("/removeCookie", (r, request, response) -> {
+			String cookieName = request.queryParams("cookieName");
+			String cookieValue = request.cookie(cookieName);
+			if (!request.queryParams("cookieValue").equals(cookieValue)) {
+				r.halt(500);
+			}
+			response.removeCookie(cookieName);
+			return "";
         });
     }
 

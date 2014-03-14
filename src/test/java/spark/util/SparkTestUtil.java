@@ -38,6 +38,17 @@ public class SparkTestUtil {
 		sr.register(https);
 		ClientConnectionManager connMrg = new BasicClientConnectionManager(sr);
 		this.httpClient = new DefaultHttpClient(connMrg);
+
+//        this.port = port;
+//        SchemePortResolver http = new SchemePortResolver ("http", port, PlainSocketFactory.getSocketFactory());
+//        Scheme https = new Scheme("https", port, new org.apache.http.conn.ssl.SSLSocketFactory(getSslFactory(), null));
+//        SchemeRegistry sr = new SchemeRegistry();
+//        sr.register(http);
+//        sr.register(https);
+//        this.httpClient = HttpClientBuilder
+//            .create ()
+//            .setConnectionManager (new BasicHttpClientConnectionManager (new Registry<> ()))
+//            .build ();
 	}
 
 	public UrlResponse doMethodSecure(String requestMethod, String path, String body)
@@ -86,7 +97,6 @@ public class SparkTestUtil {
 		try {
 			String protocol = secureConnection ? "https" : "http";
 			String uri = protocol + "://localhost:" + port + path;
-//            System.out.println (">>>>>>>>>> URI: " + uri);
 
 			if (requestMethod.equals("GET")) {
 				HttpGet httpGet = new HttpGet(uri);
