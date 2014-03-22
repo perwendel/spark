@@ -193,6 +193,14 @@ public class Request {
         return servletRequest.getContextPath();
     }
     
+    public String uri() {
+        return servletRequest.getRequestURI();
+    }
+
+    public String version() {
+        return servletRequest.getProtocol();
+    }
+    
     /**
      * Returns the URL string
      */
