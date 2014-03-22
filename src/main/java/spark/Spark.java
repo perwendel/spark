@@ -16,6 +16,8 @@
  */
 package spark;
 
+import spark.exception.ExceptionHandler;
+import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
 import spark.route.RouteMatcher;
 import spark.route.RouteMatcherFactory;
@@ -257,6 +259,15 @@ public final class Spark {
     public static synchronized void after(Filter filter) {
         addFilter(HttpMethod.after.name(), filter);
     }
+
+	/**
+	 * Maps an exception handler to be executed when an exception occurs during routing
+	 *
+	 * @param handler The handler
+	 */
+	public static synchronized void exception(ExceptionHandler handler) {
+		ExceptionMapper.getInstance().map(handler.getExceptionClass(), handler);
+	}
 
     /**
      * Stops the Spark server and clears all routes

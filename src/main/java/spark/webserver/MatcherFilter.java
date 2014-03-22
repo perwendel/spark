@@ -34,6 +34,8 @@ import spark.Request;
 import spark.RequestResponseFactory;
 import spark.Response;
 import spark.Route;
+import spark.exception.ExceptionHandler;
+import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.RouteMatcher;
@@ -146,10 +148,6 @@ public class MatcherFilter implements Filter {
                     LOG.debug("Time for request: " + t1);
                 } catch (HaltException hEx) { // NOSONAR
                     throw hEx; // NOSONAR
-                } catch (Exception e) {
-                    LOG.error("", e);
-                    httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    bodyContent = INTERNAL_ERROR;
                 }
             }
 
@@ -184,6 +182,19 @@ public class MatcherFilter implements Filter {
             } else {
                 bodyContent = "";
             }
+        } catch (Exception e) {
+	        ExceptionHandler handler = ExceptionMapper.getInstance().getHandler(e);
+	        if(handler != null) {
+		        handler.handle(e, req, res);
+		        String bodyAfterFilter = Access.getBody(res.getDelegate());
+		        if (bodyAfterFilter != null) {
+			        bodyContent = bodyAfterFilter;
+		        }
+	        } else {
+		        LOG.error("", e);
+		        httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		        bodyContent = INTERNAL_ERROR;
+	        }
         }
 
         boolean consumed = bodyContent != null;

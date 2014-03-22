@@ -1,13 +1,5 @@
 package spark;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.externalStaticFileLocation;
-import static spark.Spark.get;
-import static spark.Spark.patch;
-import static spark.Spark.post;
-import static spark.Spark.staticFileLocation;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,8 +10,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import spark.exception.ExceptionHandler;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import static spark.Spark.*;
 
 public class GenericIntegrationTest {
 
@@ -149,6 +144,20 @@ public class GenericIntegrationTest {
                 response.header("after", "foobar");
             }
         });
+
+	    get(new Route("/throwexception") {
+		    @Override
+		    public Object handle(Request request, Response response) {
+			    throw new UnsupportedOperationException();
+		    }
+	    });
+
+	    exception(new ExceptionHandler(UnsupportedOperationException.class) {
+		    @Override
+		    public void handle(Exception exception, Request request, Response response) {
+			    response.body("Exception handled");
+		    }
+	    });
 
         try {
             Thread.sleep(500);
@@ -368,5 +377,11 @@ public class GenericIntegrationTest {
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of external file", response.body);
     }
+
+	@Test
+	public void testExceptionMapper() throws Exception {
+		UrlResponse response = testUtil.doMethod("GET", "/throwexception", null);
+		Assert.assertEquals("Exception handled", response.body);
+	}
 
 }
