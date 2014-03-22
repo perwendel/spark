@@ -154,8 +154,18 @@ final class RequestWrapper extends Request {
     }
 
     @Override
+    public String uri() {
+        return delegate.uri();
+    }
+
+    @Override
     public String url() {
         return delegate.url();
+    }
+
+    @Override
+    public String version() {
+        return delegate.version();
     }
 
     @Override
