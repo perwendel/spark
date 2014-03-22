@@ -447,5 +447,17 @@ public class Request {
         }
         return Collections.unmodifiableList(splat);
     }
-    
+
+    @Override
+    public String toString() {
+        String retVal = "";
+        String nL = System.lineSeparator();
+        retVal += requestMethod() + " " + uri() + "?" + queryString() + " " + version() + nL;
+        for (String header : headers()) {
+            retVal += header + ": " + headers(header) + nL;
+        }
+        retVal += nL;
+        retVal += body();
+        return retVal;
+    }
 }
