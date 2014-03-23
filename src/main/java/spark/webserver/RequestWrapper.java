@@ -33,9 +33,9 @@ final class RequestWrapper extends Request {
         this.delegate = delegate;
     }
 
-	public Request getDelegate() {
+    Request getDelegate() {
         return delegate;
-	}
+    }
 
     @Override
     public String requestMethod() {
