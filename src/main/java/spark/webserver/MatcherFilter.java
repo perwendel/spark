@@ -183,18 +183,18 @@ public class MatcherFilter implements Filter {
                 bodyContent = "";
             }
         } catch (Exception e) {
-	        ExceptionHandler handler = ExceptionMapper.getInstance().getHandler(e);
-	        if(handler != null) {
-		        handler.handle(e, req, res);
-		        String bodyAfterFilter = Access.getBody(res.getDelegate());
-		        if (bodyAfterFilter != null) {
-			        bodyContent = bodyAfterFilter;
-		        }
-	        } else {
-		        LOG.error("", e);
-		        httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		        bodyContent = INTERNAL_ERROR;
-	        }
+            ExceptionHandler handler = ExceptionMapper.getInstance().getHandler(e);
+            if(handler != null) {
+                handler.handle(e, req, res);
+                String bodyAfterFilter = Access.getBody(res.getDelegate());
+                if (bodyAfterFilter != null) {
+                    bodyContent = bodyAfterFilter;
+                }
+            } else {
+                LOG.error("", e);
+                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                bodyContent = INTERNAL_ERROR;
+            }
         }
 
         boolean consumed = bodyContent != null;

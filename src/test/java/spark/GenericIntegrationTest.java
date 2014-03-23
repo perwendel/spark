@@ -145,19 +145,19 @@ public class GenericIntegrationTest {
             }
         });
 
-	    get(new Route("/throwexception") {
-		    @Override
-		    public Object handle(Request request, Response response) {
-			    throw new UnsupportedOperationException();
-		    }
-	    });
+        get(new Route("/throwexception") {
+            @Override
+            public Object handle(Request request, Response response) {
+                throw new UnsupportedOperationException();
+            }
+        });
 
-	    exception(new ExceptionHandler(UnsupportedOperationException.class) {
-		    @Override
-		    public void handle(Exception exception, Request request, Response response) {
-			    response.body("Exception handled");
-		    }
-	    });
+        exception(new ExceptionHandler(UnsupportedOperationException.class) {
+            @Override
+            public void handle(Exception exception, Request request, Response response) {
+                response.body("Exception handled");
+            }
+        });
 
         try {
             Thread.sleep(500);
@@ -378,10 +378,10 @@ public class GenericIntegrationTest {
         Assert.assertEquals("Content of external file", response.body);
     }
 
-	@Test
-	public void testExceptionMapper() throws Exception {
-		UrlResponse response = testUtil.doMethod("GET", "/throwexception", null);
-		Assert.assertEquals("Exception handled", response.body);
-	}
+    @Test
+    public void testExceptionMapper() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/throwexception", null);
+        Assert.assertEquals("Exception handled", response.body);
+    }
 
 }

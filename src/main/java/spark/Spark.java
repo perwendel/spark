@@ -260,14 +260,14 @@ public final class Spark {
         addFilter(HttpMethod.after.name(), filter);
     }
 
-	/**
-	 * Maps an exception handler to be executed when an exception occurs during routing
-	 *
-	 * @param handler The handler
-	 */
-	public static synchronized void exception(ExceptionHandler handler) {
-		ExceptionMapper.getInstance().map(handler.getExceptionClass(), handler);
-	}
+    /**
+     * Maps an exception handler to be executed when an exception occurs during routing
+     *
+     * @param handler The handler
+     */
+    public static synchronized void exception(ExceptionHandler handler) {
+        ExceptionMapper.getInstance().map(handler.getExceptionClass(), handler);
+    }
 
     /**
      * Stops the Spark server and clears all routes
