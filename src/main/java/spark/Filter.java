@@ -60,7 +60,7 @@ public abstract class Filter extends AbstractRoute {
      * @param request The request object providing information about the HTTP request
      * @param response The response object providing functionality for modifying the response
      */
-    public abstract void handle(Request request, Response response);
+    public abstract void handle(Request request, Response response) throws Exception;
 
     public String getAcceptType() {
 		return acceptType;
