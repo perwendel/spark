@@ -16,10 +16,9 @@
  */
 package spark.webserver;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import spark.QueryParamsMap;
 import spark.Request;

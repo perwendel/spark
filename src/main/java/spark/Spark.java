@@ -277,11 +277,6 @@ public class Spark {
         }
     }
 
-    // WARNING, used for jUnit testing only!!!
-    static synchronized void clearRoutes() {
-        routeMatcher.clearRoutes();
-    }
-
     protected static void addRoute(String httpMethod, Route route) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()

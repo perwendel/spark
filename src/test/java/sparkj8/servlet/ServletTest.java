@@ -1,17 +1,19 @@
 package sparkj8.servlet;
 
+import static spark.util.SparkTestUtil.sleep;
+
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import spark.Spark;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
-import static spark.util.SparkTestUtil.sleep;
-
-@Ignore // Disable while it's fixed
 public class ServletTest {
 
     private static final String SOMEPATH = "/somepath";

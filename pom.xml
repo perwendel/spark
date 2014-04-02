@@ -58,7 +58,8 @@
     </developers>
 
     <properties>
-        <jetty.version>9.1.2.v20140210</jetty.version>
+        <!--jetty.version>9.1.2.v20140210</jetty.version-->
+        <jetty.version>9.0.2.v20130417</jetty.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -126,56 +127,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <!-- TODO Use Jetty plugin to test servlets -->
-            <!--<plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                    <stopKey>stop</stopKey>
-                    <stopPort>1234</stopPort>
-                    <httpConnector>
-                        <port>4040</port>
-                    </httpConnector>
-
-                    <webApp>
-                        <contextPath>/test</contextPath>
-                        <baseResource>src/test/webapp</baseResource>
-                        <descriptor>src/test/webapp/WEB-INF/web.xml</descriptor>
-                    </webApp>
-                    <classesDirectory>${basedir}/target/test-classes</classesDirectory>
-
-                    <scanIntervalSeconds>10</scanIntervalSeconds>-->
-                    <!--<scanTargets>-->
-                        <!--<scanTarget>src/mydir</scanTarget>-->
-                        <!--<scanTarget>src/myfile.txt</scanTarget>-->
-                    <!--</scanTargets>-->
-                    <!--<scanTargetPatterns>-->
-                        <!--<scanTargetPattern>-->
-                            <!--<directory>src/other-resources</directory>-->
-                            <!--<includes>-->
-                                <!--<include>**/*.xml</include>-->
-                                <!--<include>**/*.properties</include>-->
-                            <!--</includes>-->
-                            <!--<excludes>-->
-                                <!--<exclude>**/myspecial.xml</exclude>-->
-                                <!--<exclude>**/myspecial.properties</exclude>-->
-                            <!--</excludes>-->
-                        <!--</scanTargetPattern>-->
-                    <!--</scanTargetPatterns>-->
-                <!--</configuration>
-                <executions>
-                    <execution>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
-        </plugins>
-    </build>
 </project>

@@ -1,18 +1,18 @@
 package sparkj8;
 
-import org.junit.Assert;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import spark.*;
-import spark.util.SparkTestUtil.UrlResponse;
-import spark.util.SparkTestUtil;
+import static spark.SparkJ8.*;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static spark.SparkJ8.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import spark.*;
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
 
 public class GenericIntegrationTest {
 
