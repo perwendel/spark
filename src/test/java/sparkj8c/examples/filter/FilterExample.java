@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sparkj8.examples.filter;
+package sparkj8c.examples.filter;
 
-import static spark.SparkJ8.after;
-import static spark.SparkJ8.before;
-import static spark.SparkJ8.get;
+import static spark.SparkJ8C.after;
+import static spark.SparkJ8C.before;
+import static spark.SparkJ8C.get;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,9 +47,9 @@ public class FilterExample {
         usernamePasswords.put ("foo", "bar");
         usernamePasswords.put ("admin", "admin");
 
-        before ((it, request, response) -> {
-            String user = request.queryParams ("user");
-            String password = request.queryParams ("password");
+        before (it -> {
+            String user = it.queryParams ("user");
+            String password = it.queryParams ("password");
 
             String dbPassword = usernamePasswords.get (user);
             if (!(password != null && password.equals (dbPassword))) {
@@ -57,14 +57,10 @@ public class FilterExample {
             }
         });
 
-        before ("/hello", (it, request, response) -> {
-            response.header ("Foo", "Set by second before filter");
-        });
+        before ("/hello", it -> it.header ("Foo", "Set by second before filter"));
 
-        get ("/hello", (it, request, response) -> "Hello World!");
+        get ("/hello", it -> "Hello World!");
 
-        after ("/hello", (it, request, response) ->
-            response.header ("spark", "added by after-filter")
-        );
+        after ("/hello", it -> it.header ("spark", "added by after-filter"));
     }
 }

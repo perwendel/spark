@@ -1,6 +1,6 @@
-package sparkj8.examples.transformer;
+package sparkj8c.examples.transformer;
 
-import static spark.SparkJ8.get;
+import static spark.SparkJ8C.get;
 
 import spark.Request;
 import spark.Response;

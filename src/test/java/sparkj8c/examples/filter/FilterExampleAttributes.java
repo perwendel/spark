@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sparkj8.examples.filter;
+package sparkj8c.examples.filter;
 
-import static spark.SparkJ8.after;
-import static spark.SparkJ8.get;
+import static spark.SparkJ8C.after;
+import static spark.SparkJ8C.get;
 
 /**
  * Example showing the use of attributes
@@ -27,20 +27,20 @@ import static spark.SparkJ8.get;
 public class FilterExampleAttributes {
 
     public static void main(String[] args) {
-        get("/hi", (r, request, response) -> {
-            request.attribute("foo", "bar");
+        get("/hi", it -> {
+            it.attribute("foo", "bar");
             return null;
         });
 
-        after("/hi", (r, request, response) -> {
-            for (String attr : request.attributes()) {
+        after("/hi", it -> {
+            for (String attr : it.attributes()) {
                 System.out.println("attr: " + attr);
             }
         });
 
-        after("/hi", (r, request, response) -> {
-            Object foo = request.attribute("foo");
-            response.body(asXml("foo", foo));
+        after("/hi", it -> {
+            Object foo = it.attribute("foo");
+            it.body(asXml("foo", foo));
         });
     }
 

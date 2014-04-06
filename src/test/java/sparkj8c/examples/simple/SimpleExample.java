@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sparkj8.examples.simple;
+package sparkj8c.examples.simple;
 
-import static spark.SparkJ8.get;
-import static spark.SparkJ8.post;
+import static spark.SparkJ8C.get;
+import static spark.SparkJ8C.post;
 
 /**
  * A simple example just showing some basic functionality
@@ -30,32 +30,32 @@ public class SimpleExample {
 
         //  setPort(5678); <- Uncomment if you wan't spark to listen on a port different than 4567.
 
-        get("/hello", (it, request, response) -> "Hello World!");
+        get("/hello", it -> "Hello World!");
 
-        post("/hello", (it, request, response) -> "Hello World: " + request.body());
+        post("/hello", it -> "Hello World: " + it.requestBody());
 
-        get("/private", (it, request, response) -> {
-            response.status(401);
+        get("/private", it -> {
+            it.status(401);
             return "Go Away!!!";
         });
 
-        get("/users/:name", (it, request, response) -> "Selected user: " + request.params(":name"));
+        get("/users/:name", it -> "Selected user: " + it.params(":name"));
 
-        get("/news/:section", (it, request, response) -> {
-            response.type("text/xml");
-            return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>" + request.params("section") + "</news>";
+        get("/news/:section", it -> {
+            it.type("text/xml");
+            return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>" + it.params("section") + "</news>";
         });
 
-        get("/protected", (it, request, response) -> {
+        get("/protected", it -> {
             it.halt(403, "I don't think so!!!");
             return null;
         });
 
-        get("/redirect", (it, request, response) -> {
-            response.redirect("/news/world");
+        get("/redirect", it -> {
+            it.redirect("/news/world");
             return null;
         });
 
-        get("/", (it, request, response) -> "root");
+        get("/", it -> "root");
     }
 }

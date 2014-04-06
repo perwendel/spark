@@ -1,14 +1,14 @@
-package sparkj8.examples.session;
+package sparkj8c.examples.session;
 
-import static spark.SparkJ8.get;
-import static spark.SparkJ8.post;
+import static spark.SparkJ8C.get;
+import static spark.SparkJ8C.post;
 
 public class SessionExample {
     private static final String SESSION_NAME = "username";
 
     public static void main (String[] args) {
-        get ("/", (it, request, response) -> {
-            String name = request.session ().attribute (SESSION_NAME);
+        get ("/", it -> {
+            String name = it.session ().attribute (SESSION_NAME);
             if (name == null) {
                 return
                     "<html>" +
@@ -26,18 +26,18 @@ public class SessionExample {
             }
         });
 
-        post ("/entry", (it, request, response) -> {
-            String name = request.queryParams ("name");
+        post ("/entry", it -> {
+            String name = it.queryParams ("name");
             if (name != null) {
-                request.session ().attribute (SESSION_NAME, name);
+                it.session ().attribute (SESSION_NAME, name);
             }
-            response.redirect ("/");
+            it.redirect ("/");
             return null;
         });
 
-        get ("/clear", (it, request, response) -> {
-            request.session ().removeAttribute (SESSION_NAME);
-            response.redirect ("/");
+        get ("/clear", it -> {
+            it.session ().removeAttribute (SESSION_NAME);
+            it.redirect ("/");
             return null;
         });
     }

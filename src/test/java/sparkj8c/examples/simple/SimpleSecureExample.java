@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sparkj8.examples.simple;
+package sparkj8c.examples.simple;
 
-import static spark.SparkJ8.get;
-import static spark.SparkJ8.post;
-import static spark.SparkJ8.setSecure;
+import static spark.SparkJ8C.get;
+import static spark.SparkJ8C.post;
+import static spark.SparkJ8C.setSecure;
 
 /**
  * A simple example just showing some basic functionality You'll need to provide
@@ -35,33 +35,33 @@ public class SimpleSecureExample {
 
         setSecure(args[0], args[1], null, null);
 
-        get("/hello", (it, request, response) -> "Hello Secure World!");
+        get("/hello", it -> "Hello Secure World!");
 
-        post("/hello", (it, request, response) -> "Hello Secure World: " + request.body());
+        post("/hello", it -> "Hello Secure World: " + it.requestBody());
 
-        get("/private", (it, request, response) -> {
-            response.status(401);
+        get("/private", it -> {
+            it.status(401);
             return "Go Away!!!";
         });
 
-        get("/users/:name", (it, request, response) -> "Selected user: " + request.params(":name"));
+        get("/users/:name", it -> "Selected user: " + it.params(":name"));
 
-        get("/news/:section", (it, request, response) -> {
-            response.type("text/xml");
+        get("/news/:section", it -> {
+            it.type("text/xml");
             return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>"
-                + request.params("section") + "</news>";
+                + it.params("section") + "</news>";
         });
 
-        get("/protected", (it, request, response) -> {
+        get("/protected", it -> {
             it.halt(403, "I don't think so!!!");
             return null;
         });
 
-        get("/redirect", (it, request, response) -> {
-            response.redirect("/news/world");
+        get("/redirect", it -> {
+            it.redirect("/news/world");
             return null;
         });
 
-        get("/", (it, request, response) -> "root");
+        get("/", it -> "root");
     }
 }

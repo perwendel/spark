@@ -16,23 +16,10 @@
  */
 package sparkj8.examples.hello;
 
-import spark.Request;
-import spark.Response;
-import spark.Route;
-
 import static spark.SparkJ8.get;
 
 public class HelloWorld {
-
    public static void main(String[] args) {
-
-      get(new Route("/hello") {
-         @Override
-         public Object handle(Request request, Response response) {
-            return "Hello World!";
-         }
-      });
-
+      get("/hello",  (it, request, response) -> "Hello World!");
    }
-
 }

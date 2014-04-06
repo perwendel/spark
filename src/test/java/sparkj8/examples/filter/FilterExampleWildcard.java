@@ -20,9 +20,9 @@ import static spark.SparkJ8.before;
 
 public class FilterExampleWildcard {
     public static void main(String[] args) {
-        before("/protected/*", (r, request, response) -> {
+        before("/protected/*", (r, request, response) ->
             // ... check if authenticated
-            r.halt(401, "Go Away!");
-        });
+            r.halt(401, "Go Away!")
+        );
     }
 }

@@ -1,72 +1,38 @@
 package sparkj8.servlet;
 
-import spark.Filter;
-import spark.Request;
-import spark.Response;
-import spark.Route;
-import spark.servlet.SparkApplication;
+import static spark.SparkJ8.after;
+import static spark.SparkJ8.before;
+import static spark.SparkJ8.get;
+import static spark.SparkJ8.post;
 
-import static spark.SparkJ8.*;
+import spark.servlet.SparkApplication;
 
 public class MyApp implements SparkApplication {
 
-    @Override
-    public void init() {
-        System.out.println("HELLO!!!");
-        before(new Filter("/protected/*") {
+    @Override public void init () {
+        System.out.println ("HELLO!!!");
 
-            @Override
-            public void handle(Request request, Response response) {
-                halt(401, "Go Away!");
-            }
+        before ("/protected/*", (it, request, response) -> it.halt (401, "Go Away!"));
+
+        get ("/hi", (it, request, response) -> "Hello World!");
+
+        get ("/:param", (it, request, response) -> "echo: " + request.params (":param"));
+
+        get ("/", (it, request, response) -> "Hello Root!");
+
+        post ("/poster", (it, request, response) -> {
+            String body = request.body ();
+            response.status (201); // created
+            return "Body was: " + body;
         });
 
-        get(new Route("/hi") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                return "Hello World!";
-            }
-        });
-
-        get(new Route("/:param") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                return "echo: " + request.params(":param");
-            }
-        });
-
-        get(new Route("/") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                return "Hello Root!";
-            }
-        });
-
-        post(new Route("/poster") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                String body = request.body();
-                response.status(201); // created
-                return "Body was: " + body;
-            }
-        });
-
-        after(new Filter("/hi") {
-
-            @Override
-            public void handle(Request request, Response response) {
-                response.header("after", "foobar");
-            }
-        });
+        after ("/hi", (it, request, response) -> response.header ("after", "foobar"));
 
         try {
-            Thread.sleep(500);
-        } catch (Exception e) {
+            Thread.sleep (500);
+        }
+        catch (Exception e) {
+            e.printStackTrace ();
         }
     }
-
 }

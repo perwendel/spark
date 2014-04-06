@@ -14,15 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sparkj8.examples.filter;
+package sparkj8c.examples.hello;
 
-import static spark.SparkJ8.after;
-import static spark.SparkJ8.before;
+import static spark.SparkJ8C.get;
 
-public class DummyFilter {
-
-    public static void main(String[] args) {
-        before((it, request, response) -> System.out.println("Before"));
-        after((it, request, response) -> System.out.println("After"));
-    }
+public class HelloWorld {
+   public static void main(String[] args) {
+      get("/hello",  it -> "Hello World!");
+   }
 }

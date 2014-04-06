@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package sparkj8.examples.books;
+package sparkj8c.examples.books;
 
-import static spark.SparkJ8.delete;
-import static spark.SparkJ8.get;
-import static spark.SparkJ8.post;
-import static spark.SparkJ8.put;
+import static spark.SparkJ8C.delete;
+import static spark.SparkJ8C.get;
+import static spark.SparkJ8C.post;
+import static spark.SparkJ8C.put;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,37 +44,37 @@ public class Books {
         // Creates a new book resource, will return the ID to the created resource
         // author and title are sent as query parameters e.g. /books?author=Foo&title=Bar
         Random random = new Random();
-        post("/books", (r, request, response) -> {
-            String author = request.queryParams("author");
-            String title = request.queryParams("title");
+        post("/books", it -> {
+            String author = it.queryParams("author");
+            String title = it.queryParams("title");
             Book book = new Book (author, title);
 
             int id = random.nextInt(Integer.MAX_VALUE);
             books.put(String.valueOf(id), book);
 
-            response.status(201); // 201 Created
+            it.status(201); // 201 Created
             return id;
         });
 
         // Gets the book resource for the provided id
-        get("/books/:id", (r, request, response) -> {
-            Book book = books.get(request.params(":id"));
+        get("/books/:id", it -> {
+            Book book = books.get(it.params(":id"));
             if (book != null) {
                 return "Title: " + book.getTitle() + ", Author: " + book.getAuthor();
             } else {
-                response.status(404); // 404 Not found
+                it.status(404); // 404 Not found
                 return "Book not found";
             }
         });
 
         // Updates the book resource for the provided id with new information
         // author and title are sent as query parameters e.g. /books/<id>?author=Foo&title=Bar
-        put("/books/:id", (r, request, response) -> {
-            String id = request.params(":id");
+        put("/books/:id", it -> {
+            String id = it.params(":id");
             Book book = books.get(id);
             if (book != null) {
-                String newAuthor = request.queryParams("author");
-                String newTitle = request.queryParams("title");
+                String newAuthor = it.queryParams("author");
+                String newTitle = it.queryParams("title");
                 if (newAuthor != null) {
                     book.setAuthor(newAuthor);
                 }
@@ -83,25 +83,25 @@ public class Books {
                 }
                 return "Book with id '" + id + "' updated";
             } else {
-                response.status(404); // 404 Not found
+                it.status(404); // 404 Not found
                 return "Book not found";
             }
         });
 
         // Deletes the book resource for the provided id
-        delete("/books/:id", (r, request, response) -> {
-            String id = request.params(":id");
+        delete("/books/:id", it -> {
+            String id = it.params(":id");
             Book book = books.remove(id);
             if (book != null) {
                 return "Book with id '" + id + "' deleted";
             } else {
-                response.status(404); // 404 Not found
+                it.status(404); // 404 Not found
                 return "Book not found";
             }
         });
 
         // Gets all available book resources (id's)
-        get("/books", (r, request, response) -> {
+        get("/books", it -> {
             String ids = "";
             for (String id : books.keySet()) {
                ids += id + " ";
