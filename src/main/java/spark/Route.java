@@ -28,9 +28,6 @@ public abstract class Route extends AbstractRoute {
 
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
-	private String path;
-    private String acceptType;
-
     /**
      * Constructor
      *
@@ -47,8 +44,7 @@ public abstract class Route extends AbstractRoute {
      * @param acceptType The accept type which is used for matching.
      */
     protected Route(String path, String acceptType) {
-    	this.path = path;
-    	this.acceptType = acceptType;
+        super (path, acceptType);
     }
 
     /**
@@ -76,16 +72,4 @@ public abstract class Route extends AbstractRoute {
     		return null;
     	}
     }
-
-    public String getAcceptType() {
-		return acceptType;
-	}
-
-    /**
-     * Returns this route's path
-     */
-    String getPath() {
-        return this.path;
-    }
-
 }

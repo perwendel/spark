@@ -9,11 +9,18 @@ import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
-import spark.*;
+import spark.ModelAndView;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.Spark;
+import spark.TemplateViewRoute;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
+@Ignore
 public class GenericIntegrationTest {
 
     static SparkTestUtil testUtil;
@@ -29,6 +36,7 @@ public class GenericIntegrationTest {
 
     @BeforeClass
     public static void setup() throws IOException {
+        Spark.stop();
         testUtil = new SparkTestUtil (4567);
 
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
@@ -41,24 +49,24 @@ public class GenericIntegrationTest {
         staticFileLocation("/public");
         externalStaticFileLocation (System.getProperty ("java.io.tmpdir"));
 
-        before("/protected/*", (r, request, response) -> r.halt(401, "Go Away!"));
+        before("/j8/protected/*", it -> it.halt(401, "Go Away!"));
 
-        before("/protected/*", "application/json", (r, request, response) ->
-            r.halt(401, "{\"message\": \"Go Away!\"}")
+        before("/j8/protected/*", "application/json", it ->
+            it.halt(401, "{\"message\": \"Go Away!\"}")
         );
 
-        get("/hi", "application/json", (r, request, response) -> "{\"message\": \"Hello World\"}");
+        get("/j8/hi", "application/json", it -> "{\"message\": \"Hello World\"}");
 
-        get("/hi", (r, request, response) -> "Hello World!");
+        get("/j8/hi", it -> "Hello World!");
 
-        get("/param/:param", (r, request, response) -> "echo: " + request.params(":param"));
+        get("/j8/param/:param", it -> "echo: " + it.params(":param"));
 
-        get("/paramandwild/:param/stuff/*", (r, request, response) ->
-            "paramandwild: " + request.params(":param") + request.splat()[0]
+        get("/j8/paramandwild/:param/stuff/*", it ->
+            "paramandwild: " + it.params(":param") + it.splat()[0]
         );
 
-        get("/paramwithmaj/:paramWithMaj", (r, request, response) ->
-            "echo: " + request.params(":paramWithMaj")
+        get("/j8/paramwithmaj/:paramWithMaj", it ->
+            "echo: " + it.params(":paramWithMaj")
         );
 
         get(new TemplateViewRoute("/templateView") {
@@ -71,21 +79,21 @@ public class GenericIntegrationTest {
             }
         });
 
-        get("/", (r, request, response) -> "Hello Root!");
+        get("/j8/", it -> "Hello Root!");
 
-        post("/poster", (r, request, response) -> {
-            String body = request.body();
-            response.status(201); // created
+        post("/j8/poster", it -> {
+            String body = it.requestBody();
+            it.status(201); // created
             return "Body was: " + body;
         });
 
-        patch("/patcher", (r, request, response) -> {
-            String body = request.body();
-            response.status(200);
+        patch("/j8/patcher", it -> {
+            String body = it.requestBody();
+            it.status(200);
             return "Body was: " + body;
         });
 
-        after("/hi", (r, request, response) -> response.header("after", "foobar"));
+        after("/j8/hi", it -> it.header("after", "foobar"));
 
         try {
             Thread.sleep(500);
@@ -97,7 +105,7 @@ public class GenericIntegrationTest {
     @Test
     public void filters_should_be_accept_type_aware() throws Exception {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/protected/resource", null, "application/json");
+            UrlResponse response = testUtil.doMethod("GET", "/j8/protected/resource", null, "application/json");
             Assert.assertTrue(response.status == 401);
             Assert.assertEquals("{\"message\": \"Go Away!\"}", response.body);
         } catch (Throwable e) {
@@ -107,7 +115,7 @@ public class GenericIntegrationTest {
 
     @Test
     public void routes_should_be_accept_type_aware() throws Exception {
-    	 UrlResponse response = testUtil.doMethod("GET", "/hi", null, "application/json");
+    	 UrlResponse response = testUtil.doMethod("GET", "/j8/hi", null, "application/json");
     	 Assert.assertEquals(200, response.status);
          Assert.assertEquals("{\"message\": \"Hello World\"}", response.body);
     }
@@ -122,7 +130,7 @@ public class GenericIntegrationTest {
     @Test
     public void testGetHi() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+            UrlResponse response = testUtil.doMethod("GET", "/j8/hi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("Hello World!", response.body);
         } catch (Throwable e) {
@@ -133,7 +141,7 @@ public class GenericIntegrationTest {
     @Test
     public void testHiHead() {
         try {
-            UrlResponse response = testUtil.doMethod("HEAD", "/hi", null);
+            UrlResponse response = testUtil.doMethod("HEAD", "/j8/hi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("", response.body);
         } catch (Throwable e) {
@@ -144,7 +152,7 @@ public class GenericIntegrationTest {
     @Test
     public void testGetHiAfterFilter() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+            UrlResponse response = testUtil.doMethod("GET", "/j8/hi", null);
             Assert.assertTrue(response.headers.get("after").contains("foobar"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -165,7 +173,7 @@ public class GenericIntegrationTest {
     @Test
     public void testParamAndWild() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/paramandwild/thedude/stuff/andits", null);
+            UrlResponse response = testUtil.doMethod("GET", "/j8/paramandwild/thedude/stuff/andits", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("paramandwild: thedudeandits", response.body);
         } catch (Throwable e) {
@@ -176,7 +184,7 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParam1() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/param/shizzy", null);
+            UrlResponse response = testUtil.doMethod("GET", "/j8/param/shizzy", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: shizzy", response.body);
         } catch (Throwable e) {
@@ -187,7 +195,7 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParam2() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/param/gunit", null);
+            UrlResponse response = testUtil.doMethod("GET", "/j8/param/gunit", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: gunit", response.body);
         } catch (Throwable e) {
@@ -199,7 +207,7 @@ public class GenericIntegrationTest {
     public void testEchoParamWithUpperCaseInValue() {
         final String camelCased = "ThisIsAValueAndSparkShouldRetainItsUpperCasedCharacters";
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/param/" + camelCased, null);
+            UrlResponse response = testUtil.doMethod("GET", "/j8/param/" + camelCased, null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: " + camelCased, response.body);
         } catch (Throwable e) {
@@ -241,7 +249,7 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParamWithMaj() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/paramwithmaj/plop", null);
+            UrlResponse response = testUtil.doMethod("GET", "/j8/paramwithmaj/plop", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: plop", response.body);
         } catch (Throwable e) {
@@ -252,7 +260,7 @@ public class GenericIntegrationTest {
     @Test
     public void testUnauthorized() throws Exception {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/protected/resource", null);
+            UrlResponse response = testUtil.doMethod("GET", "/j8/protected/resource", null);
             Assert.assertTrue(response.status == 401);
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -272,7 +280,7 @@ public class GenericIntegrationTest {
     @Test
     public void testPost() {
         try {
-            UrlResponse response = testUtil.doMethod("POST", "/poster", "Fo shizzy");
+            UrlResponse response = testUtil.doMethod("POST", "/j8/poster", "Fo shizzy");
             System.out.println(response.body);
             Assert.assertEquals(201, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
@@ -284,7 +292,7 @@ public class GenericIntegrationTest {
     @Test
     public void testPatch() {
         try {
-            UrlResponse response = testUtil.doMethod("PATCH", "/patcher", "Fo shizzy");
+            UrlResponse response = testUtil.doMethod("PATCH", "/j8/patcher", "Fo shizzy");
             System.out.println(response.body);
             Assert.assertEquals(200, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));

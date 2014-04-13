@@ -1,6 +1,6 @@
 package spark;
 
-import static spark.Spark.*;
+import static spark.SparkJ8.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,18 +18,14 @@ public class GenericIntegrationTest {
     static SparkTestUtil testUtil;
     static File tmpExternalFile;
 
-    @AfterClass
-    public static void tearDown() {
+    @AfterClass public static void tearDown() {
         Spark.stop();
-        if (tmpExternalFile != null) {
+        if (tmpExternalFile != null)
             tmpExternalFile.delete();
-        }
     }
 
-    @BeforeClass
-    public static void setup() throws IOException {
+    @BeforeClass public static void setup() throws IOException {
         testUtil = new SparkTestUtil (4567);
-
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
 
         FileWriter writer = new FileWriter(tmpExternalFile);
@@ -40,7 +36,19 @@ public class GenericIntegrationTest {
         staticFileLocation("/public");
         externalStaticFileLocation (System.getProperty ("java.io.tmpdir"));
 
-        before(new Filter("/protected/*") {
+        setupJ7 ();
+        setupJ8 ();
+
+        try {
+            Thread.sleep(500);
+        }
+        catch (Exception e) {
+            e.printStackTrace ();
+        }
+    }
+
+    private static void setupJ7 () {
+        before(new Filter ("/protected/*") {
             @Override public void handle(Request request, Response response) {
                 halt(401, "Go Away!");
             }
@@ -53,7 +61,7 @@ public class GenericIntegrationTest {
             }
         });
 
-        get(new Route("/hi", "application/json") {
+        get(new Route ("/hi", "application/json") {
 			@Override public Object handle(Request request, Response response) {
 				return "{\"message\": \"Hello World\"}";
 			}
@@ -84,7 +92,7 @@ public class GenericIntegrationTest {
             }
         });
 
-        get(new TemplateViewRoute("/templateView") {
+        get(new TemplateViewRoute ("/templateView") {
 			@Override public String render(ModelAndView modelAndView) {
 				return modelAndView.getModel()+" from "+modelAndView.getViewName();
 			}
@@ -121,15 +129,45 @@ public class GenericIntegrationTest {
                 response.header("after", "foobar");
             }
         });
-
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
-        }
     }
 
-    @Test
-    public void filters_should_be_accept_type_aware() throws Exception {
+    private static void setupJ8 () {
+        before("/j8/protected/*", it -> it.halt(401, "Go Away!"));
+
+        before("/j8/protected/*", "application/json", it ->
+            it.halt(401, "{\"message\": \"Go Away!\"}")
+        );
+
+        get("/j8/hi", "application/json", it -> "{\"message\": \"Hello World\"}");
+
+        get("/j8/hi", it -> "Hello World!");
+
+        get("/j8/param/:param", it -> "echo: " + it.params(":param"));
+
+        get("/j8/paramandwild/:param/stuff/*", it ->
+            "paramandwild: " + it.params(":param") + it.splat()[0]
+        );
+
+        get("/j8/paramwithmaj/:paramWithMaj", it -> "echo: " + it.params(":paramWithMaj"));
+
+        get("/j8/", it -> "Hello Root!");
+
+        post("/j8/poster", it -> {
+            String body = it.requestBody();
+            it.status(201); // created
+            return "Body was: " + body;
+        });
+
+        patch("/j8/patcher", it -> {
+            String body = it.requestBody();
+            it.status(200);
+            return "Body was: " + body;
+        });
+
+        after("/j8/hi", it -> it.header("after", "foobar"));
+    }
+
+    @Test public void filters_should_be_accept_type_aware() throws Exception {
         try {
             UrlResponse response = testUtil.doMethod("GET", "/protected/resource", null, "application/json");
             Assert.assertTrue(response.status == 401);
@@ -340,5 +378,4 @@ public class GenericIntegrationTest {
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of external file", response.body);
     }
-
 }

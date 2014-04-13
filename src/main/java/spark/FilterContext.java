@@ -7,7 +7,7 @@ public class FilterContext extends Context {
     public final Filter filter;
 
     public FilterContext (Filter aFilter, Request aRequest, Response aResponse) {
-        super (aRequest, aResponse);
+        super (aFilter, aRequest, aResponse);
         filter = aFilter;
     }
 

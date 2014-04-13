@@ -19,7 +19,6 @@ package spark;
 
 import spark.utils.SparkUtils;
 
-
 /**
  * A Filter is built up by a path (for url-matching) and the implementation of the 'handle' method.
  * When a request is made, if present, the matching routes 'handle' method is invoked.
@@ -29,9 +28,6 @@ import spark.utils.SparkUtils;
 public abstract class Filter extends AbstractRoute {
 
 	protected static final String DEFAUT_CONTENT_TYPE = "text/html";
-
-    private String path;
-    private String acceptType;
 
     /**
      * Constructs a filter that matches on everything
@@ -46,12 +42,11 @@ public abstract class Filter extends AbstractRoute {
      * @param path The filter path which is used for matching. (e.g. /hello, users/:name)
      */
     protected Filter(String path) {
-        this(path, DEFAUT_CONTENT_TYPE);
+        super(path, DEFAUT_CONTENT_TYPE);
     }
 
     protected Filter(String path, String acceptType) {
-    	this.path = path;
-    	this.acceptType = acceptType;
+        super(path, acceptType);
     }
 
     /**
@@ -61,16 +56,4 @@ public abstract class Filter extends AbstractRoute {
      * @param response The response object providing functionality for modifying the response
      */
     public abstract void handle(Request request, Response response);
-
-    public String getAcceptType() {
-		return acceptType;
-	}
-
-    /**
-     * Returns this route's path
-     */
-    String getPath() {
-        return this.path;
-    }
-
 }

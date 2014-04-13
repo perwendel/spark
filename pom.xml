@@ -77,17 +77,17 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.6</version>
+            <version>1.7.7</version>
             <scope>provided</scope>
         </dependency>
 
         <!-- TEMPLATE DEPENDENCIES -->
-        <!--<dependency>-->
-            <!--<groupId>org.fusesource.scalate</groupId>-->
-            <!--<artifactId>scalate-core_2.10</artifactId>-->
-            <!--<version>1.6.1</version>-->
-            <!--<optional>true</optional>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.fusesource.scalate</groupId>
+            <artifactId>scalate-core_2.10</artifactId>
+            <version>1.6.1</version>
+            <optional>true</optional>
+        </dependency>
 
         <!-- JETTY DEPENDENCIES -->
         <dependency>

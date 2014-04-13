@@ -7,11 +7,14 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * Created by jam on 6/04/14.
  */
-public class Context {
+abstract class Context {
+    public final AbstractRoute abstractRoute;
     public final Request request;
     public final Response response;
 
-    public Context (final Request aRequest, final Response aResponse) {
+    public Context (
+        final AbstractRoute aAbstractRoute, final Request aRequest, final Response aResponse) {
+        abstractRoute = aAbstractRoute;
         request = aRequest;
         response = aResponse;
     }
@@ -192,19 +195,19 @@ public class Context {
         return request.body ();
     }
 
-    public static void halt () {
-        AbstractRoute.halt ();
+    public void halt () {
+        abstractRoute.halt ();
     }
 
-    public static void halt (int status) {
-        AbstractRoute.halt (status);
+    public void halt (int status) {
+        abstractRoute.halt (status);
     }
 
-    public static void halt (String body) {
-        AbstractRoute.halt (body);
+    public void halt (String body) {
+        abstractRoute.halt (body);
     }
 
-    public static void halt (int status, String body) {
-        AbstractRoute.halt (status, body);
+    public void halt (int status, String body) {
+        abstractRoute.halt (status, body);
     }
 }
