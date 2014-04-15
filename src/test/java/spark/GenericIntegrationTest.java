@@ -10,6 +10,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import spark.examples.exception.BaseException;
+import spark.examples.exception.SubclassOfBaseException;
 import spark.exception.ExceptionHandler;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
@@ -121,34 +123,41 @@ public class GenericIntegrationTest {
         });
 
         post(new Route("/poster") {
-            @Override
-            public Object handle(Request request, Response response) {
-                String body = request.body();
-                response.status(201); // created
-                return "Body was: " + body;
-            }
+	        @Override
+	        public Object handle(Request request, Response response) {
+		        String body = request.body();
+		        response.status(201); // created
+		        return "Body was: " + body;
+	        }
         });
 
         patch(new Route("/patcher") {
-            @Override
-            public Object handle(Request request, Response response) {
-                String body = request.body();
-                response.status(200);
-                return "Body was: " + body;
-            }
+	        @Override
+	        public Object handle(Request request, Response response) {
+		        String body = request.body();
+		        response.status(200);
+		        return "Body was: " + body;
+	        }
         });
 
         after(new Filter("/hi") {
-            @Override
-            public void handle(Request request, Response response) {
-                response.header("after", "foobar");
-            }
+	        @Override
+	        public void handle(Request request, Response response) {
+		        response.header("after", "foobar");
+	        }
         });
 
         get(new Route("/throwexception") {
+	        @Override
+	        public Object handle(Request request, Response response) {
+		        throw new UnsupportedOperationException();
+	        }
+        });
+
+        get(new Route("/throwsubclassofbaseexception") {
             @Override
             public Object handle(Request request, Response response) {
-                throw new UnsupportedOperationException();
+                throw new SubclassOfBaseException();
             }
         });
 
@@ -158,6 +167,13 @@ public class GenericIntegrationTest {
                 response.body("Exception handled");
             }
         });
+
+	    exception(new ExceptionHandler(BaseException.class) {
+		    @Override
+		    public void handle(Exception exception, Request request, Response response) {
+			    response.body("Exception handled");
+		    }
+	    });
 
         try {
             Thread.sleep(500);
@@ -384,4 +400,9 @@ public class GenericIntegrationTest {
         Assert.assertEquals("Exception handled", response.body);
     }
 
+	@Test
+	public void testInheritanceExceptionMapper() throws Exception {
+		UrlResponse response = testUtil.doMethod("GET", "/throwsubclassofbaseexception", null);
+		Assert.assertEquals("Exception handled", response.body);
+	}
 }
