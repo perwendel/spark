@@ -1,15 +1,21 @@
-package spark.examples.templateview;
+package spark.examples;
+
+import static spark.Spark.get;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import spark.ModelAndView;
+import spark.Request;
+import spark.Response;
 import spark.TemplateViewRoute;
 
-import java.io.IOException;
-import java.io.StringWriter;
-
-public abstract class FreeMarkerTemplateView extends TemplateViewRoute {
+abstract class FreeMarkerTemplateView extends TemplateViewRoute {
 
     private Configuration configuration;
 
@@ -46,4 +52,23 @@ public abstract class FreeMarkerTemplateView extends TemplateViewRoute {
         return retVal;
     }
 
+}
+
+public class FreeMarkerExample {
+
+    public static void main(String args[]) {
+
+        get(new FreeMarkerTemplateView ("/hello") {
+            @Override
+            public ModelAndView handle(Request request, Response response) {
+                Map<String, Object> attributes = new HashMap<>();
+                attributes.put("message", "Hello World");
+
+                // The hello.ftl file is located in directory:
+                // src/test/resources/spark/examples/templateview/freemarker
+                return new ModelAndView(attributes, "hello.ftl");
+            }
+        });
+
+    }
 }

@@ -29,7 +29,7 @@ import spark.*;
 public class HelloWorld {
 
    public static void main(String[] args) {
-      
+
       get(new Route("/hello") {
          @Override
          public Object handle(Request request, Response response) {
@@ -48,7 +48,7 @@ More documentation is on the way!
 
 Check out and try the examples in the source code.
 You can also check out the javadoc. After getting the source from
-github run: 
+github run:
 
     mvn javadoc:javadoc
 
@@ -70,25 +70,25 @@ import spark.Route;
  * A simple example just showing some basic functionality
  */
 public class SimpleExample {
-    
+
     public static void main(String[] args) {
-        
+
         //  setPort(5678); <- Uncomment this if you wan't spark to listen on a port different than 4567.
-        
+
         get(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello World!";
             }
         });
-        
+
         post(new Route("/hello") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Hello World: " + request.body();
             }
         });
-        
+
         get(new Route("/private") {
             @Override
             public Object handle(Request request, Response response) {
@@ -96,14 +96,14 @@ public class SimpleExample {
                 return "Go Away!!!";
             }
         });
-        
+
         get(new Route("/users/:name") {
             @Override
             public Object handle(Request request, Response response) {
                 return "Selected user: " + request.params(":name");
             }
         });
-        
+
         get(new Route("/news/:section") {
             @Override
             public Object handle(Request request, Response response) {
@@ -111,7 +111,7 @@ public class SimpleExample {
                 return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><news>" + request.params("section") + "</news>";
             }
         });
-        
+
         get(new Route("/protected") {
             @Override
             public Object handle(Request request, Response response) {
@@ -119,7 +119,7 @@ public class SimpleExample {
                 return null;
             }
         });
-        
+
         get(new Route("/redirect") {
             @Override
             public Object handle(Request request, Response response) {
@@ -127,14 +127,14 @@ public class SimpleExample {
                 return null;
             }
         });
-        
+
         get(new Route("/") {
             @Override
             public Object handle(Request request, Response response) {
                 return "root";
             }
         });
-        
+
     }
 }
 ```
@@ -163,9 +163,9 @@ public class Books {
      * Map holding the books
      */
     private static Map<String, Book> books = new HashMap<String, Book>();
-    
+
     public static void main(String[] args) {
-        
+
         // Creates a new book resource, will return the ID to the created resource
         // author and title are sent as query parameters e.g. /books?author=Foo&title=Bar
         post(new Route("/books") {
@@ -175,15 +175,15 @@ public class Books {
                 String author = request.queryParams("author");
                 String title = request.queryParams("title");
                 Book book = new Book(author, title);
-                
+
                 int id = random.nextInt(Integer.MAX_VALUE);
                 books.put(String.valueOf(id), book);
-                
+
                 response.status(201); // 201 Created
                 return id;
             }
         });
-        
+
         // Gets the book resource for the provided id
         get(new Route("/books/:id") {
             @Override
@@ -197,7 +197,7 @@ public class Books {
                 }
             }
         });
-        
+
         // Updates the book resource for the provided id with new information
         // author and title are sent as query parameters e.g. /books/<id>?author=Foo&title=Bar
         put(new Route("/books/:id") {
@@ -221,8 +221,8 @@ public class Books {
                 }
             }
         });
-        
-        // Deletes the book resource for the provided id 
+
+        // Deletes the book resource for the provided id
         delete(new Route("/books/:id") {
             @Override
             public Object handle(Request request, Response response) {
@@ -236,21 +236,21 @@ public class Books {
                 }
             }
         });
-        
+
         // Gets all available book resources (id's)
         get(new Route("/books") {
             @Override
             public Object handle(Request request, Response response) {
                 String ids = "";
                 for (String id : books.keySet()) {
-                   ids += id + " "; 
+                   ids += id + " ";
                 }
                 return ids;
             }
         });
-        
+
     }
-    
+
 }
 ```
 
@@ -272,15 +272,15 @@ import spark.Route;
 /**
  * Example showing a very simple (and stupid) autentication filter that is
  * executed before all other resources.
- * 
- * When requesting the resource with e.g. 
+ *
+ * When requesting the resource with e.g.
  *     http://localhost:4567/hello?user=some&password=guy
  * the filter will stop the execution and the client will get a 401 UNAUTHORIZED with the content 'You are not welcome here'
- * 
- * When requesting the resource with e.g. 
+ *
+ * When requesting the resource with e.g.
  *     http://localhost:4567/hello?user=foo&password=bar
  * the filter will accept the request and the request will continue to the /hello route.
- * 
+ *
  * Note: There is a second "before filter" that adds a header to the response
  * Note: There is also an "after filter" that adds a header to the response
  */
@@ -305,7 +305,7 @@ public class FilterExample {
             }
          }
       });
-      
+
       before(new Filter("/hello") {
           @Override
           public void handle(Request request, Response response) {
@@ -326,7 +326,7 @@ public class FilterExample {
              response.header("spark", "added by after-filter");
           }
        });
-      
+
    }
 }
 ```
@@ -356,7 +356,7 @@ public class FilterExampleAttributes {
                 return null;
             }
         });
-        
+
         after(new Filter("/hi") {
             @Override
             public void handle(Request request, Response response) {
@@ -365,7 +365,7 @@ public class FilterExampleAttributes {
                 }
             }
         });
-        
+
         after(new Filter("/hi") {
             @Override
             public void handle(Request request, Response response) {
@@ -374,11 +374,11 @@ public class FilterExampleAttributes {
             }
         });
     }
-    
+
     private static String asXml(String name, Object value) {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + name +">" + value + "</"+ name + ">";
     }
-    
+
 }
 ```
 
@@ -431,11 +431,11 @@ public class JsonAcceptTypeExample {
 
 	}
 
-} 
+}
 ```
 ---------------------------------
 
-Example showing how to render a view from a template. Note that we are using ModelAndView class for setting the object and name/location of template. 
+Example showing how to render a view from a template. Note that we are using ModelAndView class for setting the object and name/location of template.
 
 First of all we define a class which handles and renders output depending on template engine used. In this case FreeMarker.
 
@@ -443,12 +443,12 @@ First of all we define a class which handles and renders output depending on tem
 public abstract class FreeMarkerTemplateView extends TemplateViewRoute {
 
 	private Configuration configuration;
-	
+
 	protected FreeMarkerTemplateView(String path) {
 		super(path);
 		this.configuration = createFreemarkerConfiguration();
 	}
-	
+
 	protected FreeMarkerTemplateView(String path, String acceptType) {
 		super(path, acceptType);
 		this.configuration = createFreemarkerConfiguration();
@@ -458,12 +458,12 @@ public abstract class FreeMarkerTemplateView extends TemplateViewRoute {
 	public String render(ModelAndView modelAndView) {
 		try {
 			StringWriter stringWriter = new StringWriter();
-			
+
 			Template template = configuration.getTemplate(modelAndView.getViewName());
 			template.process(modelAndView.getModel(), stringWriter);
-			
+
 			return stringWriter.toString();
-			
+
 		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
 		} catch (TemplateException e) {
@@ -476,7 +476,7 @@ public abstract class FreeMarkerTemplateView extends TemplateViewRoute {
         retVal.setClassForTemplateLoading(FreeMarkerTemplateView.class, "freemarker");
         return retVal;
     }
-	
+
 }
 ```
 
@@ -511,7 +511,7 @@ First of all we define the transformer class, in this case a class which transfo
 public abstract class JsonTransformer extends ResponseTransformerRoute {
 
 	private Gson gson = new Gson();
-	
+
 	protected JsonTransformer(String path) {
 		super(path);
 	}
@@ -519,7 +519,7 @@ public abstract class JsonTransformer extends ResponseTransformerRoute {
 	protected JsonTransformer(String path, String acceptType) {
 		super(path, acceptType);
 	}
-	
+
 	@Override
 	public String render(Model model) {
 		return gson.toJson(model.getModel());
@@ -543,6 +543,12 @@ public class TransformerExample {
 		});
 
 	}
-	
+
 }
 ```
+
+TODO
+
+* Update documentation with Java 8 usage
+* Refactor code
+* Add reports to Maven builds
