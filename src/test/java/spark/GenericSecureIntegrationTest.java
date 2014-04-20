@@ -1,5 +1,6 @@
 package spark;
 
+import static java.lang.Thread.sleep;
 import static spark.SparkJ8.*;
 import static spark.util.SparkTestUtil.getKeyStoreLocation;
 import static spark.util.SparkTestUtil.getKeystorePassword;
@@ -19,7 +20,7 @@ public class GenericSecureIntegrationTest {
         stop ();
     }
 
-    @BeforeClass public static void setup () {
+    @BeforeClass public static void setup () throws InterruptedException {
         testUtil = new SparkTestUtil (4567);
 
         // note that the keystore stuff is retrieved from SparkTestUtil which
@@ -30,12 +31,7 @@ public class GenericSecureIntegrationTest {
         setupJ7 ();
         setupJ8 ();
 
-        try {
-            Thread.sleep (500);
-        }
-        catch (Exception e) {
-            e.printStackTrace ();
-        }
+        sleep (500);
     }
 
     private static void setupJ7 () {

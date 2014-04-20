@@ -68,7 +68,7 @@
         <maven.compiler.optimize>false</maven.compiler.optimize>
         <maven.compiler.debug>true</maven.compiler.debug>
 
-        <forkCount>1</forkCount>
+        <forkCount>0</forkCount>
         <reuseForks>false</reuseForks>
     </properties>
 

@@ -1,5 +1,6 @@
 package spark;
 
+import static java.lang.Thread.sleep;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -20,6 +21,7 @@ import spark.examples.Books;
 import spark.examples.BooksJ8;
 import spark.utils.IOUtils;
 
+@Ignore
 public class BooksIntegrationTest {
 
     private static class UrlResponse {
@@ -84,16 +86,11 @@ public class BooksIntegrationTest {
         after (it -> it.header ("FOO", "BAR"));
     }
 
-    @BeforeClass public static void setup () {
+    @BeforeClass public static void setup () throws InterruptedException {
         setupJ7();
         setupJ8 ();
 
-        try {
-            Thread.sleep (500);
-        }
-        catch (Exception e) {
-            e.printStackTrace ();
-        }
+        sleep (500);
     }
 
     private void createBook (String pref) throws FileNotFoundException {

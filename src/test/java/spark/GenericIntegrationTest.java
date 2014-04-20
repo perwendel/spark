@@ -1,5 +1,6 @@
 package spark;
 
+import static java.lang.Thread.sleep;
 import static spark.SparkJ8.*;
 
 import java.io.File;
@@ -25,7 +26,7 @@ public class GenericIntegrationTest {
         }
     }
 
-    @BeforeClass public static void setup () throws IOException {
+    @BeforeClass public static void setup () throws IOException, InterruptedException {
         testUtil = new SparkTestUtil (4567);
         tmpExternalFile =
             new File (System.getProperty ("java.io.tmpdir"), "externalFile.html");
@@ -41,12 +42,7 @@ public class GenericIntegrationTest {
         setupJ7 ();
         setupJ8 ();
 
-        try {
-            Thread.sleep (500);
-        }
-        catch (Exception e) {
-            e.printStackTrace ();
-        }
+        sleep (500);
     }
 
     private static void setupJ7 () {

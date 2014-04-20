@@ -37,8 +37,7 @@ public class RequestTest {
 
     RouteMatch match =  new RouteMatch(HttpMethod.get,null,"/hi","/hi", "text/html");
 
-    @Test
-    public void queryParamShouldReturnsParametersFromQueryString() {
+    @Test public void queryParamShouldReturnsParametersFromQueryString() {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("name",new String[] {"Federico"});
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
@@ -47,8 +46,7 @@ public class RequestTest {
         assertEquals("Invalid name in query string","Federico",name);
     }
 
-    @Test
-    public void queryParamShouldBeParsedAsHashMap() {
+    @Test public void queryParamShouldBeParsedAsHashMap() {
         Map<String,String[]> params = new HashMap<String,String[]>();
         params.put("user[name]",new String[] {"Federico"});
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
@@ -57,11 +55,9 @@ public class RequestTest {
         assertEquals("Invalid name in query string","Federico",name);
     }
 
-    @Test
-    public void shouldBeAbleToGetTheServletPath() {
+    @Test public void shouldBeAbleToGetTheServletPath() {
         HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<String, String[]>()) {
-            @Override
-            public String getServletPath() {
+            @Override public String getServletPath() {
                 return THE_SERVLET_PATH;
             }
         };
@@ -72,8 +68,7 @@ public class RequestTest {
     @Test
     public void shouldBeAbleToGetTheContextPath() {
         HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<String, String[]>()) {
-            @Override
-            public String getContextPath() {
+            @Override public String getContextPath() {
                 return THE_CONTEXT_PATH;
             }
         };
@@ -88,73 +83,59 @@ public class RequestTest {
             this.params = params;
         }
 
-        @Override
-        public String getAuthType() {
+        @Override public String getAuthType() {
             return null;
         }
 
-        @Override
-        public String getContextPath() {
+        @Override public String getContextPath() {
             return null;
         }
 
-        @Override
-        public Cookie[] getCookies() {
+        @Override public Cookie[] getCookies() {
             return null;
         }
 
-        @Override
-        public long getDateHeader(String name) {
+        @Override public long getDateHeader(String name) {
             return 0;
         }
 
-        @Override
-        public String getHeader(String name) {
+        @Override public String getHeader(String name) {
             return null;
         }
 
-        @Override
-        public Enumeration<String> getHeaderNames() {
+        @Override public Enumeration<String> getHeaderNames() {
             return null;
         }
 
-        @Override
-        public Enumeration<String> getHeaders(String name) {
+        @Override public Enumeration<String> getHeaders(String name) {
             return null;
         }
 
-        @Override
-        public int getIntHeader(String name) {
+        @Override public int getIntHeader(String name) {
             return 0;
         }
 
-        @Override
-        public String getMethod() {
+        @Override public String getMethod() {
             return null;
         }
 
-        @Override
-        public String getPathInfo() {
+        @Override public String getPathInfo() {
             return null;
         }
 
-        @Override
-        public String getPathTranslated() {
+        @Override public String getPathTranslated() {
             return null;
         }
 
-        @Override
-        public String getQueryString() {
+        @Override public String getQueryString() {
             return null;
         }
 
-        @Override
-        public String getRemoteUser() {
+        @Override public String getRemoteUser() {
             return null;
         }
 
-        @Override
-        public String getRequestURI() {
+        @Override public String getRequestURI() {
             return null;
         }
 
