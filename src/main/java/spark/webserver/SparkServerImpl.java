@@ -44,7 +44,7 @@ class SparkServerImpl implements SparkServer {
 
     public SparkServerImpl(Handler handler) {
         this.handler = handler;
-        System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
+        System.setProperty("org.mortbay.log.class", "spark.webserver.JettyLogger");
     }
 
     @Override
@@ -91,8 +91,8 @@ class SparkServerImpl implements SparkServer {
 
 
         try {
-            System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
-            System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
+            System.out.println("=== " + NAME + " has ignited ..."); // NOSONAR
+            System.out.println(">>> Listening on " + host + ":" + port); // NOSONAR
 
             server.start();
             server.join();

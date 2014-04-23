@@ -16,13 +16,11 @@ import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import spark.examples.Books;
 import spark.examples.BooksJ8;
 import spark.utils.IOUtils;
 
-@Ignore
 public class BooksIntegrationTest {
 
     private static class UrlResponse {
@@ -61,8 +59,9 @@ public class BooksIntegrationTest {
         }
     }
 
-    @AfterClass public static void tearDown () {
+    @AfterClass public static void tearDown () throws InterruptedException {
         stop ();
+        sleep (500);
     }
 
     private static void setupJ7 () {
@@ -90,7 +89,6 @@ public class BooksIntegrationTest {
     @BeforeClass public static void setup () throws InterruptedException {
         setupJ7();
         setupJ8 ();
-
         sleep (500);
     }
 
