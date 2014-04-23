@@ -3,6 +3,7 @@ package spark;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static spark.SparkJ8.post;
+import static spark.SparkJ8.stop;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -24,7 +25,7 @@ public class CookiesIntegrationTest {
     private static final String DEFAULT_HOST_URL = "http://localhost:4567";
     private HttpClient httpClient = new DefaultHttpClient ();
 
-    @BeforeClass public static void initRoutes () throws InterruptedException {
+    public static void initRoutesJ7 () throws InterruptedException {
         post (new Route ("/assertNoCookies") {
             @Override public Object handle (Request request, Response response) {
                 if (!request.cookies ().isEmpty ())
@@ -63,7 +64,7 @@ public class CookiesIntegrationTest {
         });
     }
 
-    @BeforeClass public static void initRoutesJ8 () throws InterruptedException {
+    public static void initRoutesJ8 () throws InterruptedException {
         post ("/j8/assertNoCookies", it -> {
             if (!it.cookies ().isEmpty ()) {
                 it.halt (500);
@@ -93,8 +94,13 @@ public class CookiesIntegrationTest {
         });
     }
 
+    @BeforeClass public static void initRoutes () throws InterruptedException {
+        initRoutes ();
+        initRoutesJ8 ();
+    }
+
     @AfterClass public static void stopServer () {
-        Spark.stop ();
+        stop ();
     }
 
     @Test public void emptyCookies () {
