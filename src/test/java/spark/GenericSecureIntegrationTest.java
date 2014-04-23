@@ -95,9 +95,7 @@ public class GenericSecureIntegrationTest {
 
         get ("/j8/:param", it -> "echo: " + it.params (":param"));
 
-        get ("/j8/paramwithmaj/:paramWithMaj", it ->
-                "echo: " + it.params (":paramWithMaj")
-        );
+        get ("/j8/paramwithmaj/:paramWithMaj", it -> "echo: " + it.params (":paramWithMaj"));
 
         get ("/j8/", it -> "Hello Root!");
 
@@ -117,124 +115,68 @@ public class GenericSecureIntegrationTest {
     }
 
     @Test public void testGetHi () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/hi", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("Hello World!", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/hi");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("Hello World!", response.body);
     }
 
     @Test public void testHiHead () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("HEAD", "/hi", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("HEAD", "/hi");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("", response.body);
     }
 
     @Test public void testGetHiAfterFilter () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/hi", null);
-            Assert.assertTrue (response.headers.get ("after").contains ("foobar"));
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/hi");
+        Assert.assertTrue (response.headers.get ("after").contains ("foobar"));
     }
 
     @Test public void testGetRoot () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("Hello Root!", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("Hello Root!", response.body);
     }
 
     @Test public void testEchoParam1 () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/shizzy", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("echo: shizzy", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/shizzy");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("echo: shizzy", response.body);
     }
 
     @Test public void testEchoParam2 () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/gunit", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("echo: gunit", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/gunit");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("echo: gunit", response.body);
     }
 
     @Test public void testEchoParamWithMaj () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/paramwithmaj/plop", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("echo: plop", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/paramwithmaj/plop");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("echo: plop", response.body);
     }
 
     @Test public void testUnauthorized () throws Exception {
-        try {
-            UrlResponse urlResponse =
-                testUtil.doMethodSecure ("GET", "/protected/resource", null);
-            Assert.assertTrue (urlResponse.status == 401);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse urlResponse = testUtil.doMethodSecure ("GET", "/protected/resource");
+        Assert.assertTrue (urlResponse.status == 401);
     }
 
     @Test public void testNotFound () throws Exception {
-        try {
-            UrlResponse urlResponse = testUtil.doMethodSecure ("GET", "/no/resource", null);
-            Assert.assertTrue (urlResponse.status == 404);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse urlResponse = testUtil.doMethodSecure ("GET", "/no/resource");
+        Assert.assertTrue (urlResponse.status == 404);
     }
 
     @Test public void testPost () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("POST", "/poster", "Fo shizzy");
-            System.out.println (response.body);
-            Assert.assertEquals (201, response.status);
-            Assert.assertTrue (response.body.contains ("Fo shizzy"));
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("POST", "/poster", "Fo shizzy");
+        System.out.println (response.body);
+        Assert.assertEquals (201, response.status);
+        Assert.assertTrue (response.body.contains ("Fo shizzy"));
     }
 
     @Test public void testPatch () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("PATCH", "/patcher", "Fo shizzy");
-            System.out.println (response.body);
-            Assert.assertEquals (200, response.status);
-            Assert.assertTrue (response.body.contains ("Fo shizzy"));
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("PATCH", "/patcher", "Fo shizzy");
+        System.out.println (response.body);
+        Assert.assertEquals (200, response.status);
+        Assert.assertTrue (response.body.contains ("Fo shizzy"));
     }
 
     /*
@@ -242,125 +184,67 @@ public class GenericSecureIntegrationTest {
      */
 
     @Test public void testGetHiJ8 () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/hi", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("Hello World!", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/hi");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("Hello World!", response.body);
     }
 
     @Test public void testHiHeadJ8 () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("HEAD", "/j8/hi", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("HEAD", "/j8/hi");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("", response.body);
     }
 
     @Test public void testGetHiAfterFilterJ8 () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/hi", null);
-            Assert.assertTrue (response.headers.get ("after").contains ("foobar"));
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/hi");
+        Assert.assertTrue (response.headers.get ("after").contains ("foobar"));
     }
 
     @Test public void testGetRootJ8 () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("Hello Root!", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("Hello Root!", response.body);
     }
 
     @Test public void testEchoParam1J8 () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/shizzy", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("echo: shizzy", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/shizzy");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("echo: shizzy", response.body);
     }
 
     @Test public void testEchoParam2J8 () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/gunit", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("echo: gunit", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/gunit");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("echo: gunit", response.body);
     }
 
     @Test public void testEchoParamWithMajJ8 () {
-        try {
-            UrlResponse response =
-                testUtil.doMethodSecure ("GET", "/j8/paramwithmaj/plop", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("echo: plop", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("GET", "/j8/paramwithmaj/plop");
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("echo: plop", response.body);
     }
 
     @Test public void testUnauthorizedJ8 () throws Exception {
-        try {
-            UrlResponse urlResponse =
-                testUtil.doMethodSecure ("GET", "/j8/protected/resource", null);
-            Assert.assertTrue (urlResponse.status == 401);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse urlResponse = testUtil.doMethodSecure ("GET", "/j8/protected/resource");
+        Assert.assertTrue (urlResponse.status == 401);
     }
 
     @Test public void testNotFoundJ8 () throws Exception {
-        try {
-            UrlResponse urlResponse = testUtil.doMethodSecure ("GET", "/j8/no/resource", null);
-            Assert.assertTrue (urlResponse.status == 404);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse urlResponse = testUtil.doMethodSecure ("GET", "/j8/no/resource");
+        Assert.assertTrue (urlResponse.status == 404);
     }
 
     @Test public void testPostJ8 () {
-        try {
-            UrlResponse response = testUtil.doMethodSecure ("POST", "/j8/poster", "Fo shizzy");
-            System.out.println (response.body);
-            Assert.assertEquals (201, response.status);
-            Assert.assertTrue (response.body.contains ("Fo shizzy"));
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("POST", "/j8/poster", "Fo shizzy");
+        System.out.println (response.body);
+        Assert.assertEquals (201, response.status);
+        Assert.assertTrue (response.body.contains ("Fo shizzy"));
     }
 
     @Test public void testPatchJ8 () {
-        try {
-            UrlResponse response =
-                testUtil.doMethodSecure ("PATCH", "/j8/patcher", "Fo shizzy");
-            System.out.println (response.body);
-            Assert.assertEquals (200, response.status);
-            Assert.assertTrue (response.body.contains ("Fo shizzy"));
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethodSecure ("PATCH", "/j8/patcher", "Fo shizzy");
+        System.out.println (response.body);
+        Assert.assertEquals (200, response.status);
+        Assert.assertTrue (response.body.contains ("Fo shizzy"));
     }
 }

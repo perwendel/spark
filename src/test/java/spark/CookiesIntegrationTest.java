@@ -1,18 +1,14 @@
 package spark;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static java.lang.Thread.sleep;
 import static spark.SparkJ8.post;
 import static spark.SparkJ8.stop;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import spark.util.SparkTestUtil;
 
 /**
  * System tests for the Cookies support.
@@ -22,8 +18,7 @@ import org.junit.Test;
 @Ignore
 public class CookiesIntegrationTest {
 
-    private static final String DEFAULT_HOST_URL = "http://localhost:4567";
-    private HttpClient httpClient = new DefaultHttpClient ();
+    static SparkTestUtil testUtil;
 
     public static void initRoutesJ7 () throws InterruptedException {
         post (new Route ("/assertNoCookies") {
@@ -95,8 +90,12 @@ public class CookiesIntegrationTest {
     }
 
     @BeforeClass public static void initRoutes () throws InterruptedException {
-        initRoutes ();
+        testUtil = new SparkTestUtil (4567);
+
+        initRoutesJ7 ();
         initRoutesJ8 ();
+
+        sleep (500);
     }
 
     @AfterClass public static void stopServer () {
@@ -142,17 +141,12 @@ public class CookiesIntegrationTest {
         httpPost ("/j8/assertNoCookies");
     }
 
-    private void httpPost (String relativePath) {
-        HttpPost request = new HttpPost (DEFAULT_HOST_URL + relativePath);
+    private void httpPost (String aPath) {
         try {
-            HttpResponse response = httpClient.execute (request);
-            assertEquals (200, response.getStatusLine ().getStatusCode ());
+            testUtil.doMethod ("GET", "http://localhost:4567" + aPath);
         }
-        catch (Exception ex) {
-            fail (ex.toString ());
-        }
-        finally {
-            request.releaseConnection ();
+        catch (Exception e) {
+            throw new RuntimeException (e);
         }
     }
 }

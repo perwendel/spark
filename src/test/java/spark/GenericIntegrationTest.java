@@ -167,15 +167,10 @@ public class GenericIntegrationTest {
     }
 
     @Test public void filters_should_be_accept_type_aware () throws Exception {
-        try {
-            UrlResponse response =
-                testUtil.doMethod ("GET", "/protected/resource", null, "application/json");
-            Assert.assertTrue (response.status == 401);
-            Assert.assertEquals ("{\"message\": \"Go Away!\"}", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response =
+            testUtil.doMethod ("GET", "/protected/resource", null, "application/json");
+        Assert.assertTrue (response.status == 401);
+        Assert.assertEquals ("{\"message\": \"Go Away!\"}", response.body);
     }
 
     @Test
@@ -195,26 +190,16 @@ public class GenericIntegrationTest {
 
     @Test
     public void testGetHi () {
-        try {
-            UrlResponse response = testUtil.doMethod ("GET", "/hi", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("Hello World!", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethod ("GET", "/hi", null);
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("Hello World!", response.body);
     }
 
     @Test
     public void testHiHead () {
-        try {
-            UrlResponse response = testUtil.doMethod ("HEAD", "/hi", null);
-            Assert.assertEquals (200, response.status);
-            Assert.assertEquals ("", response.body);
-        }
-        catch (Throwable e) {
-            throw new RuntimeException (e);
-        }
+        UrlResponse response = testUtil.doMethod ("HEAD", "/hi", null);
+        Assert.assertEquals (200, response.status);
+        Assert.assertEquals ("", response.body);
     }
 
     @Test
@@ -510,7 +495,7 @@ public class GenericIntegrationTest {
 
     private static void registerEchoRouteJ8 (final String routePart) {
         get ("/j8/tworoutes/" + routePart + "/:param", it ->
-            routePart + " route: " + it.params (":param")
+                routePart + " route: " + it.params (":param")
         );
     }
 

@@ -112,8 +112,6 @@ public class BooksIntegrationTest {
         assertTrue (res.body.trim ().length () > 0);
         assertTrue (res.body.contains (id));
         assertEquals (200, res.status);
-
-        System.out.println ("BODY: " + res.body.trim ());
     }
 
     private void getBook (String pref) throws FileNotFoundException {
