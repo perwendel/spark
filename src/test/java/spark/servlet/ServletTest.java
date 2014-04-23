@@ -1,17 +1,16 @@
 package spark.servlet;
 
+import static spark.Spark.stop;
 import static spark.util.SparkTestUtil.sleep;
-import junit.framework.Assert;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import spark.Spark;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -25,12 +24,12 @@ public class ServletTest {
 
     @AfterClass
     public static void tearDown() {
-        Spark.stop();
+        stop ();
     }
 
     @BeforeClass
     public static void setup() {
-        testUtil = new SparkTestUtil(PORT);
+        testUtil = new SparkTestUtil (PORT);
 
         final Server server = new Server();
         ServerConnector connector = new ServerConnector(server);

@@ -1,141 +1,130 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-        <parent>
-          <groupId>org.sonatype.oss</groupId>
-          <artifactId>oss-parent</artifactId>
-          <version>7</version>
-        </parent>
-	<groupId>com.sparkjava</groupId>
-	<artifactId>spark-core</artifactId>
-	<packaging>jar</packaging>
-	<version>1.1.2</version>
-	<name>Spark</name>
-        <description>A Sinatra inspired java web framework</description>
-	<url>http://www.sparkjava.com</url>
-        <licenses>
-          <license>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
+
+    <groupId>com.sparkjava</groupId>
+    <artifactId>spark-core</artifactId>
+    <version>1.1.2</version>
+
+    <name>Spark</name>
+    <description>A Sinatra inspired java web framework</description>
+    <url>http://www.sparkjava.com</url>
+
+    <licenses>
+        <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-          </license>
-        </licenses>
-        <scm>
-          <connection>scm:git:git@github.com:perwendel/spark.git</connection>
-          <developerConnection>scm:git:git@github.com:perwendel/spark.git</developerConnection>
-          <url>scm:git:git@github.com:perwendel/spark.git</url>
-        </scm>
-        <developers>
-        </developers>
+        </license>
+    </licenses>
 
-	<properties>
-		<jetty.version>9.0.2.v20130417</jetty.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <scm>
+        <connection>scm:git:git@github.com:perwendel/spark.git</connection>
+        <developerConnection>scm:git:git@github.com:perwendel/spark.git</developerConnection>
+        <url>scm:git:git@github.com:perwendel/spark.git</url>
+    </scm>
 
-	<dependencies>
-		<!-- LOGGING DEPENDENCIES -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.2</version>
-		</dependency>
+    <profiles>
+        <profile>
+            <id>optimize</id>
+            <properties>
+                <maven.compiler.optimize>true</maven.compiler.optimize>
+                <maven.compiler.debug>false</maven.compiler.debug>
+            </properties>
+        </profile>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.2</version>
+        <profile>
+            <id>jdk8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.source>1.8</maven.compiler.source>
+                <maven.compiler.target>1.8</maven.compiler.target>
+            </properties>
+        </profile>
+    </profiles>
+
+    <developers>
+        <!-- TODO Add all developers (pull request's authors) -->
+    </developers>
+
+    <properties>
+        <!--jetty.version>9.1.2.v20140210</jetty.version-->
+        <jetty.version>9.0.2.v20130417</jetty.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.optimize>false</maven.compiler.optimize>
+        <maven.compiler.debug>true</maven.compiler.debug>
+
+        <forkCount>0</forkCount>
+        <reuseForks>false</reuseForks>
+    </properties>
+
+    <dependencies>
+        <!-- LOGGING DEPENDENCIES -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.7</version>
             <scope>provided</scope>
-		</dependency>
+        </dependency>
 
-		<!-- JETTY DEPENDENCIES -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>${jetty.version}</version>
-		</dependency>
+        <!-- TEMPLATE DEPENDENCIES -->
+        <dependency>
+            <groupId>org.fusesource.scalate</groupId>
+            <artifactId>scalate-core_2.10</artifactId>
+            <version>1.6.1</version>
+            <optional>true</optional>
+        </dependency>
 
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>${jetty.version}</version>
-		</dependency>
+        <!-- JETTY DEPENDENCIES -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
 
-		<!-- JUNIT DEPENDENCY FOR TESTING -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.2.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-            <version>2.3.19</version>
+        <!-- TESTING DEPENDENCIES -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-    		<groupId>com.google.code.gson</groupId>
-    		<artifactId>gson</artifactId>
-    		<version>2.2.4</version>
-    		<scope>test</scope>
-		</dependency>
-	</dependencies>
-
-	<build>
-
-		<resources>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**</include>
-				</includes>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
-
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-					<optimize>true</optimize>
-					<debug>true</debug>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.14</version>
-				<configuration>
-					<forkCount>1</forkCount>
-					<reuseForks>false</reuseForks>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.8</version>
-				<configuration>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.20</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

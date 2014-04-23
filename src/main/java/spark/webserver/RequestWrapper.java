@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,10 +16,9 @@
  */
 package spark.webserver;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import spark.QueryParamsMap;
 import spark.Request;
@@ -57,7 +56,7 @@ final class RequestWrapper extends Request {
     public String servletPath() {
         return delegate.servletPath();
     }
-    
+
     @Override
     public String contextPath() {
         return delegate.contextPath();
@@ -92,12 +91,12 @@ final class RequestWrapper extends Request {
     public Map<String, String> params() {
         return delegate.params();
     }
-    
+
     @Override
     public String params(String param) {
         return delegate.params(param);
     }
-    
+
     @Override
     public String[] splat() {
         return delegate.splat();
