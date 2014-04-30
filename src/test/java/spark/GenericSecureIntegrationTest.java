@@ -20,7 +20,6 @@ public class GenericSecureIntegrationTest {
 
     @AfterClass
     public static void tearDown() {
-        Spark.clearRoutes();
         Spark.stop();
     }
 

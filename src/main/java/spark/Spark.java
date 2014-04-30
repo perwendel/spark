@@ -258,24 +258,22 @@ public final class Spark {
         addFilter(HttpMethod.after.name(), filter);
     }
 
+    /**
+     * Stops the Spark server and clears all routes
+     */
+    public static synchronized void stop() {
+        if (server != null) {
+            routeMatcher.clearRoutes();
+            server.stop();
+        }
+        initialized = false;
+    }
+    
     static synchronized void runFromServlet() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             initialized = true;
         }
-    }
-
-    // WARNING, used for jUnit testing only!!!
-    static synchronized void clearRoutes() {
-        routeMatcher.clearRoutes();
-    }
-
-    // Used for jUnit testing!
-    static synchronized void stop() {
-        if (server != null) {
-            server.stop();
-        }
-        initialized = false;
     }
 
     private static void addRoute(String httpMethod, Route route) {

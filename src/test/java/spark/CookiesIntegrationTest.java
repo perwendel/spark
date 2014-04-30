@@ -72,7 +72,6 @@ public class CookiesIntegrationTest {
     
     @AfterClass
     public static void stopServer() {
-        Spark.clearRoutes();
         Spark.stop();
     }
     

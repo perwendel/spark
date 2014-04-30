@@ -11,7 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import spark.TAccess;
+import spark.Spark;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -25,8 +25,7 @@ public class ServletTest {
 
     @AfterClass
     public static void tearDown() {
-        TAccess.clearRoutes();
-        TAccess.stop();
+        Spark.stop();
     }
 
     @BeforeClass
