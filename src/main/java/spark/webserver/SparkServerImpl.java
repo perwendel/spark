@@ -17,7 +17,6 @@
 package spark.webserver;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -173,17 +172,11 @@ class SparkServerImpl implements SparkServer {
      */
     private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
         if (externalFilesRoute != null) {
-            try {
-                ResourceHandler externalResourceHandler = new ResourceHandler();
-                Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
-                externalResourceHandler.setBaseResource(externalStaticResources);
-                externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
-                handlersInList.add(externalResourceHandler);
-            } catch (IOException exception) {
-                exception.printStackTrace(); // NOSONAR
-                System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
-            }
+            ResourceHandler externalResourceHandler = new ResourceHandler();
+            Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
+            externalResourceHandler.setBaseResource(externalStaticResources);
+            externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
+            handlersInList.add(externalResourceHandler);
         }
     }
-    
 }
