@@ -266,7 +266,7 @@ public final class Spark {
      * @param handler The handler
      */
     public static synchronized void exception(ExceptionHandler handler) {
-        ExceptionMapper.getInstance().map(handler.getExceptionClass(), handler);
+        ExceptionMapper.getInstance().map(handler.exceptionClass(), handler);
     }
 
     /**
