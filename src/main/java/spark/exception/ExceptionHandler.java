@@ -18,7 +18,7 @@ package spark.exception;
 
 import spark.*;
 
-public abstract class ExceptionHandler extends Filter {
+public abstract class ExceptionHandler {
     /**
      * Holds the type of exception that this filter will handle
      */
@@ -38,27 +38,17 @@ public abstract class ExceptionHandler extends Filter {
      *
      * @return Type of exception
      */
-    public Class<? extends Exception> getExceptionClass() {
-        return exceptionClass;
+    public Class<? extends Exception> exceptionClass() {
+        return this.exceptionClass;
     }
 
     /**
-     * Returns type of exception that this filter will handle
+     * Sets the type of exception that this filter will handle
      *
      * @param exceptionClass Type of exception
      */
-    public void setExceptionClass(Class<? extends Exception> exceptionClass) {
+    public void exceptionClass(Class<? extends Exception> exceptionClass) {
         this.exceptionClass = exceptionClass;
-    }
-
-    /**
-     * This method is hidden for the ExceptionHandler filter
-     *
-     * @param request  The request object providing information about the HTTP request
-     * @param response The response object providing functionality for modifying the response
-     */
-    @Override
-    public final void handle(Request request, Response response) {
     }
 
     /**
