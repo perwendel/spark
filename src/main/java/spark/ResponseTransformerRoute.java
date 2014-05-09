@@ -45,6 +45,6 @@ public abstract class ResponseTransformerRoute extends Route {
      * 
      * @return message that it is sent to client.
      */
-    public abstract String render(Object model);
+    public abstract String render(Object model) throws Exception;
 
 }

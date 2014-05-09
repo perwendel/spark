@@ -28,6 +28,10 @@ class ResponseWrapper extends Response {
         this.delegate = delegate;
     }
 
+    Response getDelegate() {
+        return delegate;
+    }
+
     @Override
     public void status(int statusCode) {
         delegate.status(statusCode);

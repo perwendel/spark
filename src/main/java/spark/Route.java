@@ -59,7 +59,7 @@ public abstract class Route extends AbstractRoute {
      * 
      * @return The content to be set in the response
      */
-    public abstract Object handle(Request request, Response response);
+    public abstract Object handle(Request request, Response response) throws Exception;
 
     /**
      * This method should render the given element into something that can be send through Response element.
@@ -69,7 +69,7 @@ public abstract class Route extends AbstractRoute {
      * @return body content.
      */
     //TODO change String return type to Stream. It should be done in another issue.
-    public String render(Object element) {
+    public String render(Object element) throws Exception {
     	if(element != null) {
     		return element.toString();    		
     	} else {
