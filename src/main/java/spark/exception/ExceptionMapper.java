@@ -67,33 +67,33 @@ public class ExceptionMapper {
      * @return Associated handler
      */
     public ExceptionHandler getHandler(Class<? extends Exception> exceptionClass) {
-	    // If the exception map does not contain the provided exception class, it might
-	    // still be that a superclass of the exception class is.
-	    if (!this.exceptionMap.containsKey(exceptionClass)) {
+        // If the exception map does not contain the provided exception class, it might
+        // still be that a superclass of the exception class is.
+        if (!this.exceptionMap.containsKey(exceptionClass)) {
 
-		    Class superclass = exceptionClass.getSuperclass();
-		    do {
-			    // Is the superclass mapped?
-			    if (this.exceptionMap.containsKey(superclass)) {
-				    // Use the handler for the mapped superclass, and cache handler
-				    // for this exception class
-				    ExceptionHandler handler = this.exceptionMap.get(superclass);
-				    this.exceptionMap.put(exceptionClass, handler);
-				    return handler;
-			    }
+            Class superclass = exceptionClass.getSuperclass();
+            do {
+                // Is the superclass mapped?
+                if (this.exceptionMap.containsKey(superclass)) {
+                    // Use the handler for the mapped superclass, and cache handler
+                    // for this exception class
+                    ExceptionHandler handler = this.exceptionMap.get(superclass);
+                    this.exceptionMap.put(exceptionClass, handler);
+                    return handler;
+                }
 
-			    // Iteratively walk through the exception class's superclasses
-			    superclass = superclass.getSuperclass();
-		    } while (superclass != null);
+                // Iteratively walk through the exception class's superclasses
+                superclass = superclass.getSuperclass();
+            } while (superclass != null);
 
-		    // No handler found either for the superclasses of the exception class
-		    // We cache the null value to prevent future
-		    this.exceptionMap.put(exceptionClass, null);
-		    return null;
-	    }
+            // No handler found either for the superclasses of the exception class
+            // We cache the null value to prevent future
+            this.exceptionMap.put(exceptionClass, null);
+            return null;
+        }
 
-	    // Direct map
-	    return this.exceptionMap.get(exceptionClass);
+        // Direct map
+        return this.exceptionMap.get(exceptionClass);
     }
 
     /**
