@@ -18,6 +18,7 @@ package spark.webserver;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -33,11 +34,12 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
  * Spark server implementation
- * 
+ *
  * @author Per Wendel
  */
 class SparkServerImpl implements SparkServer {
 
+    private static final int SPARK_DEFAULT_PORT = 4567;
     private static final String NAME = "Spark";
     private Handler handler;
     private Server server;
@@ -52,9 +54,19 @@ class SparkServerImpl implements SparkServer {
             String keystorePassword, String truststoreFile,
             String truststorePassword, String staticFilesFolder,
             String externalFilesFolder) {
-        
+
+        if (port == 0) {
+            try (ServerSocket s = new ServerSocket(0)) {
+                port = s.getLocalPort();
+            } catch (IOException e) {
+                System.err.println(
+                        "Could not get first available port (port set to 0), using default: " + SPARK_DEFAULT_PORT);
+                port = SPARK_DEFAULT_PORT;
+            }
+        }
+
         ServerConnector connector;
-        
+
         if (keystoreFile == null) {
             connector = createSocketConnector();
         } else {
@@ -77,10 +89,10 @@ class SparkServerImpl implements SparkServer {
         } else {
             List<Handler> handlersInList = new ArrayList<Handler>();
             handlersInList.add(handler);
-            
+
             // Set static file location
             setStaticFileLocationIfPresent(staticFilesFolder, handlersInList);
-            
+
             // Set external static file location
             setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
 
@@ -88,8 +100,8 @@ class SparkServerImpl implements SparkServer {
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
-        
-        
+
+
         try {
             System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
             System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
@@ -119,12 +131,12 @@ class SparkServerImpl implements SparkServer {
     /**
      * Creates a secure jetty socket connector. Keystore required, truststore
      * optional. If truststore not specifed keystore will be reused.
-     * 
+     *
      * @param keystoreFile The keystore file location as string
      * @param keystorePassword the password for the keystore
      * @param truststoreFile the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword the trust store password
-     * 
+     *
      * @return a secure socket connector
      */
     private static ServerConnector createSecureSocketConnector(String keystoreFile,
@@ -148,7 +160,7 @@ class SparkServerImpl implements SparkServer {
 
     /**
      * Creates an ordinary, non-secured Jetty server connector.
-     * 
+     *
      * @return - a server connector
      */
     private static ServerConnector createSocketConnector() {
@@ -167,7 +179,7 @@ class SparkServerImpl implements SparkServer {
             handlersInList.add(resourceHandler);
         }
     }
-    
+
     /**
      * Sets external static file location if present
      */
@@ -185,5 +197,5 @@ class SparkServerImpl implements SparkServer {
             }
         }
     }
-    
+
 }

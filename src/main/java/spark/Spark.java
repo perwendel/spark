@@ -91,6 +91,7 @@ public final class Spark {
     /**
      * Set the port that Spark should listen on. If not called the default port
      * is 4567. This has to be called before any route mapping is done.
+     * If provided port = 0 then the an arbitrary available port will be used.
      *
      * @param port The port number
      */
