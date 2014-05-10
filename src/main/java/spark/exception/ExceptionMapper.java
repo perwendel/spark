@@ -71,7 +71,7 @@ public class ExceptionMapper {
         // still be that a superclass of the exception class is.
         if (!this.exceptionMap.containsKey(exceptionClass)) {
 
-            Class superclass = exceptionClass.getSuperclass();
+            Class<?> superclass = exceptionClass.getSuperclass();
             do {
                 // Is the superclass mapped?
                 if (this.exceptionMap.containsKey(superclass)) {
