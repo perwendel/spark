@@ -18,27 +18,18 @@ package spark.examples.filter;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
-import spark.Filter;
-import spark.Request;
-import spark.Response;
 
 
 public class DummyFilter {
 
     public static void main(String[] args) {
-        before(new Filter() {
-            @Override
-            public void handle(Request request, Response response) {
-                System.out.println("Before");
-            }
+        before((request, response) -> {
+            System.out.println("Before");
         });
-        
-        after(new Filter() {
-            @Override
-            public void handle(Request request, Response response) {
-                System.out.println("After");
-            }
+
+        after((request, response) -> {
+            System.out.println("After");
         });
     }
-    
+
 }

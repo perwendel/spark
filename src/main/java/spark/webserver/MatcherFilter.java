@@ -38,7 +38,7 @@ import spark.exception.ExceptionHandler;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
-import spark.route.RouteMatcher;
+import spark.route.SimpleRouteMatcher;
 
 /**
  * Filter for matching of filters and routes.
@@ -49,7 +49,7 @@ public class MatcherFilter implements Filter {
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
-	private RouteMatcher routeMatcher;
+	private SimpleRouteMatcher routeMatcher;
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
@@ -63,7 +63,7 @@ public class MatcherFilter implements Filter {
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(RouteMatcher routeMatcher, boolean isServletContext, boolean hasOtherHandlers) {
+    public MatcherFilter(SimpleRouteMatcher routeMatcher, boolean isServletContext, boolean hasOtherHandlers) {
         this.routeMatcher = routeMatcher;
         this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
@@ -92,6 +92,8 @@ public class MatcherFilter implements Filter {
         try {
             // BEFORE filters
             List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri, acceptType);
+
+            System.out.println("matchSet.size() = " + matchSet.size());
 
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
@@ -139,7 +141,10 @@ public class MatcherFilter implements Filter {
                         res.setDelegate(response);
 
                         Object element = route.handle(req, res);
-                        result = route.render(element);
+
+                        // TODO: How to solve this?
+                        // result = route.render(element);
+                        result = element.toString(); // TODO: Remove later when render fixed
                     }
                     if (result != null) {
                         bodyContent = result;

@@ -1,10 +1,11 @@
 package spark;
 
-import static spark.Spark.after;
+import static spark.Spark.*;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.patch;
 import static spark.Spark.post;
+
 import junit.framework.Assert;
 
 import org.junit.AfterClass;
@@ -31,71 +32,42 @@ public class GenericSecureIntegrationTest {
         // respects JVM params for keystore, password
         // but offers a default included store if not.
         Spark.setSecure(SparkTestUtil.getKeyStoreLocation(),
-                SparkTestUtil.getKeystorePassword(), null, null);
+                        SparkTestUtil.getKeystorePassword(), null, null);
 
-        before(new Filter("/protected/*") {
-
-            @Override
-            public void handle(Request request, Response response) {
-                halt(401, "Go Away!");
-            }
+        before("/protected/*", (request, response) -> {
+            halt(401, "Go Away!");
         });
 
-        get(new Route("/hi") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                return "Hello World!";
-            }
+        get("/hi", (request, response) -> {
+            return "Hello World!";
         });
 
-        get(new Route("/:param") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                return "echo: " + request.params(":param");
-            }
+        get("/:param", (request, response) -> {
+            return "echo: " + request.params(":param");
         });
 
-        get(new Route("/paramwithmaj/:paramWithMaj") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                return "echo: " + request.params(":paramWithMaj");
-            }
+        get("/paramwithmaj/:paramWithMaj", (request, response) -> {
+            return "echo: " + request.params(":paramWithMaj");
         });
 
-        get(new Route("/") {
-
-            @Override
-            public Object handle(Request request, Response response) {
-                return "Hello Root!";
-            }
+        get("/", (request, response) -> {
+            return "Hello Root!";
         });
 
-        post(new Route("/poster") {
-            @Override
-            public Object handle(Request request, Response response) {
-                String body = request.body();
-                response.status(201); // created
-                return "Body was: " + body;
-            }
+        post("/poster", (request, response) -> {
+            String body = request.body();
+            response.status(201); // created
+            return "Body was: " + body;
         });
 
-        patch(new Route("/patcher") {
-            @Override
-            public Object handle(Request request, Response response) {
-                String body = request.body();
-                response.status(200);
-                return "Body was: " + body;
-            }
+        patch("/patcher", (request, response) -> {
+            String body = request.body();
+            response.status(200);
+            return "Body was: " + body;
         });
 
-        after(new Filter("/hi") {
-            @Override
-            public void handle(Request request, Response response) {
-                response.header("after", "foobar");
-            }
+        after("/hi", (request, response) -> {
+            response.header("after", "foobar");
         });
 
         try {
@@ -108,7 +80,7 @@ public class GenericSecureIntegrationTest {
     public void testGetHi() {
         try {
             SparkTestUtil.UrlResponse response = testUtil.doMethodSecure("GET",
-                    "/hi", null);
+                                                                         "/hi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("Hello World!", response.body);
         } catch (Throwable e) {
@@ -152,7 +124,7 @@ public class GenericSecureIntegrationTest {
     public void testEchoParam1() {
         try {
             UrlResponse response = testUtil.doMethodSecure("GET", "/shizzy",
-                    null);
+                                                           null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: shizzy", response.body);
         } catch (Throwable e) {
@@ -164,7 +136,7 @@ public class GenericSecureIntegrationTest {
     public void testEchoParam2() {
         try {
             UrlResponse response = testUtil.doMethodSecure("GET", "/gunit",
-                    null);
+                                                           null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: gunit", response.body);
         } catch (Throwable e) {
@@ -176,7 +148,7 @@ public class GenericSecureIntegrationTest {
     public void testEchoParamWithMaj() {
         try {
             UrlResponse response = testUtil.doMethodSecure("GET",
-                    "/paramwithmaj/plop", null);
+                                                           "/paramwithmaj/plop", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: plop", response.body);
         } catch (Throwable e) {
@@ -208,7 +180,7 @@ public class GenericSecureIntegrationTest {
     public void testPost() {
         try {
             UrlResponse response = testUtil.doMethodSecure("POST", "/poster",
-                    "Fo shizzy");
+                                                           "Fo shizzy");
             System.out.println(response.body);
             Assert.assertEquals(201, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
@@ -221,7 +193,7 @@ public class GenericSecureIntegrationTest {
     public void testPatch() {
         try {
             UrlResponse response = testUtil.doMethodSecure("PATCH", "/patcher",
-                    "Fo shizzy");
+                                                           "Fo shizzy");
             System.out.println(response.body);
             Assert.assertEquals(200, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
