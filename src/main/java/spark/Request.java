@@ -30,7 +30,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.utils.IOUtils;
 import spark.utils.SparkUtils;
@@ -50,7 +49,6 @@ public class Request {
     private List<String> splat;
     private QueryParamsMap queryMap;
     
-    private HttpMethod httpMethod;
     private HttpServletRequest servletRequest;
 
     private Session session = null;
@@ -91,7 +89,6 @@ public class Request {
      * Constructor
      */
     Request(RouteMatch match, HttpServletRequest request) {
-        this.httpMethod = match.getHttpMethod();
         this.servletRequest = request;
         
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
