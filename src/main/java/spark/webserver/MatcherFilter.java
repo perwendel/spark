@@ -34,7 +34,7 @@ import spark.Request;
 import spark.RequestResponseFactory;
 import spark.Response;
 import spark.Route;
-import spark.exception.ExceptionHandler;
+import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
@@ -188,7 +188,7 @@ public class MatcherFilter implements Filter {
                 bodyContent = "";
             }
         } catch (Exception e) {
-            ExceptionHandler handler = ExceptionMapper.getInstance().getHandler(e);
+            ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(e);
             if(handler != null) {
                 handler.handle(e, req, res);
                 String bodyAfterFilter = Access.getBody(res.getDelegate());

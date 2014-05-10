@@ -16,7 +16,7 @@
  */
 package spark;
 
-import spark.exception.ExceptionHandler;
+import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
 import spark.utils.SparkUtils;
@@ -284,8 +284,16 @@ public final class Spark extends SparkBase {
      *
      * @param handler The handler
      */
-    public static synchronized void exception(ExceptionHandler handler) {
-        ExceptionMapper.getInstance().map(handler.exceptionClass(), handler);
+    public static synchronized void exception(Class<? extends Exception> exceptionClass, ExceptionHandler handler) {
+        // wrap
+        ExceptionHandlerImpl wrapper = new ExceptionHandlerImpl(exceptionClass) {
+            @Override
+            public void handle(Exception exception, Request request, Response response) {
+                handler.handle(exception, request, response);
+            }
+        };
+
+        ExceptionMapper.getInstance().map(exceptionClass, wrapper);
     }
 
     // HALT METHODS

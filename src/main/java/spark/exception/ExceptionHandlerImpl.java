@@ -18,7 +18,7 @@ package spark.exception;
 
 import spark.*;
 
-public abstract class ExceptionHandler {
+public abstract class ExceptionHandlerImpl {
     /**
      * Holds the type of exception that this filter will handle
      */
@@ -29,7 +29,7 @@ public abstract class ExceptionHandler {
      *
      * @param exceptionClass Type of exception
      */
-    public ExceptionHandler(Class<? extends Exception> exceptionClass) {
+    public ExceptionHandlerImpl(Class<? extends Exception> exceptionClass) {
         this.exceptionClass = exceptionClass;
     }
 

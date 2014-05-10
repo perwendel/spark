@@ -12,14 +12,17 @@ import junit.framework.Assert;
 import spark.examples.exception.BaseException;
 import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
-import spark.exception.ExceptionHandler;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
-import static spark.Spark.*;
+import static spark.Spark.after;
+import static spark.Spark.before;
 import static spark.Spark.exception;
 import static spark.Spark.externalStaticFileLocation;
+import static spark.Spark.get;
 import static spark.Spark.halt;
+import static spark.Spark.patch;
+import static spark.Spark.post;
 import static spark.Spark.staticFileLocation;
 
 public class GenericIntegrationTest {
@@ -127,26 +130,17 @@ public class GenericIntegrationTest {
             throw new NotFoundException();
         });
 
-        exception(new ExceptionHandler(UnsupportedOperationException.class) {
-            @Override
-            public void handle(Exception exception, Request request, Response response) {
-                response.body("Exception handled");
-            }
+        exception(UnsupportedOperationException.class, (exception, request, response) -> {
+            response.body("Exception handled");
         });
 
-        exception(new ExceptionHandler(BaseException.class) {
-            @Override
-            public void handle(Exception exception, Request request, Response response) {
-                response.body("Exception handled");
-            }
+        exception(BaseException.class, (exception, request, response) -> {
+            response.body("Exception handled");
         });
 
-        exception(new ExceptionHandler(NotFoundException.class) {
-            @Override
-            public void handle(Exception exception, Request request, Response response) {
-                response.status(404);
-                response.body(NOT_FOUND_BRO);
-            }
+        exception(NotFoundException.class, (exception, request, response) -> {
+            response.status(404);
+            response.body(NOT_FOUND_BRO);
         });
 
         try {

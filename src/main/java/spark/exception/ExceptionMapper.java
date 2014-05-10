@@ -40,7 +40,7 @@ public class ExceptionMapper {
     /**
      * Holds a map of Exception classes and associated handlers
      */
-    private Map<Class<? extends Exception>, ExceptionHandler> exceptionMap;
+    private Map<Class<? extends Exception>, ExceptionHandlerImpl> exceptionMap;
 
     /**
      * Class constructor
@@ -56,7 +56,7 @@ public class ExceptionMapper {
      * @param exceptionClass Type of exception
      * @param handler        Handler to map to exception
      */
-    public void map(Class<? extends Exception> exceptionClass, ExceptionHandler handler) {
+    public void map(Class<? extends Exception> exceptionClass, ExceptionHandlerImpl handler) {
         this.exceptionMap.put(exceptionClass, handler);
     }
 
@@ -66,7 +66,7 @@ public class ExceptionMapper {
      * @param exceptionClass Type of exception
      * @return Associated handler
      */
-    public ExceptionHandler getHandler(Class<? extends Exception> exceptionClass) {
+    public ExceptionHandlerImpl getHandler(Class<? extends Exception> exceptionClass) {
         // If the exception map does not contain the provided exception class, it might
         // still be that a superclass of the exception class is.
         if (!this.exceptionMap.containsKey(exceptionClass)) {
@@ -77,7 +77,7 @@ public class ExceptionMapper {
                 if (this.exceptionMap.containsKey(superclass)) {
                     // Use the handler for the mapped superclass, and cache handler
                     // for this exception class
-                    ExceptionHandler handler = this.exceptionMap.get(superclass);
+                    ExceptionHandlerImpl handler = this.exceptionMap.get(superclass);
                     this.exceptionMap.put(exceptionClass, handler);
                     return handler;
                 }
@@ -102,7 +102,7 @@ public class ExceptionMapper {
      * @param exception Exception that occurred
      * @return Associated handler
      */
-    public ExceptionHandler getHandler(Exception exception) {
+    public ExceptionHandlerImpl getHandler(Exception exception) {
         return this.getHandler(exception.getClass());
     }
 }
