@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import spark.examples.exception.BaseException;
+import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
 import spark.exception.ExceptionHandler;
 import spark.util.SparkTestUtil;
@@ -19,7 +20,9 @@ import spark.util.SparkTestUtil.UrlResponse;
 import static spark.Spark.*;
 
 public class GenericIntegrationTest {
-
+    
+    private static final String NOT_FOUND_BRO = "Not found bro";
+    
     static SparkTestUtil testUtil;
     static File tmpExternalFile;
 
@@ -160,6 +163,12 @@ public class GenericIntegrationTest {
                 throw new SubclassOfBaseException();
             }
         });
+        
+        get(new Route("/thrownotfound") {
+            public Object handle(Request request, Response response) {
+                throw new NotFoundException();
+            }
+        });
 
         exception(new ExceptionHandler(UnsupportedOperationException.class) {
             @Override
@@ -174,6 +183,14 @@ public class GenericIntegrationTest {
                 response.body("Exception handled");
             }
 	    });
+	    
+	    exception(new ExceptionHandler(NotFoundException.class) {
+            @Override
+            public void handle(Exception exception, Request request, Response response) {
+                response.status(404);
+                response.body(NOT_FOUND_BRO);
+            }
+        });
 
         try {
             Thread.sleep(500);
@@ -404,5 +421,13 @@ public class GenericIntegrationTest {
     public void testInheritanceExceptionMapper() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/throwsubclassofbaseexception", null);
         Assert.assertEquals("Exception handled", response.body);
+    }
+    
+    @Test
+    public void testNotFoundExceptionMapper() throws Exception {
+//        thrownotfound
+        UrlResponse response = testUtil.doMethod("GET", "/thrownotfound", null);
+        Assert.assertEquals(NOT_FOUND_BRO, response.body);
+        Assert.assertEquals(404, response.status);
     }
 }
