@@ -73,7 +73,8 @@ public abstract class SparkBase {
      * @param truststorePassword the trust store password
      */
     public static synchronized void setSecure(String keystoreFile,
-                                              String keystorePassword, String truststoreFile,
+                                              String keystorePassword,
+                                              String truststoreFile,
                                               String truststorePassword) {
         if (initialized) {
             throwBeforeRouteMappingException();
@@ -144,10 +145,25 @@ public abstract class SparkBase {
         }
     }
 
+    /**
+     * Wraps the route in RouteImpl
+     *
+     * @param path  the path
+     * @param route the route
+     * @return the wrapped route
+     */
     protected static RouteImpl wrap(final String path, final Route route) {
         return wrap(path, DEFAULT_ACCEPT_TYPE, route);
     }
 
+    /**
+     * Wraps the route in RouteImpl
+     *
+     * @param path       the path
+     * @param acceptType the accept type
+     * @param route      the route
+     * @return the wrapped route
+     */
     protected static RouteImpl wrap(final String path, String acceptType, final Route route) {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
@@ -161,10 +177,25 @@ public abstract class SparkBase {
         return impl;
     }
 
+    /**
+     * Wraps the filter in FilterImpl
+     *
+     * @param path the path
+     * @param filter the filter
+     * @return the wrapped route
+     */
     protected static FilterImpl wrap(final String path, final Filter filter) {
         return wrap(path, DEFAULT_ACCEPT_TYPE, filter);
     }
 
+    /**
+     * Wraps the filter in FilterImpl
+     *
+     * @param path the path
+     * @param acceptType the accept type
+     * @param filter the filter
+     * @return the wrapped route
+     */
     protected static FilterImpl wrap(final String path, String acceptType, final Filter filter) {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
