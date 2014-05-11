@@ -164,9 +164,10 @@ public class SimpleRouteMatcher {
         return matchSet;
     }
 
-    private RouteEntry findTargetWithGivenAcceptType(List<RouteEntry> routeMatchs, String acceptType) {
-        if (acceptType != null && routeMatchs.size() > 0) {
-            Map<String, RouteEntry> acceptedMimeTypes = getAcceptedMimeTypes(routeMatchs);
+    // TODO: I believe this feature has impacted performance. Optimization?
+    private RouteEntry findTargetWithGivenAcceptType(List<RouteEntry> routeMatches, String acceptType) {
+        if (acceptType != null && routeMatches.size() > 0) {
+            Map<String, RouteEntry> acceptedMimeTypes = getAcceptedMimeTypes(routeMatches);
             String bestMatch = MimeParse.bestMatch(acceptedMimeTypes.keySet(), acceptType);
 
             if (routeWithGivenAcceptType(bestMatch)) {
@@ -175,8 +176,8 @@ public class SimpleRouteMatcher {
                 return null;
             }
         } else {
-            if (routeMatchs.size() > 0) {
-                return routeMatchs.get(0);
+            if (routeMatches.size() > 0) {
+                return routeMatches.get(0);
             }
         }
 
