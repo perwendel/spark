@@ -29,11 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import spark.Access;
+import spark.FilterImpl;
 import spark.HaltException;
 import spark.Request;
 import spark.RequestResponseFactory;
 import spark.Response;
-import spark.Route;
+import spark.RouteImpl;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
@@ -49,17 +50,19 @@ public class MatcherFilter implements Filter {
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
-	private SimpleRouteMatcher routeMatcher;
+    private SimpleRouteMatcher routeMatcher;
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
-    /** The logger. */
+    /**
+     * The logger.
+     */
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MatcherFilter.class);
 
     /**
      * Constructor
      *
-     * @param routeMatcher The route matcher
+     * @param routeMatcher     The route matcher
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
@@ -74,8 +77,7 @@ public class MatcherFilter implements Filter {
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, // NOSONAR
-                    FilterChain chain) throws IOException, ServletException { // NOSONAR
-        long t0 = System.currentTimeMillis();
+                         FilterChain chain) throws IOException, ServletException { // NOSONAR
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest; // NOSONAR
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
@@ -93,15 +95,13 @@ public class MatcherFilter implements Filter {
             // BEFORE filters
             List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri, acceptType);
 
-            System.out.println("matchSet.size() = " + matchSet.size());
-
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
-                if (filterTarget instanceof spark.Filter) {
+                if (filterTarget instanceof FilterImpl) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
                     Response response = RequestResponseFactory.create(httpResponse);
 
-                    spark.Filter filter = (spark.Filter) filterTarget;
+                    FilterImpl filter = (FilterImpl) filterTarget;
 
                     req.setDelegate(request);
                     res.setDelegate(response);
@@ -126,14 +126,15 @@ public class MatcherFilter implements Filter {
                 target = match.getTarget();
             } else if (httpMethod == HttpMethod.head && bodyContent == null) {
                 // See if get is mapped to provide default head mapping
-                bodyContent = routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri, acceptType) != null ? "" : null;
+                bodyContent =
+                        routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri, acceptType) != null ? "" : null;
             }
 
             if (target != null) {
                 try {
                     String result = null;
-                    if (target instanceof Route) {
-                        Route route = ((Route) target);
+                    if (target instanceof RouteImpl) {
+                        RouteImpl route = ((RouteImpl) target);
                         Request request = RequestResponseFactory.create(match, httpRequest);
                         Response response = RequestResponseFactory.create(httpResponse);
 
@@ -142,15 +143,12 @@ public class MatcherFilter implements Filter {
 
                         Object element = route.handle(req, res);
 
-                        // TODO: How to solve this?
-                        // result = route.render(element);
-                        result = element.toString(); // TODO: Remove later when render fixed
+                        result = route.render(element);
+                        // result = element.toString(); // TODO: Remove later when render fixed
                     }
                     if (result != null) {
                         bodyContent = result;
                     }
-                    long t1 = System.currentTimeMillis() - t0;
-                    LOG.debug("Time for request: " + t1);
                 } catch (HaltException hEx) { // NOSONAR
                     throw hEx; // NOSONAR
                 }
@@ -161,14 +159,14 @@ public class MatcherFilter implements Filter {
 
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
-                if (filterTarget instanceof spark.Filter) {
+                if (filterTarget instanceof FilterImpl) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
                     Response response = RequestResponseFactory.create(httpResponse);
 
                     req.setDelegate(request);
                     res.setDelegate(response);
 
-                    spark.Filter filter = (spark.Filter) filterTarget;
+                    FilterImpl filter = (FilterImpl) filterTarget;
                     filter.handle(req, res);
 
                     String bodyAfterFilter = Access.getBody(response);
@@ -189,7 +187,7 @@ public class MatcherFilter implements Filter {
             }
         } catch (Exception e) {
             ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(e);
-            if(handler != null) {
+            if (handler != null) {
                 handler.handle(e, req, res);
                 String bodyAfterFilter = Access.getBody(res.getDelegate());
                 if (bodyAfterFilter != null) {

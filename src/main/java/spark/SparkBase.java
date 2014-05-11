@@ -144,38 +144,51 @@ public abstract class SparkBase {
         }
     }
 
-    /**
-     * Adds Route with default accept type
-     */
-    protected static void addRoute(String httpMethod, String path, Route route) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + path + "'", DEFAULT_ACCEPT_TYPE, route);
+    protected static RouteImpl wrap(final String path, final Route route) {
+        return wrap(path, DEFAULT_ACCEPT_TYPE, route);
     }
 
-    /**
-     * Adds Filter with default accept type
-     */
-    protected static void addFilter(String httpMethod, String path, Filter filter) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + path + "'", DEFAULT_ACCEPT_TYPE, filter);
+    protected static RouteImpl wrap(final String path, String acceptType, final Route route) {
+        if (acceptType == null) {
+            acceptType = DEFAULT_ACCEPT_TYPE;
+        }
+        RouteImpl impl = new RouteImpl(path, acceptType) {
+            @Override
+            public Object handle(Request request, Response response) throws Exception {
+                return route.handle(request, response);
+            }
+        };
+        return impl;
     }
 
-    /**
-     * Adds Route
-     */
-    protected static void addRoute(String httpMethod, String path, String acceptType, Route route) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + path + "'", acceptType, route);
+    protected static FilterImpl wrap(final String path, final Filter filter) {
+        return wrap(path, DEFAULT_ACCEPT_TYPE, filter);
     }
 
-    /**
-     * Adds Filter
-     */
-    protected static void addFilter(String httpMethod, String path, String acceptType, Filter filter) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + path + "'", acceptType, filter);
+    protected static FilterImpl wrap(final String path, String acceptType, final Filter filter) {
+        if (acceptType == null) {
+            acceptType = DEFAULT_ACCEPT_TYPE;
+        }
+        FilterImpl impl = new FilterImpl(path, acceptType) {
+            @Override
+            public void handle(Request request, Response response) throws Exception {
+                filter.handle(request, response);
+            }
+        };
+        return impl;
     }
 
+    protected static void addRoute(String httpMethod, RouteImpl route) {
+        init();
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
+                                                   + "'", route.getAcceptType(), route);
+    }
+
+    protected static void addFilter(String httpMethod, FilterImpl filter) {
+        init();
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
+                                                   + "'", filter.getAcceptType(), filter);
+    }
 
     private static synchronized void init() {
         if (!initialized) {
