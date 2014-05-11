@@ -34,7 +34,7 @@ public abstract class RouteImpl {
     /**
      * Constructor
      *
-     * @param path The route path which is used for matching. (e.g. /hello, users/:name) 
+     * @param path The route path which is used for matching. (e.g. /hello, users/:name)
      */
     protected RouteImpl(String path) {
         this(path, DEFAULT_ACCEPT_TYPE);
@@ -43,7 +43,7 @@ public abstract class RouteImpl {
     /**
      * Constructor
      *
-     * @param path The route path which is used for matching. (e.g. /hello, users/:name) 
+     * @param path       The route path which is used for matching. (e.g. /hello, users/:name)
      * @param acceptType The accept type which is used for matching.
      */
     protected RouteImpl(String path, String acceptType) {
@@ -54,9 +54,8 @@ public abstract class RouteImpl {
     /**
      * Invoked when a request is made on this route's corresponding path e.g. '/hello'
      *
-     * @param request The request object providing information about the HTTP request
+     * @param request  The request object providing information about the HTTP request
      * @param response The response object providing functionality for modifying the response
-     *
      * @return The content to be set in the response
      */
     public abstract Object handle(Request request, Response response) throws Exception;
@@ -70,7 +69,7 @@ public abstract class RouteImpl {
      */
     //TODO change String return type to Stream. It should be done in another issue.
     public String render(Object element) throws Exception {
-        if(element != null) {
+        if (element != null) {
             return element.toString();
         } else {
             return null;

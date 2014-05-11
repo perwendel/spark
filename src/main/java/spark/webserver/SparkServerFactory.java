@@ -19,19 +19,18 @@ package spark.webserver;
 import spark.route.RouteMatcherFactory;
 
 /**
- * 
- *
  * @author Per Wendel
  */
 public final class SparkServerFactory {
 
-    private SparkServerFactory() {}
-    
+    private SparkServerFactory() {
+    }
+
     public static SparkServer create(boolean hasMultipleHandler) {
         MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
         matcherFilter.init(null);
         JettyHandler handler = new JettyHandler(matcherFilter);
         return new SparkServerImpl(handler);
     }
-    
+
 }

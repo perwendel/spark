@@ -279,8 +279,6 @@ public final class Spark extends SparkBase {
     // END route/filter mapping with accept type
     //////////////////////////////////////////////////
 
-
-
     //////////////////////////////////////////////////
     // BEGIN Template View Routes
     //////////////////////////////////////////////////
@@ -296,6 +294,32 @@ public final class Spark extends SparkBase {
 
     //////////////////////////////////////////////////
     // END Template View Routes
+    //////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////
+    // BEGIN Response Transforming Routes
+    //////////////////////////////////////////////////
+
+    /**
+     * Map the route for HTTP GET requests
+     *
+     * @param route The route
+     */
+    public static synchronized void get(String path, String acceptType, Route route, ResponseTransformer transformer) {
+        addRoute(HttpMethod.get.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+    }
+
+    /**
+     * Map the route for HTTP GET requests
+     *
+     * @param route The route
+     */
+    public static synchronized void get(String path, Route route, ResponseTransformer transformer) {
+        addRoute(HttpMethod.get.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+    }
+
+    //////////////////////////////////////////////////
+    // END Response Transforming Routes
     //////////////////////////////////////////////////
 
     /**

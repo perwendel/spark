@@ -1,24 +1,16 @@
-//package spark.examples.transformer;
-//
-//import spark.ResponseTransformerRoute;
-//
-//import com.google.gson.Gson;
-//
-//public abstract class JsonTransformer extends ResponseTransformerRoute {
-//
-//	private Gson gson = new Gson();
-//
-//	protected JsonTransformer(String path) {
-//		super(path);
-//	}
-//
-//	protected JsonTransformer(String path, String acceptType) {
-//		super(path, acceptType);
-//	}
-//
-//	@Override
-//	public String render(Object model) {
-//		return gson.toJson(model);
-//	}
-//
-//}
+package spark.examples.transformer;
+
+import spark.ResponseTransformer;
+
+import com.google.gson.Gson;
+
+public class JsonTransformer implements ResponseTransformer {
+
+	private Gson gson = new Gson();
+
+	@Override
+	public String render(Object model) {
+		return gson.toJson(model);
+	}
+
+}

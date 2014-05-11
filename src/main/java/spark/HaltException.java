@@ -25,22 +25,22 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class HaltException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    
+
     private int statusCode = HttpServletResponse.SC_OK;
     private String body = null;
-    
+
     HaltException() {
         super();
     }
-    
+
     HaltException(int statusCode) {
         this.statusCode = statusCode;
     }
-    
+
     HaltException(String body) {
         this.body = body;
     }
-    
+
     HaltException(int statusCode, String body) {
         this.statusCode = statusCode;
         this.body = body;
@@ -53,12 +53,12 @@ public class HaltException extends RuntimeException {
         return statusCode;
     }
 
-    
+
     /**
      * @return the body
      */
     public String getBody() {
         return body;
     }
-    
+
 }

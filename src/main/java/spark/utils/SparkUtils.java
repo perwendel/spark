@@ -27,9 +27,10 @@ import java.util.List;
 public final class SparkUtils {
 
     public static final String ALL_PATHS = "+/*paths";
-    
-    private SparkUtils() {}
-    
+
+    private SparkUtils() {
+    }
+
     public static List<String> convertRouteToList(String route) {
         String[] pathArray = route.split("/");
         List<String> path = new ArrayList<String>();
@@ -40,7 +41,7 @@ public final class SparkUtils {
         }
         return path;
     }
-    
+
     public static boolean isParam(String routePart) {
         return routePart.startsWith(":");
     }
@@ -48,5 +49,5 @@ public final class SparkUtils {
     public static boolean isSplat(String routePart) {
         return routePart.equals("*");
     }
-    
+
 }

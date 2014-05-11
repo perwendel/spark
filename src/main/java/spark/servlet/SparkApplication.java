@@ -22,7 +22,7 @@ package spark.servlet;
  * @author Per Wendel
  */
 public interface SparkApplication {
-    
+
     /**
      * Invoked from the SparkFilter. Add routes here.
      */

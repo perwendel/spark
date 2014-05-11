@@ -51,9 +51,9 @@ class SparkServerImpl implements SparkServer {
 
     @Override
     public void ignite(String host, int port, String keystoreFile,
-            String keystorePassword, String truststoreFile,
-            String truststorePassword, String staticFilesFolder,
-            String externalFilesFolder) {
+                       String keystorePassword, String truststoreFile,
+                       String truststorePassword, String staticFilesFolder,
+                       String externalFilesFolder) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -71,7 +71,7 @@ class SparkServerImpl implements SparkServer {
             connector = createSocketConnector();
         } else {
             connector = createSecureSocketConnector(keystoreFile,
-                    keystorePassword, truststoreFile, truststorePassword);
+                                                    keystorePassword, truststoreFile, truststorePassword);
         }
 
         // Set some timeout options to make debugging easier.
@@ -81,7 +81,7 @@ class SparkServerImpl implements SparkServer {
         connector.setPort(port);
 
         server = connector.getServer();
-        server.setConnectors(new Connector[] { connector });
+        server.setConnectors(new Connector[] {connector});
 
         // Handle static file routes
         if (staticFilesFolder == null && externalFilesFolder == null) {
@@ -100,7 +100,6 @@ class SparkServerImpl implements SparkServer {
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
-
 
         try {
             System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
@@ -132,16 +131,15 @@ class SparkServerImpl implements SparkServer {
      * Creates a secure jetty socket connector. Keystore required, truststore
      * optional. If truststore not specifed keystore will be reused.
      *
-     * @param keystoreFile The keystore file location as string
-     * @param keystorePassword the password for the keystore
-     * @param truststoreFile the truststore file location as string, leave null to reuse keystore
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param truststoreFile     the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword the trust store password
-     *
      * @return a secure socket connector
      */
     private static ServerConnector createSecureSocketConnector(String keystoreFile,
-            String keystorePassword, String truststoreFile,
-            String truststorePassword) {
+                                                               String keystorePassword, String truststoreFile,
+                                                               String truststorePassword) {
 
         SslContextFactory sslContextFactory = new SslContextFactory(
                 keystoreFile);
@@ -175,7 +173,7 @@ class SparkServerImpl implements SparkServer {
             ResourceHandler resourceHandler = new ResourceHandler();
             Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
             resourceHandler.setBaseResource(staticResources);
-            resourceHandler.setWelcomeFiles(new String[] { "index.html" });
+            resourceHandler.setWelcomeFiles(new String[] {"index.html"});
             handlersInList.add(resourceHandler);
         }
     }
@@ -183,13 +181,14 @@ class SparkServerImpl implements SparkServer {
     /**
      * Sets external static file location if present
      */
-    private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute, List<Handler> handlersInList) {
+    private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute,
+                                                               List<Handler> handlersInList) {
         if (externalFilesRoute != null) {
             try {
                 ResourceHandler externalResourceHandler = new ResourceHandler();
                 Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
                 externalResourceHandler.setBaseResource(externalStaticResources);
-                externalResourceHandler.setWelcomeFiles(new String[] { "index.html" });
+                externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
                 handlersInList.add(externalResourceHandler);
             } catch (IOException exception) {
                 exception.printStackTrace(); // NOSONAR

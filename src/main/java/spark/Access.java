@@ -18,8 +18,9 @@ package spark;
 
 public final class Access {
 
-    private Access() {}
-    
+    private Access() {
+    }
+
     public static String getBody(Response response) {
         return response.body();
     }

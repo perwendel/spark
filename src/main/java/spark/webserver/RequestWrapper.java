@@ -61,7 +61,7 @@ final class RequestWrapper extends Request {
     public String servletPath() {
         return delegate.servletPath();
     }
-    
+
     @Override
     public String contextPath() {
         return delegate.contextPath();
@@ -96,12 +96,12 @@ final class RequestWrapper extends Request {
     public Map<String, String> params() {
         return delegate.params();
     }
-    
+
     @Override
     public String params(String param) {
         return delegate.params(param);
     }
-    
+
     @Override
     public String[] splat() {
         return delegate.splat();
@@ -181,6 +181,7 @@ final class RequestWrapper extends Request {
     public Session session() {
         return delegate.session();
     }
+
     @Override
     public Session session(boolean create) {
         return delegate.session(create);

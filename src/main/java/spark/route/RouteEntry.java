@@ -15,7 +15,7 @@ class RouteEntry {
     Object target;
 
     boolean matches(HttpMethod httpMethod, String path) {
-        if ( (httpMethod == HttpMethod.before || httpMethod == HttpMethod.after)
+        if ((httpMethod == HttpMethod.before || httpMethod == HttpMethod.after)
                 && (this.httpMethod == httpMethod)
                 && this.path.equals(SparkUtils.ALL_PATHS)) {
             // Is filter and matches all
@@ -43,7 +43,6 @@ class RouteEntry {
         List<String> thisPathList = SparkUtils.convertRouteToList(this.path);
         List<String> pathList = SparkUtils.convertRouteToList(path);
 
-
         int thisPathSize = thisPathList.size();
         int pathSize = pathList.size();
 
@@ -52,7 +51,7 @@ class RouteEntry {
                 String thisPathPart = thisPathList.get(i);
                 String pathPart = pathList.get(i);
 
-                if ((i == thisPathSize -1) && (thisPathPart.equals("*") && this.path.endsWith("*"))) {
+                if ((i == thisPathSize - 1) && (thisPathPart.equals("*") && this.path.endsWith("*"))) {
                     // wildcard match
                     return true;
                 }
@@ -80,7 +79,7 @@ class RouteEntry {
                     for (int i = 0; i < thisPathSize; i++) {
                         String thisPathPart = thisPathList.get(i);
                         String pathPart = pathList.get(i);
-                        if (thisPathPart.equals("*") && (i == thisPathSize -1) && this.path.endsWith("*")) {
+                        if (thisPathPart.equals("*") && (i == thisPathSize - 1) && this.path.endsWith("*")) {
                             // wildcard match
                             return true;
                         }

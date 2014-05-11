@@ -46,7 +46,7 @@ public class SparkFilter implements Filter {
     public static final String APPLICATION_CLASS_PARAM = "applicationClass";
 
     private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
-    
+
     private String filterPath;
 
     private MatcherFilter matcherFilter;
@@ -82,13 +82,15 @@ public class SparkFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
+                                                                                              IOException,
+                                                                                              ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request; // NOSONAR
-        
+
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
-        
+
         LOG.debug(relativePath);
-        
+
         HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override
             public String getRequestURI() {

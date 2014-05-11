@@ -24,9 +24,10 @@ final class FilterTools {
     private static final String SLASH_WILDCARD = "/*";
     private static final String SLASH = "/";
     private static final String FILTER_MAPPING_PARAM = "filterMappingUrlPattern";
-    
-    private FilterTools() {}
-    
+
+    private FilterTools() {
+    }
+
     static String getRelativePath(HttpServletRequest request, String filterPath) {
         String path = request.getRequestURI();
         String contextPath = request.getContextPath();
@@ -43,7 +44,7 @@ final class FilterTools {
         if (path.startsWith(filterPath)) {
             path = path.substring(filterPath.length());
         }
-        
+
         if (!path.startsWith(SLASH)) {
             path = SLASH + path;
         }
@@ -56,9 +57,11 @@ final class FilterTools {
         if (result == null || result.equals(SLASH_WILDCARD)) {
             return "";
         } else if (!result.startsWith(SLASH) || !result.endsWith(SLASH_WILDCARD)) {
-            throw new RuntimeException("The " + FILTER_MAPPING_PARAM + " must start with \"/\" and end with \"/*\". It's: " + result); // NOSONAR
+            throw new RuntimeException(
+                    "The " + FILTER_MAPPING_PARAM + " must start with \"/\" and end with \"/*\". It's: "
+                            + result); // NOSONAR
         }
         return result.substring(1, result.length() - 1);
     }
-    
+
 }

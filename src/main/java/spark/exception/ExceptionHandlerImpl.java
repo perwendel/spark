@@ -16,7 +16,8 @@
  */
 package spark.exception;
 
-import spark.*;
+import spark.Request;
+import spark.Response;
 
 public abstract class ExceptionHandlerImpl {
     /**

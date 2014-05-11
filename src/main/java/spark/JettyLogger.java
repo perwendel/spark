@@ -26,7 +26,7 @@ import org.eclipse.jetty.util.log.Logger;
 public class JettyLogger implements Logger {
 
     private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
-    
+
     public void debug(String msg, Throwable th) {
         logger.debug(msg, th);
     }
