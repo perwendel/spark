@@ -10,7 +10,7 @@ import spark.webserver.SparkServerFactory;
  */
 public abstract class SparkBase {
     public static final int SPARK_DEFAULT_PORT = 4567;
-    private static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     protected static boolean initialized = false;
 

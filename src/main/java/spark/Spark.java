@@ -279,18 +279,20 @@ public final class Spark extends SparkBase {
     // END route/filter mapping with accept type
     //////////////////////////////////////////////////
 
+
+
+    //////////////////////////////////////////////////
+    // BEGIN Template View Routes
+    //////////////////////////////////////////////////
+
     /**
      * Map the route for HTTP GET requests
      *
      * @param route The route
      */
     public static synchronized void get(String path, TemplateViewRoute route, TemplateEngine engine) {
-        // addRoute(HttpMethod.get.name(), path, route);
+        addRoute(HttpMethod.get.name(), TemplateViewRouteImpl.create(path, route, engine));
     }
-
-    //////////////////////////////////////////////////
-    // BEGIN Template View Routes
-    //////////////////////////////////////////////////
 
     //////////////////////////////////////////////////
     // END Template View Routes
