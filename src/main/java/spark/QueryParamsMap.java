@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  * <br>
  * For a querystring like: <br>
  *
- * user[name]=federico&user[lastname]=dayan;
+ * user[name]=federico&#38;user[lastname]=dayan
  *
  * <br>
  * <br>
@@ -77,7 +77,7 @@ public class QueryParamsMap {
      *
      * @param key    The key in the formar fo key1[key2][key3] (for example:
      *               user[info][name]).
-     * @param values
+     * @param values the values
      */
     protected QueryParamsMap(String key, String... values) {
         loadKeys(key, values);
