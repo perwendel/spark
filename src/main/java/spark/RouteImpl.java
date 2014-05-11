@@ -57,6 +57,7 @@ public abstract class RouteImpl {
      * @param request  The request object providing information about the HTTP request
      * @param response The response object providing functionality for modifying the response
      * @return The content to be set in the response
+     * @throws java.lang.Exception when handle fails
      */
     public abstract Object handle(Request request, Response response) throws Exception;
 
@@ -66,6 +67,7 @@ public abstract class RouteImpl {
      *
      * @param element to be rendered.
      * @return body content.
+     * @throws java.lang.Exception when render fails
      */
     //TODO change String return type to Stream. It should be done in another issue.
     public String render(Object element) throws Exception {
@@ -76,12 +78,15 @@ public abstract class RouteImpl {
         }
     }
 
+    /**
+     * @return the accept type
+     */
     public String getAcceptType() {
         return acceptType;
     }
 
     /**
-     * Returns this route's path
+     * @return the path
      */
     String getPath() {
         return this.path;

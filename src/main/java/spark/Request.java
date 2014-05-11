@@ -237,6 +237,9 @@ public class Request {
     }
 
     /**
+     * gets the query param
+     *
+     * @param queryParam the query parameter
      * @return the value of the provided queryParam
      * Example: query parameter 'id' from the following request URI: /hello?id=foo
      */
@@ -245,6 +248,9 @@ public class Request {
     }
 
     /**
+     * Gets the value for the provided header
+     *
+     * @param header the header
      * @return the value of the provided header
      */
     public String headers(String header) {

@@ -30,9 +30,8 @@ import spark.utils.SparkUtils;
  * <li>A callback (request, response)</li>
  * </ul>
  * Example:
- *
- * get("/hello", (request, response) -> {
- *      return "Hello World!";
+ * get("/hello", (request, response) -&#62; {
+ * return "Hello World!";
  * });
  *
  * @author Per Wendel
@@ -360,7 +359,9 @@ public final class Spark extends SparkBase {
     /**
      * Map the route for HTTP PUT requests
      *
-     * @param route The route
+     * @param path   the path
+     * @param route  The route
+     * @param engine the template engine
      */
     public static synchronized void put(String path, TemplateViewRoute route, TemplateEngine engine) {
         addRoute(HttpMethod.put.name(), TemplateViewRouteImpl.create(path, route, engine));

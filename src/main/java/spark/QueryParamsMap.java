@@ -13,24 +13,25 @@ import javax.servlet.http.HttpServletRequest;
  * Parses parameters keys like in Sinatra. <br>
  * <br>
  * For a querystring like: <br>
- * <code>
+ *
  * user[name]=federico&user[lastname]=dayan
- * </code> <br>
+ *
+ * <br>
  * <br>
  * We get would get a structure like: <br>
- * <code>
+ *
  * user : {name: federico, lastname: dayan}
- * </code>
+ *
  * <br>
  * <br>
  * That is:<br>
- * <code>
+ *
  * queryParamsMapInstance.get("user).get("name").value(); <br>
  * queryParamsMapInstance.get("user).get("lastname").value();
- * <code>
+ *
  * <br><br>
- * It is null safe, meaning that if a key does not exist, it does not throw <code>NullPointerExcetpion</code>
- * , it just returns <code>null</code>.
+ * It is null safe, meaning that if a key does not exist, it does not throw NullPointerException
+ * , it just returns null.
  *
  * @author fddayan
  */
@@ -131,7 +132,7 @@ public class QueryParamsMap {
      * Retruns and element fro the specified key. <br>
      * For querystring: <br>
      * <br>
-     * <code>
+     *
      * user[name]=fede
      * <br>
      * <br>
@@ -140,10 +141,10 @@ public class QueryParamsMap {
      * or
      * <br>
      * get("user","name").value() #  fede
-     * </code>
      *
-     * @param key The paramater nested key
-     * @return
+     *
+     * @param keys The parameter nested key(s)
+     * @return the query params map
      */
     public QueryParamsMap get(String... keys) {
         QueryParamsMap ret = this;
@@ -161,7 +162,7 @@ public class QueryParamsMap {
      * Returns the value for this key. <br>
      * If this key has nested elements and does not have a value returns null.
      *
-     * @return
+     * @return the value
      */
     public String value() {
         if (hasValue()) {
@@ -180,41 +181,65 @@ public class QueryParamsMap {
      * get("user").value("name")
      * </code>
      *
-     * @param key
-     * @return
+     * @param keys the key(s)
+     * @return the value
      */
     public String value(String... keys) {
         return get(keys).value();
     }
 
+    /**
+     * @return has keys
+     */
     public boolean hasKeys() {
         return !this.queryMap.isEmpty();
     }
 
+    /**
+     * @return has values
+     */
     public boolean hasValue() {
         return this.values != null && this.values.length > 0;
     }
 
+    /**
+     * @return the boolean value
+     */
     public Boolean booleanValue() {
         return hasValue() ? Boolean.valueOf(value()) : null;
     }
 
+    /**
+     * @return the integer value
+     */
     public Integer integerValue() {
         return hasValue() ? Integer.valueOf(value()) : null;
     }
 
+    /**
+     * @return the long value
+     */
     public Long longValue() {
         return hasValue() ? Long.valueOf(value()) : null;
     }
 
+    /**
+     * @return the float value
+     */
     public Float floatValue() {
         return hasValue() ? Float.valueOf(value()) : null;
     }
 
+    /**
+     * @return the double value
+     */
     public Double doubleValue() {
         return hasValue() ? Double.valueOf(value()) : null;
     }
 
+    /**
+     * @return the values
+     */
     public String[] values() {
         return this.values.clone();
     }
@@ -240,6 +265,9 @@ public class QueryParamsMap {
         }
     }
 
+    /**
+     * @return Map representation
+     */
     public Map<String, String[]> toMap() {
         Map<String, String[]> map = new HashMap<String, String[]>();
 
