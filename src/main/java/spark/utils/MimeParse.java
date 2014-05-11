@@ -9,23 +9,18 @@ import java.util.Map;
 
 /**
  * MIME-Type Parser
- * This class provides basic functions for handling mime-types. It can handle
- * matching mime-types against a list of media-ranges. See section 14.1 of the
- * HTTP specification [RFC 2616] for a complete explanation.
- * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
- * A port to Java of Joe Gregorio's MIME-Type Parser:
- * http://code.google.com/p/mimeparse/
- * Ported by Tom Zellman <tzellman@gmail.com>.
- * Modified by Alex Soto <asotobu@gmail.com> to coform naming conventions and removing unnecessary dependencies.
  */
 public class MimeParse {
 
+    /**
+     * Constant for no mime type
+     */
     public static final String NO_MIME_TYPE = "";
 
     /**
      * Parse results container
      */
-    protected static class ParseResults {
+    private static class ParseResults {
         String type;
 
         String subType;
@@ -49,7 +44,7 @@ public class MimeParse {
      * into:
      * ('application', 'xhtml', {'q', '0.5'})
      */
-    protected static ParseResults parseMimeType(String mimeType) {
+    private static ParseResults parseMimeType(String mimeType) {
         String[] parts = mimeType.split(";");
         ParseResults results = new ParseResults();
         results.params = new HashMap<String, String>();
@@ -84,7 +79,7 @@ public class MimeParse {
      *
      * @param range
      */
-    protected static ParseResults parseMediaRange(String range) {
+    private static ParseResults parseMediaRange(String range) {
         ParseResults results = parseMimeType(range);
         String q = results.params.get("q");
         float f = toFloat(q, 1);
@@ -97,14 +92,14 @@ public class MimeParse {
     /**
      * Structure for holding a fitness/quality combo
      */
-    protected static class FitnessAndQuality implements Comparable<FitnessAndQuality> {
+    private static class FitnessAndQuality implements Comparable<FitnessAndQuality> {
         int fitness;
 
         float quality;
 
         String mimeType; // optionally used
 
-        public FitnessAndQuality(int fitness, float quality) {
+        private FitnessAndQuality(int fitness, float quality) {
             this.fitness = fitness;
             this.quality = quality;
         }
@@ -132,7 +127,7 @@ public class MimeParse {
      * @param mimeType
      * @param parsedRanges
      */
-    protected static FitnessAndQuality fitnessAndQualityParsed(String mimeType, Collection<ParseResults> parsedRanges) {
+    private static FitnessAndQuality fitnessAndQualityParsed(String mimeType, Collection<ParseResults> parsedRanges) {
         int bestFitness = -1;
         float bestFitQ = 0;
         ParseResults target = parseMediaRange(mimeType);
@@ -171,36 +166,16 @@ public class MimeParse {
      * @param parsedRanges
      * @return
      */
-    protected static float qualityParsed(String mimeType, Collection<ParseResults> parsedRanges) {
+    private static float qualityParsed(String mimeType, Collection<ParseResults> parsedRanges) {
         return fitnessAndQualityParsed(mimeType, parsedRanges).quality;
     }
 
     /**
-     * Returns the quality 'q' of a mime-type when compared against the
-     * mediaRanges in ranges. For example:
+     * Finds best match
      *
-     * @param mimeType
-     * @param parsedRanges
-     */
-    public static float quality(String mimeType, String ranges) {
-        List<ParseResults> results = new LinkedList<ParseResults>();
-        for (String r : ranges.split(",")) {
-            results.add(parseMediaRange(r));
-        }
-        return qualityParsed(mimeType, results);
-    }
-
-    /**
-     * Takes a list of supported mime-types and finds the best match for all the
-     * media-ranges listed in header. The value of header must be a string that
-     * conforms to the format of the HTTP Accept: header. The value of
-     * 'supported' is a list of mime-types.
-     * MimeParse.bestMatch(Arrays.asList(new String[]{"application/xbel+xml",
-     * "text/xml"}), "text/*;q=0.5,*; q=0.1") 'text/xml'
-     *
-     * @param supported
-     * @param header
-     * @return
+     * @param supported the supported types
+     * @param header the header
+     * @return the best match
      */
     public static String bestMatch(Collection<String> supported, String header) {
         List<ParseResults> parseResults = new LinkedList<ParseResults>();
