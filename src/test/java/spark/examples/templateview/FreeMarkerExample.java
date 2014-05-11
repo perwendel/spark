@@ -8,10 +8,19 @@
 //import spark.ModelAndView;
 //import spark.Request;
 //import spark.Response;
+//import spark.TemplateEngine;
+//import spark.TemplateViewRoute;
 //
 //public class FreeMarkerExample {
 //
 //    public static void main(String args[]) {
+//
+//        new TemplateViewRoute() {
+//            @Override
+//            public Object handle(Request request, Response response, TemplateEngine engine) {
+//                return null;
+//            }
+//        };
 //
 //        get(new FreeMarkerTemplateView("/hello") {
 //            @Override

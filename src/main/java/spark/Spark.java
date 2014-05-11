@@ -280,6 +280,25 @@ public final class Spark extends SparkBase {
     //////////////////////////////////////////////////
 
     /**
+     * Map the route for HTTP GET requests
+     *
+     * @param route The route
+     */
+    public static synchronized void get(String path, TemplateViewRoute route, TemplateEngine engine) {
+        // addRoute(HttpMethod.get.name(), path, route);
+    }
+
+    //////////////////////////////////////////////////
+    // BEGIN Template View Routes
+    //////////////////////////////////////////////////
+
+
+
+    //////////////////////////////////////////////////
+    // END Template View Routes
+    //////////////////////////////////////////////////
+
+    /**
      * Maps an exception handler to be executed when an exception occurs during routing
      *
      * @param handler The handler
