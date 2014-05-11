@@ -11,8 +11,10 @@ package spark;
 public abstract class TemplateEngine {
 
     /**
-     * @param object
-     * @return
+     * Renders the object
+     *
+     * @param object the object
+     * @return the rendered model and view
      */
     public String render(Object object) {
         ModelAndView modelAndView = (ModelAndView) object;
@@ -23,7 +25,7 @@ public abstract class TemplateEngine {
      * Creates a new ModelAndView object with given arguments.
      *
      * @param model    object.
-     * @param viewName t be rendered.
+     * @param viewName to be rendered.
      * @return object with model and view set.
      */
     public ModelAndView modelAndView(Object model, String viewName) {

@@ -30,13 +30,10 @@ import spark.utils.SparkUtils;
  * <li>A callback (request, response)</li>
  * </ul>
  * Example:
- * <pre>
+ *
  * get("/hello", (request, response) -> {
  *      return "Hello World!";
  * });
- * </pre>
- * <code>
- * </code>
  *
  * @author Per Wendel
  */

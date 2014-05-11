@@ -37,6 +37,7 @@ public class Session {
      * Returns the object bound with the specified name in this session, or null if no object is bound under the name.
      *
      * @param name a string specifying the name of the object
+     * @param <T> The type parameter
      * @return the object with the specified name
      */
     @SuppressWarnings("unchecked")
