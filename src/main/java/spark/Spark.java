@@ -24,23 +24,18 @@ import spark.utils.SparkUtils;
 /**
  * The main building block of a Spark application is a set of routes. A route is
  * made up of three simple pieces:
- * <p/>
  * <ul>
  * <li>A verb (get, post, put, delete, head, trace, connect, options)</li>
  * <li>A path (/hello, /users/:name)</li>
  * <li>A callback (request, response)</li>
  * </ul>
- * <p>
  * Example:
- * <p/>
  * <pre>
  * get("/hello", (request, response) -> {
  *      return "Hello World!";
  * });
  * </pre>
- * <p>
  * <code>
- * <p/>
  * </code>
  *
  * @author Per Wendel

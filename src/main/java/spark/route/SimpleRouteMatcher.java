@@ -80,7 +80,7 @@ public class SimpleRouteMatcher {
      * @param httpMethod the http method
      * @param path       the path
      * @param acceptType the accept type
-     * @return
+     * @return the target
      */
     public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteEntry> routeEntries = this.findTargetsForRequestedRoute(httpMethod, path);
@@ -94,7 +94,7 @@ public class SimpleRouteMatcher {
      * @param httpMethod the http method
      * @param path       the route path
      * @param acceptType the accept type
-     * @return
+     * @return the targets
      */
     public List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteMatch> matchSet = new ArrayList<>();
