@@ -26,14 +26,35 @@ package spark;
  */
 public abstract class TemplateViewRouteImpl extends RouteImpl {
 
-    public static TemplateViewRouteImpl create(String path, TemplateViewRoute route, TemplateEngine engine) {
+    /**
+     * factory method
+     *
+     * @param path   the path
+     * @param route  the route
+     * @param engine the engine
+     * @return the wrapper template view route
+     */
+    public static TemplateViewRouteImpl create(String path,
+                                               TemplateViewRoute route,
+                                               TemplateEngine engine) {
+
         return create(path, SparkBase.DEFAULT_ACCEPT_TYPE, route, engine);
     }
 
+    /**
+     * factory method
+     *
+     * @param path       the path
+     * @param acceptType the accept type
+     * @param route      the route
+     * @param engine     the engine
+     * @return the wrapper template view route
+     */
     public static TemplateViewRouteImpl create(String path,
                                                String acceptType,
                                                TemplateViewRoute route,
                                                TemplateEngine engine) {
+
         return new TemplateViewRouteImpl(path, acceptType) {
             @Override
             public String render(ModelAndView modelAndView) {
@@ -47,6 +68,12 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
         };
     }
 
+    /**
+     * Constructor
+     *
+     * @param path the path
+     * @param acceptType the accept type
+     */
     protected TemplateViewRouteImpl(String path, String acceptType) {
         super(path, acceptType);
     }
