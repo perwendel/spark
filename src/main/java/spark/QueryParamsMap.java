@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  * <br>
  * For a querystring like: <br>
  *
- * user[name]=federico&user[lastname]=dayan
+ * user[name]=federico&user[lastname]=dayan;
  *
  * <br>
  * <br>
@@ -56,7 +56,7 @@ public class QueryParamsMap {
      * Parses the parameters from request.getParameterMap() <br>
      * No need to decode, since HttpServletRequest does it for us.
      *
-     * @param request
+     * @param request the servlet request
      */
     public QueryParamsMap(HttpServletRequest request) {
         if (request == null) {
@@ -83,16 +83,32 @@ public class QueryParamsMap {
         loadKeys(key, values);
     }
 
+    /**
+     * Constructor
+     *
+     * @param params the parameters
+     */
     protected QueryParamsMap(Map<String, String[]> params) {
         loadQueryString(params);
     }
 
+    /**
+     * loads query string
+     *
+     * @param params the parameters
+     */
     protected final void loadQueryString(Map<String, String[]> params) {
         for (Map.Entry<String, String[]> param : params.entrySet()) {
             loadKeys(param.getKey(), param.getValue());
         }
     }
 
+    /**
+     * loads keys
+     *
+     * @param key the key
+     * @param value the values
+     */
     protected final void loadKeys(String key, String[] value) {
         String[] parsed = parseKey(key);
 
