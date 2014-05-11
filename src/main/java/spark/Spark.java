@@ -619,6 +619,10 @@ public final class Spark extends SparkBase {
     // END Response Transforming Routes
     //////////////////////////////////////////////////
 
+    //////////////////////////////////////////////////
+    // EXCEPTION mapper
+    //////////////////////////////////////////////////
+
     /**
      * Maps an exception handler to be executed when an exception occurs during routing
      *
@@ -636,7 +640,9 @@ public final class Spark extends SparkBase {
         ExceptionMapper.getInstance().map(exceptionClass, wrapper);
     }
 
-    // HALT METHODS
+    //////////////////////////////////////////////////
+    // HALT methods
+    //////////////////////////////////////////////////
 
     /**
      * Immediately stops a request within a filter or route
