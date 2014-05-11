@@ -28,17 +28,15 @@ import spark.utils.SparkUtils;
  * <ul>
  * <li>A verb (get, post, put, delete, head, trace, connect, options)</li>
  * <li>A path (/hello, /users/:name)</li>
- * <li>A callback ( handle(Request request, Response response) )</li>
+ * <li>A callback (request, response)</li>
  * </ul>
  * <p/>
  * Example:
  * <p/>
  * <pre>
  * {@code
- * Spark.get(new Route("/hello") {
- *    public Object handle(Request request, Response response) {
- *       return "Hello World!";
- *    }
+ * get("/hello", (request, response) -> {
+ *      return "Hello World!";
  * });
  * </pre>
  * <p/>

@@ -9,11 +9,11 @@ import freemarker.template.TemplateException;
 import spark.ModelAndView;
 import spark.TemplateEngine;
 
-public class FreeMarkerTemplate extends TemplateEngine {
+public class FreeMarkerTemplateEngine extends TemplateEngine {
 
     private Configuration configuration;
 
-    protected FreeMarkerTemplate() {
+    protected FreeMarkerTemplateEngine() {
         this.configuration = createFreemarkerConfiguration();
     }
 
@@ -35,7 +35,7 @@ public class FreeMarkerTemplate extends TemplateEngine {
 
     private Configuration createFreemarkerConfiguration() {
         Configuration retVal = new Configuration();
-        retVal.setClassForTemplateLoading(FreeMarkerTemplate.class, "freemarker");
+        retVal.setClassForTemplateLoading(FreeMarkerTemplateEngine.class, "freemarker");
         return retVal;
     }
 
