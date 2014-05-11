@@ -87,6 +87,9 @@ public class Request {
 
     /**
      * Constructor
+     *
+     * @param match   the route match
+     * @param request the servlet request
      */
     Request(RouteMatch match, HttpServletRequest request) {
         this.servletRequest = request;
@@ -111,6 +114,7 @@ public class Request {
      * Returns the value of the provided route pattern parameter.
      * Example: parameter 'name' from the following pattern: (get '/hello/:name')
      *
+     * @param param the param
      * @return null if the given param is null or not found
      */
     public String params(String param) {
@@ -126,42 +130,42 @@ public class Request {
     }
 
     /**
-     * Returns an arrat containing the splat (wildcard) parameters
+     * @return an arrat containing the splat (wildcard) parameters
      */
     public String[] splat() {
         return splat.toArray(new String[splat.size()]);
     }
 
     /**
-     * Returns request method e.g. GET, POST, PUT, ...
+     * @return request method e.g. GET, POST, PUT, ...
      */
     public String requestMethod() {
         return servletRequest.getMethod();
     }
 
     /**
-     * Returns the scheme
+     * @return the scheme
      */
     public String scheme() {
         return servletRequest.getScheme();
     }
 
     /**
-     * Returns the host
+     * @return the host
      */
     public String host() {
         return servletRequest.getHeader("host");
     }
 
     /**
-     * Returns the user-agent
+     * @return the user-agent
      */
     public String userAgent() {
         return servletRequest.getHeader(USER_AGENT);
     }
 
     /**
-     * Returns the server port
+     * @return the server port
      */
     public int port() {
         return servletRequest.getServerPort();
@@ -169,7 +173,7 @@ public class Request {
 
 
     /**
-     * Returns the path info
+     * @return the path info
      * Example return: "/example/foo"
      */
     public String pathInfo() {
@@ -177,42 +181,42 @@ public class Request {
     }
 
     /**
-     * Returns the servlet path
+     * @return the servlet path
      */
     public String servletPath() {
         return servletRequest.getServletPath();
     }
 
     /**
-     * Returns the context path
+     * @return the context path
      */
     public String contextPath() {
         return servletRequest.getContextPath();
     }
 
     /**
-     * Returns the URL string
+     * @return the URL string
      */
     public String url() {
         return servletRequest.getRequestURL().toString();
     }
 
     /**
-     * Returns the content type of the body
+     * @return the content type of the body
      */
     public String contentType() {
         return servletRequest.getContentType();
     }
 
     /**
-     * Returns the client's IP address
+     * @return the client's IP address
      */
     public String ip() {
         return servletRequest.getRemoteAddr();
     }
 
     /**
-     * Returns the request body sent by the client
+     * @return the request body sent by the client
      */
     public String body() {
         if (body == null) {
@@ -226,14 +230,14 @@ public class Request {
     }
 
     /**
-     * Returns the length of request.body
+     * @return the length of request.body
      */
     public int contentLength() {
         return servletRequest.getContentLength();
     }
 
     /**
-     * Returns the value of the provided queryParam
+     * @return the value of the provided queryParam
      * Example: query parameter 'id' from the following request URI: /hello?id=foo
      */
     public String queryParams(String queryParam) {
@@ -241,21 +245,21 @@ public class Request {
     }
 
     /**
-     * Returns the value of the provided header
+     * @return the value of the provided header
      */
     public String headers(String header) {
         return servletRequest.getHeader(header);
     }
 
     /**
-     * Returns all query parameters
+     * @return all query parameters
      */
     public Set<String> queryParams() {
         return servletRequest.getParameterMap().keySet();
     }
 
     /**
-     * Returns all headers
+     * @return all headers
      */
     public Set<String> headers() {
         if (headers == null) {
@@ -269,7 +273,7 @@ public class Request {
     }
 
     /**
-     * Returns the query string
+     * @return the query string
      */
     public String queryString() {
         return servletRequest.getQueryString();
@@ -289,6 +293,7 @@ public class Request {
      * Gets the value of the provided attribute
      *
      * @param attribute The attribute value or null if not present
+     * @return the value for the provided attribute
      */
     public Object attribute(String attribute) {
         return servletRequest.getAttribute(attribute);
@@ -296,7 +301,7 @@ public class Request {
 
 
     /**
-     * Returns all attributes
+     * @return all attributes
      */
     public Set<String> attributes() {
         Set<String> attrList = new HashSet<String>();
@@ -308,18 +313,25 @@ public class Request {
     }
 
     /**
-     * Gets the raw HttpServletRequest object handed in by Jetty
+     * @return the raw HttpServletRequest object handed in by Jetty
      */
     public HttpServletRequest raw() {
         return servletRequest;
     }
 
+    /**
+     * @return the query map
+     */
     public QueryParamsMap queryMap() {
         initQueryMap();
 
         return queryMap;
     }
 
+    /**
+     * @param key the key
+     * @return the query map
+     */
     public QueryParamsMap queryMap(String key) {
         return queryMap().get(key);
     }
