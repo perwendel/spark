@@ -841,5 +841,20 @@ public final class Spark extends SparkBase {
         throw new HaltException(status, body);
     }
 
+    //////////////////////////////////////////////////
+    // model and view helper method
+    //////////////////////////////////////////////////
+
+
+    /**
+     * Constructs a ModelAndView with the provided model and view name
+     *
+     * @param model    the model
+     * @param viewName the view name
+     * @return the model and view
+     */
+    public static ModelAndView modelAndView(Object model, String viewName) {
+        return new ModelAndView(model, viewName);
+    }
 
 }

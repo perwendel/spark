@@ -371,46 +371,38 @@ Example showing how to render a view from a template. Note that we are using Mod
 
 First of all we define a class which handles and renders output depending on template engine used. In this case FreeMarker.
 
-OBSERVE: All below this is not valid in Spark 2.0.0. TemplateEngine should be used. This will be updated in documentation"
 
 ```java
-public abstract class FreeMarkerTemplateView extends TemplateViewRoute {
+public class FreeMarkerTemplateEngine extends TemplateEngine {
 
-	private Configuration configuration;
-	
-	protected FreeMarkerTemplateView(String path) {
-		super(path);
-		this.configuration = createFreemarkerConfiguration();
-	}
-	
-	protected FreeMarkerTemplateView(String path, String acceptType) {
-		super(path, acceptType);
-		this.configuration = createFreemarkerConfiguration();
-	}
+    private Configuration configuration;
 
-	@Override
-	public String render(ModelAndView modelAndView) {
-		try {
-			StringWriter stringWriter = new StringWriter();
-			
-			Template template = configuration.getTemplate(modelAndView.getViewName());
-			template.process(modelAndView.getModel(), stringWriter);
-			
-			return stringWriter.toString();
-			
-		} catch (IOException e) {
-			throw new IllegalArgumentException(e);
-		} catch (TemplateException e) {
-			throw new IllegalArgumentException(e);
-		}
-	}
+    protected FreeMarkerTemplateEngine() {
+        this.configuration = createFreemarkerConfiguration();
+    }
 
-	private Configuration createFreemarkerConfiguration() {
+    @Override
+    public String render(ModelAndView modelAndView) {
+        try {
+            StringWriter stringWriter = new StringWriter();
+
+            Template template = configuration.getTemplate(modelAndView.getViewName());
+            template.process(modelAndView.getModel(), stringWriter);
+
+            return stringWriter.toString();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        } catch (TemplateException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private Configuration createFreemarkerConfiguration() {
         Configuration retVal = new Configuration();
-        retVal.setClassForTemplateLoading(FreeMarkerTemplateView.class, "freemarker");
+        retVal.setClassForTemplateLoading(FreeMarkerTemplateEngine.class, "freemarker");
         return retVal;
     }
-	
+
 }
 ```
 
@@ -419,18 +411,18 @@ Then we can use it to generate our content. Note how we are setting model data a
 ```java
 public class FreeMarkerExample {
 
-	public static void main(String args[]) {
+    public static void main(String args[]) {
 
-		get(new FreeMarkerTemplateView("/hello") {
-			@Override
-			public ModelAndView handle(Request request, Response response) {
-				Map<String, Object> attributes = new HashMap<>();
-				attributes.put("message", "Hello World");
-				return new ModelAndView(attributes, "hello.ftl");
-			}
-		});
+        get("/hello", (request, response) -> {
+            Map<String, Object> attributes = new HashMap<>();
+            attributes.put("message", "Hello FreeMarker World");
 
-	}
+            // The hello.ftl file is located in directory:
+            // src/test/resources/spark/examples/templateview/freemarker
+            return new ModelAndView(attributes, "hello.ftl");
+        }, new FreeMarkerTemplateEngine());
+
+    }
 
 }
 ```
@@ -442,24 +434,17 @@ Example of using Transformer.
 First of all we define the transformer class, in this case a class which transforms an object to JSON format using gson API.
 
 ```java
-public abstract class JsonTransformer extends ResponseTransformerRoute {
+public class JsonTransformer implements ResponseTransformer {
 
 	private Gson gson = new Gson();
-	
-	protected JsonTransformer(String path) {
-		super(path);
-	}
 
-	protected JsonTransformer(String path, String acceptType) {
-		super(path, acceptType);
-	}
-	
 	@Override
-	public String render(Model model) {
-		return gson.toJson(model.getModel());
+	public String render(Object model) {
+		return gson.toJson(model);
 	}
 
 }
+
 ```
 
 And then the code which return a simple POJO to be transformed to JSON:
@@ -467,16 +452,12 @@ And then the code which return a simple POJO to be transformed to JSON:
 ```java
 public class TransformerExample {
 
-	public static void main(String args[]) {
+    public static void main(String args[]) {
+        get("/hello", "application/json", (request, response) -> {
+            return new MyMessage("Hello World");
+        }, new JsonTransformer());
+    }
 
-		get(new JsonTransformer("/hello", "application/json") {
-			@Override
-			public Model handle(Request request, Response response) {
-				return new Model(new MyMessage("Hello World"));
-			}
-		});
-
-	}
-	
 }
+
 ```
