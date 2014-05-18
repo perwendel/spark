@@ -59,7 +59,8 @@ final class FilterTools {
         } else if (!result.startsWith(SLASH) || !result.endsWith(SLASH_WILDCARD)) {
             throw new RuntimeException(
                     "The " + FILTER_MAPPING_PARAM + " must start with \"/\" and end with \"/*\". It's: "
-                            + result); // NOSONAR
+                            + result
+            ); // NOSONAR
         }
         return result.substring(1, result.length() - 1);
     }

@@ -63,7 +63,6 @@ public abstract class SparkBase {
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore
      * will be reused).
-     *
      * This method is only relevant when using embedded Jetty servers. It should
      * not be used if you are using Servlets, where you will need to secure the
      * connection in the servlet container
@@ -189,7 +188,7 @@ public abstract class SparkBase {
     /**
      * Wraps the filter in FilterImpl
      *
-     * @param path the path
+     * @param path   the path
      * @param filter the filter
      * @return the wrapped route
      */
@@ -200,9 +199,9 @@ public abstract class SparkBase {
     /**
      * Wraps the filter in FilterImpl
      *
-     * @param path the path
+     * @param path       the path
      * @param acceptType the accept type
-     * @param filter the filter
+     * @param filter     the filter
      * @return the wrapped route
      */
     protected static FilterImpl wrap(final String path, String acceptType, final Filter filter) {

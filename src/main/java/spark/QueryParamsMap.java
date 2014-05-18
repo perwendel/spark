@@ -13,22 +13,16 @@ import javax.servlet.http.HttpServletRequest;
  * Parses parameters keys like in Sinatra. <br>
  * <br>
  * For a querystring like: <br>
- *
  * user[name]=federico&#38;user[lastname]=dayan
- *
  * <br>
  * <br>
  * We get would get a structure like: <br>
- *
  * user : {name: federico, lastname: dayan}
- *
  * <br>
  * <br>
  * That is:<br>
- *
  * queryParamsMapInstance.get("user).get("name").value(); <br>
  * queryParamsMapInstance.get("user).get("lastname").value();
- *
  * <br><br>
  * It is null safe, meaning that if a key does not exist, it does not throw NullPointerException
  * , it just returns null.
@@ -106,7 +100,7 @@ public class QueryParamsMap {
     /**
      * loads keys
      *
-     * @param key the key
+     * @param key   the key
      * @param value the values
      */
     protected final void loadKeys(String key, String[] value) {
@@ -148,7 +142,6 @@ public class QueryParamsMap {
      * Retruns and element fro the specified key. <br>
      * For querystring: <br>
      * <br>
-     *
      * user[name]=fede
      * <br>
      * <br>
@@ -157,7 +150,6 @@ public class QueryParamsMap {
      * or
      * <br>
      * get("user","name").value() #  fede
-     *
      *
      * @param keys The parameter nested key(s)
      * @return the query params map

@@ -27,7 +27,6 @@ import spark.utils.Assert;
 
 /**
  * Locates resources in classpath
- *
  * Created by Per Wendel on 2014-05-18.
  */
 public class ClassPathResourceHandler {

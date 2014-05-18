@@ -16,7 +16,6 @@
  */
 package spark.utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -68,30 +67,7 @@ import java.io.Writer;
  * @version $Id: IOUtils.java 481854 2006-12-03 18:30:07Z scolebourne $
  */
 public final class IOUtils {
-    // NOTE: This class is focussed on InputStream, OutputStream, Reader and
-    // Writer. Each method should take at least one of these as a parameter,
-    // or return one of them.
 
-    /**
-     * The Unix directory separator character.
-     */
-    public static final char DIR_SEPARATOR_UNIX = '/';
-    /**
-     * The Windows directory separator character.
-     */
-    public static final char DIR_SEPARATOR_WINDOWS = '\\';
-    /**
-     * The system directory separator character.
-     */
-    public static final char DIR_SEPARATOR = File.separatorChar;
-    /**
-     * The Unix line separator string.
-     */
-    public static final String LINE_SEPARATOR_UNIX = "\n";
-    /**
-     * The Windows line separator string.
-     */
-    public static final String LINE_SEPARATOR_WINDOWS = "\r\n";
     /**
      * The system line separator string.
      */
