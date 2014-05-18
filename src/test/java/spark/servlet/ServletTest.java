@@ -157,11 +157,39 @@ public class ServletTest {
     public void testPost() {
         try {
             UrlResponse response = testUtil.doMethod("POST", SOMEPATH + "/poster", "Fo shizzy");
-            System.out.println(response.body);
             Assert.assertEquals(201, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
     }
+
+    @Test
+    public void testStaticResource() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/css/style.css", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertTrue(response.body.contains("Content of css file"));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testStaticWelcomeResource() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/pages/", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertTrue(response.body.contains("<html><body>Hello Static World!</body></html>"));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+//    @Test
+//    public void testExternalStaticFile() throws Exception {
+//        UrlResponse response = testUtil.doMethod("GET", "/externalFile.html", null);
+//        Assert.assertEquals(200, response.status);
+//        Assert.assertEquals("Content of external file", response.body);
+//    }
 }

@@ -2,6 +2,7 @@ package spark;
 
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
+import spark.servlet.SparkFilter;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
@@ -27,6 +28,7 @@ public abstract class SparkBase {
 
     protected static SparkServer server;
     protected static SimpleRouteMatcher routeMatcher;
+    private static boolean runFromServlet;
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -98,10 +100,13 @@ public abstract class SparkBase {
      * @param folder the folder in classpath.
      */
     public static synchronized void staticFileLocation(String folder) {
-        if (initialized) {
+        if (initialized && !runFromServlet) {
             throwBeforeRouteMappingException();
         }
         staticFileFolder = folder;
+        if (runFromServlet) {
+            SparkFilter.configureStaticResources(staticFileFolder);
+        }
     }
 
     /**
@@ -111,10 +116,13 @@ public abstract class SparkBase {
      * @param externalFolder the external folder serving static files.
      */
     public static synchronized void externalStaticFileLocation(String externalFolder) {
-        if (initialized) {
+        if (initialized && !runFromServlet) {
             throwBeforeRouteMappingException();
         }
         externalStaticFileFolder = externalFolder;
+        if (runFromServlet) {
+            SparkFilter.configureExternalStaticResources(externalStaticFileFolder);
+        }
     }
 
     private static void throwBeforeRouteMappingException() {
@@ -139,6 +147,7 @@ public abstract class SparkBase {
     }
 
     static synchronized void runFromServlet() {
+        runFromServlet = true;
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             initialized = true;

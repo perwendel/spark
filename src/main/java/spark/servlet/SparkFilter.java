@@ -31,7 +31,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.Access;
+import spark.resource.ClassPathResource;
+import spark.resource.ClassPathResourceHandler;
 import spark.route.RouteMatcherFactory;
+import spark.utils.IOUtils;
 import spark.webserver.MatcherFilter;
 
 /**
@@ -42,13 +45,17 @@ import spark.webserver.MatcherFilter;
  * @author Per Wendel
  */
 public class SparkFilter implements Filter {
+    private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
 
     public static final String APPLICATION_CLASS_PARAM = "applicationClass";
 
-    private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
+    private static ClassPathResourceHandler staticResourceHandler;
+
+    private static boolean staticResourcesSet = false;
+    private static boolean externalStaticResourcesSet = false;
+
 
     private String filterPath;
-
     private MatcherFilter matcherFilter;
 
     @Override
@@ -89,7 +96,9 @@ public class SparkFilter implements Filter {
 
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
 
-        LOG.debug(relativePath);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(relativePath);
+        }
 
         HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override
@@ -97,7 +106,53 @@ public class SparkFilter implements Filter {
                 return relativePath;
             }
         };
+
+        // Handle static resources
+        if (staticResourceHandler != null) {
+            ClassPathResource resource = staticResourceHandler.getResource(httpRequest);
+            if (resource != null) {
+                IOUtils.copy(resource.getInputStream(), response.getWriter());
+                return;
+            }
+        }
+
         matcherFilter.doFilter(requestWrapper, response, chain);
+    }
+
+    /**
+     * Configures location for static resources
+     *
+     * @param folder the location
+     */
+    public static void configureStaticResources(String folder) {
+        if (!staticResourcesSet) {
+            if (folder != null) {
+                try {
+                    ClassPathResource resource = new ClassPathResource(folder);
+                    if (resource.getFile().isDirectory()) {
+                        staticResourceHandler = new ClassPathResourceHandler(folder, "index.html");
+                        LOG.info("StaticResourceHandler configured with folder = " + folder);
+                    } else {
+                        LOG.error("Static resource location must be a folder");
+                    }
+                } catch (IOException e) {
+                    LOG.error("Error when creating static resource handler", e);
+                }
+            }
+            if (staticResourceHandler == null) {
+                LOG.error("Resource handler could not be initialed");
+            }
+            staticResourcesSet = true;
+        }
+    }
+
+    /**
+     * Configures location for static resources
+     *
+     * @param folder the location
+     */
+    public static void configureExternalStaticResources(String folder) {
+        // TODO: Not implemented
     }
 
     @Override
