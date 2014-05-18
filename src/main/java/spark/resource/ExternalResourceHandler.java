@@ -20,15 +20,17 @@ package spark.resource;
 import java.net.MalformedURLException;
 
 import org.eclipse.jetty.util.URIUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import spark.utils.Assert;
 
 /**
  * Locates resources from external folder
- *
  * Code snippets copied from Eclipse Jetty source. Modifications made by Per Wendel.
  */
 public class ExternalResourceHandler extends AbstractResourceHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(ExternalResourceHandler.class);
 
     private final String baseResource;
     private String welcomeFile;
@@ -78,7 +80,9 @@ public class ExternalResourceHandler extends AbstractResourceHandler {
 
             return (resource != null && resource.exists()) ? resource : null;
         } catch (Exception e) {
-            // Do nothing
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getClass().getSimpleName() + " when trying to get resource. " + e.getMessage());
+            }
         }
         return null;
     }
