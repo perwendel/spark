@@ -412,6 +412,20 @@ public class Request {
         return null;
     }
 
+    /**
+     * @return the part of this request's URL from the protocol name up to the query string in the first line of the HTTP request.
+     */
+    public String uri() {
+        return servletRequest.getRequestURI();
+    }
+
+    /**
+     * @return Returns the name and version of the protocol the request uses
+     */
+    public String protocol() {
+        return servletRequest.getProtocol();
+    }
+
     private static Map<String, String> getParams(List<String> request, List<String> matched) {
         LOG.debug("get params");
 

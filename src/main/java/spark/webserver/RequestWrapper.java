@@ -163,6 +163,16 @@ final class RequestWrapper extends Request {
     }
 
     @Override
+    public String uri() {
+        return delegate.uri();
+    }
+
+    @Override
+    public String protocol() {
+        return delegate.protocol();
+    }
+
+    @Override
     public void attribute(String attribute, Object value) {
         delegate.attribute(attribute, value);
     }
