@@ -2,6 +2,7 @@ package spark.servlet;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
@@ -20,7 +21,6 @@ public class MyApp implements SparkApplication {
             staticFileLocation("/public");
 
             File tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
-
             FileWriter writer = new FileWriter(tmpExternalFile);
             writer.write("Content of external file");
             writer.flush();

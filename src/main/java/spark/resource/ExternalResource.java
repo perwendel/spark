@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 - Per Wendel
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package spark.resource;
 
 import java.io.File;
@@ -16,18 +32,6 @@ public class ExternalResource extends AbstractFileResolvingResource {
 
     private final File file;
 
-    public static void main(String[] args) throws IOException {
-        String tempDir = System.getProperty("java.io.tmpdir");
-        System.out.println("tempDir = " + tempDir);
-        ExternalResource resource = new ExternalResource(tempDir + "/externalFile.html");
-        System.out.println("resource.exists() = " + resource.exists());
-        System.out.println("resource.isDirectory() = " + resource.isDirectory());
-        System.out.println("resource.getURL() = " + resource.getURL());
-        System.out.println("resource.getURI() = " + resource.getURI());
-        System.out.println("resource.getPath() = " + resource.getPath());
-    }
-
-
     /**
      * Constructor
      *
@@ -41,12 +45,9 @@ public class ExternalResource extends AbstractFileResolvingResource {
      * Tests whether the file denoted by this abstract pathname is a
      * directory.
      *
-     * @return <code>true</code> if and only if the file denoted by this
-     * abstract pathname exists <em>and</em> is a directory;
-     * <code>false</code> otherwise
-     * @throws SecurityException If a security manager exists and its <code>{@link
-     *                           java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-     *                           method denies read access to the file
+     * @return true if and only if the file denoted by this
+     * abstract pathname exists and is a directory;
+     * false otherwise
      */
     public boolean isDirectory() {
         return file.isDirectory();
