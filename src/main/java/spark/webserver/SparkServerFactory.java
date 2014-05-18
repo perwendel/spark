@@ -30,7 +30,7 @@ public final class SparkServerFactory {
         MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
         matcherFilter.init(null);
         JettyHandler handler = new JettyHandler(matcherFilter);
-        return new SparkServerImpl(handler);
+        return new SparkServer(handler);
     }
 
 }

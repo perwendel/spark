@@ -1,19 +1,19 @@
 package spark;
 
-import static spark.Spark.*;
-import static spark.Spark.before;
-import static spark.Spark.get;
-import static spark.Spark.patch;
-import static spark.Spark.post;
-
-import junit.framework.Assert;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import junit.framework.Assert;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.patch;
+import static spark.Spark.post;
 
 public class GenericSecureIntegrationTest {
 
@@ -31,8 +31,8 @@ public class GenericSecureIntegrationTest {
         // note that the keystore stuff is retrieved from SparkTestUtil which
         // respects JVM params for keystore, password
         // but offers a default included store if not.
-        Spark.setSecure(SparkTestUtil.getKeyStoreLocation(),
-                        SparkTestUtil.getKeystorePassword(), null, null);
+        Spark.secure(SparkTestUtil.getKeyStoreLocation(),
+                     SparkTestUtil.getKeystorePassword(), null, null);
 
         before("/protected/*", (request, response) -> {
             halt(401, "Go Away!");
