@@ -48,7 +48,6 @@ import java.util.TreeSet;
  * @author Rob Harrop
  * @author Rick Evans
  * @author Arjen Poutsma
- * @see org.apache.commons.lang.StringUtils
  * @since 16 April 2001
  */
 public abstract class StringUtils {
@@ -1194,7 +1193,9 @@ public abstract class StringUtils {
             return "";
         }
         if (arr.length == 1) {
-            return ObjectUtils.nullSafeToString(arr[0]);
+            if (arr[0] != null) {
+                return arr[0].toString();
+            }
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < arr.length; i++) {
