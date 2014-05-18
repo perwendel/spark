@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import spark.Access;
 import spark.resource.ClassPathResource;
 import spark.resource.ClassPathResourceHandler;
+import spark.resource.ExternalResource;
+import spark.resource.ExternalResourceHandler;
 import spark.route.RouteMatcherFactory;
 import spark.utils.IOUtils;
 import spark.webserver.MatcherFilter;
@@ -50,10 +52,10 @@ public class SparkFilter implements Filter {
     public static final String APPLICATION_CLASS_PARAM = "applicationClass";
 
     private static ClassPathResourceHandler staticResourceHandler;
+    private static ExternalResourceHandler externalStaticResourceHandler;
 
     private static boolean staticResourcesSet = false;
     private static boolean externalStaticResourcesSet = false;
-
 
     private String filterPath;
     private MatcherFilter matcherFilter;
@@ -116,6 +118,15 @@ public class SparkFilter implements Filter {
             }
         }
 
+        // Handle external static resources
+        if (externalStaticResourceHandler != null) {
+            ExternalResource resource = externalStaticResourceHandler.getResource(httpRequest);
+            if (resource != null && resource.isReadable()) {
+                IOUtils.copy(resource.getInputStream(), response.getWriter());
+                return;
+            }
+        }
+
         matcherFilter.doFilter(requestWrapper, response, chain);
     }
 
@@ -136,11 +147,11 @@ public class SparkFilter implements Filter {
                         LOG.error("Static resource location must be a folder");
                     }
                 } catch (IOException e) {
-                    LOG.error("Error when creating static resource handler", e);
+                    LOG.error("Error when creating StaticResourceHandler", e);
                 }
             }
             if (staticResourceHandler == null) {
-                LOG.error("Resource handler could not be initialed");
+                LOG.error("StaticResourceHandler could not be initialed");
             }
             staticResourcesSet = true;
         }
@@ -152,7 +163,25 @@ public class SparkFilter implements Filter {
      * @param folder the location
      */
     public static void configureExternalStaticResources(String folder) {
-        // TODO: Not implemented
+        if (!externalStaticResourcesSet) {
+            if (folder != null) {
+                try {
+                    ExternalResource resource = new ExternalResource(folder);
+                    if (resource.getFile().isDirectory()) {
+                        externalStaticResourceHandler = new ExternalResourceHandler(folder, "index.html");
+                        LOG.info("External StaticResourceHandler configured with folder = " + folder);
+                    } else {
+                        LOG.error("External Static resource location must be a folder");
+                    }
+                } catch (IOException e) {
+                    LOG.error("Error when creating external StaticResourceHandler", e);
+                }
+            }
+            if (externalStaticResourceHandler == null) {
+                LOG.error("External StaticResourceHandler could not be initialed");
+            }
+            externalStaticResourcesSet = true;
+        }
     }
 
     @Override

@@ -1,8 +1,5 @@
 package spark.servlet;
 
-import static spark.util.SparkTestUtil.sleep;
-import junit.framework.Assert;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -11,9 +8,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import junit.framework.Assert;
 import spark.Spark;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import static spark.util.SparkTestUtil.sleep;
 
 public class ServletTest {
 
@@ -39,7 +39,7 @@ public class ServletTest {
         connector.setIdleTimeout(1000 * 60 * 60);
         connector.setSoLingerTime(-1);
         connector.setPort(PORT);
-        server.setConnectors(new Connector[]{connector});
+        server.setConnectors(new Connector[] {connector});
 
         WebAppContext bb = new WebAppContext();
         bb.setServer(server);
@@ -186,10 +186,10 @@ public class ServletTest {
         }
     }
 
-//    @Test
-//    public void testExternalStaticFile() throws Exception {
-//        UrlResponse response = testUtil.doMethod("GET", "/externalFile.html", null);
-//        Assert.assertEquals(200, response.status);
-//        Assert.assertEquals("Content of external file", response.body);
-//    }
+    @Test
+    public void testExternalStaticFile() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/externalFile.html", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Content of external file", response.body);
+    }
 }
