@@ -1,11 +1,7 @@
 package spark.examples.hello;
 
 import static spark.Spark.get;
-import static spark.Spark.setSecure;
-
-import spark.Request;
-import spark.Response;
-import spark.Route;
+import static spark.Spark.secure;
 
 /**
  * You'll need to provide a JKS keystore as arg 0 and its password as arg 1.
@@ -13,7 +9,7 @@ import spark.Route;
 public class HelloSecureWorld {
     public static void main(String[] args) {
 
-        setSecure(args[0], args[1], null, null);
+        secure(args[0], args[1], null, null);
         get("/hello", (request, response) -> {
             return "Hello Secure World!";
         });

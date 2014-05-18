@@ -17,6 +17,8 @@
 package spark.servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -31,7 +33,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.Access;
+import spark.resource.AbstractFileResolvingResource;
+import spark.resource.AbstractResourceHandler;
+import spark.resource.ClassPathResource;
+import spark.resource.ClassPathResourceHandler;
+import spark.resource.ExternalResource;
+import spark.resource.ExternalResourceHandler;
 import spark.route.RouteMatcherFactory;
+import spark.utils.IOUtils;
 import spark.webserver.MatcherFilter;
 
 /**
@@ -42,13 +51,16 @@ import spark.webserver.MatcherFilter;
  * @author Per Wendel
  */
 public class SparkFilter implements Filter {
+    private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
 
     public static final String APPLICATION_CLASS_PARAM = "applicationClass";
 
-    private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
+    private static List<AbstractResourceHandler> staticResourceHandlers = null;
+
+    private static boolean staticResourcesSet = false;
+    private static boolean externalStaticResourcesSet = false;
 
     private String filterPath;
-
     private MatcherFilter matcherFilter;
 
     @Override
@@ -89,7 +101,9 @@ public class SparkFilter implements Filter {
 
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
 
-        LOG.debug(relativePath);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(relativePath);
+        }
 
         HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override
@@ -97,7 +111,73 @@ public class SparkFilter implements Filter {
                 return relativePath;
             }
         };
+
+        // handle static resources
+        if (staticResourceHandlers != null) {
+            for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
+                AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
+                if (resource != null && resource.isReadable()) {
+                    IOUtils.copy(resource.getInputStream(), response.getWriter());
+                    return;
+                }
+            }
+        }
+
         matcherFilter.doFilter(requestWrapper, response, chain);
+    }
+
+    /**
+     * Configures location for static resources
+     *
+     * @param folder the location
+     */
+    public static void configureStaticResources(String folder) {
+        if (!staticResourcesSet) {
+            if (folder != null) {
+                try {
+                    ClassPathResource resource = new ClassPathResource(folder);
+                    if (resource.getFile().isDirectory()) {
+                        if (staticResourceHandlers == null) {
+                            staticResourceHandlers = new ArrayList<>();
+                        }
+                        staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
+                        LOG.info("StaticResourceHandler configured with folder = " + folder);
+                    } else {
+                        LOG.error("Static resource location must be a folder");
+                    }
+                } catch (IOException e) {
+                    LOG.error("Error when creating StaticResourceHandler", e);
+                }
+            }
+            staticResourcesSet = true;
+        }
+    }
+
+    /**
+     * Configures location for static resources
+     *
+     * @param folder the location
+     */
+    public static void configureExternalStaticResources(String folder) {
+        if (!externalStaticResourcesSet) {
+            if (folder != null) {
+                try {
+                    ExternalResource resource = new ExternalResource(folder);
+                    if (resource.getFile().isDirectory()) {
+                        if (staticResourceHandlers == null) {
+                            staticResourceHandlers = new ArrayList<>();
+                        }
+                        staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
+                        LOG.info("External StaticResourceHandler configured with folder = " + folder);
+                    } else {
+                        LOG.error("External Static resource location must be a folder");
+                    }
+                } catch (IOException e) {
+                    LOG.error("Error when creating external StaticResourceHandler", e);
+                }
+            }
+            externalStaticResourcesSet = true;
+        }
     }
 
     @Override

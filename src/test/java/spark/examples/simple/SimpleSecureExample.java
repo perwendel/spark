@@ -19,7 +19,7 @@ package spark.examples.simple;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.post;
-import static spark.Spark.setSecure;
+import static spark.Spark.secure;
 
 /**
  * A simple example just showing some basic functionality You'll need to provide
@@ -32,10 +32,10 @@ public class SimpleSecureExample {
 
     public static void main(String[] args) {
 
-        // setPort(5678); <- Uncomment this if you want spark to listen on a
+        // port(5678); <- Uncomment this if you want spark to listen on a
         // port different than 4567.
 
-        setSecure(args[0], args[1], null, null);
+        secure(args[0], args[1], null, null);
 
         get("/hello", (request, response) -> {
             return "Hello Secure World!";

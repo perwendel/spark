@@ -1,7 +1,11 @@
 package spark;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
+import spark.servlet.SparkFilter;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
@@ -9,6 +13,7 @@ import spark.webserver.SparkServerFactory;
  * Spark base class
  */
 public abstract class SparkBase {
+    private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
     public static final int SPARK_DEFAULT_PORT = 4567;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
@@ -27,6 +32,25 @@ public abstract class SparkBase {
 
     protected static SparkServer server;
     protected static SimpleRouteMatcher routeMatcher;
+    private static boolean runFromServlet;
+
+    private static boolean servletStaticLocationSet;
+    private static boolean servletExternalStaticLocationSet;
+
+    /**
+     * Set the IP address that Spark should listen on. If not called the default
+     * address is '0.0.0.0'. This has to be called before any route mapping is
+     * done.
+     *
+     * @param ipAddress The ipAddress
+     * @deprecated replaced by {@link #ipAddress(String)}
+     */
+    public static synchronized void setIpAddress(String ipAddress) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.ipAddress = ipAddress;
+    }
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -35,7 +59,7 @@ public abstract class SparkBase {
      *
      * @param ipAddress The ipAddress
      */
-    public static synchronized void setIpAddress(String ipAddress) {
+    public static synchronized void ipAddress(String ipAddress) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -48,8 +72,23 @@ public abstract class SparkBase {
      * If provided port = 0 then the an arbitrary available port will be used.
      *
      * @param port The port number
+     * @deprecated replaced by {@link #port(int)}
      */
     public static synchronized void setPort(int port) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        Spark.port = port;
+    }
+
+    /**
+     * Set the port that Spark should listen on. If not called the default port
+     * is 4567. This has to be called before any route mapping is done.
+     * If provided port = 0 then the an arbitrary available port will be used.
+     *
+     * @param port The port number
+     */
+    public static synchronized void port(int port) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -61,7 +100,41 @@ public abstract class SparkBase {
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore
      * will be reused).
+     * This method is only relevant when using embedded Jetty servers. It should
+     * not be used if you are using Servlets, where you will need to secure the
+     * connection in the servlet container
      *
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param truststoreFile     the truststore file location as string, leave null to reuse
+     *                           keystore
+     * @param truststorePassword the trust store password
+     * @deprecated replaced by {@link #secure(String, String, String, String)}
+     */
+    public static synchronized void setSecure(String keystoreFile,
+                                              String keystorePassword,
+                                              String truststoreFile,
+                                              String truststorePassword) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+
+        if (keystoreFile == null) {
+            throw new IllegalArgumentException(
+                    "Must provide a keystore file to run secured");
+        }
+
+        Spark.keystoreFile = keystoreFile;
+        Spark.keystorePassword = keystorePassword;
+        Spark.truststoreFile = truststoreFile;
+        Spark.truststorePassword = truststorePassword;
+    }
+
+    /**
+     * Set the connection to be secure, using the specified keystore and
+     * truststore. This has to be called before any route mapping is done. You
+     * have to supply a keystore file, truststore file is optional (keystore
+     * will be reused).
      * This method is only relevant when using embedded Jetty servers. It should
      * not be used if you are using Servlets, where you will need to secure the
      * connection in the servlet container
@@ -72,10 +145,10 @@ public abstract class SparkBase {
      *                           keystore
      * @param truststorePassword the trust store password
      */
-    public static synchronized void setSecure(String keystoreFile,
-                                              String keystorePassword,
-                                              String truststoreFile,
-                                              String truststorePassword) {
+    public static synchronized void secure(String keystoreFile,
+                                           String keystorePassword,
+                                           String truststoreFile,
+                                           String truststorePassword) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -98,10 +171,18 @@ public abstract class SparkBase {
      * @param folder the folder in classpath.
      */
     public static synchronized void staticFileLocation(String folder) {
-        if (initialized) {
+        if (initialized && !runFromServlet) {
             throwBeforeRouteMappingException();
         }
         staticFileFolder = folder;
+        if (!servletStaticLocationSet) {
+            if (runFromServlet) {
+                SparkFilter.configureStaticResources(staticFileFolder);
+                servletStaticLocationSet = true;
+            }
+        } else {
+            LOG.warn("Static file location has already been set");
+        }
     }
 
     /**
@@ -111,10 +192,18 @@ public abstract class SparkBase {
      * @param externalFolder the external folder serving static files.
      */
     public static synchronized void externalStaticFileLocation(String externalFolder) {
-        if (initialized) {
+        if (initialized && !runFromServlet) {
             throwBeforeRouteMappingException();
         }
         externalStaticFileFolder = externalFolder;
+        if (!servletExternalStaticLocationSet) {
+            if (runFromServlet) {
+                SparkFilter.configureExternalStaticResources(externalStaticFileFolder);
+                servletExternalStaticLocationSet = true;
+            }
+        } else {
+            LOG.warn("External static file location has already been set");
+        }
     }
 
     private static void throwBeforeRouteMappingException() {
@@ -139,6 +228,7 @@ public abstract class SparkBase {
     }
 
     static synchronized void runFromServlet() {
+        runFromServlet = true;
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             initialized = true;
@@ -180,7 +270,7 @@ public abstract class SparkBase {
     /**
      * Wraps the filter in FilterImpl
      *
-     * @param path the path
+     * @param path   the path
      * @param filter the filter
      * @return the wrapped route
      */
@@ -191,9 +281,9 @@ public abstract class SparkBase {
     /**
      * Wraps the filter in FilterImpl
      *
-     * @param path the path
+     * @param path       the path
      * @param acceptType the accept type
-     * @param filter the filter
+     * @param filter     the filter
      * @return the wrapped route
      */
     protected static FilterImpl wrap(final String path, String acceptType, final Filter filter) {

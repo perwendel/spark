@@ -47,7 +47,7 @@ public class MimeParse {
     private static ParseResults parseMimeType(String mimeType) {
         String[] parts = mimeType.split(";");
         ParseResults results = new ParseResults();
-        results.params = new HashMap<String, String>();
+        results.params = new HashMap<>();
 
         for (int i = 1; i < parts.length; ++i) {
             String p = parts[i];
@@ -156,25 +156,10 @@ public class MimeParse {
     }
 
     /**
-     * Find the best match for a given mime-type against a list of ranges that
-     * have already been parsed by parseMediaRange(). Returns the 'q' quality
-     * parameter of the best match, 0 if no match was found. This function
-     * bahaves the same as quality() except that 'parsed_ranges' must be a list
-     * of parsed media ranges.
-     *
-     * @param mimeType
-     * @param parsedRanges
-     * @return
-     */
-    private static float qualityParsed(String mimeType, Collection<ParseResults> parsedRanges) {
-        return fitnessAndQualityParsed(mimeType, parsedRanges).quality;
-    }
-
-    /**
      * Finds best match
      *
      * @param supported the supported types
-     * @param header the header
+     * @param header    the header
      * @return the best match
      */
     public static String bestMatch(Collection<String> supported, String header) {
