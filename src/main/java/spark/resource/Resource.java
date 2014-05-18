@@ -35,7 +35,7 @@ import java.net.URL;
  * @see #getFile()
  * @see ClassPathResource
  * @see InputStreamResource
- * @since 28.12.2003
+ * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
  */
 public interface Resource extends InputStreamResource {
 

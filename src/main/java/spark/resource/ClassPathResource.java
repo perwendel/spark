@@ -36,7 +36,7 @@ import spark.utils.StringUtils;
  * @author Sam Brannen
  * @see ClassLoader#getResourceAsStream(String)
  * @see Class#getResourceAsStream(String)
- * @since 28.12.2003
+ * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
  */
 public class ClassPathResource extends AbstractFileResolvingResource {
 

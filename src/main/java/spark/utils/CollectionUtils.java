@@ -26,7 +26,9 @@ import java.util.Map;
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Arjen Poutsma
- * @since 1.1.3
+ *
+ * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
+ *
  */
 public abstract class CollectionUtils {
 

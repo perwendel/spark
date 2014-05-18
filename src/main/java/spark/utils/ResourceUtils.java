@@ -41,6 +41,9 @@ import java.net.URLConnection;
  *
  * @author Juergen Hoeller
  * @since 1.1.5
+ *
+ * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
+ *
  */
 public abstract class ResourceUtils {
 

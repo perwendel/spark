@@ -18,7 +18,6 @@ package spark.resource;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -81,7 +80,7 @@ public class ExternalResource extends AbstractFileResolvingResource {
 
     /**
      * Gets the path
-     * 
+     *
      * @return the path
      */
     public String getPath() {

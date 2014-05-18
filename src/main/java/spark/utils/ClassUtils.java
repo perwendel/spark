@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package spark.utils;
 
 import java.lang.reflect.Array;
@@ -32,7 +31,9 @@ import java.util.Set;
  * @author Rob Harrop
  * @author Sam Brannen
  * @since 1.1
- * s
+ *
+ * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
+ *
  */
 public abstract class ClassUtils {
 

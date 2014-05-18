@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package spark.utils;
 
 import java.util.ArrayList;
@@ -48,7 +47,9 @@ import java.util.TreeSet;
  * @author Rob Harrop
  * @author Rick Evans
  * @author Arjen Poutsma
- * @since 16 April 2001
+ *
+ * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
+ *
  */
 public abstract class StringUtils {
 

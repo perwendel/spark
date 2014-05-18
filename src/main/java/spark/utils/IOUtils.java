@@ -65,6 +65,8 @@ import java.io.Writer;
  * @author Niall Pemberton
  * @author Sandy McArthur
  * @version $Id: IOUtils.java 481854 2006-12-03 18:30:07Z scolebourne $
+ *
+ * Code copied from apache commons io source. Changes made (mostly removal of methods) by Per Wendel.
  */
 public final class IOUtils {
 

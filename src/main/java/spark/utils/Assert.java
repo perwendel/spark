@@ -40,7 +40,8 @@ package spark.utils;
  * @author Juergen Hoeller
  * @author Colin Sampaleanu
  * @author Rob Harrop
- * @since 1.1.2
+ *
+ * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
  */
 public abstract class Assert {
 

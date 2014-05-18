@@ -35,7 +35,7 @@ import spark.utils.ResourceUtils;
  * throw an exception; and "toString" will return the description.
  *
  * @author Juergen Hoeller
- * @since 28.12.2003
+ *         Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
  */
 public abstract class AbstractResource implements Resource {
 

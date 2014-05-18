@@ -26,7 +26,9 @@ package spark.utils;
  * @author Rod Johnson
  * @author Rob Harrop
  * @author Chris Beams
- * @since 19.03.2004
+ *
+ * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
+ *
  */
 public abstract class ObjectUtils {
 

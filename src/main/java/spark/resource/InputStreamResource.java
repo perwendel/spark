@@ -33,7 +33,7 @@ import java.io.InputStream;
  * @see java.io.InputStream
  * @see Resource
  * @see InputStreamResource
- * @since 20.01.2004
+ * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
  */
 public interface InputStreamResource {
 
