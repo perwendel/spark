@@ -110,7 +110,7 @@ public class SparkFilter implements Filter {
         // Handle static resources
         if (staticResourceHandler != null) {
             ClassPathResource resource = staticResourceHandler.getResource(httpRequest);
-            if (resource != null) {
+            if (resource != null && resource.isReadable()) {
                 IOUtils.copy(resource.getInputStream(), response.getWriter());
                 return;
             }

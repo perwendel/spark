@@ -60,7 +60,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      * @see spark.utils.ClassUtils#getDefaultClassLoader()
      */
     public ClassPathResource(String path) {
-        this(path, (ClassLoader) null);
+        this(path, null);
     }
 
     /**
@@ -84,21 +84,6 @@ public class ClassPathResource extends AbstractFileResolvingResource {
     }
 
     /**
-     * Create a new ClassPathResource for Class usage.
-     * The path can be relative to the given class,
-     * or absolute within the classpath via a leading slash.
-     *
-     * @param path  relative or absolute path within the class path
-     * @param clazz the class to load resources with
-     * @see java.lang.Class#getResourceAsStream
-     */
-    public ClassPathResource(String path, Class<?> clazz) {
-        Assert.notNull(path, "Path must not be null");
-        this.path = StringUtils.cleanPath(path);
-        this.clazz = clazz;
-    }
-
-    /**
      * Create a new ClassPathResource with optional ClassLoader and Class.
      * Only for internal usage.
      *
@@ -117,13 +102,6 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      */
     public final String getPath() {
         return this.path;
-    }
-
-    /**
-     * Return the ClassLoader that this resource will be obtained from.
-     */
-    public final ClassLoader getClassLoader() {
-        return (this.classLoader != null ? this.classLoader : this.clazz.getClassLoader());
     }
 
     /**
