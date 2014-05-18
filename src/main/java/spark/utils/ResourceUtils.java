@@ -75,11 +75,6 @@ public abstract class ResourceUtils {
     public static final String URL_PROTOCOL_VFSZIP = "vfszip";
 
     /**
-     * URL protocol for a JBoss VFS resource: "vfs"
-     */
-    public static final String URL_PROTOCOL_VFS = "vfs";
-
-    /**
      * URL protocol for an entry from a WebSphere jar file: "wsjar"
      */
     public static final String URL_PROTOCOL_WSJAR = "wsjar";
@@ -269,7 +264,7 @@ public abstract class ResourceUtils {
      */
     public static boolean isFileURL(URL url) {
         String protocol = url.getProtocol();
-        return (URL_PROTOCOL_FILE.equals(protocol) || protocol.startsWith(URL_PROTOCOL_VFS));
+        return (URL_PROTOCOL_FILE.equals(protocol));
     }
 
     /**
