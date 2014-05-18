@@ -23,7 +23,6 @@ import java.net.URL;
 
 import spark.utils.Assert;
 import spark.utils.ClassUtils;
-import spark.utils.ObjectUtils;
 import spark.utils.StringUtils;
 
 /**
@@ -213,9 +212,13 @@ public class ClassPathResource extends AbstractFileResolvingResource {
         }
         if (obj instanceof ClassPathResource) {
             ClassPathResource otherRes = (ClassPathResource) obj;
+
+            ClassLoader thisLoader = this.classLoader;
+            ClassLoader otherLoader = otherRes.classLoader;
+
             return (this.path.equals(otherRes.path) &&
-                    ObjectUtils.nullSafeEquals(this.classLoader, otherRes.classLoader) &&
-                    ObjectUtils.nullSafeEquals(this.clazz, otherRes.clazz));
+                    thisLoader.equals(otherLoader) &&
+                    this.clazz.equals(otherRes.clazz));
         }
         return false;
     }

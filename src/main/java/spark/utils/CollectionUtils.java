@@ -41,15 +41,4 @@ public abstract class CollectionUtils {
         return (collection == null || collection.isEmpty());
     }
 
-    /**
-     * Return {@code true} if the supplied Map is {@code null} or empty.
-     * Otherwise, return {@code false}.
-     *
-     * @param map the Map to check
-     * @return whether the given Map is empty
-     */
-    public static boolean isEmpty(Map<?, ?> map) {
-        return (map == null || map.isEmpty());
-    }
-
 }
