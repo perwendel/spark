@@ -41,9 +41,9 @@ public abstract class AbstractResourceHandler {
     public AbstractFileResolvingResource getResource(HttpServletRequest request) throws MalformedURLException {
         String servletPath;
         String pathInfo;
-        Boolean included = request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) != null;
+        boolean included = request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) != null;
 
-        if (included != null && included.booleanValue()) {
+        if (included) {
             servletPath = (String) request.getAttribute(RequestDispatcher.INCLUDE_SERVLET_PATH);
             pathInfo = (String) request.getAttribute(RequestDispatcher.INCLUDE_PATH_INFO);
 
