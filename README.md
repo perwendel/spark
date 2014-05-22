@@ -14,8 +14,6 @@ NEWS: Spark 2.0.0 with Lambda support is now available on Maven central!!! :
 NEWS: Spark google group created:
 https://groups.google.com/d/forum/sparkjava
 
-Examples can also be viewed on: http://code.google.com/p/spark-java/
-
 Temporary API Docs: http://spark.screenisland.com
 
 Getting started
