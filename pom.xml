@@ -61,6 +61,13 @@
             <version>${jetty.version}</version>
         </dependency>
 
+        <!-- ROUTING DEPENDENCIES -->
+        <dependency>
+            <groupId>com.augustl</groupId>
+            <artifactId>pathtravelagent</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- JUNIT DEPENDENCY FOR TESTING -->
         <dependency>
             <groupId>junit</groupId>
