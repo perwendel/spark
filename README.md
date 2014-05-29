@@ -1,5 +1,6 @@
 Spark - a Sinatra inspired web framework
 ==============================================
+[![Build Status](https://travis-ci.org/perwendel/spark.png)](https://travis-ci.org/perwendel/spark)
 
 NEWS: Spark 2.0.0 with Lambda support is now available on Maven central!!! :
 
