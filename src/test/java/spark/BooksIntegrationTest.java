@@ -149,10 +149,11 @@ public class BooksIntegrationTest {
         }
     }
 
-    @Ignore
     @Test
     public void testDeleteBook() {
         try {
+            bookId = createBookViaPOST().body.trim();
+
             UrlResponse response = doMethod("DELETE", "/books/" + bookId, null);
             String result = response.body;
             assertNotNull(response);
