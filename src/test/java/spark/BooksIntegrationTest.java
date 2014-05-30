@@ -1,12 +1,14 @@
 package spark;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.FileNotFoundException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-
-import junit.framework.Assert;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -58,10 +60,10 @@ public class BooksIntegrationTest {
         try {
             UrlResponse response = doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE, null);
             id = response.body.trim();
-            Assert.assertNotNull(response);
-            Assert.assertNotNull(response.body);
-            Assert.assertTrue(Integer.valueOf(response.body) > 0);
-            Assert.assertEquals(201, response.status);
+            assertNotNull(response);
+            assertNotNull(response.body);
+            assertTrue(Integer.valueOf(response.body) > 0);
+            assertEquals(201, response.status);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -71,13 +73,13 @@ public class BooksIntegrationTest {
     public void testListBooks() {
         try {
             UrlResponse response = doMethod("GET", "/books", null);
-            Assert.assertNotNull(response);
+            assertNotNull(response);
             String body = response.body.trim();
             System.out.println("BODY: " + body);
-            Assert.assertNotNull(body);
-            Assert.assertTrue(Integer.valueOf(body) > 0);
-            Assert.assertEquals(200, response.status);
-            Assert.assertTrue(response.body.contains(id));
+            assertNotNull(body);
+            assertTrue(Integer.valueOf(body) > 0);
+            assertEquals(200, response.status);
+            assertTrue(response.body.contains(id));
         } catch (Throwable e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -92,15 +94,15 @@ public class BooksIntegrationTest {
 
             UrlResponse response = doMethod("GET", "/books/" + id, null);
             String result = response.body;
-            Assert.assertNotNull(response);
-            Assert.assertNotNull(response.body);
-            Assert.assertEquals(200, response.status);
-            Assert.assertTrue(result.contains(AUTHOR));
-            Assert.assertTrue(result.contains(TITLE));
+            assertNotNull(response);
+            assertNotNull(response.body);
+            assertEquals(200, response.status);
+            assertTrue(result.contains(AUTHOR));
+            assertTrue(result.contains(TITLE));
 
             // verify response header set by filters:
-            Assert.assertTrue(response.headers.get("FOZ").get(0).equals("BAZ"));
-            Assert.assertTrue(response.headers.get("FOO").get(0).equals("BAR"));
+            assertTrue(response.headers.get("FOZ").get(0).equals("BAZ"));
+            assertTrue(response.headers.get("FOO").get(0).equals("BAR"));
 
             // delete the book again
             // Comment this delete to ensure the running of the tests
@@ -115,11 +117,11 @@ public class BooksIntegrationTest {
         try {
             UrlResponse response = doMethod("PUT", "/books/" + id + "?title=" + NEW_TITLE, null);
             String result = response.body;
-            Assert.assertNotNull(response);
-            Assert.assertNotNull(response.body);
-            Assert.assertEquals(200, response.status);
-            Assert.assertTrue(result.contains(id));
-            Assert.assertTrue(result.contains("updated"));
+            assertNotNull(response);
+            assertNotNull(response.body);
+            assertEquals(200, response.status);
+            assertTrue(result.contains(id));
+            assertTrue(result.contains("updated"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -130,11 +132,11 @@ public class BooksIntegrationTest {
         try {
             UrlResponse response = doMethod("GET", "/books/" + id, null);
             String result = response.body;
-            Assert.assertNotNull(response);
-            Assert.assertNotNull(response.body);
-            Assert.assertEquals(200, response.status);
-            Assert.assertTrue(result.contains(AUTHOR));
-            Assert.assertTrue(result.contains(NEW_TITLE));
+            assertNotNull(response);
+            assertNotNull(response.body);
+            assertEquals(200, response.status);
+            assertTrue(result.contains(AUTHOR));
+            assertTrue(result.contains(NEW_TITLE));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -145,11 +147,11 @@ public class BooksIntegrationTest {
         try {
             UrlResponse response = doMethod("DELETE", "/books/" + id, null);
             String result = response.body;
-            Assert.assertNotNull(response);
-            Assert.assertNotNull(response.body);
-            Assert.assertEquals(200, response.status);
-            Assert.assertTrue(result.contains(id));
-            Assert.assertTrue(result.contains("deleted"));
+            assertNotNull(response);
+            assertNotNull(response.body);
+            assertEquals(200, response.status);
+            assertTrue(result.contains(id));
+            assertTrue(result.contains("deleted"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -161,7 +163,7 @@ public class BooksIntegrationTest {
             doMethod("GET", "/books/" + id, null);
         } catch (Exception e) {
             if (e instanceof FileNotFoundException) {
-                Assert.assertTrue(true);
+                assertTrue(true);
             } else {
                 e.printStackTrace();
                 throw new RuntimeException(e);
