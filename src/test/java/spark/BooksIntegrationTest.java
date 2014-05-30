@@ -7,6 +7,7 @@ import static spark.Spark.after;
 import static spark.Spark.before;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -175,18 +176,25 @@ public class BooksIntegrationTest {
         }
     }
 
-    private static UrlResponse doMethod(String requestMethod, String path, String body) throws Exception {
-        URL url = new URL("http://localhost:" + PORT + path);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod(requestMethod);
-
-        connection.connect();
-
-        String res = IOUtils.toString(connection.getInputStream());
+    private static UrlResponse doMethod(String requestMethod, String path, String body) {
         UrlResponse response = new UrlResponse();
-        response.body = res;
-        response.status = connection.getResponseCode();
-        response.headers = connection.getHeaderFields();
+
+        try {
+            URL url = new URL("http://localhost:" + PORT + path);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod(requestMethod);
+
+            connection.connect();
+
+            String res = IOUtils.toString(connection.getInputStream());
+
+            response.body = res;
+            response.status = connection.getResponseCode();
+            response.headers = connection.getHeaderFields();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return response;
     }
 
