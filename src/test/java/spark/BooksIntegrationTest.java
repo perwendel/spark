@@ -164,18 +164,9 @@ public class BooksIntegrationTest {
         }
     }
 
-    @Test
-    public void wontFindBook() {
-        try {
-            getResponse("GET", "/books/" + bookId, null);
-        } catch (Exception e) {
-            if (e instanceof FileNotFoundException) {
-                assertTrue(true);
-            } else {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        }
+    @Test(expected = FileNotFoundException.class)
+    public void wontFindBook() throws IOException {
+        getResponse("GET", "/books/" + bookId, null);
     }
 
     private static UrlResponse doMethod(String requestMethod, String path, String body) {
