@@ -25,10 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import spark.Request;
-import spark.Response;
-import spark.Route;
-
 /**
  * A simple RESTful example showing howto create, get, update and delete book resources.
  *
@@ -39,7 +35,7 @@ public class Books {
     /**
      * Map holding the books
      */
-    private static Map<String, Book> books = new HashMap<String, Book>();
+    public static Map<String, Book> books = new HashMap<String, Book>();
 
     public static void main(String[] args) {
 
