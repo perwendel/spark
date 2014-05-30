@@ -30,6 +30,7 @@ public class BooksIntegrationTest {
 
     @After
     public void tearDown() {
+        Books.books.clear();
         Spark.stop();
     }
 
