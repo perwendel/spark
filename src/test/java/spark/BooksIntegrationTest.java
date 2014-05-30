@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import spark.examples.books.Books;
@@ -32,14 +33,18 @@ public class BooksIntegrationTest {
 
     private String bookId;
 
-    @After
-    public void tearDown() {
-        Books.books.clear();
+    @AfterClass
+    public static void tearDown() {
         Spark.stop();
     }
 
-    @Before
-    public void setup() {
+    @After
+    public void clearBooks() {
+        Books.books.clear();
+    }
+
+    @BeforeClass
+    public static void setup() {
         before((request, response) -> {
             response.header("FOZ", "BAZ");
         });
