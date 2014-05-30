@@ -3,6 +3,8 @@ package spark;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static spark.Spark.after;
+import static spark.Spark.before;
 
 import java.io.FileNotFoundException;
 import java.net.HttpURLConnection;
@@ -35,21 +37,16 @@ public class BooksIntegrationTest {
 
     @Before
     public void setup() {
-        Spark.before(new Filter() {
-            @Override
-            public void handle(Request request, Response response) {
-                response.header("FOZ", "BAZ");
-            }
+        before((request, response) -> {
+            response.header("FOZ", "BAZ");
         });
 
         Books.main(null);
 
-        Spark.after(new Filter() {
-            @Override
-            public void handle(Request request, Response response) {
-                response.header("FOO", "BAR");
-            }
+        after((request, response) -> {
+            response.header("FOO", "BAR");
         });
+
         try {
             Thread.sleep(500);
         } catch (Exception e) {
