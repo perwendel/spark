@@ -167,7 +167,7 @@ public class BooksIntegrationTest {
     @Test
     public void wontFindBook() {
         try {
-            doMethod("GET", "/books/" + bookId, null);
+            getResponse("GET", "/books/" + bookId, null);
         } catch (Exception e) {
             if (e instanceof FileNotFoundException) {
                 assertTrue(true);
