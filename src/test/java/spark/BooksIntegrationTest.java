@@ -76,9 +76,9 @@ public class BooksIntegrationTest {
             bookId = createBookViaPOST().body.trim();
 
             UrlResponse response = doMethod("GET", "/books", null);
+
             assertNotNull(response);
             String body = response.body.trim();
-
             assertNotNull(body);
             assertTrue(Integer.valueOf(body) > 0);
             assertEquals(200, response.status);
@@ -95,13 +95,13 @@ public class BooksIntegrationTest {
             bookId = createBookViaPOST().body.trim();
 
             UrlResponse response = doMethod("GET", "/books/" + bookId, null);
+
             String result = response.body;
             assertNotNull(response);
             assertNotNull(response.body);
             assertEquals(200, response.status);
             assertTrue(result.contains(AUTHOR));
             assertTrue(result.contains(TITLE));
-
             assertTrue(beforeFilterIsSet(response));
             assertTrue(afterFilterIsSet(response));
         } catch (Throwable e) {
@@ -115,6 +115,7 @@ public class BooksIntegrationTest {
             bookId = createBookViaPOST().body.trim();
 
             UrlResponse response = updateBook();
+
             String result = response.body;
             assertNotNull(response);
             assertNotNull(response.body);
@@ -133,6 +134,7 @@ public class BooksIntegrationTest {
             updateBook();
 
             UrlResponse response = doMethod("GET", "/books/" + bookId, null);
+
             String result = response.body;
             assertNotNull(response);
             assertNotNull(response.body);
@@ -150,6 +152,7 @@ public class BooksIntegrationTest {
             bookId = createBookViaPOST().body.trim();
 
             UrlResponse response = doMethod("DELETE", "/books/" + bookId, null);
+
             String result = response.body;
             assertNotNull(response);
             assertNotNull(response.body);
