@@ -102,9 +102,8 @@ public class BooksIntegrationTest {
             assertTrue(result.contains(AUTHOR));
             assertTrue(result.contains(TITLE));
 
-            // verify response header set by filters:
-            assertTrue(response.headers.get("FOZ").get(0).equals("BAZ"));
-            assertTrue(response.headers.get("FOO").get(0).equals("BAR"));
+            assertTrue(beforeFilterIsSet(response));
+            assertTrue(afterFilterIsSet(response));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -203,5 +202,13 @@ public class BooksIntegrationTest {
 
     private UrlResponse updateBook() throws Exception {
         return doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE, null);
+    }
+
+    private boolean afterFilterIsSet(UrlResponse response) {
+        return response.headers.get("FOO").get(0).equals("BAR");
+    }
+
+    private boolean beforeFilterIsSet(UrlResponse response) {
+        return response.headers.get("FOZ").get(0).equals("BAZ");
     }
 }
