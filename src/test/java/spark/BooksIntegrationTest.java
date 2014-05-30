@@ -10,8 +10,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -26,13 +26,13 @@ public class BooksIntegrationTest {
     private static String TITLE = "BAR";
     private static String NEW_TITLE = "SPARK";
 
-    @AfterClass
-    public static void tearDown() {
+    @After
+    public void tearDown() {
         Spark.stop();
     }
 
-    @BeforeClass
-    public static void setup() {
+    @Before
+    public void setup() {
         Spark.before(new Filter() {
             @Override
             public void handle(Request request, Response response) {
