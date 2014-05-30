@@ -54,7 +54,7 @@ public class BooksIntegrationTest {
     }
 
     @Test
-    public void testCreateBook() {
+    public void canCreateBook() {
         try {
             UrlResponse response = createBookViaPOST();
 
@@ -68,7 +68,7 @@ public class BooksIntegrationTest {
     }
 
     @Test
-    public void testListBooks() {
+    public void canListBooks() {
         try {
             bookId = createBookViaPOST().body.trim();
 
@@ -87,7 +87,7 @@ public class BooksIntegrationTest {
     }
 
     @Test
-    public void testGetBook() {
+    public void canGetBook() {
         try {
             bookId = createBookViaPOST().body.trim();
 
@@ -107,7 +107,7 @@ public class BooksIntegrationTest {
     }
 
     @Test
-    public void testUpdateBook() {
+    public void canUpdateBook() {
         try {
             bookId = createBookViaPOST().body.trim();
 
@@ -125,7 +125,7 @@ public class BooksIntegrationTest {
     }
 
     @Test
-    public void testGetUpdatedBook() {
+    public void canGetUpdatedBook() {
         try {
             bookId = createBookViaPOST().body.trim();
             updateBook();
@@ -144,7 +144,7 @@ public class BooksIntegrationTest {
     }
 
     @Test
-    public void testDeleteBook() {
+    public void canDeleteBook() {
         try {
             bookId = createBookViaPOST().body.trim();
 
@@ -162,7 +162,7 @@ public class BooksIntegrationTest {
     }
 
     @Test
-    public void testBookNotFound() {
+    public void wontFindBook() {
         try {
             doMethod("GET", "/books/" + bookId, null);
         } catch (Exception e) {
