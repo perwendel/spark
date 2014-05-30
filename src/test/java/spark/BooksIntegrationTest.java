@@ -54,13 +54,13 @@ public class BooksIntegrationTest {
         }
     }
 
-    private static String id;
+    private static String bookId;
 
     @Test
     public void testCreateBook() {
         try {
-            UrlResponse response = doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE, null);
-            id = response.body.trim();
+            UrlResponse response = createBookViaPOST();
+
             assertNotNull(response);
             assertNotNull(response.body);
             assertTrue(Integer.valueOf(response.body) > 0);
@@ -70,10 +70,12 @@ public class BooksIntegrationTest {
         }
     }
 
+
     @Test
     public void testListBooks() {
         try {
-            testCreateBook();
+            bookId = createBookViaPOST().body.trim();
+
             UrlResponse response = doMethod("GET", "/books", null);
             assertNotNull(response);
             String body = response.body.trim();
@@ -81,7 +83,7 @@ public class BooksIntegrationTest {
             assertNotNull(body);
             assertTrue(Integer.valueOf(body) > 0);
             assertEquals(200, response.status);
-            assertTrue(response.body.contains(id));
+            assertTrue(response.body.contains(bookId));
         } catch (Throwable e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -91,10 +93,9 @@ public class BooksIntegrationTest {
     @Test
     public void testGetBook() {
         try {
-            // ensure there is a book
-            testCreateBook();
+            bookId = createBookViaPOST().body.trim();
 
-            UrlResponse response = doMethod("GET", "/books/" + id, null);
+            UrlResponse response = doMethod("GET", "/books/" + bookId, null);
             String result = response.body;
             assertNotNull(response);
             assertNotNull(response.body);
@@ -118,12 +119,12 @@ public class BooksIntegrationTest {
     @Test
     public void testUpdateBook() {
         try {
-            UrlResponse response = doMethod("PUT", "/books/" + id + "?title=" + NEW_TITLE, null);
+            UrlResponse response = doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE, null);
             String result = response.body;
             assertNotNull(response);
             assertNotNull(response.body);
             assertEquals(200, response.status);
-            assertTrue(result.contains(id));
+            assertTrue(result.contains(bookId));
             assertTrue(result.contains("updated"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -134,7 +135,7 @@ public class BooksIntegrationTest {
     @Test
     public void testGetUpdatedBook() {
         try {
-            UrlResponse response = doMethod("GET", "/books/" + id, null);
+            UrlResponse response = doMethod("GET", "/books/" + bookId, null);
             String result = response.body;
             assertNotNull(response);
             assertNotNull(response.body);
@@ -149,12 +150,12 @@ public class BooksIntegrationTest {
     @Test
     public void testDeleteBook() {
         try {
-            UrlResponse response = doMethod("DELETE", "/books/" + id, null);
+            UrlResponse response = doMethod("DELETE", "/books/" + bookId, null);
             String result = response.body;
             assertNotNull(response);
             assertNotNull(response.body);
             assertEquals(200, response.status);
-            assertTrue(result.contains(id));
+            assertTrue(result.contains(bookId));
             assertTrue(result.contains("deleted"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -164,7 +165,7 @@ public class BooksIntegrationTest {
     @Test
     public void testBookNotFound() {
         try {
-            doMethod("GET", "/books/" + id, null);
+            doMethod("GET", "/books/" + bookId, null);
         } catch (Exception e) {
             if (e instanceof FileNotFoundException) {
                 assertTrue(true);
@@ -199,4 +200,7 @@ public class BooksIntegrationTest {
         private int status;
     }
 
+    private UrlResponse createBookViaPOST() throws Exception {
+        return doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE, null);
+    }
 }
