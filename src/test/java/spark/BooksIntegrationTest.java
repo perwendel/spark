@@ -118,10 +118,11 @@ public class BooksIntegrationTest {
         }
     }
 
-    @Ignore
     @Test
     public void testUpdateBook() {
         try {
+            bookId = createBookViaPOST().body.trim();
+
             UrlResponse response = doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE, null);
             String result = response.body;
             assertNotNull(response);
