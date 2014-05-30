@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import spark.examples.books.Books;
@@ -123,7 +122,7 @@ public class BooksIntegrationTest {
         try {
             bookId = createBookViaPOST().body.trim();
 
-            UrlResponse response = doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE, null);
+            UrlResponse response = updateBook();
             String result = response.body;
             assertNotNull(response);
             assertNotNull(response.body);
@@ -135,10 +134,12 @@ public class BooksIntegrationTest {
         }
     }
 
-    @Ignore
     @Test
     public void testGetUpdatedBook() {
         try {
+            bookId = createBookViaPOST().body.trim();
+            updateBook();
+
             UrlResponse response = doMethod("GET", "/books/" + bookId, null);
             String result = response.body;
             assertNotNull(response);
@@ -208,5 +209,9 @@ public class BooksIntegrationTest {
 
     private UrlResponse createBookViaPOST() throws Exception {
         return doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE, null);
+    }
+
+    private UrlResponse updateBook() throws Exception {
+        return doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE, null);
     }
 }
