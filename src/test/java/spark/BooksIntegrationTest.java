@@ -58,110 +58,85 @@ public class BooksIntegrationTest {
 
     @Test
     public void canCreateBook() {
-        try {
-            UrlResponse response = createBookViaPOST();
+        UrlResponse response = createBookViaPOST();
 
-            assertNotNull(response);
-            assertNotNull(response.body);
-            assertTrue(Integer.valueOf(response.body) > 0);
-            assertEquals(201, response.status);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        assertNotNull(response);
+        assertNotNull(response.body);
+        assertTrue(Integer.valueOf(response.body) > 0);
+        assertEquals(201, response.status);
     }
 
     @Test
     public void canListBooks() {
-        try {
-            bookId = createBookViaPOST().body.trim();
+        bookId = createBookViaPOST().body.trim();
 
-            UrlResponse response = doMethod("GET", "/books", null);
+        UrlResponse response = doMethod("GET", "/books", null);
 
-            assertNotNull(response);
-            String body = response.body.trim();
-            assertNotNull(body);
-            assertTrue(Integer.valueOf(body) > 0);
-            assertEquals(200, response.status);
-            assertTrue(response.body.contains(bookId));
-        } catch (Throwable e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        assertNotNull(response);
+        String body = response.body.trim();
+        assertNotNull(body);
+        assertTrue(Integer.valueOf(body) > 0);
+        assertEquals(200, response.status);
+        assertTrue(response.body.contains(bookId));
     }
 
     @Test
     public void canGetBook() {
-        try {
-            bookId = createBookViaPOST().body.trim();
+        bookId = createBookViaPOST().body.trim();
 
-            UrlResponse response = doMethod("GET", "/books/" + bookId, null);
+        UrlResponse response = doMethod("GET", "/books/" + bookId, null);
 
-            String result = response.body;
-            assertNotNull(response);
-            assertNotNull(response.body);
-            assertEquals(200, response.status);
-            assertTrue(result.contains(AUTHOR));
-            assertTrue(result.contains(TITLE));
-            assertTrue(beforeFilterIsSet(response));
-            assertTrue(afterFilterIsSet(response));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        String result = response.body;
+        assertNotNull(response);
+        assertNotNull(response.body);
+        assertEquals(200, response.status);
+        assertTrue(result.contains(AUTHOR));
+        assertTrue(result.contains(TITLE));
+        assertTrue(beforeFilterIsSet(response));
+        assertTrue(afterFilterIsSet(response));
     }
 
     @Test
     public void canUpdateBook() {
-        try {
-            bookId = createBookViaPOST().body.trim();
+        bookId = createBookViaPOST().body.trim();
 
-            UrlResponse response = updateBook();
+        UrlResponse response = updateBook();
 
-            String result = response.body;
-            assertNotNull(response);
-            assertNotNull(response.body);
-            assertEquals(200, response.status);
-            assertTrue(result.contains(bookId));
-            assertTrue(result.contains("updated"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        String result = response.body;
+        assertNotNull(response);
+        assertNotNull(response.body);
+        assertEquals(200, response.status);
+        assertTrue(result.contains(bookId));
+        assertTrue(result.contains("updated"));
     }
 
     @Test
     public void canGetUpdatedBook() {
-        try {
-            bookId = createBookViaPOST().body.trim();
-            updateBook();
+        bookId = createBookViaPOST().body.trim();
+        updateBook();
 
-            UrlResponse response = doMethod("GET", "/books/" + bookId, null);
+        UrlResponse response = doMethod("GET", "/books/" + bookId, null);
 
-            String result = response.body;
-            assertNotNull(response);
-            assertNotNull(response.body);
-            assertEquals(200, response.status);
-            assertTrue(result.contains(AUTHOR));
-            assertTrue(result.contains(NEW_TITLE));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        String result = response.body;
+        assertNotNull(response);
+        assertNotNull(response.body);
+        assertEquals(200, response.status);
+        assertTrue(result.contains(AUTHOR));
+        assertTrue(result.contains(NEW_TITLE));
     }
 
     @Test
     public void canDeleteBook() {
-        try {
-            bookId = createBookViaPOST().body.trim();
+        bookId = createBookViaPOST().body.trim();
 
-            UrlResponse response = doMethod("DELETE", "/books/" + bookId, null);
+        UrlResponse response = doMethod("DELETE", "/books/" + bookId, null);
 
-            String result = response.body;
-            assertNotNull(response);
-            assertNotNull(response.body);
-            assertEquals(200, response.status);
-            assertTrue(result.contains(bookId));
-            assertTrue(result.contains("deleted"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        String result = response.body;
+        assertNotNull(response);
+        assertNotNull(response.body);
+        assertEquals(200, response.status);
+        assertTrue(result.contains(bookId));
+        assertTrue(result.contains("deleted"));
     }
 
     @Test(expected = FileNotFoundException.class)
@@ -199,11 +174,11 @@ public class BooksIntegrationTest {
         private int status;
     }
 
-    private UrlResponse createBookViaPOST() throws Exception {
+    private UrlResponse createBookViaPOST() {
         return doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE, null);
     }
 
-    private UrlResponse updateBook() throws Exception {
+    private UrlResponse updateBook() {
         return doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE, null);
     }
 
