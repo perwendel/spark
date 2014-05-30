@@ -56,8 +56,6 @@ public class BooksIntegrationTest {
         }
     }
 
-
-
     @Test
     public void testCreateBook() {
         try {
@@ -71,7 +69,6 @@ public class BooksIntegrationTest {
             throw new RuntimeException(e);
         }
     }
-
 
     @Test
     public void testListBooks() {
@@ -108,10 +105,6 @@ public class BooksIntegrationTest {
             // verify response header set by filters:
             assertTrue(response.headers.get("FOZ").get(0).equals("BAZ"));
             assertTrue(response.headers.get("FOO").get(0).equals("BAR"));
-
-            // delete the book again
-            // Comment this delete to ensure the running of the tests
-            // testDeleteBook();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -188,10 +181,7 @@ public class BooksIntegrationTest {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod);
 
-        // connection.setDoOutput(true);
-
         connection.connect();
-        // connection.getOutputStream().flush();
 
         String res = IOUtils.toString(connection.getInputStream());
         UrlResponse response = new UrlResponse();
