@@ -78,7 +78,7 @@ public class BooksIntegrationTest {
             UrlResponse response = doMethod("GET", "/books", null);
             assertNotNull(response);
             String body = response.body.trim();
-            System.out.println("BODY: " + body);
+
             assertNotNull(body);
             assertTrue(Integer.valueOf(body) > 0);
             assertEquals(200, response.status);
