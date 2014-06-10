@@ -76,6 +76,11 @@ final class RequestWrapper extends Request {
     public String body() {
         return delegate.body();
     }
+    
+    @Override
+    public byte[] bodyAsBytes() {
+        return delegate.bodyAsBytes();
+    }
 
     @Override
     public int contentLength() {
