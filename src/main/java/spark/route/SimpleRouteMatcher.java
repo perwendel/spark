@@ -33,6 +33,7 @@ public class SimpleRouteMatcher {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleRouteMatcher.class);
     private static final char SINGLE_QUOTE = '\'';
+    private static Boolean ACCEPT_TYPE_CHECK_ENABLED = false;
 
     private List<RouteEntry> routes;
 
@@ -75,6 +76,15 @@ public class SimpleRouteMatcher {
     }
 
     /**
+     * Changes static flag reflecting Accept-Type checks enabled/disabled
+     *
+     * @param flag  boolean; true - enabled, false - disabled
+     */
+    public static void setCheckAcceptType(Boolean flag){
+        ACCEPT_TYPE_CHECK_ENABLED = flag;
+    }
+
+    /**
      * finds target for a requested route
      *
      * @param httpMethod the http method
@@ -84,7 +94,14 @@ public class SimpleRouteMatcher {
      */
     public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteEntry> routeEntries = this.findTargetsForRequestedRoute(httpMethod, path);
-        RouteEntry entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
+        RouteEntry entry = null;
+        if(ACCEPT_TYPE_CHECK_ENABLED) {
+            entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
+        } else {
+            if(routeEntries.size() > 0) {
+                entry = routeEntries.get(0);
+            }
+        }
         return entry != null ? new RouteMatch(httpMethod, entry.target, entry.path, path, acceptType) : null;
     }
 
@@ -101,7 +118,7 @@ public class SimpleRouteMatcher {
         List<RouteEntry> routeEntries = findTargetsForRequestedRoute(httpMethod, path);
 
         for (RouteEntry routeEntry : routeEntries) {
-            if (acceptType != null) {
+            if (acceptType != null && routeEntry.acceptedType != null) {
                 String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
 
                 if (routeWithGivenAcceptType(bestMatch)) {
