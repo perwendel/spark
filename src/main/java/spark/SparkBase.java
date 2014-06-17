@@ -236,6 +236,15 @@ public abstract class SparkBase {
     }
 
     /**
+     * Enables or disables Accept-Type check on request
+     *
+     * @param flag boolean - true - check enabled, false - check disabled
+     */
+    protected static synchronized void checkAcceptType(Boolean flag){
+        routeMatcher.setCheckAcceptType(flag);
+    }
+
+    /**
      * Wraps the route in RouteImpl
      *
      * @param path  the path
