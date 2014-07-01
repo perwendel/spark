@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import spark.Spark;
 import spark.SparkInstance;
 
 public class InstanceBooks implements Runnable {
@@ -11,7 +12,7 @@ public class InstanceBooks implements Runnable {
     public Map<String, Book> books = new HashMap<String, Book>();
 
     public InstanceBooks(int port) {
-        spark = SparkInstance.builder().port(port).build();
+        spark = Spark.builder().port(port).build();
     }
 
     public static void main(String[] args) {

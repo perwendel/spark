@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import spark.ModelAndView;
+import spark.Spark;
 import spark.SparkInstance;
 import spark.TemplateEngine;
 import spark.examples.exception.BaseException;
@@ -35,7 +36,7 @@ public class GenericIntegrationTest {
 
     @BeforeClass
     public static void setup() throws IOException {
-        spark = SparkInstance.builder()
+        spark = Spark.builder()
                 .port(4567)
                 .staticFilesAt("/public")
                 .externalStaticFilesAt(System.getProperty("java.io.tmpdir"))

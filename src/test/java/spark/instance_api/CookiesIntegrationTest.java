@@ -13,8 +13,6 @@ import spark.SparkInstance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static spark.Spark.halt;
-import static spark.Spark.post;
 
 /**
  * System tests for the Cookies support.
@@ -29,7 +27,7 @@ public class CookiesIntegrationTest {
 
     @BeforeClass
     public static void initRoutes() throws InterruptedException {
-        spark = SparkInstance.builder().build();
+        spark = Spark.builder().build();
         spark.post("/assertNoCookies", (request, response) -> {
             if (!request.cookies().isEmpty()) {
                 spark.halt(500);

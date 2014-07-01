@@ -37,10 +37,6 @@ public class SparkInstance {
     SparkInstance() {
     }
 
-    public static SparkBuilder builder() {
-        return new SparkBuilder();
-    }
-
     private void throwBeforeRouteMappingException() {
         throw new IllegalStateException("This must be done before route mapping has begun");
     }

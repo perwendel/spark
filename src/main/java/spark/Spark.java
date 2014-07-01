@@ -39,6 +39,10 @@ public final class Spark extends SparkBase {
     Spark() {
     }
 
+    public static SparkBuilder builder() {
+        return new SparkBuilder();
+    }
+
     /**
      * Map the route for HTTP GET requests
      *

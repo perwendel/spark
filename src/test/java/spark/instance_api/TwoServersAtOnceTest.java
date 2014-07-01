@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import spark.Route;
+import spark.Spark;
 import spark.SparkInstance;
 import spark.utils.IOUtils;
 
@@ -25,8 +26,8 @@ public class TwoServersAtOnceTest {
 
     @BeforeClass
     public static void setUp() {
-        spark1 = SparkInstance.builder().port(4567).build();
-        spark2 = SparkInstance.builder().port(4568).build();
+        spark1 = Spark.builder().port(4567).build();
+        spark2 = Spark.builder().port(4568).build();
 
         String path = "/someResource";
         Route route = (request, response) -> "SOME RESOURCE";

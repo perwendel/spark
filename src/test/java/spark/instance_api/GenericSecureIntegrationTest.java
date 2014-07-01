@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import junit.framework.Assert;
+import spark.Spark;
 import spark.SparkInstance;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
@@ -24,7 +25,7 @@ public class GenericSecureIntegrationTest {
         // note that the keystore stuff is retrieved from SparkTestUtil which
         // respects JVM params for keystore, password
         // but offers a default included store if not.
-        spark = SparkInstance.builder()
+        spark = Spark.builder()
                 .port(4567)
                 .secure(SparkTestUtil.getKeyStoreLocation(), SparkTestUtil.getKeystorePassword(), null, null)
                 .build();
