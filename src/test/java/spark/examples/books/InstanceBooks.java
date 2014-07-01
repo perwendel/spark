@@ -12,7 +12,6 @@ public class InstanceBooks implements Runnable {
 
     public InstanceBooks(int port) {
         spark = SparkInstance.builder().port(port).build();
-        spark.runFromServlet();
     }
 
     public static void main(String[] args) {
