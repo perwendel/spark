@@ -3,39 +3,16 @@ package spark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.route.RouteMatcherFactory;
+import spark.exception.ExceptionMapper;
 import spark.route.SimpleRouteMatcher;
-import spark.servlet.SparkFilter;
-import spark.webserver.SparkServer;
-import spark.webserver.SparkServerFactory;
 
 /**
  * Spark base class
  */
 public abstract class SparkBase {
+
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
-    public static final int SPARK_DEFAULT_PORT = 4567;
-    protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
-
-    protected static boolean initialized = false;
-
-    protected static int port = SPARK_DEFAULT_PORT;
-    protected static String ipAddress = "0.0.0.0";
-
-    protected static String keystoreFile;
-    protected static String keystorePassword;
-    protected static String truststoreFile;
-    protected static String truststorePassword;
-
-    protected static String staticFileFolder = null;
-    protected static String externalStaticFileFolder = null;
-
-    protected static SparkServer server;
-    protected static SimpleRouteMatcher routeMatcher;
-    private static boolean runFromServlet;
-
-    private static boolean servletStaticLocationSet;
-    private static boolean servletExternalStaticLocationSet;
+    protected static SparkInstance instance = new SparkInstance();
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -46,10 +23,7 @@ public abstract class SparkBase {
      * @deprecated replaced by {@link #ipAddress(String)}
      */
     public static synchronized void setIpAddress(String ipAddress) {
-        if (initialized) {
-            throwBeforeRouteMappingException();
-        }
-        Spark.ipAddress = ipAddress;
+        ipAddress(ipAddress);
     }
 
     /**
@@ -60,10 +34,7 @@ public abstract class SparkBase {
      * @param ipAddress The ipAddress
      */
     public static synchronized void ipAddress(String ipAddress) {
-        if (initialized) {
-            throwBeforeRouteMappingException();
-        }
-        Spark.ipAddress = ipAddress;
+        instance.ip(ipAddress);
     }
 
     /**
@@ -75,10 +46,7 @@ public abstract class SparkBase {
      * @deprecated replaced by {@link #port(int)}
      */
     public static synchronized void setPort(int port) {
-        if (initialized) {
-            throwBeforeRouteMappingException();
-        }
-        Spark.port = port;
+        port(port);
     }
 
     /**
@@ -89,10 +57,7 @@ public abstract class SparkBase {
      * @param port The port number
      */
     public static synchronized void port(int port) {
-        if (initialized) {
-            throwBeforeRouteMappingException();
-        }
-        Spark.port = port;
+        instance.port(port);
     }
 
     /**
@@ -115,19 +80,7 @@ public abstract class SparkBase {
                                               String keystorePassword,
                                               String truststoreFile,
                                               String truststorePassword) {
-        if (initialized) {
-            throwBeforeRouteMappingException();
-        }
-
-        if (keystoreFile == null) {
-            throw new IllegalArgumentException(
-                    "Must provide a keystore file to run secured");
-        }
-
-        Spark.keystoreFile = keystoreFile;
-        Spark.keystorePassword = keystorePassword;
-        Spark.truststoreFile = truststoreFile;
-        Spark.truststorePassword = truststorePassword;
+        secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 
     /**
@@ -149,19 +102,7 @@ public abstract class SparkBase {
                                            String keystorePassword,
                                            String truststoreFile,
                                            String truststorePassword) {
-        if (initialized) {
-            throwBeforeRouteMappingException();
-        }
-
-        if (keystoreFile == null) {
-            throw new IllegalArgumentException(
-                    "Must provide a keystore file to run secured");
-        }
-
-        Spark.keystoreFile = keystoreFile;
-        Spark.keystorePassword = keystorePassword;
-        Spark.truststoreFile = truststoreFile;
-        Spark.truststorePassword = truststorePassword;
+        instance.secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 
     /**
@@ -171,18 +112,7 @@ public abstract class SparkBase {
      * @param folder the folder in classpath.
      */
     public static synchronized void staticFileLocation(String folder) {
-        if (initialized && !runFromServlet) {
-            throwBeforeRouteMappingException();
-        }
-        staticFileFolder = folder;
-        if (!servletStaticLocationSet) {
-            if (runFromServlet) {
-                SparkFilter.configureStaticResources(staticFileFolder);
-                servletStaticLocationSet = true;
-            }
-        } else {
-            LOG.warn("Static file location has already been set");
-        }
+        instance.staticFileLocation(folder);
     }
 
     /**
@@ -192,47 +122,15 @@ public abstract class SparkBase {
      * @param externalFolder the external folder serving static files.
      */
     public static synchronized void externalStaticFileLocation(String externalFolder) {
-        if (initialized && !runFromServlet) {
-            throwBeforeRouteMappingException();
-        }
-        externalStaticFileFolder = externalFolder;
-        if (!servletExternalStaticLocationSet) {
-            if (runFromServlet) {
-                SparkFilter.configureExternalStaticResources(externalStaticFileFolder);
-                servletExternalStaticLocationSet = true;
-            }
-        } else {
-            LOG.warn("External static file location has already been set");
-        }
+        instance.externalStaticFileLocation(externalFolder);
     }
 
-    private static void throwBeforeRouteMappingException() {
-        throw new IllegalStateException(
-                "This must be done before route mapping has begun");
-    }
-
-    private static boolean hasMultipleHandlers() {
-        return staticFileFolder != null || externalStaticFileFolder != null;
-    }
-
-
-    /**
-     * Stops the Spark server and clears all routes
-     */
     public static synchronized void stop() {
-        if (server != null) {
-            routeMatcher.clearRoutes();
-            server.stop();
-        }
-        initialized = false;
+        instance.stop();
     }
 
     static synchronized void runFromServlet() {
-        runFromServlet = true;
-        if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
-            initialized = true;
-        }
+        instance.runFromServlet();
     }
 
     /**
@@ -243,7 +141,7 @@ public abstract class SparkBase {
      * @return the wrapped route
      */
     protected static RouteImpl wrap(final String path, final Route route) {
-        return wrap(path, DEFAULT_ACCEPT_TYPE, route);
+        return instance.wrap(path, route);
     }
 
     /**
@@ -255,16 +153,7 @@ public abstract class SparkBase {
      * @return the wrapped route
      */
     protected static RouteImpl wrap(final String path, String acceptType, final Route route) {
-        if (acceptType == null) {
-            acceptType = DEFAULT_ACCEPT_TYPE;
-        }
-        RouteImpl impl = new RouteImpl(path, acceptType) {
-            @Override
-            public Object handle(Request request, Response response) throws Exception {
-                return route.handle(request, response);
-            }
-        };
-        return impl;
+        return instance.wrap(path, acceptType, route);
     }
 
     /**
@@ -275,7 +164,7 @@ public abstract class SparkBase {
      * @return the wrapped route
      */
     protected static FilterImpl wrap(final String path, final Filter filter) {
-        return wrap(path, DEFAULT_ACCEPT_TYPE, filter);
+        return instance.wrap(path, filter);
     }
 
     /**
@@ -287,50 +176,14 @@ public abstract class SparkBase {
      * @return the wrapped route
      */
     protected static FilterImpl wrap(final String path, String acceptType, final Filter filter) {
-        if (acceptType == null) {
-            acceptType = DEFAULT_ACCEPT_TYPE;
-        }
-        FilterImpl impl = new FilterImpl(path, acceptType) {
-            @Override
-            public void handle(Request request, Response response) throws Exception {
-                filter.handle(request, response);
-            }
-        };
-        return impl;
+        return instance.wrap(path, acceptType, filter);
     }
 
-    protected static void addRoute(String httpMethod, RouteImpl route) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
-                                                   + "'", route.getAcceptType(), route);
+    public static ExceptionMapper getExceptionMapper() {
+        return instance.exceptionMapper;
     }
 
-    protected static void addFilter(String httpMethod, FilterImpl filter) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
-                                                   + "'", filter.getAcceptType(), filter);
+    public static SimpleRouteMatcher getRouteMatcher() {
+        return instance.routeMatcher;
     }
-
-    private static synchronized void init() {
-        if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    server = SparkServerFactory.create(hasMultipleHandlers());
-                    server.ignite(
-                            ipAddress,
-                            port,
-                            keystoreFile,
-                            keystorePassword,
-                            truststoreFile,
-                            truststorePassword,
-                            staticFileFolder,
-                            externalStaticFileFolder);
-                }
-            }).start();
-            initialized = true;
-        }
-    }
-
 }

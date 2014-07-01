@@ -17,10 +17,9 @@ import static spark.util.SparkTestUtil.sleep;
 
 public class ServletTest {
 
+    static final Server server = new Server();
     private static final String SOMEPATH = "/somepath";
     private static final int PORT = 9393;
-    static final Server server = new Server();
-
     static SparkTestUtil testUtil;
 
     @AfterClass
@@ -145,12 +144,8 @@ public class ServletTest {
 
     @Test
     public void testNotFound() throws Exception {
-        try {
-            UrlResponse urlResponse = testUtil.doMethod("GET", SOMEPATH + "/no/resource", null);
-            Assert.assertTrue(urlResponse.status == 404);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        UrlResponse urlResponse = testUtil.doMethod("GET", SOMEPATH + "/no/resource", null);
+        Assert.assertTrue(urlResponse.status == 404);
     }
 
     @Test

@@ -50,9 +50,10 @@ public class MatcherFilter implements Filter {
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
-    private SimpleRouteMatcher routeMatcher;
-    private boolean isServletContext;
-    private boolean hasOtherHandlers;
+    private final SimpleRouteMatcher routeMatcher;
+    private final ExceptionMapper exceptionMapper;
+    private final boolean isServletContext;
+    private final boolean hasOtherHandlers;
 
     /**
      * The logger.
@@ -66,12 +67,14 @@ public class MatcherFilter implements Filter {
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(SimpleRouteMatcher routeMatcher, boolean isServletContext, boolean hasOtherHandlers) {
+    public MatcherFilter(SimpleRouteMatcher routeMatcher, ExceptionMapper exceptionMapper, boolean isServletContext, boolean hasOtherHandlers) {
         this.routeMatcher = routeMatcher;
+        this.exceptionMapper = exceptionMapper;
         this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
     }
 
+    @Override
     public void init(FilterConfig filterConfig) {
         //
     }
@@ -186,7 +189,7 @@ public class MatcherFilter implements Filter {
                 bodyContent = "";
             }
         } catch (Exception e) {
-            ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(e);
+            ExceptionHandlerImpl handler = exceptionMapper.getHandler(e);
             if (handler != null) {
                 handler.handle(e, req, res);
                 String bodyAfterFilter = Access.getBody(res.getDelegate());

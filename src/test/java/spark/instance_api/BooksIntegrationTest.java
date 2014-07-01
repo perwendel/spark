@@ -1,10 +1,4 @@
-package spark;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static spark.Spark.after;
-import static spark.Spark.before;
+package spark.instance_api;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,46 +14,74 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import spark.examples.books.Books;
 import spark.examples.books.InstanceBooks;
 import spark.utils.IOUtils;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class BooksIntegrationTest {
 
     private static int PORT = 4567;
-
     private static String AUTHOR = "FOO";
     private static String TITLE = "BAR";
     private static String NEW_TITLE = "SPARK";
-
+    private static InstanceBooks books;
     private String bookId;
 
     @AfterClass
     public static void tearDown() {
-        Spark.stop();
-    }
-
-    @After
-    public void clearBooks() {
-        Books.books.clear();
+        books.spark.stop();
     }
 
     @BeforeClass
     public static void setup() {
-        before((request, response) -> {
+        books = new InstanceBooks(PORT);
+
+        books.spark.before((request, response) -> {
             response.header("FOZ", "BAZ");
         });
 
-        Books.main(null);
-
-        after((request, response) -> {
+        books.spark.after((request, response) -> {
             response.header("FOO", "BAR");
         });
+
+        books.run();
 
         try {
             Thread.sleep(500);
         } catch (Exception e) {
         }
+    }
+
+    private static UrlResponse doMethod(String requestMethod, String path, String body) {
+        UrlResponse response = new UrlResponse();
+
+        try {
+            getResponse(requestMethod, path, response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    private static void getResponse(String requestMethod, String path, UrlResponse response)
+            throws MalformedURLException, IOException, ProtocolException {
+        URL url = new URL("http://localhost:" + PORT + path);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod(requestMethod);
+        connection.connect();
+        String res = IOUtils.toString(connection.getInputStream());
+        response.body = res;
+        response.status = connection.getResponseCode();
+        response.headers = connection.getHeaderFields();
+    }
+
+    @After
+    public void clearBooks() {
+        books.books.clear();
     }
 
     @Test
@@ -150,36 +172,6 @@ public class BooksIntegrationTest {
         getResponse("GET", "/books/" + bookId, null);
     }
 
-    private static UrlResponse doMethod(String requestMethod, String path, String body) {
-        UrlResponse response = new UrlResponse();
-
-        try {
-            getResponse(requestMethod, path, response);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return response;
-    }
-
-    private static void getResponse(String requestMethod, String path, UrlResponse response)
-            throws MalformedURLException, IOException, ProtocolException {
-        URL url = new URL("http://localhost:" + PORT + path);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod(requestMethod);
-        connection.connect();
-        String res = IOUtils.toString(connection.getInputStream());
-        response.body = res;
-        response.status = connection.getResponseCode();
-        response.headers = connection.getHeaderFields();
-    }
-
-    private static class UrlResponse {
-        public Map<String, List<String>> headers;
-        private String body;
-        private int status;
-    }
-
     private UrlResponse createBookViaPOST() {
         return doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE, null);
     }
@@ -194,5 +186,11 @@ public class BooksIntegrationTest {
 
     private boolean beforeFilterIsSet(UrlResponse response) {
         return response.headers.get("FOZ").get(0).equals("BAZ");
+    }
+
+    private static class UrlResponse {
+        public Map<String, List<String>> headers;
+        private String body;
+        private int status;
     }
 }
