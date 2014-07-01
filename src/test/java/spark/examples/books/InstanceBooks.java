@@ -5,10 +5,9 @@ import java.util.Map;
 import java.util.Random;
 
 import spark.Spark;
-import spark.SparkInstance;
 
 public class InstanceBooks implements Runnable {
-    public final SparkInstance spark;
+    public final Spark.Api spark;
     public Map<String, Book> books = new HashMap<String, Book>();
 
     public InstanceBooks(int port) {

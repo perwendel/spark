@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import spark.Route;
 import spark.Spark;
-import spark.SparkInstance;
 import spark.utils.IOUtils;
 
 import static org.junit.Assert.assertEquals;
@@ -21,8 +20,8 @@ import static org.junit.Assert.assertTrue;
 
 public class TwoServersAtOnceTest {
 
-    private static SparkInstance spark1;
-    private static SparkInstance spark2;
+    private static Spark.Api spark1;
+    private static Spark.Api spark2;
 
     @BeforeClass
     public static void setUp() {

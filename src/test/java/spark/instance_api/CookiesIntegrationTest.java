@@ -9,7 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import spark.Spark;
-import spark.SparkInstance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -22,7 +21,7 @@ import static org.junit.Assert.fail;
 public class CookiesIntegrationTest {
 
     private static final String DEFAULT_HOST_URL = "http://localhost:4567";
-    private static SparkInstance spark;
+    private static Spark.Api spark;
     private HttpClient httpClient = new DefaultHttpClient();
 
     @BeforeClass

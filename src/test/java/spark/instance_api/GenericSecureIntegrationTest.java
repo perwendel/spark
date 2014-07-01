@@ -6,14 +6,13 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import spark.Spark;
-import spark.SparkInstance;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
 public class GenericSecureIntegrationTest {
 
     static SparkTestUtil testUtil;
-    static SparkInstance spark;
+    static Spark.Api spark;
 
     @AfterClass
     public static void tearDown() {

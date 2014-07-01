@@ -11,7 +11,6 @@ import org.junit.Test;
 import junit.framework.Assert;
 import spark.ModelAndView;
 import spark.Spark;
-import spark.SparkInstance;
 import spark.TemplateEngine;
 import spark.examples.exception.BaseException;
 import spark.examples.exception.NotFoundException;
@@ -24,7 +23,7 @@ public class GenericIntegrationTest {
     private static final String NOT_FOUND_BRO = "Not found bro";
     static SparkTestUtil testUtil;
     static File tmpExternalFile;
-    static SparkInstance spark;
+    static Spark.Api spark;
 
     @AfterClass
     public static void tearDown() {

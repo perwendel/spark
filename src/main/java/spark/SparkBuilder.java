@@ -1,7 +1,7 @@
 package spark;
 
 public class SparkBuilder {
-    private SparkInstance instance = new SparkInstance();
+    private Spark.Api instance = new Spark.Api();
 
     public SparkBuilder port(int port) {
         instance.port(port);
@@ -31,7 +31,7 @@ public class SparkBuilder {
         return this;
     }
 
-    public SparkInstance build() {
+    public Spark.Api build() {
         return instance;
     }
 }
