@@ -39,6 +39,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  */
 public class SparkServer {
 
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SparkServer.class);
     private static final int SPARK_DEFAULT_PORT = 4567;
     private static final String NAME = "Spark";
     private Handler handler;
@@ -71,7 +72,7 @@ public class SparkServer {
             try (ServerSocket s = new ServerSocket(0)) {
                 port = s.getLocalPort();
             } catch (IOException e) {
-                System.err.println(
+                LOG.error(
                         "Could not get first available port (port set to 0), using default: " + SPARK_DEFAULT_PORT);
                 port = SPARK_DEFAULT_PORT;
             }
@@ -114,8 +115,8 @@ public class SparkServer {
         }
 
         try {
-            System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
-            System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
+            LOG.info("== " + NAME + " has ignited ..."); // NOSONAR
+            LOG.info(">> Listening on " + host + ":" + port); // NOSONAR
 
             server.start();
             server.join();
@@ -126,7 +127,7 @@ public class SparkServer {
     }
 
     public void stop() {
-        System.out.print(">>> " + NAME + " shutting down..."); // NOSONAR
+        LOG.info(">>> " + NAME + " shutting down..."); // NOSONAR
         try {
             if (server != null) {
                 server.stop();
@@ -135,7 +136,7 @@ public class SparkServer {
             e.printStackTrace(); // NOSONAR
             System.exit(100); // NOSONAR
         }
-        System.out.println("done"); // NOSONAR
+        LOG.info("done"); // NOSONAR
     }
 
     /**
@@ -203,7 +204,7 @@ public class SparkServer {
                 handlersInList.add(externalResourceHandler);
             } catch (IOException exception) {
                 exception.printStackTrace(); // NOSONAR
-                System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
+                LOG.error("Error during initialize external resource " + externalFilesRoute); // NOSONAR
             }
         }
     }
