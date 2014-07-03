@@ -81,7 +81,7 @@ public class MatcherFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest; // NOSONAR
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-        String httpMethodStr = httpRequest.getMethod().toLowerCase(); // NOSONAR
+        String httpMethodStr = getHttpMethodString(httpRequest); // NOSONAR
         String uri = httpRequest.getRequestURI(); // NOSONAR
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
@@ -230,7 +230,15 @@ public class MatcherFilter implements Filter {
         }
     }
 
-    public void destroy() {
+  private String getHttpMethodString(HttpServletRequest httpRequest) {
+    String method = httpRequest.getParameter("_method");
+    if(method == null) {
+      method = httpRequest.getMethod();
+    }
+    return method.toLowerCase();
+  }
+
+  public void destroy() {
         // TODO Auto-generated method stub
     }
 

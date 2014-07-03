@@ -104,6 +104,11 @@ public class GenericIntegrationTest {
             return "Body was: " + body;
         });
 
+        post("/post_via_get", (request, response) -> {
+            response.status(201); // created
+            return "Method Override Worked";
+        });
+
         patch("/patcher", (request, response) -> {
             String body = request.body();
             response.status(200);
@@ -324,6 +329,18 @@ public class GenericIntegrationTest {
             System.out.println(response.body);
             Assert.assertEquals(201, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testPostViaGetWithMethodOverride() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/post_via_get?_method=post", "Fo shizzy");
+            System.out.println(response.body);
+            Assert.assertEquals(201, response.status);
+            Assert.assertTrue(response.body.contains("Method Override Worked"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
