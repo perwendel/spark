@@ -49,6 +49,7 @@ import spark.route.SimpleRouteMatcher;
 public class MatcherFilter implements Filter {
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
+    private static final String HTTP_METHOD_OVERRIDE_HEADER = "X-HTTP-Method-Override";
 
     private SimpleRouteMatcher routeMatcher;
     private boolean isServletContext;
@@ -81,7 +82,11 @@ public class MatcherFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest; // NOSONAR
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-        String httpMethodStr = getHttpMethodString(httpRequest); // NOSONAR
+        String method = httpRequest.getHeader(HTTP_METHOD_OVERRIDE_HEADER);
+        if (method == null) {
+            method = httpRequest.getMethod();
+        }
+        String httpMethodStr = method.toLowerCase(); // NOSONAR
         String uri = httpRequest.getRequestURI(); // NOSONAR
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
@@ -230,15 +235,7 @@ public class MatcherFilter implements Filter {
         }
     }
 
-  private String getHttpMethodString(HttpServletRequest httpRequest) {
-    String method = httpRequest.getParameter("_method");
-    if(method == null) {
-      method = httpRequest.getMethod();
-    }
-    return method.toLowerCase();
-  }
-
-  public void destroy() {
+    public void destroy() {
         // TODO Auto-generated method stub
     }
 

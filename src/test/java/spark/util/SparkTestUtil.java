@@ -1,6 +1,7 @@
 package spark.util;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
@@ -69,44 +71,48 @@ public class SparkTestUtil {
 
 	private UrlResponse doMethod(String requestMethod, String path, String body, boolean secureConnection,
 			String acceptType) throws Exception {
-
-		HttpUriRequest httpRequest = getHttpRequest(requestMethod, path, body, secureConnection, acceptType);
-		HttpResponse httpResponse = httpClient.execute(httpRequest);
-
-		UrlResponse urlResponse = new UrlResponse();
-		urlResponse.status = httpResponse.getStatusLine().getStatusCode();
-		HttpEntity entity = httpResponse.getEntity();
-		if (entity != null) {
-			urlResponse.body = EntityUtils.toString(entity);
-		} else {
-			urlResponse.body = "";
-		}
-		Map<String, String> headers = new HashMap<String, String>();
-		Header[] allHeaders = httpResponse.getAllHeaders();
-		for (Header header : allHeaders) {
-			headers.put(header.getName(), header.getValue());
-		}
-		urlResponse.headers = headers;
-		return urlResponse;
+        return doMethod(requestMethod, path, body, secureConnection, acceptType, null);
 	}
 
-	private HttpUriRequest getHttpRequest(String requestMethod, String path, String body, boolean secureConnection,
-			String acceptType) {
+    public UrlResponse doMethod(String requestMethod, String path, String body, boolean secureConnection,
+                                 String acceptType, Map<String, String> reqHeaders) throws IOException {
+        HttpUriRequest httpRequest = getHttpRequest(requestMethod, path, body, secureConnection, acceptType, reqHeaders);
+        HttpResponse httpResponse = httpClient.execute(httpRequest);
+
+        UrlResponse urlResponse = new UrlResponse();
+        urlResponse.status = httpResponse.getStatusLine().getStatusCode();
+        HttpEntity entity = httpResponse.getEntity();
+        if (entity != null) {
+            urlResponse.body = EntityUtils.toString(entity);
+        } else {
+            urlResponse.body = "";
+        }
+        Map<String, String> headers = new HashMap<String, String>();
+        Header[] allHeaders = httpResponse.getAllHeaders();
+        for (Header header : allHeaders) {
+            headers.put(header.getName(), header.getValue());
+        }
+        urlResponse.headers = headers;
+        return urlResponse;
+    }
+
+    private HttpUriRequest getHttpRequest(String requestMethod, String path, String body, boolean secureConnection,
+                                          String acceptType, Map<String, String> reqHeaders) {
 		try {
 			String protocol = secureConnection ? "https" : "http";
 			String uri = protocol + "://localhost:" + port + path;
 
 			if (requestMethod.equals("GET")) {
 				HttpGet httpGet = new HttpGet(uri);
-
 				httpGet.setHeader("Accept", acceptType);
-
+                addHeaders(reqHeaders, httpGet);
 				return httpGet;
 			}
 
 			if (requestMethod.equals("POST")) {
 				HttpPost httpPost = new HttpPost(uri);
 				httpPost.setHeader("Accept", acceptType);
+                addHeaders(reqHeaders, httpPost);
 				httpPost.setEntity(new StringEntity(body));
 				return httpPost;
 			}
@@ -114,12 +120,14 @@ public class SparkTestUtil {
 			if (requestMethod.equals("PATCH")) {
 				HttpPatch httpPatch = new HttpPatch(uri);
 				httpPatch.setHeader("Accept", acceptType);
+                addHeaders(reqHeaders, httpPatch);
 				httpPatch.setEntity(new StringEntity(body));
 				return httpPatch;
 			}
 
 			if (requestMethod.equals("DELETE")) {
 				HttpDelete httpDelete = new HttpDelete(uri);
+                addHeaders(reqHeaders, httpDelete);
 				httpDelete.setHeader("Accept", acceptType);
 				return httpDelete;
 			}
@@ -127,20 +135,27 @@ public class SparkTestUtil {
 			if (requestMethod.equals("PUT")) {
 				HttpPut httpPut = new HttpPut(uri);
 				httpPut.setHeader("Accept", acceptType);
+                addHeaders(reqHeaders, httpPut);
 				httpPut.setEntity(new StringEntity(body));
 				return httpPut;
 			}
 
 			if (requestMethod.equals("HEAD")) {
-				return new HttpHead(uri);
+                HttpHead httpHead = new HttpHead(uri);
+                addHeaders(reqHeaders, httpHead);
+                return httpHead;
 			}
 
 			if (requestMethod.equals("TRACE")) {
-				return new HttpTrace(uri);
+                HttpTrace httpTrace = new HttpTrace(uri);
+                addHeaders(reqHeaders, httpTrace);
+                return httpTrace;
 			}
 
 			if (requestMethod.equals("OPTIONS")) {
-				return new HttpOptions(uri);
+                HttpOptions httpOptions = new HttpOptions(uri);
+                addHeaders(reqHeaders, httpOptions);
+                return httpOptions;
 			}
 
 			throw new IllegalArgumentException("Unknown method " + requestMethod);
@@ -151,7 +166,15 @@ public class SparkTestUtil {
 
 	}
 
-	public int getPort() {
+    private void addHeaders(Map<String, String> reqHeaders, HttpRequest req) {
+        if(reqHeaders != null) {
+            for (Map.Entry<String, String> header : reqHeaders.entrySet()) {
+                req.addHeader(header.getKey(), header.getValue());
+            }
+        }
+    }
+
+    public int getPort() {
 		return port;
 	}
 

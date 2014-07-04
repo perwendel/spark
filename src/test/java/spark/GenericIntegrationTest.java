@@ -3,6 +3,8 @@ package spark;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -107,6 +109,10 @@ public class GenericIntegrationTest {
         post("/post_via_get", (request, response) -> {
             response.status(201); // created
             return "Method Override Worked";
+        });
+
+        get("/post_via_get", (request, response) -> {
+            return "Method Override Did Not Work";
         });
 
         patch("/patcher", (request, response) -> {
@@ -335,9 +341,11 @@ public class GenericIntegrationTest {
     }
 
     @Test
-    public void testPostViaGetWithMethodOverride() {
+    public void testPostViaGetWithMethodOverrideHeader() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/post_via_get?_method=post", "Fo shizzy");
+            Map<String, String> map = new HashMap<>();
+            map.put("X-HTTP-Method-Override", "POST");
+            UrlResponse response = testUtil.doMethod("GET", "/post_via_get", "Fo shizzy", false, "*/*", map);
             System.out.println(response.body);
             Assert.assertEquals(201, response.status);
             Assert.assertTrue(response.body.contains("Method Override Worked"));
