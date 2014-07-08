@@ -19,6 +19,7 @@ package spark.webserver;
 import java.io.IOException;
 
 import javax.servlet.Filter;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,6 +40,9 @@ class JettyHandler extends SessionHandler {
 
     private static final String LOG_FMT = "%d %s %s (%s) %.2fms";
 
+    private static final MultipartConfigElement MULTI_PART_CONFIG = new MultipartConfigElement(
+            System.getProperty("java.io.tmpdir"));
+
     private Filter filter;
 
     public JettyHandler(Filter filter) {
@@ -53,6 +57,11 @@ class JettyHandler extends SessionHandler {
             HttpServletResponse response) throws IOException, ServletException {
         try {
             long start, cost;
+
+            String contentType = request.getContentType();
+            if (contentType != null && contentType.startsWith("multipart/form-data")) {
+                request.setAttribute(Request.__MULTIPART_CONFIG_ELEMENT, MULTI_PART_CONFIG);
+            }
 
             start = System.nanoTime();
             filter.doFilter(request, response, null);
