@@ -130,7 +130,7 @@ public class Request {
     }
 
     /**
-     * @return an arrat containing the splat (wildcard) parameters
+     * @return an array containing the splat (wildcard) parameters
      */
     public String[] splat() {
         return splat.toArray(new String[splat.size()]);
