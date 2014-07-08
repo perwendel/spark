@@ -105,14 +105,14 @@ public class SparkTestUtil {
 			if (requestMethod.equals("GET")) {
 				HttpGet httpGet = new HttpGet(uri);
 				httpGet.setHeader("Accept", acceptType);
-                addHeaders(reqHeaders, httpGet);
+        addHeaders(reqHeaders, httpGet);
 				return httpGet;
 			}
 
 			if (requestMethod.equals("POST")) {
 				HttpPost httpPost = new HttpPost(uri);
 				httpPost.setHeader("Accept", acceptType);
-                addHeaders(reqHeaders, httpPost);
+        addHeaders(reqHeaders, httpPost);
 				httpPost.setEntity(new StringEntity(body));
 				return httpPost;
 			}
@@ -120,14 +120,14 @@ public class SparkTestUtil {
 			if (requestMethod.equals("PATCH")) {
 				HttpPatch httpPatch = new HttpPatch(uri);
 				httpPatch.setHeader("Accept", acceptType);
-                addHeaders(reqHeaders, httpPatch);
+        addHeaders(reqHeaders, httpPatch);
 				httpPatch.setEntity(new StringEntity(body));
 				return httpPatch;
 			}
 
 			if (requestMethod.equals("DELETE")) {
 				HttpDelete httpDelete = new HttpDelete(uri);
-                addHeaders(reqHeaders, httpDelete);
+        addHeaders(reqHeaders, httpDelete);
 				httpDelete.setHeader("Accept", acceptType);
 				return httpDelete;
 			}
@@ -135,27 +135,27 @@ public class SparkTestUtil {
 			if (requestMethod.equals("PUT")) {
 				HttpPut httpPut = new HttpPut(uri);
 				httpPut.setHeader("Accept", acceptType);
-                addHeaders(reqHeaders, httpPut);
+        addHeaders(reqHeaders, httpPut);
 				httpPut.setEntity(new StringEntity(body));
 				return httpPut;
 			}
 
-			if (requestMethod.equals("HEAD")) {
-                HttpHead httpHead = new HttpHead(uri);
-                addHeaders(reqHeaders, httpHead);
-                return httpHead;
-			}
+      if (requestMethod.equals("HEAD")) {
+        HttpHead httpHead = new HttpHead(uri);
+        addHeaders(reqHeaders, httpHead);
+        return httpHead;
+      }
 
-			if (requestMethod.equals("TRACE")) {
-                HttpTrace httpTrace = new HttpTrace(uri);
-                addHeaders(reqHeaders, httpTrace);
-                return httpTrace;
-			}
+      if (requestMethod.equals("TRACE")) {
+        HttpTrace httpTrace = new HttpTrace(uri);
+        addHeaders(reqHeaders, httpTrace);
+        return httpTrace;
+      }
 
-			if (requestMethod.equals("OPTIONS")) {
-                HttpOptions httpOptions = new HttpOptions(uri);
-                addHeaders(reqHeaders, httpOptions);
-                return httpOptions;
+      if (requestMethod.equals("OPTIONS")) {
+        HttpOptions httpOptions = new HttpOptions(uri);
+        addHeaders(reqHeaders, httpOptions);
+        return httpOptions;
 			}
 
 			throw new IllegalArgumentException("Unknown method " + requestMethod);
@@ -166,13 +166,13 @@ public class SparkTestUtil {
 
 	}
 
-    private void addHeaders(Map<String, String> reqHeaders, HttpRequest req) {
-        if(reqHeaders != null) {
-            for (Map.Entry<String, String> header : reqHeaders.entrySet()) {
-                req.addHeader(header.getKey(), header.getValue());
-            }
-        }
+  private void addHeaders(Map<String, String> reqHeaders, HttpRequest req) {
+    if (reqHeaders != null) {
+      for (Map.Entry<String, String> header : reqHeaders.entrySet()) {
+        req.addHeader(header.getKey(), header.getValue());
+      }
     }
+  }
 
     public int getPort() {
 		return port;
