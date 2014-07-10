@@ -68,9 +68,11 @@ class JettyHandler extends SessionHandler {
             baseRequest.setHandled(true);
             cost = System.nanoTime() - start;
 
-            LOG.info(String.format(LOG_FMT, response.getStatus(),
-                    request.getMethod().toUpperCase(), getRequestLine(request),
-                    request.getRemoteHost(), cost / 1000000.0));
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(String.format(LOG_FMT, response.getStatus(), request.getMethod()
+                        .toUpperCase(), getRequestLine(request), request.getRemoteHost(),
+                        cost / 1000000.0));
+            }
 
         } catch (NotConsumedException ignore) {
             // TODO : Not use an exception in order to be faster.
