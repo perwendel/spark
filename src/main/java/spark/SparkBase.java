@@ -224,6 +224,21 @@ public abstract class SparkBase {
             routeMatcher.clearRoutes();
             server.stop();
         }
+
+        port = SPARK_DEFAULT_PORT;
+        ipAddress = "0.0.0.0";
+
+        keystoreFile = null;
+        keystorePassword = null;
+        truststoreFile = null;
+        truststorePassword = null;
+
+        staticFileFolder = null;
+        externalStaticFileFolder = null;
+
+        server = null;
+        routeMatcher = null;
+
         initialized = false;
     }
 
