@@ -301,8 +301,8 @@ public class Request {
      * @param attribute The attribute value or null if not present
      * @return the value for the provided attribute
      */
-    public Object attribute(String attribute) {
-        return servletRequest.getAttribute(attribute);
+    public <T> T attribute(String attribute) {
+        return (T) servletRequest.getAttribute(attribute);
     }
 
 
