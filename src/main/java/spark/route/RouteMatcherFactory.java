@@ -16,6 +16,8 @@
  */
 package spark.route;
 
+import spark.Spark;
+import spark.route.RouteMatcher.MatcherImplementation;
 
 /**
  * RouteMatcherFactory
@@ -23,22 +25,33 @@ package spark.route;
  * @author Per Wendel
  */
 public final class RouteMatcherFactory {
-    /**
-     * The logger.
-     */
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RouteMatcherFactory.class);
+	/**
+	 * The logger.
+	 */
+	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory
+			.getLogger(RouteMatcherFactory.class);
 
-    private static SimpleRouteMatcher routeMatcher = null;
+	private static RouteMatcher routeMatcher = null;
+	public static MatcherImplementation impl = MatcherImplementation.list;
 
-    private RouteMatcherFactory() {
-    }
+	private RouteMatcherFactory() {
+	}
 
-    public static synchronized SimpleRouteMatcher get() {
-        if (routeMatcher == null) {
-            LOG.debug("creates RouteMatcher");
-            routeMatcher = new SimpleRouteMatcher();
-        }
-        return routeMatcher;
-    }
+	public static synchronized RouteMatcher get() {
+		if (routeMatcher == null) {
+			LOG.debug("creates RouteMatcher");
+			switch (impl) {
+				case list:
+					routeMatcher = new SimpleRouteMatcher();
+					break;
+				case trie:
+					routeMatcher = new TrieRouteMatcher();
+					break;
+				default:
+					throw new IllegalArgumentException();
+		}
+		}
+		return routeMatcher;
+	}
 
 }

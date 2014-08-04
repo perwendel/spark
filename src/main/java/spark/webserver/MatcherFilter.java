@@ -39,7 +39,7 @@ import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
-import spark.route.SimpleRouteMatcher;
+import spark.route.RouteMatcher;
 
 /**
  * Filter for matching of filters and routes.
@@ -50,7 +50,7 @@ public class MatcherFilter implements Filter {
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
-    private SimpleRouteMatcher routeMatcher;
+    private RouteMatcher routeMatcher;
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
@@ -66,7 +66,7 @@ public class MatcherFilter implements Filter {
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(SimpleRouteMatcher routeMatcher, boolean isServletContext, boolean hasOtherHandlers) {
+    public MatcherFilter(RouteMatcher routeMatcher, boolean isServletContext, boolean hasOtherHandlers) {
         this.routeMatcher = routeMatcher;
         this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
