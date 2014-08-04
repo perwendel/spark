@@ -205,7 +205,9 @@ public class MatcherFilter implements Filter {
                     httpResponse.setContentType("text/html; charset=utf-8");
                 }
                 byte[] bytes=bodyContent.getBytes("utf-8");
-                httpResponse.setHeader("Content-Length", new Integer(bytes.length).toString());
+                if(httpResponse.getHeader("Content-Length")==null){
+                    httpResponse.setHeader("Content-Length", new Integer(bytes.length).toString());
+                }
                 httpResponse.getOutputStream().write(bytes);
             }
         } else if (chain != null) {
