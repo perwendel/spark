@@ -17,13 +17,13 @@
 package spark.servlet;
 
 import javax.servlet.FilterConfig;
-import javax.servlet.FilterRegistration;
 import javax.servlet.http.HttpServletRequest;
 
 final class FilterTools {
 
     private static final String SLASH_WILDCARD = "/*";
     private static final String SLASH = "/";
+    private static final String FILTER_MAPPING_PARAM = "filterMappingUrlPattern";
 
     private FilterTools() {
     }
@@ -53,13 +53,12 @@ final class FilterTools {
     }
 
     static String getFilterPath(FilterConfig config) {
-        FilterRegistration filterRegistration = config.getServletContext().getFilterRegistration(config.getFilterName());
-        String result = filterRegistration.getUrlPatternMappings().iterator().next();
+        String result = config.getInitParameter(FILTER_MAPPING_PARAM);
         if (result == null || result.equals(SLASH_WILDCARD)) {
             return "";
         } else if (!result.startsWith(SLASH) || !result.endsWith(SLASH_WILDCARD)) {
             throw new RuntimeException(
-                    "The mapping must start with \"/\" and end with \"/*\". It's: "
+                    "The " + FILTER_MAPPING_PARAM + " must start with \"/\" and end with \"/*\". It's: "
                             + result
             ); // NOSONAR
         }
