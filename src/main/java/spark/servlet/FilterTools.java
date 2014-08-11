@@ -53,8 +53,8 @@ final class FilterTools {
     }
 
     static String getFilterPath(FilterConfig config) {
-        FilterRegistration registration = config.getServletContext().getFilterRegistration(config.getFilterName());
-        String result = registration.getUrlPatternMappings().iterator().next();
+        FilterRegistration filterRegistration = config.getServletContext().getFilterRegistration(config.getFilterName());
+        String result = filterRegistration.getUrlPatternMappings().iterator().next();
         if (result == null || result.equals(SLASH_WILDCARD)) {
             return "";
         } else if (!result.startsWith(SLASH) || !result.endsWith(SLASH_WILDCARD)) {
