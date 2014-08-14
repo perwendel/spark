@@ -5,10 +5,13 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import junit.framework.Assert;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Spark;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
@@ -19,6 +22,7 @@ public class ServletTest {
 
     private static final String SOMEPATH = "/somepath";
     private static final int PORT = 9393;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServletTest.class);
     static final Server server = new Server();
 
     static SparkTestUtil testUtil;
@@ -52,10 +56,10 @@ public class ServletTest {
             @Override
             public void run() {
                 try {
-                    System.out.println(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
+                    LOGGER.info(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
                     server.start();
                     System.in.read();
-                    System.out.println(">>> STOPPING EMBEDDED JETTY SERVER");
+                    LOGGER.info(">>> STOPPING EMBEDDED JETTY SERVER");
                     server.stop();
                     server.join();
                 } catch (Exception e) {

@@ -19,6 +19,8 @@ package spark.examples.filter;
 import static spark.Spark.after;
 import static spark.Spark.get;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
@@ -31,6 +33,8 @@ import spark.Route;
  */
 public class FilterExampleAttributes {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FilterExampleAttributes.class);
+
     public static void main(String[] args) {
         get("/hi", (request, response) -> {
             request.attribute("foo", "bar");
@@ -39,7 +43,7 @@ public class FilterExampleAttributes {
 
         after("/hi", (request, response) -> {
             for (String attr : request.attributes()) {
-                System.out.println("attr: " + attr);
+                LOGGER.info("attr: " + attr);
             }
         });
 
