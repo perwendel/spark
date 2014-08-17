@@ -44,7 +44,7 @@ public class ServletTest {
         WebAppContext bb = new WebAppContext();
         bb.setServer(server);
         bb.setContextPath(SOMEPATH);
-        bb.setWar("src/test/webapp");
+        bb.setWar("tests/src/test/webapp");
 
         server.setHandler(bb);
 
