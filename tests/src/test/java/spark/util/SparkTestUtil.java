@@ -196,7 +196,7 @@ public class SparkTestUtil {
 	 */
 	public static String getKeyStoreLocation() {
 		String keyStoreLoc = System.getProperty("javax.net.ssl.keyStore");
-		return keyStoreLoc == null ? "./src/test/resources/keystore.jks" : keyStoreLoc;
+		return keyStoreLoc == null ? "./tests/src/test/resources/keystore.jks" : keyStoreLoc;
 	}
 
 	/**

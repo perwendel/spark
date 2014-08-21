@@ -782,7 +782,7 @@ public final class Spark extends SparkBase {
      * @param exceptionClass the exception class
      * @param handler        The handler
      */
-    public static synchronized void exception(Class<? extends Exception> exceptionClass, ExceptionHandler handler) {
+    public static synchronized void exception(Class<? extends Exception> exceptionClass, final ExceptionHandler handler) {
         // wrap
         ExceptionHandlerImpl wrapper = new ExceptionHandlerImpl(exceptionClass) {
             @Override

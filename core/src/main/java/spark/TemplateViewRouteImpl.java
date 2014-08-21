@@ -52,8 +52,8 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
      */
     public static TemplateViewRouteImpl create(String path,
                                                String acceptType,
-                                               TemplateViewRoute route,
-                                               TemplateEngine engine) {
+                                               final TemplateViewRoute route,
+                                               final TemplateEngine engine) {
 
         return new TemplateViewRouteImpl(path, acceptType) {
             @Override
