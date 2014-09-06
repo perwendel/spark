@@ -212,8 +212,9 @@ public class MatcherFilter implements Filter {
         }
 
         if (!consumed && !isServletContext) {
+            LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            bodyContent = String.format(NOT_FOUND, uri);
+            bodyContent = String.format(NOT_FOUND);
             consumed = true;
         }
 
@@ -234,6 +235,6 @@ public class MatcherFilter implements Filter {
         // TODO Auto-generated method stub
     }
 
-    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route [%s] has not been mapped in Spark</body></html>";
+    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
     private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
 }
