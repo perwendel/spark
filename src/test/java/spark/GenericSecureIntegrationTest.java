@@ -1,10 +1,13 @@
 package spark;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import junit.framework.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spark.servlet.ServletTest;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -18,6 +21,8 @@ import static spark.Spark.post;
 public class GenericSecureIntegrationTest {
 
     static SparkTestUtil testUtil;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenericSecureIntegrationTest.class);
 
     @AfterClass
     public static void tearDown() {
@@ -181,7 +186,7 @@ public class GenericSecureIntegrationTest {
         try {
             UrlResponse response = testUtil.doMethodSecure("POST", "/poster",
                                                            "Fo shizzy");
-            System.out.println(response.body);
+            LOGGER.info(response.body);
             Assert.assertEquals(201, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
         } catch (Throwable e) {
@@ -194,7 +199,7 @@ public class GenericSecureIntegrationTest {
         try {
             UrlResponse response = testUtil.doMethodSecure("PATCH", "/patcher",
                                                            "Fo shizzy");
-            System.out.println(response.body);
+            LOGGER.info(response.body);
             Assert.assertEquals(200, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
         } catch (Throwable e) {

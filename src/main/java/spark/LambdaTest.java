@@ -1,5 +1,8 @@
 package spark;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.halt;
@@ -9,9 +12,10 @@ import static spark.Spark.halt;
  */
 public class LambdaTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(LambdaTest.class);
     public static void main(String[] args) {
         get("/hello", (request, response) -> {
-            System.out.println("request = " + request.pathInfo());
+            LOGGER.info("request = " + request.pathInfo());
             return "Hello World";
         });
 

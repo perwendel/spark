@@ -31,6 +31,8 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Spark server implementation
@@ -43,6 +45,8 @@ public class SparkServer {
     private static final String NAME = "Spark";
     private Handler handler;
     private Server server;
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public SparkServer(Handler handler) {
         this.handler = handler;
@@ -71,8 +75,7 @@ public class SparkServer {
             try (ServerSocket s = new ServerSocket(0)) {
                 port = s.getLocalPort();
             } catch (IOException e) {
-                System.err.println(
-                        "Could not get first available port (port set to 0), using default: " + SPARK_DEFAULT_PORT);
+                logger.error("Could not get first available port (port set to 0), using default: {}", SPARK_DEFAULT_PORT);
                 port = SPARK_DEFAULT_PORT;
             }
         }
@@ -114,28 +117,28 @@ public class SparkServer {
         }
 
         try {
-            System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
-            System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
+            logger.info("== {} has ignited ...", NAME);
+            logger.info(">> Listening on {}:{}", host, port);
 
             server.start();
             server.join();
         } catch (Exception e) {
-            e.printStackTrace(); // NOSONAR
+            logger.error("ignite failed",e);
             System.exit(100); // NOSONAR
         }
     }
 
     public void stop() {
-        System.out.print(">>> " + NAME + " shutting down..."); // NOSONAR
+        logger.info(">>> {} shutting down ...", NAME);
         try {
             if (server != null) {
                 server.stop();
             }
         } catch (Exception e) {
-            e.printStackTrace(); // NOSONAR
+            logger.error("stop failed",e);
             System.exit(100); // NOSONAR
         }
-        System.out.println("done"); // NOSONAR
+        logger.info("done");
     }
 
     /**
