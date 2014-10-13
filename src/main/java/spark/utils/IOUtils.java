@@ -16,6 +16,7 @@
  */
 package spark.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -112,6 +113,29 @@ public final class IOUtils {
         return sw.toString();
     }
 
+	/**
+	 * Get the contents of an <code>InputStream</code> as a ByteArray
+	 * <p>
+	 * This method buffers the input internally, so there is no need to use a
+	 * <code>BufferedInputStream</code>.
+	 *
+	 * @param input
+	 *            the <code>InputStream</code> to read from
+	 * @return the byte array
+	 * @throws NullPointerException
+	 *             if the input is null
+	 * @throws IOException
+	 *             if an I/O error occurs
+	 */
+	public static byte[] toByteArray(InputStream input) throws IOException {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		byte[] buf = new byte[1024];
+		for (int n = input.read(buf); n != -1; n = input.read(buf)) {
+			os.write(buf, 0, n);
+		}
+		return os.toByteArray();
+	}
+    
     /**
      * Copy bytes from an <code>InputStream</code> to chars on a
      * <code>Writer</code> using the default character encoding of the platform.
