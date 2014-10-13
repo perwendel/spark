@@ -16,12 +16,11 @@
  */
 package spark.route;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.augustl.pathtravelagent.MutableSynchronizedPathTravelAgent;
+import com.augustl.pathtravelagent.Route;
+import com.augustl.pathtravelagent.RouteStringBuilder;
 import spark.utils.MimeParse;
 
 /**
@@ -33,14 +32,13 @@ public class SimpleRouteMatcher {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleRouteMatcher.class);
     private static final char SINGLE_QUOTE = '\'';
-
-    private List<RouteEntry> routes;
+    private final MutableSynchronizedPathTravelAgent<SparkRequest, SparkResponse> pta = new MutableSynchronizedPathTravelAgent<>();
+    private final HashMap<String, SparkRequestHandler> handlerByPath = new HashMap<>();
 
     /**
      * Constructor
      */
     public SimpleRouteMatcher() {
-        routes = new ArrayList<RouteEntry>();
     }
 
     /**
@@ -83,9 +81,17 @@ public class SimpleRouteMatcher {
      * @return the target
      */
     public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
-        List<RouteEntry> routeEntries = this.findTargetsForRequestedRoute(httpMethod, path);
-        RouteEntry entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
-        return entry != null ? new RouteMatch(httpMethod, entry.target, entry.path, path, acceptType) : null;
+        SparkResponse res = pta.match(new SparkRequest(httpMethod, path));
+        if (res == null) {
+            return null;
+        } else {
+            Object target = findTargetWithGivenAcceptType(res, acceptType);
+            if (target == null) {
+                return null;
+            } else {
+                return new RouteMatch(httpMethod, target, res.getRouteSourceUrl(), path, acceptType);
+            }
+        }
     }
 
     /**
@@ -98,17 +104,20 @@ public class SimpleRouteMatcher {
      */
     public List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteMatch> matchSet = new ArrayList<>();
-        List<RouteEntry> routeEntries = findTargetsForRequestedRoute(httpMethod, path);
 
-        for (RouteEntry routeEntry : routeEntries) {
-            if (acceptType != null) {
-                String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
+        SparkResponse res = pta.match(new SparkRequest(httpMethod, path));
+        if (res != null) {
+            Set<String> acceptedMimeTypes = res.getAcceptedMimeTypes();
 
-                if (routeWithGivenAcceptType(bestMatch)) {
-                    matchSet.add(new RouteMatch(httpMethod, routeEntry.target, routeEntry.path, path, acceptType));
-                }
+            if (acceptType == null) {
+                matchSet.add(new RouteMatch(httpMethod, res.getDefaultTarget(), res.getRouteSourceUrl(), path, null));
             } else {
-                matchSet.add(new RouteMatch(httpMethod, routeEntry.target, routeEntry.path, path, acceptType));
+                for (String acceptedMimeType : acceptedMimeTypes) {
+                    String bestMatch = MimeParse.bestMatch(Arrays.asList(acceptedMimeType), acceptType);
+                    if (routeWithGivenAcceptType(bestMatch)) {
+                        matchSet.add(new RouteMatch(httpMethod, res.getTargetForAcceptType(bestMatch), res.getRouteSourceUrl(), path, acceptType));
+                    }
+                }
             }
         }
 
@@ -119,7 +128,8 @@ public class SimpleRouteMatcher {
      * ¨Clear all routes
      */
     public void clearRoutes() {
-        routes.clear();
+        pta.clear();
+        this.handlerByPath.clear();
     }
 
     //////////////////////////////////////////////////
@@ -127,61 +137,40 @@ public class SimpleRouteMatcher {
     //////////////////////////////////////////////////
 
     private void addRoute(HttpMethod method, String url, String acceptedType, Object target) {
-        RouteEntry entry = new RouteEntry();
-        entry.httpMethod = method;
-        entry.path = url;
-        entry.target = target;
-        entry.acceptedType = acceptedType;
-        LOG.debug("Adds route: " + entry);
-        // Adds to end of list
-        routes.add(entry);
-    }
+        LOG.debug("Adds route: " + method.name() + ", " + url + ", " + target);
 
-    //can be cached? I don't think so.
-    private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
-        Map<String, RouteEntry> acceptedTypes = new HashMap<>();
-
-        for (RouteEntry routeEntry : routes) {
-            if (!acceptedTypes.containsKey(routeEntry.acceptedType)) {
-                acceptedTypes.put(routeEntry.acceptedType, routeEntry);
-            }
+        SparkRequestHandler handler = handlerByPath.get(url);
+        if (handler == null) {
+            handler = new SparkRequestHandler(url);
+            handler.addMethodAndAcceptHandler(method, acceptedType, target);
+            handlerByPath.put(url, handler);
+            Route<SparkRequest, SparkResponse> route =
+                new RouteStringBuilder<SparkRequest, SparkResponse>(":").build(url, handler);
+            pta.addRoute(route);
+        } else {
+            handler.addMethodAndAcceptHandler(method, acceptedType, target);
         }
-
-        return acceptedTypes;
     }
 
     private boolean routeWithGivenAcceptType(String bestMatch) {
         return !MimeParse.NO_MIME_TYPE.equals(bestMatch);
     }
 
-    private List<RouteEntry> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
-        List<RouteEntry> matchSet = new ArrayList<RouteEntry>();
-        for (RouteEntry entry : routes) {
-            if (entry.matches(httpMethod, path)) {
-                matchSet.add(entry);
-            }
-        }
-        return matchSet;
-    }
-
     // TODO: I believe this feature has impacted performance. Optimization?
-    private RouteEntry findTargetWithGivenAcceptType(List<RouteEntry> routeMatches, String acceptType) {
-        if (acceptType != null && routeMatches.size() > 0) {
-            Map<String, RouteEntry> acceptedMimeTypes = getAcceptedMimeTypes(routeMatches);
-            String bestMatch = MimeParse.bestMatch(acceptedMimeTypes.keySet(), acceptType);
+    private Object findTargetWithGivenAcceptType(SparkResponse res, String acceptType) {
+        if (acceptType != null) {
+            Set<String> acceptedMimeTypes = res.getAcceptedMimeTypes();
+
+            String bestMatch = MimeParse.bestMatch(acceptedMimeTypes, acceptType);
 
             if (routeWithGivenAcceptType(bestMatch)) {
-                return acceptedMimeTypes.get(bestMatch);
+                return res.getTargetForAcceptType(bestMatch);
             } else {
                 return null;
             }
         } else {
-            if (routeMatches.size() > 0) {
-                return routeMatches.get(0);
-            }
+            return res.getDefaultTarget();
         }
-
-        return null;
     }
 
 }
