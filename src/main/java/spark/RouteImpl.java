@@ -24,7 +24,7 @@ package spark;
  *
  * @author Per Wendel
  */
-public abstract class RouteImpl {
+public abstract class RouteImpl implements Route {
 
     private static final String DEFAULT_ACCEPT_TYPE = "*/*";
 

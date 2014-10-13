@@ -12,6 +12,6 @@ public interface Route {
      * @param response The response object providing functionality for modifying the response
      * @return The content to be set in the response
      */
-    Object handle(Request request, Response response);
+    Object handle(Request request, Response response)  throws Exception;
 
 }
