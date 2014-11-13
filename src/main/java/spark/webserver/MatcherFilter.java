@@ -196,6 +196,10 @@ public class MatcherFilter implements Filter {
 
                     responseWrapper.setDelegate(response);
 
+                    if ( bodyContent instanceof String ){
+                        responseWrapper.body((String) bodyContent);
+                    }
+
                     FilterImpl filter = (FilterImpl) filterTarget;
                     filter.handle(requestWrapper, responseWrapper);
 
