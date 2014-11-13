@@ -44,12 +44,12 @@ class ResponseWrapper extends Response {
         delegate.body(body);
     }
 
-	@Override
-	public String body() {
-		return delegate.body();
-	}
+    @Override
+    public String body() {
+        return delegate.body();
+    }
 
-	@Override
+    @Override
     public boolean equals(Object obj) {
         return delegate.equals(obj);
     }
