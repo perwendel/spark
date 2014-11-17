@@ -19,6 +19,7 @@ package spark;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
+import spark.utils.ExceptionUtils;
 import spark.utils.SparkUtils;
 
 /**
@@ -855,6 +856,14 @@ public final class Spark extends SparkBase {
      */
     public static ModelAndView modelAndView(Object model, String viewName) {
         return new ModelAndView(model, viewName);
+    }
+
+    public static synchronized void set404(String path) {
+        ExceptionUtils.setNotFound(path);
+    }
+
+    public static synchronized void set500(String path) {
+        ExceptionUtils.setInternalError(path);
     }
 
 }

@@ -37,6 +37,7 @@ import spark.Response;
 import spark.RouteImpl;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
+import spark.utils.ExceptionUtils;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.SimpleRouteMatcher;
@@ -127,7 +128,7 @@ public class MatcherFilter implements Filter {
             } else if (httpMethod == HttpMethod.head && bodyContent == null) {
                 // See if get is mapped to provide default head mapping
                 bodyContent =
-                        routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri, acceptType) != null ? "" : null;
+                        routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri, acceptType) != null ? "Yo! yo! Page 404 error" : null;
             }
 
             if (target != null) {
@@ -208,7 +209,12 @@ public class MatcherFilter implements Filter {
         boolean consumed = bodyContent != null;
 
         if (!consumed && hasOtherHandlers) {
-            throw new NotConsumedException();
+
+            LOG.info("The requested route [" + uri + "] has a handler but cannot be consumed");
+            httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            bodyContent = String.format(NOT_FOUND);
+            consumed = true;
+          //  throw new NotConsumedException();
         }
 
         if (!consumed && !isServletContext) {
@@ -235,6 +241,6 @@ public class MatcherFilter implements Filter {
         // TODO Auto-generated method stub
     }
 
-    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
-    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
+    private static final String NOT_FOUND = ExceptionUtils.getNotFound();
+    private static final String INTERNAL_ERROR = ExceptionUtils.getNotFound();
 }
