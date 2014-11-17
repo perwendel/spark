@@ -13,10 +13,18 @@ public class ExceptionUtils {
 
     public static String getNotFound()  {
         String NOT_FOUND;
-        try {
-            NOT_FOUND = FileUtils.readFileToString(new File(notFound));
-            System.out.println(NOT_FOUND);
-        } catch (IOException e) {
+
+        if(notFound != null)
+        {
+            try {
+                NOT_FOUND = FileUtils.readFileToString(new File(notFound));
+                System.out.println(NOT_FOUND);
+            } catch (IOException e) {
+                NOT_FOUND = "<html><body><h2>Sparkie says - 404 Page Not found</h2></body></html>";
+            }
+        }
+        else
+        {
             NOT_FOUND = "<html><body><h2>Sparkie says - 404 Page Not found</h2></body></html>";
         }
         return NOT_FOUND;
@@ -24,10 +32,18 @@ public class ExceptionUtils {
 
     public static String getInternalError() {
         String INTERNAL_ERROR;
-        try {
-            INTERNAL_ERROR = FileUtils.readFileToString(new File(internalError));
-            System.out.println(INTERNAL_ERROR);
-        } catch (IOException e) {
+
+        if(internalError != null)
+        {
+            try {
+                INTERNAL_ERROR = FileUtils.readFileToString(new File(internalError));
+                System.out.println(INTERNAL_ERROR);
+            } catch (IOException e) {
+                INTERNAL_ERROR = "<html><body><h2>Sparkie says - 500 Internal Error</h2></body></html>";
+            }
+        }
+        else
+        {
             INTERNAL_ERROR = "<html><body><h2>Sparkie says - 500 Internal Error</h2></body></html>";
         }
 
@@ -41,5 +57,4 @@ public class ExceptionUtils {
     public static synchronized  void setInternalError(String internalError) {
         ExceptionUtils.internalError = internalError;
     }
-
 }

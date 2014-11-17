@@ -13,7 +13,6 @@ public class MyApp implements SparkApplication {
         try {
             externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
             staticFileLocation("/public");
-
             File tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
             FileWriter writer = new FileWriter(tmpExternalFile);
             writer.write("Content of external file");
@@ -49,17 +48,11 @@ public class MyApp implements SparkApplication {
             response.header("after", "foobar");
         });
 
-        set404("C:\\spark\\400.html");
+        set404("400.html");
 
         try {
             Thread.sleep(500);
         } catch (Exception e) {
         }
     }
-
-    public static void main(String[] args)
-    {
-        new MyApp().init();
-    }
-
 }
