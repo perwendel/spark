@@ -209,12 +209,7 @@ public class MatcherFilter implements Filter {
         boolean consumed = bodyContent != null;
 
         if (!consumed && hasOtherHandlers) {
-
-            LOG.info("The requested route [" + uri + "] has a handler but cannot be consumed");
-            httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            bodyContent = String.format(NOT_FOUND);
-            consumed = true;
-          //  throw new NotConsumedException();
+            throw new NotConsumedException();
         }
 
         if (!consumed && !isServletContext) {

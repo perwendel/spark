@@ -13,6 +13,7 @@ public class MyApp implements SparkApplication {
         try {
             externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
             staticFileLocation("/public");
+
             File tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
             FileWriter writer = new FileWriter(tmpExternalFile);
             writer.write("Content of external file");
