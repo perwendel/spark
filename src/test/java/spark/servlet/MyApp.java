@@ -57,9 +57,4 @@ public class MyApp implements SparkApplication {
         } catch (Exception e) {
         }
     }
-
-    public static void main(String[] args)
-    {
-        new MyApp().init();
-    }
 }
