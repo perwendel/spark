@@ -16,8 +16,10 @@
  */
 package spark.servlet;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -28,6 +30,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +43,7 @@ import spark.resource.ClassPathResourceHandler;
 import spark.resource.ExternalResource;
 import spark.resource.ExternalResourceHandler;
 import spark.route.RouteMatcherFactory;
+import spark.utils.ExceptionUtils;
 import spark.utils.IOUtils;
 import spark.webserver.MatcherFilter;
 
@@ -61,7 +65,9 @@ public class SparkFilter implements Filter {
     private static boolean externalStaticResourcesSet = false;
 
     private String filterPath;
-    private MatcherFilter matcherFilter;
+    private static MatcherFilter matcherFilter;
+    private static List<String> staticLocations;
+    private static List<String> externalLocations;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -72,6 +78,7 @@ public class SparkFilter implements Filter {
 
         filterPath = FilterTools.getFilterPath(filterConfig);
         matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true, false);
+
     }
 
     /**
@@ -124,6 +131,8 @@ public class SparkFilter implements Filter {
         }
 
         matcherFilter.doFilter(requestWrapper, response, chain);
+
+
     }
 
     /**
@@ -132,6 +141,7 @@ public class SparkFilter implements Filter {
      * @param folder the location
      */
     public static void configureStaticResources(String folder) {
+
         if (!staticResourcesSet) {
             if (folder != null) {
                 try {
@@ -141,6 +151,8 @@ public class SparkFilter implements Filter {
                             staticResourceHandlers = new ArrayList<>();
                         }
                         staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
+
+
                         LOG.info("StaticResourceHandler configured with folder = " + folder);
                     } else {
                         LOG.error("Static resource location must be a folder");
@@ -149,9 +161,12 @@ public class SparkFilter implements Filter {
                     LOG.error("Error when creating StaticResourceHandler", e);
                 }
             }
+
             staticResourcesSet = true;
         }
     }
+
+
 
     /**
      * Configures location for static resources
@@ -159,6 +174,7 @@ public class SparkFilter implements Filter {
      * @param folder the location
      */
     public static void configureExternalStaticResources(String folder) {
+
         if (!externalStaticResourcesSet) {
             if (folder != null) {
                 try {
@@ -168,6 +184,7 @@ public class SparkFilter implements Filter {
                             staticResourceHandlers = new ArrayList<>();
                         }
                         staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
+
                         LOG.info("External StaticResourceHandler configured with folder = " + folder);
                     } else {
                         LOG.error("External Static resource location must be a folder");

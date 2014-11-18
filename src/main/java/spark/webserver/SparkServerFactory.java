@@ -16,7 +16,15 @@
  */
 package spark.webserver;
 
+import spark.resource.ClassPathResource;
+import spark.resource.ExternalResource;
 import spark.route.RouteMatcherFactory;
+import spark.utils.IOUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Per Wendel
@@ -26,9 +34,49 @@ public final class SparkServerFactory {
     private SparkServerFactory() {
     }
 
-    public static SparkServer create(boolean hasMultipleHandler) {
+    public static SparkServer create(boolean hasMultipleHandler,
+                                     String staticFileFolder,
+                                     String externalStaticFileFolder)  {
         MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
         matcherFilter.init(null);
+        List<String> staticFileLocations = new ArrayList<>();
+        List<String> externalFileLocations = new ArrayList<>();
+
+        if(hasMultipleHandler)
+        {
+            ExternalResource externalResource = new ExternalResource(externalStaticFileFolder);
+            ClassPathResource resource = new ClassPathResource(staticFileFolder);
+
+            File externalLocations = null;
+            File staticLocations = null;
+
+            try {
+                staticLocations = resource.getFile();
+                externalLocations = externalResource.getFile();
+            } catch (IOException e) {
+                //ignore
+            }
+            if (staticLocations.listFiles() != null)
+            {
+                for(File file : staticLocations.listFiles())
+                {
+                    IOUtils.update(file, staticFileLocations,"");
+                }
+            }
+
+            if (externalLocations.listFiles() != null)
+            {
+                for(File file : externalLocations.listFiles())
+                {
+                    IOUtils.update(file, externalFileLocations,"");
+                }
+            }
+        }
+
+        System.out.println(staticFileLocations);
+
+        matcherFilter.addExternalLocations(externalFileLocations);
+        matcherFilter.addStaticLocations(staticFileLocations);
         JettyHandler handler = new JettyHandler(matcherFilter);
         return new SparkServer(handler);
     }

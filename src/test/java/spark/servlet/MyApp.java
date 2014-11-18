@@ -12,6 +12,7 @@ public class MyApp implements SparkApplication {
     public void init() {
         try {
             externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
+
             staticFileLocation("/public");
 
             File tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
@@ -55,5 +56,10 @@ public class MyApp implements SparkApplication {
             Thread.sleep(500);
         } catch (Exception e) {
         }
+    }
+
+    public static void main(String[] args)
+    {
+        new MyApp().init();
     }
 }
