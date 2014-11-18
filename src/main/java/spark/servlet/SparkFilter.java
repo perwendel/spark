@@ -65,9 +65,9 @@ public class SparkFilter implements Filter {
     private static boolean externalStaticResourcesSet = false;
 
     private String filterPath;
-    private static MatcherFilter matcherFilter;
-    private static List<String> staticLocations;
-    private static List<String> externalLocations;
+    private MatcherFilter matcherFilter;
+    private static List<String> staticLocations = new ArrayList<>();
+    private static List<String> externalLocations = new ArrayList<>();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -130,6 +130,8 @@ public class SparkFilter implements Filter {
             }
         }
 
+        matcherFilter.addStaticLocations(staticLocations);
+        matcherFilter.addExternalLocations(externalLocations);
         matcherFilter.doFilter(requestWrapper, response, chain);
 
 
@@ -149,7 +151,12 @@ public class SparkFilter implements Filter {
                     if (resource.getFile().isDirectory()) {
                         if (staticResourceHandlers == null) {
                             staticResourceHandlers = new ArrayList<>();
+                            for(File file : resource.getFile().listFiles())
+                            {
+                                IOUtils.update(file,staticLocations,"");
+                            }
                         }
+
                         staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
 
 
@@ -182,6 +189,10 @@ public class SparkFilter implements Filter {
                     if (resource.getFile().isDirectory()) {
                         if (staticResourceHandlers == null) {
                             staticResourceHandlers = new ArrayList<>();
+                            for(File file : resource.getFile().listFiles())
+                            {
+                                IOUtils.update(file,externalLocations,"");
+                            }
                         }
                         staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
 
