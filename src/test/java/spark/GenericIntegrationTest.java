@@ -374,6 +374,13 @@ public class GenericIntegrationTest {
     }
 
     @Test
+    public void testErrorPage() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/random/random/stuff", null);
+        Assert.assertEquals(404, response.status);
+        Assert.assertTrue(response.body.toUpperCase().contains("PAGE NOT FOUND"));
+    }
+
+    @Test
     public void testNotFoundExceptionMapper() throws Exception {
         //        thrownotfound
         UrlResponse response = testUtil.doMethod("GET", "/thrownotfound", null);

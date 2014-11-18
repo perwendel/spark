@@ -73,8 +73,6 @@ public final class SparkServerFactory {
             }
         }
 
-        System.out.println(staticFileLocations);
-
         matcherFilter.addExternalLocations(externalFileLocations);
         matcherFilter.addStaticLocations(staticFileLocations);
         JettyHandler handler = new JettyHandler(matcherFilter);
