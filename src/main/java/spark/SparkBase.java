@@ -20,7 +20,7 @@ public abstract class SparkBase {
     protected static boolean initialized = false;
 
     protected static int port = SPARK_DEFAULT_PORT;
-    protected static String ipAddress = "0.0.0.0";
+    protected static String ipAddress = "127.0.0.1";
 
     protected static String keystoreFile;
     protected static String keystorePassword;
