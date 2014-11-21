@@ -16,17 +16,22 @@
  */
 package spark.webserver;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
+
+import spark.utils.IOUtils;
 
 /**
  * Simple Jetty Handler
@@ -51,7 +56,8 @@ class JettyHandler extends SessionHandler {
             HttpServletResponse response) throws IOException, ServletException {
         LOG.debug("jettyhandler, handle();");
         try {
-            filter.doFilter(request, response, null);
+        	// wrap the request so 'getInputStream()' can be called multiple times
+            filter.doFilter(new HttpRequestWrapper(request), response, null);
             baseRequest.setHandled(true);
         } catch (NotConsumedException ignore) {
             // TODO : Not use an exception in order to be faster.
@@ -59,4 +65,36 @@ class JettyHandler extends SessionHandler {
         }
     }
 
+    private class HttpRequestWrapper extends HttpServletRequestWrapper {
+    	private byte[] cachedBytes;
+
+    	public HttpRequestWrapper(HttpServletRequest request) {
+    		super(request);
+    	}
+
+    	@Override
+    	public ServletInputStream getInputStream() throws IOException {
+    		if (cachedBytes == null) {
+    			cacheInputStream();
+    		}
+    		return new CachedServletInputStream();
+    	}
+
+    	private void cacheInputStream() throws IOException {
+    		cachedBytes = IOUtils.toByteArray(super.getInputStream());
+    	}
+
+    	public class CachedServletInputStream extends ServletInputStream {
+    		private ByteArrayInputStream byteArrayInputStream;
+
+    		public CachedServletInputStream() {
+    			byteArrayInputStream = new ByteArrayInputStream(cachedBytes);
+    		}
+
+    		@Override
+    		public int read() {
+    			return byteArrayInputStream.read();
+    		}
+    	}
+    }
 }
