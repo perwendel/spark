@@ -8,7 +8,7 @@
     </parent>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <version>2.0.1-SNAPSHOT</version>
     <name>Spark</name>
     <description>A Sinatra inspired java web framework</description>
@@ -154,6 +154,15 @@
                 <configuration>
                 </configuration>
             </plugin>
+
+            <!-- to generate OSGi bundle -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.5.0</version>
+                <extensions>true</extensions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
