@@ -1,5 +1,16 @@
 package spark;
 
+import static spark.Spark.after;
+import static spark.Spark.afterFinally;
+import static spark.Spark.before;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.patch;
+import static spark.Spark.post;
+import static spark.SparkBase.externalStaticFileLocation;
+import static spark.SparkBase.staticFileLocation;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,26 +19,14 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import spark.examples.exception.BaseException;
 import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
-import spark.servlet.ServletTest;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
-
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.exception;
-import static spark.Spark.externalStaticFileLocation;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.post;
-import static spark.Spark.staticFileLocation;
 
 public class GenericIntegrationTest {
 
@@ -131,7 +130,7 @@ public class GenericIntegrationTest {
         get("/thrownotfound", (request, response) -> {
             throw new NotFoundException();
         });
-
+        
         exception(UnsupportedOperationException.class, (exception, request, response) -> {
             response.body("Exception handled");
         });
@@ -144,7 +143,24 @@ public class GenericIntegrationTest {
             response.status(404);
             response.body(NOT_FOUND_BRO);
         });
-
+        
+        get("/exception", (request, response) -> {
+            throw new RuntimeException();
+        });
+        
+        
+        afterFinally("/exception", (request, response) -> {
+        	response.body("finally executed for exception");
+        });
+        
+        post("/nice", (request, response) -> {
+        	return "nice response";
+        });
+        
+        afterFinally("/nice", (request, response) -> {
+        	response.header("post-process", "nice finally response");
+        });
+        
         try {
             Thread.sleep(500);
         } catch (Exception e) {
@@ -379,5 +395,20 @@ public class GenericIntegrationTest {
         UrlResponse response = testUtil.doMethod("GET", "/thrownotfound", null);
         Assert.assertEquals(NOT_FOUND_BRO, response.body);
         Assert.assertEquals(404, response.status);
+    }
+    
+    @Test
+    public void testRuntimeExceptionForFinally() throws Exception {
+    	UrlResponse response = testUtil.doMethod("GET", "/exception", null);
+    	Assert.assertEquals("finally executed for exception", response.body);
+    	Assert.assertEquals(500, response.status);
+    }
+    
+    @Test
+    public void testPostProcessBodyForFinally() throws Exception {
+    	UrlResponse response = testUtil.doMethod("POST", "/nice", "");
+    	Assert.assertEquals("nice response", response.body);
+    	Assert.assertEquals("nice finally response", response.headers.get("post-process"));
+    	Assert.assertEquals(200, response.status);
     }
 }

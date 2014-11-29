@@ -301,6 +301,36 @@ public abstract class SparkBase {
         };
         return impl;
     }
+    
+    /**
+     * Wraps the filter in FinallyFilter
+     *
+     * @param path   the path
+     * @param filter the filter
+     * @return the wrapped route
+     */
+    protected static FinallyFilter wrapFinally(final String path, final Filter filter) {
+        return wrapFinally(path, DEFAULT_ACCEPT_TYPE, filter);
+    }
+    
+    /**
+     * Wraps the filter in FinallyFilter
+     *
+     * @param path       the path
+     * @param acceptType the accept type
+     * @param filter     the filter
+     * @return the wrapped route
+     */
+
+    protected static FinallyFilter wrapFinally(final String path, String acceptType, final Filter filter) {
+    	acceptType = acceptType == null ? DEFAULT_ACCEPT_TYPE : acceptType;
+    	return new FinallyFilter(path, acceptType) {
+    		@Override
+    		public void handle(Request request, Response response) throws Exception {
+    			filter.handle(request, response);
+    		}
+    	};
+    }
 
     protected static void addRoute(String httpMethod, RouteImpl route) {
         init();

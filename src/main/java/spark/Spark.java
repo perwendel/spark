@@ -155,7 +155,18 @@ public final class Spark extends SparkBase {
     public static synchronized void after(String path, Filter filter) {
         addFilter(HttpMethod.after.name(), wrap(path, filter));
     }
-
+    
+    /**
+     * 
+     * Execute after route even if the route throws exception
+     * 
+     * @param path
+     * @param filter
+     */
+    public static synchronized void afterFinally(String path, Filter filter) {
+    	addFilter(HttpMethod.after.name(), wrapFinally(path, filter));
+    }
+    
     //////////////////////////////////////////////////
     // BEGIN route/filter mapping with accept type
     //////////////////////////////////////////////////
