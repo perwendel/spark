@@ -56,7 +56,7 @@ class JettyHandler extends SessionHandler {
             HttpServletResponse response) throws IOException, ServletException {
         LOG.debug("jettyhandler, handle();");
         try {
-        	// wrap the request so 'getInputStream()' can be called multiple times
+            // wrap the request so 'getInputStream()' can be called multiple times
             filter.doFilter(new HttpRequestWrapper(request), response, null);
             baseRequest.setHandled(true);
         } catch (NotConsumedException ignore) {
@@ -66,35 +66,35 @@ class JettyHandler extends SessionHandler {
     }
 
     private class HttpRequestWrapper extends HttpServletRequestWrapper {
-    	private byte[] cachedBytes;
+        private byte[] cachedBytes;
 
-    	public HttpRequestWrapper(HttpServletRequest request) {
-    		super(request);
-    	}
+        public HttpRequestWrapper(HttpServletRequest request) {
+            super(request);
+        }
 
-    	@Override
-    	public ServletInputStream getInputStream() throws IOException {
-    		if (cachedBytes == null) {
-    			cacheInputStream();
-    		}
-    		return new CachedServletInputStream();
-    	}
+        @Override
+        public ServletInputStream getInputStream() throws IOException {
+            if (cachedBytes == null) {
+                cacheInputStream();
+            }
+            return new CachedServletInputStream();
+        }
 
-    	private void cacheInputStream() throws IOException {
-    		cachedBytes = IOUtils.toByteArray(super.getInputStream());
-    	}
+        private void cacheInputStream() throws IOException {
+            cachedBytes = IOUtils.toByteArray(super.getInputStream());
+        }
 
-    	public class CachedServletInputStream extends ServletInputStream {
-    		private ByteArrayInputStream byteArrayInputStream;
+        public class CachedServletInputStream extends ServletInputStream {
+            private ByteArrayInputStream byteArrayInputStream;
 
-    		public CachedServletInputStream() {
-    			byteArrayInputStream = new ByteArrayInputStream(cachedBytes);
-    		}
+            public CachedServletInputStream() {
+                byteArrayInputStream = new ByteArrayInputStream(cachedBytes);
+            }
 
-    		@Override
-    		public int read() {
-    			return byteArrayInputStream.read();
-    		}
-    	}
+            @Override
+            public int read() {
+                return byteArrayInputStream.read();
+            }
+        }
     }
 }
