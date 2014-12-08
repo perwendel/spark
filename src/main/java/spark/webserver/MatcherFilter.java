@@ -92,8 +92,10 @@ public class MatcherFilter implements Filter {
 
         String bodyContent = null;
 
-        RequestWrapper req = new RequestWrapper();
-        ResponseWrapper res = new ResponseWrapper();
+        RequestWrapper requestWrapper = new RequestWrapper();
+        ResponseWrapper responseWrapper = new ResponseWrapper();
+
+        Response response = RequestResponseFactory.create(httpResponse);
 
         LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
         try {
@@ -104,14 +106,13 @@ public class MatcherFilter implements Filter {
                 Object filterTarget = filterMatch.getTarget();
                 if (filterTarget instanceof FilterImpl) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
-                    Response response = RequestResponseFactory.create(httpResponse);
 
                     FilterImpl filter = (FilterImpl) filterTarget;
 
-                    req.setDelegate(request);
-                    res.setDelegate(response);
+                    requestWrapper.setDelegate(request);
+                    responseWrapper.setDelegate(response);
 
-                    filter.handle(req, res);
+                    filter.handle(requestWrapper, responseWrapper);
 
                     String bodyAfterFilter = Access.getBody(response);
                     if (bodyAfterFilter != null) {
@@ -140,13 +141,17 @@ public class MatcherFilter implements Filter {
                     String result = null;
                     if (target instanceof RouteImpl) {
                         RouteImpl route = ((RouteImpl) target);
-                        Request request = RequestResponseFactory.create(match, httpRequest);
-                        Response response = RequestResponseFactory.create(httpResponse);
 
-                        req.setDelegate(request);
-                        res.setDelegate(response);
+                        if (requestWrapper.getDelegate() == null) {
+                            Request request = RequestResponseFactory.create(match, httpRequest);
+                            requestWrapper.setDelegate(request);
+                        } else {
+                            requestWrapper.changeMatch(match);
+                        }
 
-                        Object element = route.handle(req, res);
+                        responseWrapper.setDelegate(response);
+
+                        Object element = route.handle(requestWrapper, responseWrapper);
 
                         result = route.render(element);
                         // result = element.toString(); // TODO: Remove later when render fixed
@@ -165,14 +170,18 @@ public class MatcherFilter implements Filter {
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
                 if (filterTarget instanceof FilterImpl) {
-                    Request request = RequestResponseFactory.create(filterMatch, httpRequest);
-                    Response response = RequestResponseFactory.create(httpResponse);
 
-                    req.setDelegate(request);
-                    res.setDelegate(response);
+                    if (requestWrapper.getDelegate() == null) {
+                        Request request = RequestResponseFactory.create(filterMatch, httpRequest);
+                        requestWrapper.setDelegate(request);
+                    } else {
+                        requestWrapper.changeMatch(filterMatch);
+                    }
+
+                    responseWrapper.setDelegate(response);
 
                     FilterImpl filter = (FilterImpl) filterTarget;
-                    filter.handle(req, res);
+                    filter.handle(requestWrapper, responseWrapper);
 
                     String bodyAfterFilter = Access.getBody(response);
                     if (bodyAfterFilter != null) {
@@ -193,8 +202,8 @@ public class MatcherFilter implements Filter {
         } catch (Exception e) {
             ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(e);
             if (handler != null) {
-                handler.handle(e, req, res);
-                String bodyAfterFilter = Access.getBody(res.getDelegate());
+                handler.handle(e, requestWrapper, responseWrapper);
+                String bodyAfterFilter = Access.getBody(responseWrapper.getDelegate());
                 if (bodyAfterFilter != null) {
                     bodyContent = bodyAfterFilter;
                 }
@@ -206,7 +215,7 @@ public class MatcherFilter implements Filter {
         }
 
         // If redirected and content is null set to empty string to not throw NotConsumedException
-        if (bodyContent == null && res.isRedirected()) {
+        if (bodyContent == null && responseWrapper.isRedirected()) {
             bodyContent = "";
         }
 

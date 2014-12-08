@@ -16,6 +16,8 @@
  */
 package spark;
 
+import spark.route.RouteMatch;
+
 public final class Access {
 
     private Access() {
@@ -27,6 +29,10 @@ public final class Access {
 
     public static void runFromServlet() {
         Spark.runFromServlet();
+    }
+
+    public static void changeMatch(Request request, RouteMatch match) {
+        request.changeMatch(match);
     }
 
 }
