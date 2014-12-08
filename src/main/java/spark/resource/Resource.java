@@ -44,6 +44,8 @@ public interface Resource extends InputStreamResource {
      * <p>This method performs a definitive existence check, whereas the
      * existence of a {@code Resource} handle only guarantees a
      * valid descriptor handle.
+     *
+     * @return if exists
      */
     boolean exists();
 
@@ -55,6 +57,7 @@ public interface Resource extends InputStreamResource {
      * However, a value of {@code false} is a definitive indication
      * that the resource content cannot be read.
      *
+     * @return if readable
      * @see #getInputStream()
      */
     boolean isReadable();
@@ -64,52 +67,47 @@ public interface Resource extends InputStreamResource {
      * stream. If true, the InputStream cannot be read multiple times,
      * and must be read and closed to avoid resource leaks.
      * <p>Will be {@code false} for typical resource descriptors.
+     *
+     * @return if open
      */
     boolean isOpen();
 
     /**
-     * Return a URL handle for this resource.
-     *
+     * @return a URL handle for this resource.
      * @throws IOException if the resource cannot be resolved as URL,
      *                     i.e. if the resource is not available as descriptor
      */
     URL getURL() throws IOException;
 
     /**
-     * Return a URI handle for this resource.
-     *
+     * @return a URI handle for this resource.
      * @throws IOException if the resource cannot be resolved as URI,
      *                     i.e. if the resource is not available as descriptor
      */
     URI getURI() throws IOException;
 
     /**
-     * Return a File handle for this resource.
-     *
+     * @return a File handle for this resource.
      * @throws IOException if the resource cannot be resolved as absolute
      *                     file path, i.e. if the resource is not available in a file system
      */
     File getFile() throws IOException;
 
     /**
-     * Determine the content length for this resource.
-     *
+     * @return the content length for this resource.
      * @throws IOException if the resource cannot be resolved
      *                     (in the file system or as some other known physical resource type)
      */
     long contentLength() throws IOException;
 
     /**
-     * Determine the last-modified timestamp for this resource.
-     *
+     * @return the last-modified timestamp for this resource.
      * @throws IOException if the resource cannot be resolved
      *                     (in the file system or as some other known physical resource type)
      */
     long lastModified() throws IOException;
 
     /**
-     * Create a resource relative to this resource.
-     *
      * @param relativePath the relative path (relative to this resource)
      * @return the resource handle for the relative resource
      * @throws IOException if the relative resource cannot be determined
@@ -121,15 +119,16 @@ public interface Resource extends InputStreamResource {
      * part of the path: for example, "myfile.txt".
      * <p>Returns {@code null} if this type of resource does not
      * have a filename.
+     *
+     * @return the file name.
      */
     String getFilename();
 
     /**
-     * Return a description for this resource,
+     * @return a description for this resource,
      * to be used for error output when working with the resource.
      * <p>Implementations are also encouraged to return this value
      * from their {@code toString} method.
-     *
      * @see Object#toString()
      */
     String getDescription();
