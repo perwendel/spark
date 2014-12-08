@@ -152,8 +152,7 @@ public abstract class StringUtils {
     }
 
     /**
-     * Extract the filename from the given path,
-     * e.g. "mypath/myfile.txt" -> "myfile.txt".
+     * Extract the filename from the given path.
      *
      * @param path the file path (may be {@code null})
      * @return the extracted filename, or {@code null} if none
