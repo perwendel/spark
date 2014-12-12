@@ -31,6 +31,7 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,8 @@ public class SparkServer {
     public void ignite(String host, int port, String keystoreFile,
                        String keystorePassword, String truststoreFile,
                        String truststorePassword, String staticFilesFolder,
-                       String externalFilesFolder) {
+                       String externalFilesFolder, int maxThreads,
+                       int minThreads, int threadIdleTimeoutMillis) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -80,12 +82,14 @@ public class SparkServer {
             }
         }
 
+        Server server = createServer(maxThreads, minThreads, threadIdleTimeoutMillis);
+
         ServerConnector connector;
 
         if (keystoreFile == null) {
-            connector = createSocketConnector();
+            connector = createSocketConnector(server);
         } else {
-            connector = createSecureSocketConnector(keystoreFile,
+            connector = createSecureSocketConnector(server, keystoreFile,
                                                     keystorePassword, truststoreFile, truststorePassword);
         }
 
@@ -145,13 +149,14 @@ public class SparkServer {
      * Creates a secure jetty socket connector. Keystore required, truststore
      * optional. If truststore not specifed keystore will be reused.
      *
+     * @param server             Jetty server
      * @param keystoreFile       The keystore file location as string
      * @param keystorePassword   the password for the keystore
      * @param truststoreFile     the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword the trust store password
      * @return a secure socket connector
      */
-    private static ServerConnector createSecureSocketConnector(String keystoreFile,
+    private static ServerConnector createSecureSocketConnector(Server server, String keystoreFile,
                                                                String keystorePassword, String truststoreFile,
                                                                String truststorePassword) {
 
@@ -167,16 +172,24 @@ public class SparkServer {
         if (truststorePassword != null) {
             sslContextFactory.setTrustStorePassword(truststorePassword);
         }
-        return new ServerConnector(new Server(), sslContextFactory);
+        return new ServerConnector(server, sslContextFactory);
     }
 
     /**
      * Creates an ordinary, non-secured Jetty server connector.
      *
+     * @param server Jetty server
      * @return - a server connector
      */
-    private static ServerConnector createSocketConnector() {
-        return new ServerConnector(new Server());
+    private static ServerConnector createSocketConnector(Server server) {
+        return new ServerConnector(server);
+    }
+
+    private static Server createServer(int maxThreads, int minThreads, int threadTimeoutMillis) {
+        int max = (maxThreads > 0) ? maxThreads : 200;
+        int min = (minThreads > 0) ? minThreads : 8;
+        int idleTimeout = (threadTimeoutMillis > 0) ? threadTimeoutMillis : 60000;
+        return new Server(new QueuedThreadPool(max, min, idleTimeout));
     }
 
     /**
