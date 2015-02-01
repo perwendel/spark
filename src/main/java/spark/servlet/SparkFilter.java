@@ -95,8 +95,8 @@ public class SparkFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
-                                                                                              IOException,
-                                                                                              ServletException {
+        IOException,
+        ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request; // NOSONAR
 
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
@@ -117,7 +117,7 @@ public class SparkFilter implements Filter {
             for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
-                    IOUtils.copy(resource.getInputStream(), response.getWriter());
+                    IOUtils.copy(resource.getInputStream(), response.getOutputStream());
                     return;
                 }
             }
