@@ -22,6 +22,8 @@ import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -57,7 +59,13 @@ class JettyHandler extends SessionHandler {
         LOG.debug("jettyhandler, handle();");
         try {
             // wrap the request so 'getInputStream()' can be called multiple times
-            filter.doFilter(new HttpRequestWrapper(request), response, null);
+            GZIPFilter gzip = new GZIPFilter();
+            gzip.doFilter(new HttpRequestWrapper(request), response,
+                    (ServletRequest request1, ServletResponse response1) ->
+                    {
+                        //chain
+                        filter.doFilter(request1, response1, null);
+                    });
             baseRequest.setHandled(true);
         } catch (NotConsumedException ignore) {
             // TODO : Not use an exception in order to be faster.
