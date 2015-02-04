@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Connector;
@@ -69,7 +70,7 @@ public class SparkServer {
     public void ignite(String host, int port, String keystoreFile,
                        String keystorePassword, String truststoreFile,
                        String truststorePassword, String staticFilesFolder,
-                       String externalFilesFolder) {
+                       String externalFilesFolder, CountDownLatch latch) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -121,6 +122,7 @@ public class SparkServer {
             logger.info(">> Listening on {}:{}", host, port);
 
             server.start();
+            latch.countDown();
             server.join();
         } catch (Exception e) {
             logger.error("ignite failed",e);

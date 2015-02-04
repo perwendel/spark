@@ -1,5 +1,7 @@
 package spark;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,8 @@ public abstract class SparkBase {
 
     private static boolean servletStaticLocationSet;
     private static boolean servletExternalStaticLocationSet;
+
+    private static CountDownLatch latch = new CountDownLatch(1);
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -205,6 +209,18 @@ public abstract class SparkBase {
             LOG.warn("External static file location has already been set");
         }
     }
+    
+    /**
+     * Waits for the spark server to be initialized.
+     * If it's already initialized will return immediately
+     */
+    public static void awaitInitialization() {
+    	try {
+			latch.await();
+		} catch (InterruptedException e) {
+			LOG.info("Interrupted by another thread");
+		}
+    }
 
     private static void throwBeforeRouteMappingException() {
         throw new IllegalStateException(
@@ -223,6 +239,7 @@ public abstract class SparkBase {
         if (server != null) {
             routeMatcher.clearRoutes();
             server.stop();
+            latch = new CountDownLatch(1);
         }
         initialized = false;
     }
@@ -326,7 +343,7 @@ public abstract class SparkBase {
                             truststoreFile,
                             truststorePassword,
                             staticFileFolder,
-                            externalStaticFileFolder);
+                            externalStaticFileFolder, latch);
                 }
             }).start();
             initialized = true;
