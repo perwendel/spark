@@ -28,11 +28,12 @@ import javax.servlet.ServletOutputStream;
  */
 public class OutputStreamAsServletOutputStream extends ServletOutputStream
 {
-    private OutputStream out = null;
+    private final OutputStream out;
 
     public OutputStreamAsServletOutputStream(OutputStream output) throws IOException
     {
         super();
+        out = output;
     }
 
     @Override
