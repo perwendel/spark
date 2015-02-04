@@ -18,6 +18,7 @@ package spark.webserver;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -47,7 +48,10 @@ public class GZIPFilter implements Filter
          HttpServletRequest  httpRequest  = (HttpServletRequest)  request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         
-        if(Collections.list(httpRequest.getHeaders("Accept-Encoding")).contains("gzip"))
+        List<String> headers = Collections.list(httpRequest.getHeaders("Accept-Encoding"));
+        //For some reason getting the headers is returning a single string, like "gzip, deflate, sdch" instead of multiple like "gzip", "deflate", "sdch"
+        if(headers.contains("gzip") ||
+                (headers.size() == 1 && headers.get(0).contains("gzip")))
         {
             httpResponse.addHeader("Content-Encoding", "gzip");
             GZIPServletResponseWrapper gzipResponse = new GZIPServletResponseWrapper(httpResponse);
