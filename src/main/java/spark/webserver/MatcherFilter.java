@@ -18,6 +18,7 @@ package spark.webserver;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -238,7 +239,16 @@ public class MatcherFilter implements Filter {
                 if (httpResponse.getContentType() == null) {
                     httpResponse.setContentType("text/html; charset=utf-8");
                 }
-                httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+                //gzip compression support
+                if(httpResponse.getHeaders("Content-Encoding").contains("gzip"))
+                {
+                    try(GZIPOutputStream gzipOut = new GZIPOutputStream(httpResponse.getOutputStream()))
+                    {
+                        gzipOut.write(bodyContent.getBytes("utf-8"));
+                    }
+                }
+                else
+                    httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
