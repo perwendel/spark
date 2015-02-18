@@ -4,13 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.externalStaticFileLocation;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.post;
-import static spark.Spark.staticFileLocation;
+import static spark.Spark.*;
 
 public class MyApp implements SparkApplication {
 
@@ -18,6 +12,7 @@ public class MyApp implements SparkApplication {
     public void init() {
         try {
             externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
+
             staticFileLocation("/public");
 
             File tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
@@ -55,10 +50,11 @@ public class MyApp implements SparkApplication {
             response.header("after", "foobar");
         });
 
+        set404("400.html");
+
         try {
             Thread.sleep(500);
         } catch (Exception e) {
         }
     }
-
 }

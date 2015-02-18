@@ -37,6 +37,7 @@ import spark.Response;
 import spark.RouteImpl;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
+import spark.utils.ExceptionUtils;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.SimpleRouteMatcher;
@@ -59,6 +60,8 @@ public class MatcherFilter implements Filter {
      * The logger.
      */
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MatcherFilter.class);
+    private static List<String> externalLocations;
+    private static List<String> staticLocations;
 
     /**
      * Constructor
@@ -133,7 +136,7 @@ public class MatcherFilter implements Filter {
             } else if (httpMethod == HttpMethod.head && bodyContent == null) {
                 // See if get is mapped to provide default head mapping
                 bodyContent =
-                        routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri, acceptType) != null ? "" : null;
+                        routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri, acceptType) != null ? "Yo! yo! Page 404 error" : null;
             }
 
             if (target != null) {
@@ -222,7 +225,21 @@ public class MatcherFilter implements Filter {
         boolean consumed = bodyContent != null;
 
         if (!consumed && hasOtherHandlers) {
-            throw new NotConsumedException();
+
+            if(staticLocations != null || externalLocations != null)
+            {
+                if(staticLocations.contains(httpRequest.getRequestURI()) || externalLocations.contains(httpRequest.getRequestURI()))
+                {
+                    throw new NotConsumedException();
+                }
+            }
+            else
+            {
+                LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
+                httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                bodyContent = String.format(NOT_FOUND);
+                consumed = true;
+            }
         }
 
         if (!consumed && !isServletContext) {
@@ -249,6 +266,14 @@ public class MatcherFilter implements Filter {
         // TODO Auto-generated method stub
     }
 
-    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
-    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
+    private static final String NOT_FOUND = ExceptionUtils.getNotFound();
+    private static final String INTERNAL_ERROR = ExceptionUtils.getNotFound();
+
+    public synchronized void addExternalLocations(List<String> externalLocations) {
+        this.externalLocations = externalLocations;
+    }
+
+    public synchronized void addStaticLocations(List<String> staticLocations) {
+        this.staticLocations = staticLocations;
+    }
 }

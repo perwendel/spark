@@ -16,14 +16,8 @@
  */
 package spark.utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
+import java.util.List;
 
 
 /**
@@ -209,6 +203,21 @@ public final class IOUtils {
             count += n;
         }
         return count;
+    }
+
+    public static void update(File file, List<String> files, String folder) {
+        if(!file.isDirectory())
+        {
+            String path = folder+"/"+file.getName();
+            files.add(path);
+        }
+        else
+        {
+            for(File file2 : file.listFiles())
+            {
+                update(file2,files,folder+"/"+file.getName());
+            }
+        }
     }
 
 }

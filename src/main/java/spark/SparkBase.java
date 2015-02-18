@@ -317,7 +317,8 @@ public abstract class SparkBase {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    server = SparkServerFactory.create(hasMultipleHandlers());
+                    server = SparkServerFactory.create(hasMultipleHandlers(),staticFileFolder,
+                            externalStaticFileFolder);
                     server.ignite(
                             ipAddress,
                             port,
