@@ -170,7 +170,7 @@ public class SimpleRouteMatcher {
         if (routeMatches.isEmpty()) {
             return null;
         }
-
+  
         if (acceptType != null) {
             Map<String, RouteEntry> acceptedMimeTypes = getAcceptedMimeTypes(routeMatches);
             String bestMatch = MimeParse.bestMatch(acceptedMimeTypes.keySet(), acceptType);
