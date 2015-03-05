@@ -245,7 +245,7 @@ public class SimpleRouteMatcher {
             }
 
             if (routeEntry.matches(httpMethodToMatch, path)) {
-                LOG.debug("Removing path %s", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
+                LOG.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
 
                 forRemoval.add(routeEntry);
             }
