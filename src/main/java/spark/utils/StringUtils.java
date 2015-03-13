@@ -353,5 +353,37 @@ public abstract class StringUtils {
     public static String collectionToDelimitedString(Collection<?> coll, String delim) {
         return collectionToDelimitedString(coll, delim, "", "");
     }
-
+    
+    /**
+     * Convenience method to trim a string for a specific value
+     * 
+     * @param input the String to trim
+     * @param c the char we want to trim
+     * @return the trimmed String
+     */
+    public static String trim(String input, char c) {
+    	if (input == null || input.length() < 1) {
+    		return input;
+    	}
+    	int start = 0;
+    	int end = input.length() - 1;
+    	char[] array = input.toCharArray();
+    	
+    	if (array[start] == c) {
+    		start++;
+    	}
+    	if (array[end] == c) {
+    		end--;
+    	}
+    	if (start > end) {
+    		return "";
+    	}
+    	
+    	char[] ret = new char[end+1-start];
+    	for (int i=0; i<ret.length; i++) {
+    		ret[i] = array[start+i];
+    	}
+    	
+    	return String.valueOf(ret);	
+    }
 }

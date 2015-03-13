@@ -18,9 +18,7 @@ package spark.route;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import spark.utils.MimeParse;
 
@@ -29,10 +27,9 @@ import spark.utils.MimeParse;
  *
  * @author Per Wendel
  */
-public class SimpleRouteMatcher {
+public class SimpleRouteMatcher extends RouteMatcher{
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SimpleRouteMatcher.class);
-    private static final char SINGLE_QUOTE = '\'';
 
     private List<RouteEntry> routes;
 
@@ -44,37 +41,6 @@ public class SimpleRouteMatcher {
     }
 
     /**
-     * Parse and validates a route and adds it
-     *
-     * @param route      the route path
-     * @param acceptType the accept type
-     * @param target     the invocation target
-     */
-    public void parseValidateAddRoute(String route, String acceptType, Object target) {
-        try {
-            int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
-            String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase(); // NOSONAR
-            String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim(); // NOSONAR
-
-            // Use special enum stuff to get from value
-            HttpMethod method;
-            try {
-                method = HttpMethod.valueOf(httpMethod);
-            } catch (IllegalArgumentException e) {
-                LOG.error("The @Route value: "
-                                  + route
-                                  + " has an invalid HTTP method part: "
-                                  + httpMethod
-                                  + ".");
-                return;
-            }
-            addRoute(method, url, acceptType, target);
-        } catch (Exception e) {
-            LOG.error("The @Route value: " + route + " is not in the correct format", e);
-        }
-    }
-
-    /**
      * finds target for a requested route
      *
      * @param httpMethod the http method
@@ -82,6 +48,7 @@ public class SimpleRouteMatcher {
      * @param acceptType the accept type
      * @return the target
      */
+    @Override
     public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteEntry> routeEntries = this.findTargetsForRequestedRoute(httpMethod, path);
         RouteEntry entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
@@ -96,6 +63,7 @@ public class SimpleRouteMatcher {
      * @param acceptType the accept type
      * @return the targets
      */
+    @Override
     public List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteMatch> matchSet = new ArrayList<>();
         List<RouteEntry> routeEntries = findTargetsForRequestedRoute(httpMethod, path);
@@ -118,6 +86,7 @@ public class SimpleRouteMatcher {
     /**
      * ¨Clear all routes
      */
+    @Override
     public void clearRoutes() {
         routes.clear();
     }
@@ -126,7 +95,8 @@ public class SimpleRouteMatcher {
     // PRIVATE METHODS
     //////////////////////////////////////////////////
 
-    private void addRoute(HttpMethod method, String url, String acceptedType, Object target) {
+    @Override
+    void addRoute(HttpMethod method, String url, String acceptedType, Object target) {
         RouteEntry entry = new RouteEntry();
         entry.httpMethod = method;
         entry.path = url;
@@ -137,22 +107,6 @@ public class SimpleRouteMatcher {
         routes.add(entry);
     }
 
-    //can be cached? I don't think so.
-    private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
-        Map<String, RouteEntry> acceptedTypes = new HashMap<>();
-
-        for (RouteEntry routeEntry : routes) {
-            if (!acceptedTypes.containsKey(routeEntry.acceptedType)) {
-                acceptedTypes.put(routeEntry.acceptedType, routeEntry);
-            }
-        }
-
-        return acceptedTypes;
-    }
-
-    private boolean routeWithGivenAcceptType(String bestMatch) {
-        return !MimeParse.NO_MIME_TYPE.equals(bestMatch);
-    }
 
     private List<RouteEntry> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
         List<RouteEntry> matchSet = new ArrayList<RouteEntry>();
@@ -162,26 +116,6 @@ public class SimpleRouteMatcher {
             }
         }
         return matchSet;
-    }
-
-    // TODO: I believe this feature has impacted performance. Optimization?
-    private RouteEntry findTargetWithGivenAcceptType(List<RouteEntry> routeMatches, String acceptType) {
-        if (acceptType != null && routeMatches.size() > 0) {
-            Map<String, RouteEntry> acceptedMimeTypes = getAcceptedMimeTypes(routeMatches);
-            String bestMatch = MimeParse.bestMatch(acceptedMimeTypes.keySet(), acceptType);
-
-            if (routeWithGivenAcceptType(bestMatch)) {
-                return acceptedMimeTypes.get(bestMatch);
-            } else {
-                return null;
-            }
-        } else {
-            if (routeMatches.size() > 0) {
-                return routeMatches.get(0);
-            }
-        }
-
-        return null;
     }
 
 }

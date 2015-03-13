@@ -3,8 +3,9 @@ package spark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.route.RouteMatcher;
+import spark.route.RouteMatcher.MatcherImplementation;
 import spark.route.RouteMatcherFactory;
-import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
@@ -31,12 +32,12 @@ public abstract class SparkBase {
     protected static String externalStaticFileFolder = null;
 
     protected static SparkServer server;
-    protected static SimpleRouteMatcher routeMatcher;
+    protected static RouteMatcher routeMatcher;
     private static boolean runFromServlet;
 
     private static boolean servletStaticLocationSet;
     private static boolean servletExternalStaticLocationSet;
-
+    
     /**
      * Set the IP address that Spark should listen on. If not called the default
      * address is '0.0.0.0'. This has to be called before any route mapping is
@@ -225,6 +226,13 @@ public abstract class SparkBase {
             server.stop();
         }
         initialized = false;
+    }
+    
+    /**
+     * Sets the RouteMatcher implementation
+     */
+    public static synchronized void matcher(MatcherImplementation matcher) {
+    	RouteMatcherFactory.impl = matcher;
     }
 
     static synchronized void runFromServlet() {
