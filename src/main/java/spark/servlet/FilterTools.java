@@ -16,6 +16,8 @@
  */
 package spark.servlet;
 
+import spark.webserver.InitParameters;
+
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,7 +54,7 @@ final class FilterTools {
         return path;
     }
 
-    static String getFilterPath(FilterConfig config) {
+    static String getHandlerPath(InitParameters config) {
         String result = config.getInitParameter(FILTER_MAPPING_PARAM);
         if (result == null || result.equals(SLASH_WILDCARD)) {
             return "";

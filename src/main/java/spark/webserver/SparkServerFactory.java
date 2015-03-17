@@ -27,9 +27,9 @@ public final class SparkServerFactory {
     }
 
     public static SparkServer create(boolean hasMultipleHandler) {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
-        matcherFilter.init(null);
-        JettyHandler handler = new JettyHandler(matcherFilter);
+        MatcherHandler matcherHandler = new MatcherHandler(RouteMatcherFactory.get(), hasMultipleHandler);
+        matcherHandler.init(null);
+        JettyHandler handler = new JettyHandler(matcherHandler);
         return new SparkServer(handler);
     }
 

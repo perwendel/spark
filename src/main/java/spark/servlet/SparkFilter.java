@@ -16,32 +16,17 @@
  */
 package spark.servlet;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.Access;
-import spark.resource.AbstractFileResolvingResource;
-import spark.resource.AbstractResourceHandler;
-import spark.resource.ClassPathResource;
-import spark.resource.ClassPathResourceHandler;
-import spark.resource.ExternalResource;
-import spark.resource.ExternalResourceHandler;
 import spark.route.RouteMatcherFactory;
-import spark.utils.IOUtils;
-import spark.webserver.MatcherFilter;
+import spark.webserver.InitParameters;
+import spark.webserver.MatcherHandler;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.io.IOException;
 
 /**
  * Filter that can be configured to be used in a web.xml file.
@@ -49,19 +34,17 @@ import spark.webserver.MatcherFilter;
  * the adding of routes should be made.
  *
  * @author Per Wendel
+ * @deprecated In favor of {@link spark.servlet.SparkServlet}
  */
+@Deprecated
 public class SparkFilter implements Filter {
+
     private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
 
     public static final String APPLICATION_CLASS_PARAM = "applicationClass";
 
-    private static List<AbstractResourceHandler> staticResourceHandlers = null;
-
-    private static boolean staticResourcesSet = false;
-    private static boolean externalStaticResourcesSet = false;
-
     private String filterPath;
-    private MatcherFilter matcherFilter;
+    private MatcherHandler matcherHandler;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -70,8 +53,8 @@ public class SparkFilter implements Filter {
         final SparkApplication application = getApplication(filterConfig);
         application.init();
 
-        filterPath = FilterTools.getFilterPath(filterConfig);
-        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true, false);
+        filterPath = FilterTools.getHandlerPath(InitParameters.ofFilter(filterConfig));
+        matcherHandler = new MatcherHandler(RouteMatcherFactory.get(), false);
     }
 
     /**
@@ -95,8 +78,8 @@ public class SparkFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
-        IOException,
-        ServletException {
+            IOException,
+            ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request; // NOSONAR
 
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
@@ -113,71 +96,17 @@ public class SparkFilter implements Filter {
         };
 
         // handle static resources
-        if (staticResourceHandlers != null) {
-            for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
-                AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
-                if (resource != null && resource.isReadable()) {
-                    IOUtils.copy(resource.getInputStream(), response.getOutputStream());
-                    return;
-                }
-            }
+        if (SparkHandler.handleStaticResources(httpRequest, response)) {
+            return;
         }
 
-        matcherFilter.doFilter(requestWrapper, response, chain);
-    }
+        matcherHandler.service(requestWrapper, response);
 
-    /**
-     * Configures location for static resources
-     *
-     * @param folder the location
-     */
-    public static void configureStaticResources(String folder) {
-        if (!staticResourcesSet) {
-            if (folder != null) {
-                try {
-                    ClassPathResource resource = new ClassPathResource(folder);
-                    if (resource.getFile().isDirectory()) {
-                        if (staticResourceHandlers == null) {
-                            staticResourceHandlers = new ArrayList<>();
-                        }
-                        staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
-                        LOG.info("StaticResourceHandler configured with folder = " + folder);
-                    } else {
-                        LOG.error("Static resource location must be a folder");
-                    }
-                } catch (IOException e) {
-                    LOG.error("Error when creating StaticResourceHandler", e);
-                }
-            }
-            staticResourcesSet = true;
-        }
-    }
-
-    /**
-     * Configures location for static resources
-     *
-     * @param folder the location
-     */
-    public static void configureExternalStaticResources(String folder) {
-        if (!externalStaticResourcesSet) {
-            if (folder != null) {
-                try {
-                    ExternalResource resource = new ExternalResource(folder);
-                    if (resource.getFile().isDirectory()) {
-                        if (staticResourceHandlers == null) {
-                            staticResourceHandlers = new ArrayList<>();
-                        }
-                        staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
-                        LOG.info("External StaticResourceHandler configured with folder = " + folder);
-                    } else {
-                        LOG.error("External Static resource location must be a folder");
-                    }
-                } catch (IOException e) {
-                    LOG.error("Error when creating external StaticResourceHandler", e);
-                }
-            }
-            externalStaticResourcesSet = true;
-        }
+        //Once all requests are consumed now, there is no need to go through filter chain
+        //OLD behaviour:
+        //if (!consumed && chain != null) {
+        //    chain.doFilter(requestWrapper, response);
+        //}
     }
 
     @Override

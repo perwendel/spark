@@ -3,6 +3,7 @@ package spark.util;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.ServerSocket;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
@@ -264,6 +265,14 @@ public class SparkTestUtil {
         try {
             Thread.sleep(time);
         } catch (Exception e) {
+        }
+    }
+
+    public static boolean isAvailable(int port) {
+        try (ServerSocket ignored = new ServerSocket(port)) {
+            return true;
+        } catch (IOException ignored) {
+            return false;
         }
     }
 
