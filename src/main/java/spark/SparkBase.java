@@ -37,6 +37,32 @@ public abstract class SparkBase {
     private static boolean servletStaticLocationSet;
     private static boolean servletExternalStaticLocationSet;
 
+    // store request and response in threadlocals to support SimpleRoute
+    private static final ThreadLocal<spark.Request> req = new ThreadLocal<>();
+    private static final ThreadLocal<spark.Response> rsp = new ThreadLocal<>();
+    
+    // only needs to be called by MatcherFilter
+    public static void setRequestResponse(Request request, Response response) {
+        req.set(request);
+        rsp.set(response);
+    }
+    
+    /**
+     * Returns the Request being handled by the current Thread
+     * @return the Request being handled by the current Thread
+     */
+    public static Request request() {
+        return req.get();
+    }
+    
+    /**
+     * Returns the Response being provided by the current Thread
+     * @return the Response being provided by the current Thread
+     */
+    public static Response response() {
+        return rsp.get();
+    }
+
     /**
      * Set the IP address that Spark should listen on. If not called the default
      * address is '0.0.0.0'. This has to be called before any route mapping is
@@ -235,6 +261,15 @@ public abstract class SparkBase {
         }
     }
 
+    /**
+     * Wraps the SimpleRoute in a Route
+     * @param sroute the SimpleRoute to wrap
+     * @return the wrapped SimpleRoute
+     */
+    protected static Route wrap(final SimpleRoute sroute) {
+        return (Request req, Response rsp) -> sroute.handle();
+    }
+    
     /**
      * Wraps the route in RouteImpl
      *

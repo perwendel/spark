@@ -35,6 +35,7 @@ import spark.Request;
 import spark.RequestResponseFactory;
 import spark.Response;
 import spark.RouteImpl;
+import spark.SparkBase;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
@@ -98,6 +99,7 @@ public class MatcherFilter implements Filter {
         Response response = RequestResponseFactory.create(httpResponse);
 
         LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
+        SparkBase.setRequestResponse(requestWrapper, responseWrapper);
         try {
             // BEFORE filters
             List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri, acceptType);
@@ -212,6 +214,8 @@ public class MatcherFilter implements Filter {
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 bodyContent = INTERNAL_ERROR;
             }
+        } finally {
+            SparkBase.setRequestResponse(null, null); // don't hang on to these any longer than necessary
         }
 
         // If redirected and content is null set to empty string to not throw NotConsumedException
