@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
-import spark.utils.StringUtils;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
@@ -216,72 +215,6 @@ public abstract class SparkBase {
         return staticFileFolder != null || externalStaticFileFolder != null;
     }
 
-    /**
-     * Clear all routes but without stopping the server
-     *
-     * @throws IllegalStateException if the server is not yet initialized
-     *
-     * @since 2.2
-     */
-    public static synchronized void clearRoutes() {
-        if (!initialized) {
-            throw new IllegalStateException("This must be done after route mapping has been done");
-        }
-
-        routeMatcher.clearRoutes();
-    }
-
-    /**
-     * Removes a route from the server without stopping the server
-     *
-     * @param path the path of the route that should be removed
-     *
-     * @return <tt>true</tt> if this any matching routes were removed
-     *
-     * @throws IllegalArgumentException if <tt>path</tt> is null or blank
-     *
-     * @since 2.2
-     */
-    public static synchronized boolean removeRoute(String path) {
-        if (!initialized) {
-            throw new IllegalStateException("This must be done after route mapping has been done");
-        }
-
-        if (StringUtils.isEmpty(path)) {
-            throw new IllegalArgumentException("path cannot be null or blank");
-        }
-
-        return routeMatcher.removeRoute(path);
-    }
-
-    /**
-     * Removes a route from the server without stopping the server
-     *
-     * @param path the path of the route that should be removed
-     * @param httpMethod the HTTP method that the route to be removed was added for
-     *
-     * @return <tt>true</tt> if this any matching routes were removed
-     *
-     * @throws IllegalArgumentException if <tt>path</tt> or <tt>httpMethod</tt> is null or blank
-     * @throws IllegalStateException if the server is not yet initialized
-     *
-     * @since 2.2
-     */
-    public static synchronized boolean removeRoute(String path, String httpMethod) {
-        if (!initialized) {
-            throw new IllegalStateException("This must be done after route mapping has been done");
-        }
-
-        if (StringUtils.isEmpty(path)) {
-            throw new IllegalArgumentException("path cannot be null or blank");
-        }
-
-        if (StringUtils.isEmpty(httpMethod)) {
-            throw new IllegalArgumentException("httpMethod cannot be null or blank");
-        }
-
-        return routeMatcher.removeRoute(path, httpMethod);
-    }
 
     /**
      * Stops the Spark server and clears all routes
