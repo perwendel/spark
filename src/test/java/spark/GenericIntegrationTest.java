@@ -3,15 +3,21 @@ package spark;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import junit.framework.Assert;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.examples.exception.BaseException;
 import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
+import spark.servlet.ServletTest;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -28,6 +34,8 @@ import static spark.Spark.staticFileLocation;
 public class GenericIntegrationTest {
 
     private static final String NOT_FOUND_BRO = "Not found bro";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenericIntegrationTest.class);
 
     static SparkTestUtil testUtil;
     static File tmpExternalFile;
@@ -102,6 +110,15 @@ public class GenericIntegrationTest {
             String body = request.body();
             response.status(201); // created
             return "Body was: " + body;
+        });
+
+        post("/post_via_get", (request, response) -> {
+            response.status(201); // created
+            return "Method Override Worked";
+        });
+
+        get("/post_via_get", (request, response) -> {
+            return "Method Override Did Not Work";
         });
 
         patch("/patcher", (request, response) -> {
@@ -321,9 +338,23 @@ public class GenericIntegrationTest {
     public void testPost() {
         try {
             UrlResponse response = testUtil.doMethod("POST", "/poster", "Fo shizzy");
-            System.out.println(response.body);
+            LOGGER.info(response.body);
             Assert.assertEquals(201, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testPostViaGetWithMethodOverrideHeader() {
+        try {
+            Map<String, String> map = new HashMap<>();
+            map.put("X-HTTP-Method-Override", "POST");
+            UrlResponse response = testUtil.doMethod("GET", "/post_via_get", "Fo shizzy", false, "*/*", map);
+            System.out.println(response.body);
+            Assert.assertEquals(201, response.status);
+            Assert.assertTrue(response.body.contains("Method Override Worked"));
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -333,7 +364,7 @@ public class GenericIntegrationTest {
     public void testPatch() {
         try {
             UrlResponse response = testUtil.doMethod("PATCH", "/patcher", "Fo shizzy");
-            System.out.println(response.body);
+            LOGGER.info(response.body);
             Assert.assertEquals(200, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
         } catch (Throwable e) {

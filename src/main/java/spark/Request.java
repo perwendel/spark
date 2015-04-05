@@ -16,6 +16,7 @@
  */
 package spark;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -55,6 +56,7 @@ public class Request {
 
     /* Lazy loaded stuff */
     private String body = null;
+    private byte[] bodyAsBytes = null;
 
     private Set<String> headers = null;
 
@@ -93,7 +95,10 @@ public class Request {
      */
     Request(RouteMatch match, HttpServletRequest request) {
         this.servletRequest = request;
+        changeMatch(match);
+    }
 
+    protected void changeMatch(RouteMatch match) {
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
 
@@ -130,7 +135,7 @@ public class Request {
     }
 
     /**
-     * @return an arrat containing the splat (wildcard) parameters
+     * @return an array containing the splat (wildcard) parameters
      */
     public String[] splat() {
         return splat.toArray(new String[splat.size()]);
@@ -220,14 +225,26 @@ public class Request {
      */
     public String body() {
         if (body == null) {
-            try {
-                body = IOUtils.toString(servletRequest.getInputStream());
-            } catch (Exception e) {
-                LOG.warn("Exception when reading body", e);
-            }
+            readBody();
         }
         return body;
     }
+    
+    public byte[] bodyAsBytes() {
+        if (bodyAsBytes == null) {
+            readBody();
+        }
+        return bodyAsBytes;
+    }
+    
+    private void readBody() {
+		try {
+			bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
+			body = new String(bodyAsBytes);
+		} catch (Exception e) {
+			LOG.warn("Exception when reading body", e);
+		}
+	}
 
     /**
      * @return the length of request.body
@@ -245,7 +262,7 @@ public class Request {
      */
     public String queryParams(String queryParam) {
         return servletRequest.getParameter(queryParam);
-    }
+    } 
 
     /**
      * Gets the value for the provided header

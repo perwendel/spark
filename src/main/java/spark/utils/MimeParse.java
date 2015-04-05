@@ -63,9 +63,17 @@ public class MimeParse {
         if (fullType.equals("*")) {
             fullType = "*/*";
         }
-        String[] types = fullType.split("/");
-        results.type = types[0].trim();
-        results.subType = types[1].trim();
+
+        int slashIndex = fullType.indexOf('/');
+        if (slashIndex != -1) {
+            results.type = fullType.substring(0, slashIndex);
+            results.subType = fullType.substring(slashIndex + 1);
+        } else {
+            //If the type is invalid, attempt to turn into a wildcard
+            results.type = fullType;
+            results.subType = "*";
+        }
+
         return results;
     }
 

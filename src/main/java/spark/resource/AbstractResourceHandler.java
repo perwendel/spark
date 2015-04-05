@@ -26,7 +26,6 @@ import org.eclipse.jetty.util.URIUtil;
 
 /**
  * Abstract class providing functionality for finding resources based on an Http Servlet request.
- *
  * Code snippets copied from Eclipse Jetty source. Modifications made by Per Wendel.
  */
 public abstract class AbstractResourceHandler {
@@ -36,7 +35,7 @@ public abstract class AbstractResourceHandler {
      *
      * @param request the servlet request
      * @return the resource or null if not found
-     * @throws java.net.MalformedURLException
+     * @throws java.net.MalformedURLException thrown when malformed URL.
      */
     public AbstractFileResolvingResource getResource(HttpServletRequest request) throws MalformedURLException {
         String servletPath;
@@ -65,7 +64,7 @@ public abstract class AbstractResourceHandler {
      *
      * @param path the path
      * @return the resource or null if resource doesn't exist
-     * @throws MalformedURLException
+     * @throws java.net.MalformedURLException thrown when malformed URL.
      */
     protected abstract AbstractFileResolvingResource getResource(String path) throws MalformedURLException;
 

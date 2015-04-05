@@ -98,6 +98,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 
     /**
      * Return the path for this resource (as resource path within the class path).
+     *
+     * @return the path
      */
     public final String getPath() {
         return this.path;
@@ -108,6 +110,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      *
      * @see java.lang.ClassLoader#getResource(String)
      * @see java.lang.Class#getResource(String)
+     *
+     * @return if exists.
      */
     @Override
     public boolean exists() {
@@ -125,6 +129,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      *
      * @see java.lang.ClassLoader#getResourceAsStream(String)
      * @see java.lang.Class#getResourceAsStream(String)
+     *
+     * @return the input stream.
      */
     @Override
     public InputStream getInputStream() throws IOException {
@@ -145,6 +151,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      *
      * @see java.lang.ClassLoader#getResource(String)
      * @see java.lang.Class#getResource(String)
+     *
+     * @return the url.
      */
     @Override
     public URL getURL() throws IOException {
@@ -165,6 +173,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      * relative to the path of the underlying resource of this descriptor.
      *
      * @see spark.utils.StringUtils#applyRelativePath(String, String)
+     *
+     * @return the resource.
      */
     @Override
     public Resource createRelative(String relativePath) {
@@ -177,6 +187,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      * resource refers to.
      *
      * @see spark.utils.StringUtils#getFilename(String)
+     *
+     * @return the file name.
      */
     @Override
     public String getFilename() {
@@ -185,6 +197,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 
     /**
      * This implementation returns a description that includes the class path location.
+     *
+     * @return the description.
      */
     @Override
     public String getDescription() {
@@ -204,6 +218,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 
     /**
      * This implementation compares the underlying class path locations.
+     *
+     * @return if equals.
      */
     @Override
     public boolean equals(Object obj) {
@@ -226,6 +242,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
     /**
      * This implementation returns the hash code of the underlying
      * class path location.
+     *
+     * @return the hash code.
      */
     @Override
     public int hashCode() {

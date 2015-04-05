@@ -16,13 +16,10 @@
  */
 package spark.route;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import spark.utils.MimeParse;
+import spark.utils.StringUtils;
 
 /**
  * Simple route matcher that is supposed to work exactly as Sinatra's
@@ -122,6 +119,58 @@ public class SimpleRouteMatcher {
         routes.clear();
     }
 
+    /**
+     * Removes a particular route from the collection of those that have been previously routed.
+     *
+     * Search for a previously established routes using the given path and HTTP method, removing
+     * any matches that are found.
+     *
+     * @param path the route path
+     * @param httpMethod the http method
+     *
+     * @return <tt>true</tt> if this a matching route has been previously routed
+     *
+     * @throws IllegalArgumentException if <tt>path</tt> is null or blank or if <tt>httpMethod</tt> is null, blank
+     * or an invalid HTTP method
+     *
+     * @since 2.2
+     */
+    public boolean removeRoute(String path, String httpMethod) {
+        if (StringUtils.isEmpty(path)) {
+            throw new IllegalArgumentException("path cannot be null or blank");
+        }
+
+        if (StringUtils.isEmpty(httpMethod)) {
+            throw new IllegalArgumentException("httpMethod cannot be null or blank");
+        }
+
+        // Catches invalid input and throws IllegalArgumentException
+        HttpMethod method = HttpMethod.valueOf(httpMethod);
+
+        return removeRoute(method, path);
+    }
+
+    /**
+     * Removes a particular route from the collection of those that have been previously routed.
+     *
+     * Search for a previously established routes using the given path and removes any matches that are found.
+     *
+     * @param path the route path
+     *
+     * @return <tt>true</tt> if this a matching route has been previously routed
+     *
+     * @throws java.lang.IllegalArgumentException if <tt>path</tt> is null or blank
+     *
+     * @since 2.2
+     */
+    public boolean removeRoute(String path) {
+        if (StringUtils.isEmpty(path)) {
+            throw new IllegalArgumentException("path cannot be null or blank");
+        }
+
+        return removeRoute((HttpMethod)null, path);
+    }
+
     //////////////////////////////////////////////////
     // PRIVATE METHODS
     //////////////////////////////////////////////////
@@ -184,4 +233,24 @@ public class SimpleRouteMatcher {
         return null;
     }
 
+    private boolean removeRoute(HttpMethod httpMethod, String path) {
+        List<RouteEntry> forRemoval = new ArrayList<>();
+
+        for (RouteEntry routeEntry : routes) {
+            HttpMethod httpMethodToMatch = httpMethod;
+
+            if (httpMethod == null) {
+                // Use the routeEntry's HTTP method if none was given, so that only path is used to match.
+                httpMethodToMatch = routeEntry.httpMethod;
+            }
+
+            if (routeEntry.matches(httpMethodToMatch, path)) {
+                LOG.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
+
+                forRemoval.add(routeEntry);
+            }
+        }
+
+        return routes.removeAll(forRemoval);
+    }
 }

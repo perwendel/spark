@@ -26,7 +26,7 @@ import spark.utils.SparkUtils;
  *
  * @author Per Wendel
  */
-public abstract class FilterImpl {
+public abstract class FilterImpl implements Filter {
 
     private static final String DEFAUT_CONTENT_TYPE = "text/html";
 
