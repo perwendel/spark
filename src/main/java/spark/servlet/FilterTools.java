@@ -18,6 +18,8 @@ package spark.servlet;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 final class FilterTools {
 
@@ -49,6 +51,11 @@ final class FilterTools {
             path = SLASH + path;
         }
 
+        try {
+            path = URLDecoder.decode(path, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            // this can't really ever happen
+        }
         return path;
     }
 

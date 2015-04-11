@@ -107,7 +107,7 @@ public class SparkFilter implements Filter {
 
         HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override
-            public String getRequestURI() {
+            public String getPathInfo() {
                 return relativePath;
             }
         };
