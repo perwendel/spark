@@ -60,7 +60,7 @@ public class SimpleExample {
 
     public static void main(String[] args) {
 
-        //  setPort(5678); <- Uncomment this if you wan't spark to listen on a port different than 4567.
+        //  port(5678); <- Uncomment this if you want spark to listen on a port different than 4567
 
         get("/hello", (request, response) -> "Hello World!");
 

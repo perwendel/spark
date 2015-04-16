@@ -37,22 +37,16 @@ public class SimpleSecureExample {
 
         secure(args[0], args[1], null, null);
 
-        get("/hello", (request, response) -> {
-            return "Hello Secure World!";
-        });
+        get("/hello", (request, response) -> "Hello Secure World!");
 
-        post("/hello", (request, response) -> {
-            return "Hello Secure World: " + request.body();
-        });
+        post("/hello", (request, response) -> "Hello Secure World: " + request.body());
 
         get("/private", (request, response) -> {
             response.status(401);
             return "Go Away!!!";
         });
 
-        get("/users/:name", (request, response) -> {
-            return "Selected user: " + request.params(":name");
-        });
+        get("/users/:name", (request, response) -> "Selected user: " + request.params(":name"));
 
         get("/news/:section", (request, response) -> {
             response.type("text/xml");
@@ -70,9 +64,6 @@ public class SimpleSecureExample {
             return null;
         });
 
-        get("/", (request, response) -> {
-            return "root";
-        });
-
+        get("/", (request, response) -> "root");
     }
 }
