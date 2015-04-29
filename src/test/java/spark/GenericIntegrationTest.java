@@ -106,6 +106,14 @@ public class GenericIntegrationTest {
             return "Hello Root!";
         });
 
+        get("/simpleRoute", () -> "Success");
+        
+        get("/simpleRouteRequestResponse", () -> {
+            if (Spark.request() == null) return("Request was null!");
+            if (Spark.response() == null) return("Response was null!");
+            return "Success";
+        });
+        
         post("/poster", (request, response) -> {
             String body = request.body();
             response.status(201); // created
@@ -173,6 +181,19 @@ public class GenericIntegrationTest {
         }
     }
 
+    @Test
+    public void simpleRoute_should_return_success() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/simpleRoute", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Success", response.body);
+    }
+    
+    public void simpleRoute_should_have_access_to_request_and_response() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/simpleRouteRequestResponse", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Success", response.body);        
+    }
+    
     @Test
     public void routes_should_be_accept_type_aware() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/hi", null, "application/json");

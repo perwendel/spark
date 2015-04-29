@@ -40,8 +40,7 @@ public final class Spark extends SparkBase {
     // Hide constructor
     private Spark() {
     }
-
-
+    
     /**
      * Map the route for HTTP GET requests
      *
@@ -50,6 +49,16 @@ public final class Spark extends SparkBase {
      */
     public static synchronized void get(final String path, final Route route) {
         addRoute(HttpMethod.get.name(), wrap(path, route));
+    }
+
+    /**
+     * Map the route for HTTP GET requests
+     *
+     * @param path  the path
+     * @param route The route
+     */
+    public static synchronized void get(final String path, final SimpleRoute route) {
+        get(path, wrap(route));
     }
 
     /**
@@ -63,6 +72,16 @@ public final class Spark extends SparkBase {
     }
 
     /**
+     * Map the route for HTTP POST requests
+     *
+     * @param path  the path
+     * @param route The route
+     */
+    public static synchronized void post(String path, SimpleRoute route) {
+        post(path, wrap(route));
+    }
+
+    /**
      * Map the route for HTTP PUT requests
      *
      * @param path  the path
@@ -70,6 +89,16 @@ public final class Spark extends SparkBase {
      */
     public static synchronized void put(String path, Route route) {
         addRoute(HttpMethod.put.name(), wrap(path, route));
+    }
+
+    /**
+     * Map the route for HTTP PUT requests
+     *
+     * @param path  the path
+     * @param route The route
+     */
+    public static synchronized void put(String path, SimpleRoute route) {
+        post(path, wrap(route));
     }
 
     /**
@@ -83,6 +112,16 @@ public final class Spark extends SparkBase {
     }
 
     /**
+     * Map the route for HTTP PATCH requests
+     *
+     * @param path  the path
+     * @param route The route
+     */
+    public static synchronized void patch(String path, SimpleRoute route) {
+        patch(path, wrap(route));
+    }
+
+    /**
      * Map the route for HTTP DELETE requests
      *
      * @param path  the path
@@ -90,6 +129,16 @@ public final class Spark extends SparkBase {
      */
     public static synchronized void delete(String path, Route route) {
         addRoute(HttpMethod.delete.name(), wrap(path, route));
+    }
+
+    /**
+     * Map the route for HTTP DELETE requests
+     *
+     * @param path  the path
+     * @param route The route
+     */
+    public static synchronized void delete(String path, SimpleRoute route) {
+        delete(path, wrap(route));
     }
 
     /**
@@ -103,6 +152,16 @@ public final class Spark extends SparkBase {
     }
 
     /**
+     * Map the route for HTTP HEAD requests
+     *
+     * @param path  the path
+     * @param route The route
+     */
+    public static synchronized void head(String path, SimpleRoute route) {
+        head(path, wrap(route));
+    }
+
+    /**
      * Map the route for HTTP TRACE requests
      *
      * @param path  the path
@@ -110,6 +169,16 @@ public final class Spark extends SparkBase {
      */
     public static synchronized void trace(String path, Route route) {
         addRoute(HttpMethod.trace.name(), wrap(path, route));
+    }
+
+    /**
+     * Map the route for HTTP TRACE requests
+     *
+     * @param path  the path
+     * @param route The route
+     */
+    public static synchronized void trace(String path, SimpleRoute route) {
+        trace(path, wrap(route));
     }
 
     /**
@@ -123,6 +192,16 @@ public final class Spark extends SparkBase {
     }
 
     /**
+     * Map the route for HTTP CONNECT requests
+     *
+     * @param path  the path
+     * @param route The route
+     */
+    public static synchronized void connect(String path, SimpleRoute route) {
+        connect(path, wrap(route));
+    }
+
+    /**
      * Map the route for HTTP OPTIONS requests
      *
      * @param path  the path
@@ -130,6 +209,16 @@ public final class Spark extends SparkBase {
      */
     public static synchronized void options(String path, Route route) {
         addRoute(HttpMethod.options.name(), wrap(path, route));
+    }
+
+    /**
+     * Map the route for HTTP OPTIONS requests
+     *
+     * @param path  the path
+     * @param route The route
+     */
+    public static synchronized void options(String path, SimpleRoute route) {
+        options(path, wrap(route));
     }
 
     /**
