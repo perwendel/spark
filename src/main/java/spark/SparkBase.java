@@ -30,6 +30,10 @@ public abstract class SparkBase {
     protected static String staticFileFolder = null;
     protected static String externalStaticFileFolder = null;
 
+    protected static int maxThreads;
+    protected static int minThreads;
+    protected static int threadIdleTimeoutMillis;
+
     protected static SparkServer server;
     protected static SimpleRouteMatcher routeMatcher;
     private static boolean runFromServlet;
@@ -162,6 +166,16 @@ public abstract class SparkBase {
         Spark.keystorePassword = keystorePassword;
         Spark.truststoreFile = truststoreFile;
         Spark.truststorePassword = truststorePassword;
+    }
+
+    public static synchronized void thread(int maxThreads, int minThreads, int idleTimeoutMillis) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+
+        Spark.maxThreads = maxThreads;
+        Spark.minThreads = minThreads;
+        Spark.threadIdleTimeoutMillis = idleTimeoutMillis;
     }
 
     /**
@@ -326,7 +340,10 @@ public abstract class SparkBase {
                             truststoreFile,
                             truststorePassword,
                             staticFileFolder,
-                            externalStaticFileFolder);
+                            externalStaticFileFolder,
+                            maxThreads,
+                            minThreads,
+                            threadIdleTimeoutMillis);
                 }
             }).start();
             initialized = true;
