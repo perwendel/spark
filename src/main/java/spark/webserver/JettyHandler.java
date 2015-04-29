@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import javax.servlet.Filter;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -42,10 +43,10 @@ class JettyHandler extends SessionHandler {
 
     private static final Logger LOG = Log.getLogger(JettyHandler.class);
 
-    private Filter filter;
+    private MatcherHandler handler;
 
-    public JettyHandler(Filter filter) {
-        this.filter = filter;
+    public JettyHandler(MatcherHandler handler) {
+        this.handler = handler;
     }
 
     @Override
@@ -57,7 +58,7 @@ class JettyHandler extends SessionHandler {
         LOG.debug("jettyhandler, handle();");
         try {
             // wrap the request so 'getInputStream()' can be called multiple times
-            filter.doFilter(new HttpRequestWrapper(request), response, null);
+            handler.service(new HttpRequestWrapper(request), response);
             baseRequest.setHandled(true);
         } catch (NotConsumedException ignore) {
             // TODO : Not use an exception in order to be faster.

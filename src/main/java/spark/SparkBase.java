@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
+import spark.servlet.SparkHandler;
+import spark.servlet.SparkServlet;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
@@ -177,7 +179,7 @@ public abstract class SparkBase {
         staticFileFolder = folder;
         if (!servletStaticLocationSet) {
             if (runFromServlet) {
-                SparkFilter.configureStaticResources(staticFileFolder);
+                SparkHandler.configureStaticResources(staticFileFolder);
                 servletStaticLocationSet = true;
             }
         } else {
@@ -198,7 +200,7 @@ public abstract class SparkBase {
         externalStaticFileFolder = externalFolder;
         if (!servletExternalStaticLocationSet) {
             if (runFromServlet) {
-                SparkFilter.configureExternalStaticResources(externalStaticFileFolder);
+                SparkHandler.configureExternalStaticResources(externalStaticFileFolder);
                 servletExternalStaticLocationSet = true;
             }
         } else {

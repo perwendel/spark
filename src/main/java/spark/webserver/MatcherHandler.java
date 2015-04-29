@@ -1,84 +1,54 @@
-/*
- * Copyright 2011- Per Wendel
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package spark.webserver;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import spark.Access;
-import spark.FilterImpl;
-import spark.HaltException;
-import spark.Request;
-import spark.RequestResponseFactory;
-import spark.Response;
-import spark.RouteImpl;
+import spark.*;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.SimpleRouteMatcher;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+
 /**
- * Filter for matching of filters and routes.
+ * Handler for matching of filters and routes.
  *
  * @author Per Wendel
  */
-public class MatcherFilter implements Filter {
+public class MatcherHandler {
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
     private static final String HTTP_METHOD_OVERRIDE_HEADER = "X-HTTP-Method-Override";
 
     private SimpleRouteMatcher routeMatcher;
-    private boolean isServletContext;
     private boolean hasOtherHandlers;
 
     /**
      * The logger.
      */
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MatcherFilter.class);
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MatcherHandler.class);
 
     /**
      * Constructor
      *
      * @param routeMatcher     The route matcher
-     * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(SimpleRouteMatcher routeMatcher, boolean isServletContext, boolean hasOtherHandlers) {
+    public MatcherHandler(SimpleRouteMatcher routeMatcher, boolean hasOtherHandlers) {
         this.routeMatcher = routeMatcher;
-        this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
     }
 
-    public void init(FilterConfig filterConfig) {
+    public void init(InitParameters initParameter) {
         //
     }
 
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, // NOSONAR
-                         FilterChain chain) throws IOException, ServletException { // NOSONAR
+    public void service(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException { // NOSONAR
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest; // NOSONAR
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
@@ -225,23 +195,22 @@ public class MatcherFilter implements Filter {
             throw new NotConsumedException();
         }
 
-        if (!consumed && !isServletContext) {
+        // OLD behaviour: //if (!consumed && !isServletContext) {
+        // once spark started using Servlet instead of Filter, there is no more need
+        // to give another filter/servlet chance to change body content. Servlet is
+        // last item in execution chain
+        if (!consumed) {
             LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
             bodyContent = String.format(NOT_FOUND);
-            consumed = true;
         }
 
-        if (consumed) {
-            // Write body content
-            if (!httpResponse.isCommitted()) {
-                if (httpResponse.getContentType() == null) {
-                    httpResponse.setContentType("text/html; charset=utf-8");
-                }
-                httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+        // Write body content
+        if (!httpResponse.isCommitted()) {
+            if (httpResponse.getContentType() == null) {
+                httpResponse.setContentType("text/html; charset=utf-8");
             }
-        } else if (chain != null) {
-            chain.doFilter(httpRequest, httpResponse);
+            httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
         }
     }
 
