@@ -1,5 +1,7 @@
 package spark;
 
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,7 @@ public abstract class SparkBase {
 
     private static boolean servletStaticLocationSet;
     private static boolean servletExternalStaticLocationSet;
+    protected static HttpConnectionFactory connectionFactory = initHttpConnectionFactory(); 
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -310,7 +313,12 @@ public abstract class SparkBase {
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
                                                    + "'", filter.getAcceptType(), filter);
     }
-
+    
+    private static HttpConnectionFactory initHttpConnectionFactory(){
+    	HttpConfiguration httpConfiguration = new HttpConfiguration();
+        return new HttpConnectionFactory(httpConfiguration);
+    }
+    
     private static synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
@@ -326,7 +334,8 @@ public abstract class SparkBase {
                             truststoreFile,
                             truststorePassword,
                             staticFileFolder,
-                            externalStaticFileFolder);
+                            externalStaticFileFolder,
+                            connectionFactory);
                 }
             }).start();
             initialized = true;

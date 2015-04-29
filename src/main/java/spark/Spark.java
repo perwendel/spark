@@ -16,6 +16,10 @@
  */
 package spark;
 
+import static java.util.Objects.requireNonNull;
+
+import org.eclipse.jetty.server.HttpConnectionFactory;
+
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
@@ -856,5 +860,14 @@ public final class Spark extends SparkBase {
     public static ModelAndView modelAndView(Object model, String viewName) {
         return new ModelAndView(model, viewName);
     }
-
+    
+    /**
+     * Provide HttpConnectionFactory injection point to customize server configuration
+     *
+     * @param HttpConnectionFactory provide server configuration
+     */
+    public static void connectionFactory(HttpConnectionFactory httpConnectionFactory){
+    	requireNonNull(httpConnectionFactory, "HttpConnectionFactory cannot be null");
+    	connectionFactory = httpConnectionFactory;
+    }
 }
