@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -69,7 +70,8 @@ public class SparkServer {
     public void ignite(String host, int port, String keystoreFile,
                        String keystorePassword, String truststoreFile,
                        String truststorePassword, String staticFilesFolder,
-                       String externalFilesFolder) {
+                       String externalFilesFolder,
+                       HttpConnectionFactory connectionFactory) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -83,10 +85,11 @@ public class SparkServer {
         ServerConnector connector;
 
         if (keystoreFile == null) {
-            connector = createSocketConnector();
+            connector = createSocketConnector(connectionFactory);
         } else {
             connector = createSecureSocketConnector(keystoreFile,
-                                                    keystorePassword, truststoreFile, truststorePassword);
+                                                    keystorePassword, truststoreFile, truststorePassword,
+                                                    connectionFactory);
         }
 
         // Set some timeout options to make debugging easier.
@@ -149,11 +152,13 @@ public class SparkServer {
      * @param keystorePassword   the password for the keystore
      * @param truststoreFile     the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword the trust store password
+     * @param connectionFactory 
      * @return a secure socket connector
      */
     private static ServerConnector createSecureSocketConnector(String keystoreFile,
                                                                String keystorePassword, String truststoreFile,
-                                                               String truststorePassword) {
+                                                               String truststorePassword, 
+                                                               HttpConnectionFactory connectionFactory) {
 
         SslContextFactory sslContextFactory = new SslContextFactory(
                 keystoreFile);
@@ -167,16 +172,17 @@ public class SparkServer {
         if (truststorePassword != null) {
             sslContextFactory.setTrustStorePassword(truststorePassword);
         }
-        return new ServerConnector(new Server(), sslContextFactory);
+        return new ServerConnector(new Server(), sslContextFactory, connectionFactory);
     }
 
     /**
      * Creates an ordinary, non-secured Jetty server connector.
+     * @param connectionFactory 
      *
      * @return - a server connector
      */
-    private static ServerConnector createSocketConnector() {
-        return new ServerConnector(new Server());
+    private static ServerConnector createSocketConnector(HttpConnectionFactory connectionFactory) {
+        return new ServerConnector(new Server(), connectionFactory);
     }
 
     /**
@@ -210,5 +216,4 @@ public class SparkServer {
             }
         }
     }
-
 }

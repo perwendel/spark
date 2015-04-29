@@ -1,22 +1,21 @@
 package spark;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import spark.servlet.ServletTest;
-import spark.util.SparkTestUtil;
-import spark.util.SparkTestUtil.UrlResponse;
-
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.post;
+
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
 
 public class GenericSecureIntegrationTest {
 
@@ -26,6 +25,10 @@ public class GenericSecureIntegrationTest {
 
     @AfterClass
     public static void tearDown() {
+		Spark.keystoreFile = null;
+		Spark.keystorePassword = null;
+		Spark.truststoreFile = null;
+		Spark.truststorePassword = null;
         Spark.stop();
     }
 

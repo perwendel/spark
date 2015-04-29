@@ -18,6 +18,7 @@ package spark.webserver;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import spark.Access;
 import spark.FilterImpl;
+import spark.FinallyFilter;
 import spark.HaltException;
 import spark.Request;
 import spark.RequestResponseFactory;
@@ -211,6 +213,35 @@ public class MatcherFilter implements Filter {
                 LOG.error("", e);
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 bodyContent = INTERNAL_ERROR;
+            }
+        }finally{
+        	List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.after, uri, acceptType);
+        	
+        	List<RouteMatch> filtered = matchSet.stream().filter(match -> {
+        		return match.getTarget() instanceof FinallyFilter;
+        	}).collect(Collectors.toList());
+        	
+            for (RouteMatch filterMatch : filtered) {
+                Object filterTarget = filterMatch.getTarget();
+                Request request = RequestResponseFactory.create(filterMatch, httpRequest);
+                Response response = RequestResponseFactory.create(httpResponse);
+
+                req.setDelegate(request);
+                res.setDelegate(response);
+
+                FilterImpl filter = (FilterImpl) filterTarget;
+                try {
+					filter.handle(req, res);
+				} catch (Exception e) {
+					LOG.error("", e);
+	                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+	                bodyContent = INTERNAL_ERROR;
+				}
+
+                String bodyAfterFilter = Access.getBody(response);
+                if (bodyAfterFilter != null) {
+                    bodyContent = bodyAfterFilter;
+                }
             }
         }
 

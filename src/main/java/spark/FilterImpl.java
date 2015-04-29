@@ -72,5 +72,4 @@ public abstract class FilterImpl implements Filter {
     String getPath() {
         return this.path;
     }
-
 }
