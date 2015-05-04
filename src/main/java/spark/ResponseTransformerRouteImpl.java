@@ -28,8 +28,12 @@ package spark;
  */
 public abstract class ResponseTransformerRouteImpl extends RouteImpl {
 
+    protected ResponseTransformerRouteImpl(String path, String acceptType) {
+        super(path, acceptType);
+    }
+
     public static ResponseTransformerRouteImpl create(String path, Route route, ResponseTransformer transformer) {
-        return create(path, SparkBase.DEFAULT_ACCEPT_TYPE, route, transformer);
+        return create(path, Spark.Api.DEFAULT_ACCEPT_TYPE, route, transformer);
     }
 
     public static ResponseTransformerRouteImpl create(String path,
@@ -47,10 +51,6 @@ public abstract class ResponseTransformerRouteImpl extends RouteImpl {
                 return route.handle(request, response);
             }
         };
-    }
-
-    protected ResponseTransformerRouteImpl(String path, String acceptType) {
-        super(path, acceptType);
     }
 
     /**
