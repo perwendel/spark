@@ -235,10 +235,14 @@ public class MatcherFilter implements Filter {
         if (consumed) {
             // Write body content
             if (!httpResponse.isCommitted()) {
-                if (httpResponse.getContentType() == null) {
-                    httpResponse.setContentType("text/html; charset=utf-8");
+                String encoding = httpResponse.getCharacterEncoding();
+                if(encoding == null) {
+                    encoding = "utf-8";
                 }
-                httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+                if (httpResponse.getContentType() == null) {
+                    httpResponse.setContentType("text/html; charset=" + encoding);
+                }
+                httpResponse.getOutputStream().write(bodyContent.getBytes(encoding));
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
