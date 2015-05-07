@@ -803,7 +803,7 @@ public final class Spark extends SparkBase {
      * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
      * halt will not work
      */
-    public static void halt() {
+    public static HaltException halt() {
         throw new HaltException();
     }
 
@@ -814,7 +814,7 @@ public final class Spark extends SparkBase {
      *
      * @param status the status code
      */
-    public static void halt(int status) {
+    public static HaltException halt(int status) {
         throw new HaltException(status);
     }
 
@@ -825,7 +825,7 @@ public final class Spark extends SparkBase {
      *
      * @param body The body content
      */
-    public static void halt(String body) {
+    public static HaltException halt(String body) {
         throw new HaltException(body);
     }
 
@@ -837,7 +837,7 @@ public final class Spark extends SparkBase {
      * @param status The status code
      * @param body   The body content
      */
-    public static void halt(int status, String body) {
+    public static HaltException halt(int status, String body) {
         throw new HaltException(status, body);
     }
 
