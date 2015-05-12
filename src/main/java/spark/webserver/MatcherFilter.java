@@ -87,7 +87,7 @@ public class MatcherFilter implements Filter {
             method = httpRequest.getMethod();
         }
         String httpMethodStr = method.toLowerCase(); // NOSONAR
-        String uri = httpRequest.getRequestURI(); // NOSONAR
+        String uri = httpRequest.getPathInfo(); // NOSONAR
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
         String bodyContent = null;
