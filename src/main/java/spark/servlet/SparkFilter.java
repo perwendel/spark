@@ -95,8 +95,8 @@ public class SparkFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws
-        IOException,
-        ServletException {
+                                                                                              IOException,
+                                                                                              ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request; // NOSONAR
 
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
@@ -108,6 +108,11 @@ public class SparkFilter implements Filter {
         HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override
             public String getPathInfo() {
+                return relativePath;
+            }
+
+            @Override
+            public String getRequestURI() {
                 return relativePath;
             }
         };
