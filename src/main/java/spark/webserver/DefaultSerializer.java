@@ -1,5 +1,5 @@
 /*
- * Copyright 2011- Per Wendel
+ * Copyright 2015 - Per Wendel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 
 /**
  * Serilizer that writes the result of toString to output in UTF-8 encoding
+ *
  * @author alsoto
  */
 public class DefaultSerializer extends Serializer {
@@ -36,7 +37,7 @@ public class DefaultSerializer extends Serializer {
         try {
             outputStream.write(element.toString().getBytes("utf-8"));
         } catch (UnsupportedEncodingException e) {
-           throw new IOException(e);
+            throw new IOException(e);
         }
     }
 

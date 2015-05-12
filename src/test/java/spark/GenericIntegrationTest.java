@@ -1,15 +1,5 @@
 package spark;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.post;
-import static spark.SparkBase.externalStaticFileLocation;
-import static spark.SparkBase.staticFileLocation;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -30,6 +20,16 @@ import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.patch;
+import static spark.Spark.post;
+import static spark.SparkBase.externalStaticFileLocation;
+import static spark.SparkBase.staticFileLocation;
 
 public class GenericIntegrationTest {
 
@@ -83,16 +83,16 @@ public class GenericIntegrationTest {
         });
 
         get("/binaryhi", (request, response) -> {
-           return "Hello World!".getBytes(); 
+            return "Hello World!".getBytes();
         });
 
         get("/bytebufferhi", (request, response) -> {
-            return ByteBuffer.wrap("Hello World!".getBytes()); 
-         });
+            return ByteBuffer.wrap("Hello World!".getBytes());
+        });
 
         get("/inputstreamhi", (request, response) -> {
             return new ByteArrayInputStream("Hello World!".getBytes("utf-8"));
-         });
+        });
 
         get("/param/:param", (request, response) -> {
             return "echo: " + request.params(":param");

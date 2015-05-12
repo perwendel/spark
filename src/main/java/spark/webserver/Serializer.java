@@ -1,5 +1,5 @@
 /*
- * Copyright 2011- Per Wendel
+ * Copyright 2015 - Per Wendel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.io.OutputStream;
 
 /**
  * Class that serializers and writes the result to given output stream.
- * 
+ *
  * @author alex
  */
 public abstract class Serializer {
@@ -33,15 +33,16 @@ public abstract class Serializer {
     }
 
     public void processElement(OutputStream outputStream, Object element) throws IOException {
-        if(canHandle(element)) {
+        if (canHandle(element)) {
             process(outputStream, element);
         } else {
-            if(next != null) {
+            if (next != null) {
                 this.next.processElement(outputStream, element);
             }
         }
     }
 
     public abstract boolean canHandle(Object element);
+
     public abstract void process(OutputStream outputStream, Object element) throws IOException;
 }
