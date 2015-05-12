@@ -58,13 +58,13 @@ public class SparkServer {
      * Ignites the spark server, listening on the specified port, running SSL secured with the specified keystore
      * and truststore.  If truststore is null, keystore is reused.
      *
-     * @param host                  The address to listen on
-     * @param port                  - the port
-     * @param keystoreFile          - The keystore file location as string
-     * @param keystorePassword      - the password for the keystore
-     * @param truststoreFile        - the truststore file location as string, leave null to reuse keystore
-     * @param truststorePassword    - the trust store password
-     * @param staticFilesFolder      - the route to static files in classPath
+     * @param host                The address to listen on
+     * @param port                - the port
+     * @param keystoreFile        - The keystore file location as string
+     * @param keystorePassword    - the password for the keystore
+     * @param truststoreFile      - the truststore file location as string, leave null to reuse keystore
+     * @param truststorePassword  - the trust store password
+     * @param staticFilesFolder   - the route to static files in classPath
      * @param externalFilesFolder - the route to static files external to classPath.
      */
     public void ignite(String host, int port, String keystoreFile,
@@ -125,7 +125,7 @@ public class SparkServer {
             latch.countDown();
             server.join();
         } catch (Exception e) {
-            logger.error("ignite failed",e);
+            logger.error("ignite failed", e);
             System.exit(100); // NOSONAR
         }
     }
@@ -137,7 +137,7 @@ public class SparkServer {
                 server.stop();
             }
         } catch (Exception e) {
-            logger.error("stop failed",e);
+            logger.error("stop failed", e);
             System.exit(100); // NOSONAR
         }
         logger.info("done");

@@ -209,17 +209,17 @@ public abstract class SparkBase {
             LOG.warn("External static file location has already been set");
         }
     }
-    
+
     /**
      * Waits for the spark server to be initialized.
      * If it's already initialized will return immediately
      */
     public static void awaitInitialization() {
-    	try {
-			latch.await();
-		} catch (InterruptedException e) {
-			LOG.info("Interrupted by another thread");
-		}
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            LOG.info("Interrupted by another thread");
+        }
     }
 
     private static void throwBeforeRouteMappingException() {
