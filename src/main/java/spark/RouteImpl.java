@@ -69,10 +69,9 @@ public abstract class RouteImpl implements Route {
      * @return body content.
      * @throws java.lang.Exception when render fails
      */
-    //TODO change String return type to Stream. It should be done in another issue.
-    public String render(Object element) throws Exception {
+    public Object render(Object element) throws Exception {
         if (element != null) {
-            return element.toString();
+            return element;
         } else {
             return null;
         }
