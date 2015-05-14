@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver;
+package spark.webserver.serializing;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,7 +38,7 @@ public abstract class Serializer {
     }
 
     /**
-     * Wraps {@link spark.webserver.Serializer#process(java.io.OutputStream, Object)} and calls next serializer in chain.
+     * Wraps {@link Serializer#process(java.io.OutputStream, Object)} and calls next serializer in chain.
      *
      * @param outputStream the output stream.
      * @param element the element to process.

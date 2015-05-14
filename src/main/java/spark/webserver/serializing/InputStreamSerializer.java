@@ -14,36 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver;
+package spark.webserver.serializing;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.ByteBuffer;
+
+import spark.utils.IOUtils;
 
 /**
- * Bytes serializer.
+ * Input stream serializer.
  *
  * @author alex
  */
-public class BytesSerializer extends Serializer {
+class InputStreamSerializer extends Serializer {
 
     @Override
     public boolean canProcess(Object element) {
-        return element instanceof byte[] || element instanceof ByteBuffer;
+        return element instanceof InputStream;
     }
 
     @Override
     public void process(OutputStream outputStream, Object element)
             throws IOException {
-        byte[] bytes = null;
-        if (element instanceof byte[]) {
-            bytes = (byte[]) element;
-        } else {
-            if (element instanceof ByteBuffer) {
-                bytes = ((ByteBuffer) element).array();
-            }
-        }
-        outputStream.write(bytes);
+        String content = IOUtils.toString((InputStream) element);
+        outputStream.write(content.getBytes("utf-8"));
     }
 
 }
