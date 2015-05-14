@@ -17,6 +17,7 @@
 package spark.webserver;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -40,6 +41,7 @@ import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.SimpleRouteMatcher;
+import spark.utils.GzipUtils;
 
 /**
  * Filter for matching of filters and routes.
@@ -240,7 +242,14 @@ public class MatcherFilter implements Filter {
                 if (httpResponse.getContentType() == null) {
                     httpResponse.setContentType("text/html; charset=utf-8");
                 }
-                serializerChain.process(httpResponse.getOutputStream(), bodyContent);
+
+                // Check if gzip is wanted/accepted and in that case handle that
+                OutputStream outputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse);
+
+                // serialize the body to output stream
+                serializerChain.process(outputStream, bodyContent);
+
+                outputStream.flush();//needed for GZIP stream. NOt sure where the HTTP response actually gets cleaned up
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);

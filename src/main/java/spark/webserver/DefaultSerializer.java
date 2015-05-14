@@ -21,14 +21,14 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Serilizer that writes the result of toString to output in UTF-8 encoding
+ * Serializer that writes the result of toString to output in UTF-8 encoding
  *
- * @author alsoto
+ * @author alex
  */
 public class DefaultSerializer extends Serializer {
 
     @Override
-    public boolean canHandle(Object element) {
+    public boolean canProcess(Object element) {
         return true;
     }
 
