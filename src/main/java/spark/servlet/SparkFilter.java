@@ -107,6 +107,11 @@ public class SparkFilter implements Filter {
 
         HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
             @Override
+            public String getPathInfo() {
+                return relativePath;
+            }
+
+            @Override
             public String getRequestURI() {
                 return relativePath;
             }
@@ -117,7 +122,7 @@ public class SparkFilter implements Filter {
             for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
-                    IOUtils.copy(resource.getInputStream(), response.getWriter());
+                    IOUtils.copy(resource.getInputStream(), response.getOutputStream());
                     return;
                 }
             }

@@ -1,8 +1,10 @@
 package spark;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,26 +12,24 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import spark.examples.exception.BaseException;
 import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
-import spark.servlet.ServletTest;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.exception;
-import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.post;
-import static spark.Spark.staticFileLocation;
+import static spark.SparkBase.externalStaticFileLocation;
+import static spark.SparkBase.staticFileLocation;
 
 public class GenericIntegrationTest {
 
@@ -80,6 +80,18 @@ public class GenericIntegrationTest {
 
         get("/hi", (request, response) -> {
             return "Hello World!";
+        });
+
+        get("/binaryhi", (request, response) -> {
+            return "Hello World!".getBytes();
+        });
+
+        get("/bytebufferhi", (request, response) -> {
+            return ByteBuffer.wrap("Hello World!".getBytes());
+        });
+
+        get("/inputstreamhi", (request, response) -> {
+            return new ByteArrayInputStream("Hello World!".getBytes("utf-8"));
         });
 
         get("/param/:param", (request, response) -> {
@@ -191,6 +203,39 @@ public class GenericIntegrationTest {
     public void testGetHi() {
         try {
             UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("Hello World!", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testGetBinaryHi() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/binaryhi", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("Hello World!", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testGetByteBufferHi() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/bytebufferhi", null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("Hello World!", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testGetInputStreamHi() {
+        try {
+            UrlResponse response = testUtil.doMethod("GET", "/inputstreamhi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("Hello World!", response.body);
         } catch (Throwable e) {

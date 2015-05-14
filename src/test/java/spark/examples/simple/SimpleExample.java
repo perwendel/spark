@@ -28,24 +28,18 @@ public class SimpleExample {
 
     public static void main(String[] args) {
 
-        //  setPort(5678); <- Uncomment this if you wan't spark to listen on a port different than 4567.
+        //  port(5678); <- Uncomment this if you want spark to listen on a port different than 4567
 
-        get("/hello", (request, response) -> {
-            return "Hello World!";
-        });
+        get("/hello", (request, response) -> "Hello World!");
 
-        post("/hello", (request, response) -> {
-            return "Hello World: " + request.body();
-        });
+        post("/hello", (request, response) -> "Hello World: " + request.body());
 
         get("/private", (request, response) -> {
             response.status(401);
             return "Go Away!!!";
         });
 
-        get("/users/:name", (request, response) -> {
-            return "Selected user: " + request.params(":name");
-        });
+        get("/users/:name", (request, response) -> "Selected user: " + request.params(":name"));
 
         get("/news/:section", (request, response) -> {
             response.type("text/xml");
@@ -62,9 +56,6 @@ public class SimpleExample {
             return null;
         });
 
-        get("/", (request, response) -> {
-            return "root";
-        });
-
+        get("/", (request, response) -> "root");
     }
 }

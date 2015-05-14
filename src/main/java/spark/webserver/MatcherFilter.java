@@ -54,6 +54,7 @@ public class MatcherFilter implements Filter {
     private static final String HTTP_METHOD_OVERRIDE_HEADER = "X-HTTP-Method-Override";
 
     private SimpleRouteMatcher routeMatcher;
+    private SerializerChain serializerChain;
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
@@ -73,6 +74,7 @@ public class MatcherFilter implements Filter {
         this.routeMatcher = routeMatcher;
         this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
+        this.serializerChain = new SerializerChain();
     }
 
     public void init(FilterConfig filterConfig) {
@@ -89,10 +91,10 @@ public class MatcherFilter implements Filter {
             method = httpRequest.getMethod();
         }
         String httpMethodStr = method.toLowerCase(); // NOSONAR
-        String uri = httpRequest.getRequestURI(); // NOSONAR
+        String uri = httpRequest.getPathInfo(); // NOSONAR
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
-        String bodyContent = null;
+        Object bodyContent = null;
 
         RequestWrapper requestWrapper = new RequestWrapper();
         ResponseWrapper responseWrapper = new ResponseWrapper();
@@ -140,7 +142,7 @@ public class MatcherFilter implements Filter {
 
             if (target != null) {
                 try {
-                    String result = null;
+                    Object result = null;
                     if (target instanceof RouteImpl) {
                         RouteImpl route = ((RouteImpl) target);
 
@@ -240,18 +242,7 @@ public class MatcherFilter implements Filter {
                 if (httpResponse.getContentType() == null) {
                     httpResponse.setContentType("text/html; charset=utf-8");
                 }
-                boolean acceptsGzip = Collections.list(httpRequest.getHeaders("Accept-Encoding")).stream().anyMatch(s -> s.contains("gzip"));
-                
-                //gzip compression support
-                if(acceptsGzip && httpResponse.getHeaders("Content-Encoding").contains("gzip"))
-                {
-                    try(GZIPOutputStream gzipOut = new GZIPOutputStream(httpResponse.getOutputStream()))
-                    {
-                        gzipOut.write(bodyContent.getBytes("utf-8"));
-                    }
-                }
-                else
-                    httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+                serializerChain.process(httpResponse.getOutputStream(), bodyContent);
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
