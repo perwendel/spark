@@ -32,6 +32,10 @@ public abstract class SparkBase {
     protected static String staticFileFolder = null;
     protected static String externalStaticFileFolder = null;
 
+    protected static int maxThreads = -1;
+    protected static int minThreads = -1;
+    protected static int threadIdleTimeoutMillis = -1;
+
     protected static SparkServer server;
     protected static SimpleRouteMatcher routeMatcher;
     private static boolean runFromServlet;
@@ -166,6 +170,32 @@ public abstract class SparkBase {
         Spark.keystorePassword = keystorePassword;
         Spark.truststoreFile = truststoreFile;
         Spark.truststorePassword = truststorePassword;
+    }
+
+    /**
+     * Configures the embedded web servers thread pool.
+     *
+     * @param maxThreads        max nbr of threads.
+     */
+    public static synchronized void threadPool(int maxThreads) {
+        threadPool(maxThreads, -1, -1);
+    }
+
+    /**
+     * Configures the embedded web servers thread pool.
+     *
+     * @param maxThreads        max nbr of threads.
+     * @param minThreads        min nbr of threads.
+     * @param idleTimeoutMillis thread idle timeout (ms).
+     */
+    public static synchronized void threadPool(int maxThreads, int minThreads, int idleTimeoutMillis) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+
+        Spark.maxThreads = maxThreads;
+        Spark.minThreads = minThreads;
+        Spark.threadIdleTimeoutMillis = idleTimeoutMillis;
     }
 
     /**
@@ -343,7 +373,11 @@ public abstract class SparkBase {
                             truststoreFile,
                             truststorePassword,
                             staticFileFolder,
-                            externalStaticFileFolder, latch);
+                            externalStaticFileFolder,
+                            latch,
+                            maxThreads,
+                            minThreads,
+                            threadIdleTimeoutMillis);
                 }
             }).start();
             initialized = true;
