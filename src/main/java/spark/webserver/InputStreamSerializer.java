@@ -22,10 +22,15 @@ import java.io.OutputStream;
 
 import spark.utils.IOUtils;
 
+/**
+ * Input stream serializer.
+ *
+ * @author alex
+ */
 public class InputStreamSerializer extends Serializer {
 
     @Override
-    public boolean canHandle(Object element) {
+    public boolean canProcess(Object element) {
         return element instanceof InputStream;
     }
 

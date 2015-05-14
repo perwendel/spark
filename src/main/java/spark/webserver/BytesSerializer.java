@@ -20,10 +20,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * Bytes serializer.
+ *
+ * @author alex
+ */
 public class BytesSerializer extends Serializer {
 
     @Override
-    public boolean canHandle(Object element) {
+    public boolean canProcess(Object element) {
         return element instanceof byte[] || element instanceof ByteBuffer;
     }
 

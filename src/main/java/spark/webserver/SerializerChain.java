@@ -19,10 +19,16 @@ package spark.webserver;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * Chain of serializers for the output.
+ */
 public class SerializerChain {
 
     private Serializer root;
 
+    /**
+     * Constructs a serializer chain.
+     */
     public SerializerChain() {
 
         DefaultSerializer defaultSerializer = new DefaultSerializer();
@@ -36,6 +42,13 @@ public class SerializerChain {
         this.root = bytesSerializer;
     }
 
+    /**
+     * Process the output.
+     *
+     * @param outputStream the output stream to write to.
+     * @param element the element to serialize.
+     * @throws IOException in the case of IO error.
+     */
     public void process(OutputStream outputStream, Object element) throws IOException {
         this.root.processElement(outputStream, element);
     }
