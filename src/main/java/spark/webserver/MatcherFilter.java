@@ -42,7 +42,7 @@ import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.SimpleRouteMatcher;
 import spark.utils.GzipUtils;
-import spark.webserver.serializing.SerializerChain;
+import spark.webserver.serialization.SerializerChain;
 
 /**
  * Filter for matching of filters and routes.

@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,31 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver.serializing;
+package spark.webserver.serialization;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 
 /**
- * Serializer that writes the result of toString to output in UTF-8 encoding
+ * Bytes serializer.
  *
  * @author alex
  */
-class DefaultSerializer extends Serializer {
+class BytesSerializer extends Serializer {
 
     @Override
     public boolean canProcess(Object element) {
-        return true;
+        return element instanceof byte[] || element instanceof ByteBuffer;
     }
 
     @Override
-    public void process(OutputStream outputStream, Object element) throws IOException {
-        try {
-            outputStream.write(element.toString().getBytes("utf-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new IOException(e);
+    public void process(OutputStream outputStream, Object element)
+            throws IOException {
+        byte[] bytes = null;
+        if (element instanceof byte[]) {
+            bytes = (byte[]) element;
+        } else {
+            if (element instanceof ByteBuffer) {
+                bytes = ((ByteBuffer) element).array();
+            }
         }
+        outputStream.write(bytes);
     }
 
 }
