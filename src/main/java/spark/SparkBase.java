@@ -241,6 +241,21 @@ public abstract class SparkBase {
             server.stop();
             latch = new CountDownLatch(1);
         }
+
+        port = SPARK_DEFAULT_PORT;
+        ipAddress = "0.0.0.0";
+
+        keystoreFile = null;
+        keystorePassword = null;
+        truststoreFile = null;
+        truststorePassword = null;
+
+        staticFileFolder = null;
+        externalStaticFileFolder = null;
+
+        server = null;
+        routeMatcher = null;
+
         initialized = false;
     }
 
