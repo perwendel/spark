@@ -17,7 +17,10 @@
 package spark.webserver;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -240,7 +243,18 @@ public class MatcherFilter implements Filter {
                 if (httpResponse.getContentType() == null) {
                     httpResponse.setContentType("text/html; charset=utf-8");
                 }
-                serializerChain.process(httpResponse.getOutputStream(), bodyContent);
+                
+                OutputStream outstream = httpResponse.getOutputStream();
+                
+                //GZIP Support handled here. First we must ensure that we want to use gzip, and that the client supports gzip
+                boolean acceptsGzip = Collections.list(httpRequest.getHeaders("Accept-Encoding")).stream().anyMatch(s -> s.contains("gzip"));
+                boolean wantGzip = httpResponse.getHeaders("Content-Encoding").contains("gzip");
+                
+                if(acceptsGzip && wantGzip)
+                    outstream = new GZIPOutputStream(outstream, true);
+                
+                serializerChain.process(outstream, bodyContent);
+                outstream.flush();//needed for GZIP stream. NOt sure where the HTTP response actually gets cleaned up
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
