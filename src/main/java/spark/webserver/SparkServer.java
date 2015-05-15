@@ -68,6 +68,7 @@ public class SparkServer {
      * @param truststorePassword      - the trust store password
      * @param staticFilesFolder       - the route to static files in classPath
      * @param externalFilesFolder     - the route to static files external to classPath.
+     * @param latch                   - the countdown latch
      * @param maxThreads              - max nbr of threads.
      * @param minThreads              - min nbr of threads.
      * @param threadIdleTimeoutMillis - idle timeout (ms).

@@ -11,7 +11,8 @@ public interface Route {
      * @param request  The request object providing information about the HTTP request
      * @param response The response object providing functionality for modifying the response
      * @return The content to be set in the response
+     * @throws java.lang.Exception
      */
-    Object handle(Request request, Response response)  throws Exception;
+    Object handle(Request request, Response response) throws Exception;
 
 }
