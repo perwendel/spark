@@ -173,7 +173,7 @@ public abstract class SparkBase {
     }
 
     /**
-     * Configures the embedded web servers thread pool.
+     * Configures the embedded web server's thread pool.
      *
      * @param maxThreads        max nbr of threads.
      */
@@ -182,7 +182,7 @@ public abstract class SparkBase {
     }
 
     /**
-     * Configures the embedded web servers thread pool.
+     * Configures the embedded web server's thread pool.
      *
      * @param maxThreads        max nbr of threads.
      * @param minThreads        min nbr of threads.
