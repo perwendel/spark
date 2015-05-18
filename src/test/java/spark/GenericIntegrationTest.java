@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jetty.util.URIUtil;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -300,9 +301,11 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParam2() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/param/gunit", null);
+            String polyglot = "жξ Ä 聊";
+            String encoded  = URIUtil.encodePath(polyglot);
+            UrlResponse response = testUtil.doMethod("GET", "/param/" + encoded, null);
             Assert.assertEquals(200, response.status);
-            Assert.assertEquals("echo: gunit", response.body);
+            Assert.assertEquals("echo: " + polyglot, response.body);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
