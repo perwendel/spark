@@ -16,7 +16,6 @@
  */
 package spark;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -225,7 +224,7 @@ public class Request {
      */
     public String body() {
         if (body == null) {
-            readBody();
+            body = new String(bodyAsBytes());
         }
         return body;
     }
@@ -240,7 +239,6 @@ public class Request {
     private void readBody() {
 		try {
 			bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
-			body = new String(bodyAsBytes);
 		} catch (Exception e) {
 			LOG.warn("Exception when reading body", e);
 		}
