@@ -38,7 +38,7 @@ import spark.utils.IOUtils;
  *
  * @author Per Wendel
  */
-class JettyHandler extends SessionHandler {
+public class JettyHandler extends SessionHandler {
 
     private static final Logger LOG = Log.getLogger(JettyHandler.class);
 

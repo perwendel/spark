@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.Access;
+import spark.exception.ExceptionMapper;
 import spark.resource.AbstractFileResolvingResource;
 import spark.resource.AbstractResourceHandler;
 import spark.resource.ClassPathResource;
@@ -71,7 +72,7 @@ public class SparkFilter implements Filter {
         application.init();
 
         filterPath = FilterTools.getFilterPath(filterConfig);
-        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true, false);
+        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), ExceptionMapper.getInstance(), true, false);
     }
 
     /**
@@ -127,7 +128,6 @@ public class SparkFilter implements Filter {
                 }
             }
         }
-
         matcherFilter.doFilter(requestWrapper, response, chain);
     }
 

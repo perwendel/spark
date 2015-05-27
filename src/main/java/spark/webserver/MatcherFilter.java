@@ -16,26 +16,7 @@
  */
 package spark.webserver;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import spark.Access;
-import spark.FilterImpl;
-import spark.HaltException;
-import spark.Request;
-import spark.RequestResponseFactory;
-import spark.Response;
-import spark.RouteImpl;
+import spark.*;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
@@ -43,6 +24,14 @@ import spark.route.RouteMatch;
 import spark.route.SimpleRouteMatcher;
 import spark.utils.GzipUtils;
 import spark.webserver.serialization.SerializerChain;
+
+import javax.servlet.Filter;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Filter for matching of filters and routes.
@@ -55,8 +44,10 @@ public class MatcherFilter implements Filter {
     private static final String HTTP_METHOD_OVERRIDE_HEADER = "X-HTTP-Method-Override";
 
     private SimpleRouteMatcher routeMatcher;
+    private ExceptionMapper exceptionMapper;
     private SerializerChain serializerChain;
     private boolean isServletContext;
+
     private boolean hasOtherHandlers;
 
     /**
@@ -68,11 +59,13 @@ public class MatcherFilter implements Filter {
      * Constructor
      *
      * @param routeMatcher     The route matcher
+     * @param exceptionMapper  An instance of the exceptionMapper
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(SimpleRouteMatcher routeMatcher, boolean isServletContext, boolean hasOtherHandlers) {
+    public MatcherFilter(SimpleRouteMatcher routeMatcher, ExceptionMapper exceptionMapper, boolean isServletContext, boolean hasOtherHandlers) {
         this.routeMatcher = routeMatcher;
+        this.exceptionMapper = exceptionMapper;
         this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
         this.serializerChain = new SerializerChain();
@@ -205,7 +198,7 @@ public class MatcherFilter implements Filter {
                 bodyContent = "";
             }
         } catch (Exception e) {
-            ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(e);
+            ExceptionHandlerImpl handler = exceptionMapper.getHandler(e);
             if (handler != null) {
                 handler.handle(e, requestWrapper, responseWrapper);
                 String bodyAfterFilter = Access.getBody(responseWrapper.getDelegate());
