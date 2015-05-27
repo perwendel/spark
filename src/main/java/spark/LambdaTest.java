@@ -20,11 +20,11 @@ public class LambdaTest {
         });
 
         before("/protected/*", "application/xml", (request, response) -> {
-            halt(401, "<xml>fuck off</xml>");
+            halt(401, "<xml>Unauthorized</xml>");
         });
 
         before("/protected/*", "application/json", (request, response) -> {
-            halt(401, "{\"message\": \"Go Away!\"}");
+            halt(401, "{\"message\": \"Unauthorized\"}");
         });
 
     }
