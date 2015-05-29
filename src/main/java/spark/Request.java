@@ -263,6 +263,17 @@ public class Request {
     public String queryParams(String queryParam) {
         return servletRequest.getParameter(queryParam);
     } 
+    
+    /**
+     * gets all the values of the query param
+     *
+     * @param queryParam the query parameter
+     * @return the values of the provided queryParam, null if it doesn't exists
+     * Example: query parameter 'id' from the following request URI: /hello?id=foo&id=bar
+     */
+    public String[] queryParamsValues(String queryParam) {
+        return servletRequest.getParameterValues(queryParam);
+    } 
 
     /**
      * Gets the value for the provided header
