@@ -68,8 +68,11 @@ public class ServletTest {
                 }
             }
         }).start();
-
-        sleep(1000);
+        
+        while(!server.isStarted()){
+            sleep(1000);
+            LOGGER.info(">>> WAITING FOR EMBEDDED JETTY SERVER TO START");
+        }
     }
 
     @Test
