@@ -29,7 +29,7 @@
     </developers>
 
     <properties>
-        <jetty.version>9.3.0.M2</jetty.version>
+        <jetty.version>9.2.11.v20150529</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
