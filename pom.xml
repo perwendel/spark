@@ -29,7 +29,7 @@
     </developers>
 
     <properties>
-        <jetty.version>9.0.2.v20130417</jetty.version>
+        <jetty.version>9.2.11.v20150529</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -38,13 +38,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.7</version>
+            <version>1.7.12</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.7</version>
+            <version>1.7.12</version>
         </dependency>
 
         <!-- JETTY DEPENDENCIES -->

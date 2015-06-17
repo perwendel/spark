@@ -60,7 +60,7 @@ public class GenericIntegrationTest {
         writer.close();
 
         staticFileLocation("/public");
-        externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
+        externalStaticFileLocation(new String[] {System.getProperty("java.io.tmpdir")});
 
         before("/secretcontent/*", (request, response) -> {
             halt(401, "Go Away!");

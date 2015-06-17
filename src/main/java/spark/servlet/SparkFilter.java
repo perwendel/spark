@@ -163,23 +163,25 @@ public class SparkFilter implements Filter {
      *
      * @param folder the location
      */
-    public static void configureExternalStaticResources(String folder) {
+    public static void configureExternalStaticResources(String[] folders) {
         if (!externalStaticResourcesSet) {
-            if (folder != null) {
-                try {
-                    ExternalResource resource = new ExternalResource(folder);
-                    if (resource.getFile().isDirectory()) {
-                        if (staticResourceHandlers == null) {
-                            staticResourceHandlers = new ArrayList<>();
-                        }
-                        staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
-                        LOG.info("External StaticResourceHandler configured with folder = " + folder);
-                    } else {
-                        LOG.error("External Static resource location must be a folder");
-                    }
-                } catch (IOException e) {
-                    LOG.error("Error when creating external StaticResourceHandler", e);
-                }
+            if (folders != null) {
+            	for(String folder : folders) {
+	                try {
+	                    ExternalResource resource = new ExternalResource(folder);
+	                    if (resource.getFile().isDirectory()) {
+	                        if (staticResourceHandlers == null) {
+	                            staticResourceHandlers = new ArrayList<>();
+	                        }
+	                        staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
+	                        LOG.info("External StaticResourceHandler configured with folder = " + folder);
+	                    } else {
+	                        LOG.error("External Static resource location must be a folder");
+	                    }
+	                } catch (IOException e) {
+	                    LOG.error("Error when creating external StaticResourceHandler", e);
+	                }
+            	}
             }
             externalStaticResourcesSet = true;
         }

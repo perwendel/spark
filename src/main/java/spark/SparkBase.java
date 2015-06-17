@@ -30,7 +30,7 @@ public abstract class SparkBase {
     protected static String truststorePassword;
 
     protected static String staticFileFolder = null;
-    protected static String externalStaticFileFolder = null;
+    protected static String[] externalStaticFileFolder = null;
 
     protected static int maxThreads = -1;
     protected static int minThreads = -1;
@@ -225,7 +225,7 @@ public abstract class SparkBase {
      *
      * @param externalFolder the external folder serving static files.
      */
-    public static synchronized void externalStaticFileLocation(String externalFolder) {
+    public static synchronized void externalStaticFileLocation(String[] externalFolder) {
         if (initialized && !runFromServlet) {
             throwBeforeRouteMappingException();
         }
