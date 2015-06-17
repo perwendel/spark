@@ -31,6 +31,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
@@ -80,7 +81,7 @@ public class SparkServer {
                        String truststoreFile,
                        String truststorePassword,
                        String staticFilesFolder,
-                       String externalFilesFolder,
+                       String[] externalFilesFolder,
                        CountDownLatch latch,
                        int maxThreads,
                        int minThreads,
@@ -231,19 +232,14 @@ public class SparkServer {
     /**
      * Sets external static file location if present
      */
-    private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute,
+    private static void setExternalStaticFileLocationIfPresent(String[] externalFilesRoute,
                                                                List<Handler> handlersInList) {
         if (externalFilesRoute != null) {
-            try {
-                ResourceHandler externalResourceHandler = new ResourceHandler();
-                Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
-                externalResourceHandler.setBaseResource(externalStaticResources);
-                externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
-                handlersInList.add(externalResourceHandler);
-            } catch (IOException exception) {
-                exception.printStackTrace(); // NOSONAR
-                System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
-            }
+            ResourceHandler externalResourceHandler = new ResourceHandler();
+            ResourceCollection externalStaticResources = new ResourceCollection(externalFilesRoute);
+            externalResourceHandler.setBaseResource(externalStaticResources);
+            externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
+            handlersInList.add(externalResourceHandler);
         }
     }
 
