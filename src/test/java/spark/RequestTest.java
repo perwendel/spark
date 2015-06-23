@@ -59,6 +59,16 @@ public class RequestTest {
     }
 
     @Test
+    public void queryParamShouldBeUrlDecoded() {
+        Map<String,String[]> params = new HashMap<String,String[]>();
+        params.put("user[name]",new String[] {"Federico%20With%20Blanks"});
+        HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
+        Request request = new Request(match,servletRequest);
+        String name = request.queryMap("user").value("name");
+        assertEquals("Invalid name in query string","Federico With Blanks",name);
+    }
+
+    @Test
     public void shouldBeAbleToGetTheServletPath() {
         HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<String, String[]>()) {
             @Override

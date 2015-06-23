@@ -1,5 +1,7 @@
 package spark;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +50,7 @@ public class QueryParamsMap {
     /**
      * Creates a new QueryParamsMap from and HttpServletRequest. <br>
      * Parses the parameters from request.getParameterMap() <br>
-     * No need to decode, since HttpServletRequest does it for us.
+     * All values will be URL-decoded.
      *
      * @param request the servlet request
      */
@@ -93,7 +95,15 @@ public class QueryParamsMap {
      */
     protected final void loadQueryString(Map<String, String[]> params) {
         for (Map.Entry<String, String[]> param : params.entrySet()) {
-            loadKeys(param.getKey(), param.getValue());
+            String[] values = param.getValue();
+            for (int i = 0; i < values.length; i++) {
+                try {
+                    values[i] = URLDecoder.decode(values[i], "UTF-8");
+                } catch (UnsupportedEncodingException ex) {
+
+                }
+            }
+            loadKeys(param.getKey(), values);
         }
     }
 
