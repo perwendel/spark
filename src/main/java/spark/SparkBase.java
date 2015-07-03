@@ -1,5 +1,7 @@
 package spark;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +32,18 @@ public abstract class SparkBase {
     protected static String staticFileFolder = null;
     protected static String externalStaticFileFolder = null;
 
+    protected static int maxThreads = -1;
+    protected static int minThreads = -1;
+    protected static int threadIdleTimeoutMillis = -1;
+
     protected static SparkServer server;
     protected static SimpleRouteMatcher routeMatcher;
     private static boolean runFromServlet;
 
     private static boolean servletStaticLocationSet;
     private static boolean servletExternalStaticLocationSet;
+
+    private static CountDownLatch latch = new CountDownLatch(1);
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -165,6 +173,32 @@ public abstract class SparkBase {
     }
 
     /**
+     * Configures the embedded web server's thread pool.
+     *
+     * @param maxThreads        max nbr of threads.
+     */
+    public static synchronized void threadPool(int maxThreads) {
+        threadPool(maxThreads, -1, -1);
+    }
+
+    /**
+     * Configures the embedded web server's thread pool.
+     *
+     * @param maxThreads        max nbr of threads.
+     * @param minThreads        min nbr of threads.
+     * @param idleTimeoutMillis thread idle timeout (ms).
+     */
+    public static synchronized void threadPool(int maxThreads, int minThreads, int idleTimeoutMillis) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+
+        Spark.maxThreads = maxThreads;
+        Spark.minThreads = minThreads;
+        Spark.threadIdleTimeoutMillis = idleTimeoutMillis;
+    }
+
+    /**
      * Sets the folder in classpath serving static files. Observe: this method
      * must be called before all other methods.
      *
@@ -206,6 +240,18 @@ public abstract class SparkBase {
         }
     }
 
+    /**
+     * Waits for the spark server to be initialized.
+     * If it's already initialized will return immediately
+     */
+    public static void awaitInitialization() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            LOG.info("Interrupted by another thread");
+        }
+    }
+
     private static void throwBeforeRouteMappingException() {
         throw new IllegalStateException(
                 "This must be done before route mapping has begun");
@@ -223,6 +269,7 @@ public abstract class SparkBase {
         if (server != null) {
             routeMatcher.clearRoutes();
             server.stop();
+            latch = new CountDownLatch(1);
         }
         initialized = false;
     }
@@ -326,7 +373,11 @@ public abstract class SparkBase {
                             truststoreFile,
                             truststorePassword,
                             staticFileFolder,
-                            externalStaticFileFolder);
+                            externalStaticFileFolder,
+                            latch,
+                            maxThreads,
+                            minThreads,
+                            threadIdleTimeoutMillis);
                 }
             }).start();
             initialized = true;

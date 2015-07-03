@@ -240,7 +240,7 @@ public class Request {
     private void readBody() {
 		try {
 			bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
-			body = IOUtils.toString(new ByteArrayInputStream(bodyAsBytes));
+			body = new String(bodyAsBytes);
 		} catch (Exception e) {
 			LOG.warn("Exception when reading body", e);
 		}

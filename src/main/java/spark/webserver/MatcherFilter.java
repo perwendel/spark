@@ -17,6 +17,7 @@
 package spark.webserver;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -40,6 +41,8 @@ import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 import spark.route.SimpleRouteMatcher;
+import spark.utils.GzipUtils;
+import spark.webserver.serialization.SerializerChain;
 
 /**
  * Filter for matching of filters and routes.
@@ -52,6 +55,7 @@ public class MatcherFilter implements Filter {
     private static final String HTTP_METHOD_OVERRIDE_HEADER = "X-HTTP-Method-Override";
 
     private SimpleRouteMatcher routeMatcher;
+    private SerializerChain serializerChain;
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
@@ -71,6 +75,7 @@ public class MatcherFilter implements Filter {
         this.routeMatcher = routeMatcher;
         this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
+        this.serializerChain = new SerializerChain();
     }
 
     public void init(FilterConfig filterConfig) {
@@ -87,10 +92,10 @@ public class MatcherFilter implements Filter {
             method = httpRequest.getMethod();
         }
         String httpMethodStr = method.toLowerCase(); // NOSONAR
-        String uri = httpRequest.getRequestURI(); // NOSONAR
+        String uri = httpRequest.getPathInfo(); // NOSONAR
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
-        String bodyContent = null;
+        Object bodyContent = null;
 
         RequestWrapper requestWrapper = new RequestWrapper();
         ResponseWrapper responseWrapper = new ResponseWrapper();
@@ -138,7 +143,7 @@ public class MatcherFilter implements Filter {
 
             if (target != null) {
                 try {
-                    String result = null;
+                    Object result = null;
                     if (target instanceof RouteImpl) {
                         RouteImpl route = ((RouteImpl) target);
 
@@ -238,7 +243,14 @@ public class MatcherFilter implements Filter {
                 if (httpResponse.getContentType() == null) {
                     httpResponse.setContentType("text/html; charset=utf-8");
                 }
-                httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
+
+                // Check if gzip is wanted/accepted and in that case handle that
+                OutputStream outputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse);
+
+                // serialize the body to output stream
+                serializerChain.process(outputStream, bodyContent);
+
+                outputStream.flush();//needed for GZIP stream. NOt sure where the HTTP response actually gets cleaned up
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);

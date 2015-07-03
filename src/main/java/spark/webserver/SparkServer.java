@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Connector;
@@ -31,6 +32,7 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +45,7 @@ public class SparkServer {
 
     private static final int SPARK_DEFAULT_PORT = 4567;
     private static final String NAME = "Spark";
+
     private Handler handler;
     private Server server;
 
@@ -57,19 +60,31 @@ public class SparkServer {
      * Ignites the spark server, listening on the specified port, running SSL secured with the specified keystore
      * and truststore.  If truststore is null, keystore is reused.
      *
-     * @param host                  The address to listen on
-     * @param port                  - the port
-     * @param keystoreFile          - The keystore file location as string
-     * @param keystorePassword      - the password for the keystore
-     * @param truststoreFile        - the truststore file location as string, leave null to reuse keystore
-     * @param truststorePassword    - the trust store password
-     * @param staticFilesFolder      - the route to static files in classPath
-     * @param externalFilesFolder - the route to static files external to classPath.
+     * @param host                    The address to listen on
+     * @param port                    - the port
+     * @param keystoreFile            - The keystore file location as string
+     * @param keystorePassword        - the password for the keystore
+     * @param truststoreFile          - the truststore file location as string, leave null to reuse keystore
+     * @param truststorePassword      - the trust store password
+     * @param staticFilesFolder       - the route to static files in classPath
+     * @param externalFilesFolder     - the route to static files external to classPath.
+     * @param latch                   - the countdown latch
+     * @param maxThreads              - max nbr of threads.
+     * @param minThreads              - min nbr of threads.
+     * @param threadIdleTimeoutMillis - idle timeout (ms).
      */
-    public void ignite(String host, int port, String keystoreFile,
-                       String keystorePassword, String truststoreFile,
-                       String truststorePassword, String staticFilesFolder,
-                       String externalFilesFolder) {
+    public void ignite(String host,
+                       int port,
+                       String keystoreFile,
+                       String keystorePassword,
+                       String truststoreFile,
+                       String truststorePassword,
+                       String staticFilesFolder,
+                       String externalFilesFolder,
+                       CountDownLatch latch,
+                       int maxThreads,
+                       int minThreads,
+                       int threadIdleTimeoutMillis) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -80,12 +95,14 @@ public class SparkServer {
             }
         }
 
+        server = createServer(maxThreads, minThreads, threadIdleTimeoutMillis);
+
         ServerConnector connector;
 
         if (keystoreFile == null) {
-            connector = createSocketConnector();
+            connector = createSocketConnector(server);
         } else {
-            connector = createSecureSocketConnector(keystoreFile,
+            connector = createSecureSocketConnector(server, keystoreFile,
                                                     keystorePassword, truststoreFile, truststorePassword);
         }
 
@@ -121,9 +138,10 @@ public class SparkServer {
             logger.info(">> Listening on {}:{}", host, port);
 
             server.start();
+            latch.countDown();
             server.join();
         } catch (Exception e) {
-            logger.error("ignite failed",e);
+            logger.error("ignite failed", e);
             System.exit(100); // NOSONAR
         }
     }
@@ -135,7 +153,7 @@ public class SparkServer {
                 server.stop();
             }
         } catch (Exception e) {
-            logger.error("stop failed",e);
+            logger.error("stop failed", e);
             System.exit(100); // NOSONAR
         }
         logger.info("done");
@@ -145,14 +163,17 @@ public class SparkServer {
      * Creates a secure jetty socket connector. Keystore required, truststore
      * optional. If truststore not specifed keystore will be reused.
      *
+     * @param server             Jetty server
      * @param keystoreFile       The keystore file location as string
      * @param keystorePassword   the password for the keystore
      * @param truststoreFile     the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword the trust store password
      * @return a secure socket connector
      */
-    private static ServerConnector createSecureSocketConnector(String keystoreFile,
-                                                               String keystorePassword, String truststoreFile,
+    private static ServerConnector createSecureSocketConnector(Server server,
+                                                               String keystoreFile,
+                                                               String keystorePassword,
+                                                               String truststoreFile,
                                                                String truststorePassword) {
 
         SslContextFactory sslContextFactory = new SslContextFactory(
@@ -167,16 +188,31 @@ public class SparkServer {
         if (truststorePassword != null) {
             sslContextFactory.setTrustStorePassword(truststorePassword);
         }
-        return new ServerConnector(new Server(), sslContextFactory);
+        return new ServerConnector(server, sslContextFactory);
     }
 
     /**
      * Creates an ordinary, non-secured Jetty server connector.
      *
+     * @param server Jetty server
      * @return - a server connector
      */
-    private static ServerConnector createSocketConnector() {
-        return new ServerConnector(new Server());
+    private static ServerConnector createSocketConnector(Server server) {
+        return new ServerConnector(server);
+    }
+
+    private static Server createServer(int maxThreads, int minThreads, int threadTimeoutMillis) {
+        Server server;
+
+        if (maxThreads > 0) {
+            int max = (maxThreads > 0) ? maxThreads : 200;
+            int min = (minThreads > 0) ? minThreads : 8;
+            int idleTimeout = (threadTimeoutMillis > 0) ? threadTimeoutMillis : 60000;
+            server = new Server(new QueuedThreadPool(max, min, idleTimeout));
+        } else {
+            server = new Server();
+        }
+        return server;
     }
 
     /**

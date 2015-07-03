@@ -8,8 +8,8 @@
     </parent>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <packaging>jar</packaging>
-    <version>2.2-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <version>2.2</version>
     <name>Spark</name>
     <description>A Sinatra inspired java web framework</description>
     <url>http://www.sparkjava.com</url>
@@ -153,6 +153,12 @@
                 <version>2.9.1</version>
                 <configuration>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.5.3</version>
+                <extensions>true</extensions>
             </plugin>
         </plugins>
     </build>

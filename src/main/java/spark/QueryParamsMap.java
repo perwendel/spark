@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServletRequest;
  * <br>
  * <br>
  * That is:<br>
- * queryParamsMapInstance.get("user).get("name").value(); <br>
- * queryParamsMapInstance.get("user).get("lastname").value();
+ * queryParamsMapInstance.get("user").get("name").value(); <br>
+ * queryParamsMapInstance.get("user").get("lastname").value();
  * <br><br>
  * It is null safe, meaning that if a key does not exist, it does not throw NullPointerException
  * , it just returns null.
