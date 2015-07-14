@@ -18,8 +18,6 @@ package spark;
 
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
-import spark.route.RouteMatcherFactory;
-import spark.webserver.SparkServerFactory;
 
 /**
  * The main building block of a Spark application is a set of routes. A route is
@@ -37,15 +35,15 @@ import spark.webserver.SparkServerFactory;
  * @author Per Wendel
  */
 public final class Spark {
-    private static SparkInstance instance;
+    private static SparkAPI instance;
 
     // Hide constructor
     private Spark() {
     }
 
-    private static SparkInstance getInstance() {
+    private static SparkAPI getInstance() {
         if (instance == null)
-            instance = new SparkInstance();
+            instance = new SparkAPI();
         return instance;
     }
 

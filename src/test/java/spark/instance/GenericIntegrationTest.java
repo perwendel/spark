@@ -7,8 +7,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.ModelAndView;
-import spark.Spark;
-import spark.SparkInstance;
+import spark.SparkAPI;
 import spark.TemplateEngine;
 import spark.examples.exception.BaseException;
 import spark.examples.exception.NotFoundException;
@@ -34,11 +33,14 @@ public class GenericIntegrationTest {
     static SparkTestUtil testUtil;
     static File tmpExternalFile;
 
-    private static SparkInstance spark;
+    private static SparkAPI spark;
 
     @BeforeClass
     public static void setup() throws IOException {
-        testUtil = new SparkTestUtil(4567);
+        spark = new SparkAPI();
+        spark.port(4570);
+
+        testUtil = new SparkTestUtil(4570);
 
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
 
@@ -164,7 +166,7 @@ public class GenericIntegrationTest {
 
     @AfterClass
     public static void tearDown() {
-        Spark.stop();
+        spark.stop();
         if (tmpExternalFile != null) {
             tmpExternalFile.delete();
         }

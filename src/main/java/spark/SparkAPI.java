@@ -14,31 +14,31 @@ import spark.webserver.SparkServerFactory;
 
 import java.util.concurrent.CountDownLatch;
 
-public class SparkInstance {
-    private static final Logger LOG = LoggerFactory.getLogger(SparkInstance.class);
+public class SparkAPI {
+    private static final Logger LOG = LoggerFactory.getLogger(SparkAPI.class);
 
     public final int SPARK_DEFAULT_PORT = 4567;
-    protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
-    protected boolean initialized = false;
+    private boolean initialized = false;
 
-    protected int port = SPARK_DEFAULT_PORT;
-    protected String ipAddress = "0.0.0.0";
+    private int port = SPARK_DEFAULT_PORT;
+    private String ipAddress = "0.0.0.0";
 
-    protected String keystoreFile;
-    protected String keystorePassword;
-    protected String truststoreFile;
-    protected String truststorePassword;
+    private String keystoreFile;
+    private String keystorePassword;
+    private String truststoreFile;
+    private String truststorePassword;
 
-    protected String FileFolder = null;
-    protected String externalStaticFileFolder = null;
+    private String FileFolder = null;
+    private String externalStaticFileFolder = null;
 
-    protected int maxThreads = -1;
-    protected int minThreads = -1;
-    protected int threadIdleTimeoutMillis = -1;
+    private int maxThreads = -1;
+    private int minThreads = -1;
+    private int threadIdleTimeoutMillis = -1;
 
-    protected SparkServer server;
-    protected SimpleRouteMatcher routeMatcher;
+    private SparkServer server;
+    private SimpleRouteMatcher routeMatcher;
     private boolean runFromServlet;
 
     private boolean servletStaticLocationSet;
