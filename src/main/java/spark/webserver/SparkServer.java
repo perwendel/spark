@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -29,9 +31,13 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
+import org.eclipse.jetty.websocket.server.pathmap.ServletPathSpec;
+import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +77,7 @@ public class SparkServer {
      * @param maxThreads              - max nbr of threads.
      * @param minThreads              - min nbr of threads.
      * @param threadIdleTimeoutMillis - idle timeout (ms).
+     * @param webSockerIdleTimeoutMIllis - Optional WebSocket idle timeout (ms).
      */
     public void ignite(String host,
                        int port,
@@ -83,7 +90,9 @@ public class SparkServer {
                        CountDownLatch latch,
                        int maxThreads,
                        int minThreads,
-                       int threadIdleTimeoutMillis) {
+                       int threadIdleTimeoutMillis,
+                       Map<String, Class<?>> webSocketHandlers,
+                       Optional<Integer> webSockerIdleTimeoutMillis) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -114,8 +123,26 @@ public class SparkServer {
         server = connector.getServer();
         server.setConnectors(new Connector[] {connector});
 
+	ServletContextHandler webSocketServletContextHandler = null;
+	if (webSocketHandlers != null) {
+	    try {
+		webSocketServletContextHandler = new ServletContextHandler(null, "/", true, false);
+		WebSocketUpgradeFilter wsfilter = WebSocketUpgradeFilter.configureContext(webSocketServletContextHandler);
+		if (webSockerIdleTimeoutMillis.isPresent()) {
+		    wsfilter.getFactory().getPolicy().setIdleTimeout(webSockerIdleTimeoutMillis.get());
+		}
+		for (String path : webSocketHandlers.keySet()) {
+		    WebSocketCreator wscreator = WebSocketCreatorFactory.create(webSocketHandlers.get(path));
+		    wsfilter.addMapping(new ServletPathSpec(path), wscreator);
+		}
+	    } catch (Exception ex) {
+		logger.error("ignite failed", ex);
+		System.exit(100); // NOSONAR
+	    }
+	}
+
         // Handle static file routes
-        if (staticFilesFolder == null && externalFilesFolder == null) {
+        if (staticFilesFolder == null && externalFilesFolder == null && webSocketServletContextHandler == null) {
             server.setHandler(handler);
         } else {
             List<Handler> handlersInList = new ArrayList<Handler>();
@@ -126,6 +153,11 @@ public class SparkServer {
 
             // Set external static file location
             setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
+
+            // WebSocket handler must be the last one
+            if (webSocketServletContextHandler != null) {
+                handlersInList.add(webSocketServletContextHandler);
+            }
 
             HandlerList handlers = new HandlerList();
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
