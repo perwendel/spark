@@ -16,7 +16,6 @@
  */
 package spark.webserver;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -234,16 +233,10 @@ public class SparkServer {
     private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute,
                                                                List<Handler> handlersInList) {
         if (externalFilesRoute != null) {
-            try {
-                ResourceHandler externalResourceHandler = new ResourceHandler();
-                Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
-                externalResourceHandler.setBaseResource(externalStaticResources);
-                externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
-                handlersInList.add(externalResourceHandler);
-            } catch (IOException exception) {
-                exception.printStackTrace(); // NOSONAR
-                System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
-            }
+            ResourceHandler externalResourceHandler = new ResourceHandler();
+            externalResourceHandler.setResourceBase(externalFilesRoute);
+            externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
+            handlersInList.add(externalResourceHandler);
         }
     }
 
