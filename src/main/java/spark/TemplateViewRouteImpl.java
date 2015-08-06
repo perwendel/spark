@@ -38,7 +38,7 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
                                                TemplateViewRoute route,
                                                TemplateEngine engine) {
 
-        return create(path, SparkBase.DEFAULT_ACCEPT_TYPE, route, engine);
+        return create(path, SparkAPI.DEFAULT_ACCEPT_TYPE, route, engine);
     }
 
     /**
