@@ -87,7 +87,7 @@ class JettyHandler extends SessionHandler {
 
         public class CachedServletInputStream extends ServletInputStream {
             private ByteArrayInputStream byteArrayInputStream;
-            
+
             public CachedServletInputStream() {
                 byteArrayInputStream = new ByteArrayInputStream(cachedBytes);
             }
@@ -108,7 +108,8 @@ class JettyHandler extends SessionHandler {
             }
 
             @Override
-            public void setReadListener(ReadListener readListener) {}
+            public void setReadListener(ReadListener readListener) {
+            }
         }
     }
 }
