@@ -1,5 +1,12 @@
 language: java
+
 jdk:
   - oraclejdk8
 
+after_success:
+    - sh deploy/deploy-snapshot.sh
 
+env:
+    global:
+        - secure: "CHANGEME by the token generated with: travis encrypt CI_DEPLOY_USERNAME=your-sonatype-username"
+        - secure: "CHANGEME by the token generated with: travis encrypt CI_DEPLOY_PASSWORD=your-sonatype-password"
