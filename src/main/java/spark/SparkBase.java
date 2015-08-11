@@ -277,6 +277,12 @@ public abstract class SparkBase {
      * @param timeoutMillis The max idle timeout in milliseconds.
      */
     public static void webSocketIdleTimeoutMillis(int timeoutMillis) {
+	if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+	if (runFromServlet) {
+            throw new IllegalStateException("WebSockets are only supported in the embedded server");
+        }
 	webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
     }
 

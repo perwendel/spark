@@ -15,8 +15,10 @@
  */
 package spark.webserver;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
+import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
@@ -37,24 +39,45 @@ public class WebSocketCreatorFactory {
      * @return The WebSocketCreator.
      */
     public static WebSocketCreator create(Class<?> handlerClass) {
+	validate(handlerClass);
 	try {
 	    Object handler = handlerClass.newInstance();
 	    return new SparkWebSocketCreator(handler);
 	} catch (InstantiationException | IllegalAccessException ex) {
-	    throw new RuntimeException( "Could not instantiate websocket handler", ex);
+	    throw new RuntimeException("Could not instantiate websocket handler", ex);
 	}
     }
 
-    private static class SparkWebSocketCreator implements WebSocketCreator {
+    /**
+     * Validates that the handler can actually handle the WebSocket connection.
+     *
+     * @param handlerClass The handler class to validate.
+     * @throws IllegalArgumentException if the class is not a valid handler class.
+     */
+    private static void validate(Class<?> handlerClass) {
+	boolean valid = WebSocketListener.class.isAssignableFrom(handlerClass)
+		|| handlerClass.isAnnotationPresent(WebSocket.class);
+	if (!valid) {
+	    throw new IllegalArgumentException(
+		    "WebSocket handler must implement 'WebSocketListener' or be annotated as '@WebSocket'");
+	}
+    }
+
+    // Package protected to be visible to the unit tests
+    static class SparkWebSocketCreator implements WebSocketCreator {
 	private final Object handler;
 
 	private SparkWebSocketCreator(Object handler) {
-	    this.handler = Objects.requireNonNull(handler, "handler cannot be null");
+	    this.handler = requireNonNull(handler, "handler cannot be null");
 	}
 
 	@Override
 	public Object createWebSocket(ServletUpgradeRequest request,
 		ServletUpgradeResponse response) {
+	    return handler;
+	}
+
+	Object getHandler() {
 	    return handler;
 	}
     }
