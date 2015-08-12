@@ -27,6 +27,7 @@ import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 import spark.websocket.WebSocketTestClient;
 import spark.websocket.WebSocketTestHandler;
+
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.exception;
@@ -461,22 +462,22 @@ public class GenericIntegrationTest {
 
     @Test
     public void testWebSocketConversation() throws Exception {
-	String uri = "ws://localhost:4567/ws";
-	WebSocketClient client = new WebSocketClient();
-	WebSocketTestClient ws = new WebSocketTestClient();
+        String uri = "ws://localhost:4567/ws";
+        WebSocketClient client = new WebSocketClient();
+        WebSocketTestClient ws = new WebSocketTestClient();
 
-	try {
-	    client.start();
-	    client.connect(ws, URI.create(uri), new ClientUpgradeRequest());
-	    ws.awaitClose(30, TimeUnit.SECONDS);
-	} finally {
-	    client.stop();
-	}
+        try {
+            client.start();
+            client.connect(ws, URI.create(uri), new ClientUpgradeRequest());
+            ws.awaitClose(30, TimeUnit.SECONDS);
+        } finally {
+            client.stop();
+        }
 
-	List<String> events = WebSocketTestHandler.events;
-	Assert.assertEquals(3, events.size(), 3);
-	Assert.assertEquals("onConnect", events.get(0));
-	Assert.assertEquals("onMessage: Hi Spark!", events.get(1));
-	Assert.assertEquals("onClose: 1000 Bye!", events.get(2));
+        List<String> events = WebSocketTestHandler.events;
+        Assert.assertEquals(3, events.size(), 3);
+        Assert.assertEquals("onConnect", events.get(0));
+        Assert.assertEquals("onMessage: Hi Spark!", events.get(1));
+        Assert.assertEquals("onClose: 1000 Bye!", events.get(2));
     }
 }

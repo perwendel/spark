@@ -1,7 +1,5 @@
 package spark;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +13,8 @@ import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Spark base class
@@ -183,7 +183,7 @@ public abstract class SparkBase {
     /**
      * Configures the embedded web server's thread pool.
      *
-     * @param maxThreads        max nbr of threads.
+     * @param maxThreads max nbr of threads.
      */
     public static synchronized void threadPool(int maxThreads) {
         threadPool(maxThreads, -1, -1);
@@ -253,12 +253,12 @@ public abstract class SparkBase {
      * <p>
      * This is currently only available in the embedded server mode.
      *
-     * @param path the WebSocket path.
+     * @param path    the WebSocket path.
      * @param handler the handler class that will manage the WebSocket connection to the given path.
      */
     public static synchronized void webSocket(String path, Class<?> handler) {
-	requireNonNull(path, "WebSocket path cannot be null");
-	requireNonNull(handler, "WebSocket handler class cannot be null");
+        requireNonNull(path, "WebSocket path cannot be null");
+        requireNonNull(handler, "WebSocket handler class cannot be null");
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -277,13 +277,13 @@ public abstract class SparkBase {
      * @param timeoutMillis The max idle timeout in milliseconds.
      */
     public static void webSocketIdleTimeoutMillis(int timeoutMillis) {
-	if (initialized) {
+        if (initialized) {
             throwBeforeRouteMappingException();
         }
-	if (runFromServlet) {
+        if (runFromServlet) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
-	webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
+        webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
     }
 
     /**

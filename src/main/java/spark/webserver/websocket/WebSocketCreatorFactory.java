@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver;
-
-import static java.util.Objects.requireNonNull;
+package spark.webserver.websocket;
 
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -23,10 +21,12 @@ import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Factory class to create {@link WebSocketCreator} implementations that
  * delegate to the given handler class.
- * 
+ *
  * @author Ignasi Barrera
  */
 public class WebSocketCreatorFactory {
@@ -34,18 +34,18 @@ public class WebSocketCreatorFactory {
     /**
      * Creates a {@link WebSocketCreator} that uses the given handler class for
      * the WebSocket connections.
-     * 
+     *
      * @param handlerClass The handler to use to manage WebSocket connections.
      * @return The WebSocketCreator.
      */
     public static WebSocketCreator create(Class<?> handlerClass) {
-	validate(handlerClass);
-	try {
-	    Object handler = handlerClass.newInstance();
-	    return new SparkWebSocketCreator(handler);
-	} catch (InstantiationException | IllegalAccessException ex) {
-	    throw new RuntimeException("Could not instantiate websocket handler", ex);
-	}
+        validate(handlerClass);
+        try {
+            Object handler = handlerClass.newInstance();
+            return new SparkWebSocketCreator(handler);
+        } catch (InstantiationException | IllegalAccessException ex) {
+            throw new RuntimeException("Could not instantiate websocket handler", ex);
+        }
     }
 
     /**
@@ -55,30 +55,30 @@ public class WebSocketCreatorFactory {
      * @throws IllegalArgumentException if the class is not a valid handler class.
      */
     private static void validate(Class<?> handlerClass) {
-	boolean valid = WebSocketListener.class.isAssignableFrom(handlerClass)
-		|| handlerClass.isAnnotationPresent(WebSocket.class);
-	if (!valid) {
-	    throw new IllegalArgumentException(
-		    "WebSocket handler must implement 'WebSocketListener' or be annotated as '@WebSocket'");
-	}
+        boolean valid = WebSocketListener.class.isAssignableFrom(handlerClass)
+                || handlerClass.isAnnotationPresent(WebSocket.class);
+        if (!valid) {
+            throw new IllegalArgumentException(
+                    "WebSocket handler must implement 'WebSocketListener' or be annotated as '@WebSocket'");
+        }
     }
 
     // Package protected to be visible to the unit tests
     static class SparkWebSocketCreator implements WebSocketCreator {
-	private final Object handler;
+        private final Object handler;
 
-	private SparkWebSocketCreator(Object handler) {
-	    this.handler = requireNonNull(handler, "handler cannot be null");
-	}
+        private SparkWebSocketCreator(Object handler) {
+            this.handler = requireNonNull(handler, "handler cannot be null");
+        }
 
-	@Override
-	public Object createWebSocket(ServletUpgradeRequest request,
-		ServletUpgradeResponse response) {
-	    return handler;
-	}
+        @Override
+        public Object createWebSocket(ServletUpgradeRequest request,
+                                      ServletUpgradeResponse response) {
+            return handler;
+        }
 
-	Object getHandler() {
-	    return handler;
-	}
+        Object getHandler() {
+            return handler;
+        }
     }
 }
