@@ -4,10 +4,15 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -20,7 +25,8 @@ import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
-
+import spark.websocket.WebSocketTestClient;
+import spark.websocket.WebSocketTestHandler;
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.exception;
@@ -30,6 +36,7 @@ import static spark.Spark.patch;
 import static spark.Spark.post;
 import static spark.SparkBase.externalStaticFileLocation;
 import static spark.SparkBase.staticFileLocation;
+import static spark.SparkBase.webSocket;
 
 public class GenericIntegrationTest {
 
@@ -61,6 +68,7 @@ public class GenericIntegrationTest {
 
         staticFileLocation("/public");
         externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
+        webSocket("/ws", WebSocketTestHandler.class);
 
         before("/secretcontent/*", (request, response) -> {
             halt(401, "Go Away!");
@@ -449,5 +457,26 @@ public class GenericIntegrationTest {
         UrlResponse response = testUtil.doMethod("GET", "/thrownotfound", null);
         Assert.assertEquals(NOT_FOUND_BRO, response.body);
         Assert.assertEquals(404, response.status);
+    }
+
+    @Test
+    public void testWebSocketConversation() throws Exception {
+	String uri = "ws://localhost:4567/ws";
+	WebSocketClient client = new WebSocketClient();
+	WebSocketTestClient ws = new WebSocketTestClient();
+
+	try {
+	    client.start();
+	    client.connect(ws, URI.create(uri), new ClientUpgradeRequest());
+	    ws.awaitClose(30, TimeUnit.SECONDS);
+	} finally {
+	    client.stop();
+	}
+
+	List<String> events = WebSocketTestHandler.events;
+	Assert.assertEquals(3, events.size(), 3);
+	Assert.assertEquals("onConnect", events.get(0));
+	Assert.assertEquals("onMessage: Hi Spark!", events.get(1));
+	Assert.assertEquals("onClose: 1000 Bye!", events.get(2));
     }
 }
