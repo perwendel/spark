@@ -231,12 +231,12 @@ public class Request {
     
     public byte[] bodyAsBytes() {
         if (bodyAsBytes == null) {
-            readBody();
+            readBodyAsBytes();
         }
         return bodyAsBytes;
     }
     
-    private void readBody() {
+    private void readBodyAsBytes() {
 		try {
 			bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
 		} catch (Exception e) {
