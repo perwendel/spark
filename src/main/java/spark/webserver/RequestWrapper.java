@@ -194,7 +194,7 @@ final class RequestWrapper extends Request {
     }
 
     @Override
-    public Object attribute(String attribute) {
+    public <T> T attribute(String attribute) {
         return delegate.attribute(attribute);
     }
 
