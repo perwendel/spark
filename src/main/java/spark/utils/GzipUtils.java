@@ -76,6 +76,10 @@ public class GzipUtils {
     private static class StringMatch implements Predicate<String> {
         @Override
         public boolean test(String s) {
+            if (s == null) {
+                return false;
+            }
+
             return s.contains(GZIP);
         }
     }
