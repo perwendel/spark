@@ -34,6 +34,6 @@ public interface TemplateViewRoute {
      * @param response The response object providing functionality for modifying the response
      * @return The content to be set in the response
      */
-    ModelAndView handle(Request request, Response response);
+    ModelAndView handle(Request request, Response response) throws Exception;
 
 }
