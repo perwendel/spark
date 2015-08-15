@@ -132,8 +132,13 @@ final class RequestWrapper extends Request {
     public String queryParams(String queryParam) {
         return delegate.queryParams(queryParam);
     }
-
+    
     @Override
+	public String[] queryParamsValues(String queryParam) {
+		return delegate.queryParamsValues(queryParam);
+	}
+
+	@Override
     public String headers(String header) {
         return delegate.headers(header);
     }
