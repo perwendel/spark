@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.AfterClass;
@@ -312,6 +313,19 @@ public class GenericIntegrationTest {
             UrlResponse response = testUtil.doMethod("GET", "/param/gunit", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("echo: gunit", response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testEchoParam3() {
+        try {
+            String polyglot = "жξ Ä 聊";
+            String encoded  = URIUtil.encodePath(polyglot);
+            UrlResponse response = testUtil.doMethod("GET", "/param/" + encoded, null);
+            Assert.assertEquals(200, response.status);
+            Assert.assertEquals("echo: " + polyglot, response.body);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
