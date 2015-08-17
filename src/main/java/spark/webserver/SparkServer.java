@@ -16,15 +16,6 @@
  */
 package spark.webserver;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -40,8 +31,16 @@ import org.eclipse.jetty.websocket.server.pathmap.ServletPathSpec;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.webserver.websocket.WebSocketCreatorFactory;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Spark server implementation
@@ -51,6 +50,7 @@ import spark.webserver.websocket.WebSocketCreatorFactory;
 public class SparkServer {
 
     private static final int SPARK_DEFAULT_PORT = 4567;
+    private static final int SPARK_DEFAULT_PORT_SSL = 4568;
     private static final String NAME = "Spark";
 
     private Handler handler;
@@ -73,6 +73,7 @@ public class SparkServer {
      * @param keystorePassword           - the password for the keystore
      * @param truststoreFile             - the truststore file location as string, leave null to reuse keystore
      * @param truststorePassword         - the trust store password
+     * @param justSsl
      * @param staticFilesFolder          - the route to static files in classPath
      * @param externalFilesFolder        - the route to static files external to classPath.
      * @param latch                      - the countdown latch
@@ -83,10 +84,12 @@ public class SparkServer {
      */
     public void ignite(String host,
                        int port,
+                       int sslPort,
                        String keystoreFile,
                        String keystorePassword,
                        String truststoreFile,
                        String truststorePassword,
+                       boolean justSsl,
                        String staticFilesFolder,
                        String externalFilesFolder,
                        CountDownLatch latch,
@@ -104,26 +107,54 @@ public class SparkServer {
                 port = SPARK_DEFAULT_PORT;
             }
         }
+        if (keystoreFile != null && sslPort == 0) {
+            try (ServerSocket s = new ServerSocket(0)) {
+                sslPort = s.getLocalPort();
+            } catch (IOException e) {
+                logger.error("Could not get first available port (port set to 0), using default ssl: {}", SPARK_DEFAULT_PORT_SSL);
+                sslPort = SPARK_DEFAULT_PORT_SSL;
+            }
+        }
 
         server = createServer(maxThreads, minThreads, threadIdleTimeoutMillis);
 
-        ServerConnector connector;
+        ServerConnector connector1 = null;
+        ServerConnector connector2 = null;
 
-        if (keystoreFile == null) {
-            connector = createSocketConnector(server);
-        } else {
-            connector = createSecureSocketConnector(server, keystoreFile,
-                                                    keystorePassword, truststoreFile, truststorePassword);
+        if (keystoreFile == null || !justSsl) {
+            connector1 = createSocketConnector(server);
+            // Set some timeout options to make debugging easier.
+            connector1.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
+            connector1.setSoLingerTime(-1);
+            connector1.setHost(host);
+            connector1.setPort(port);
+        }
+        if (keystoreFile != null) {
+            connector2 = createSecureSocketConnector(server, keystoreFile,
+                    keystorePassword, truststoreFile, truststorePassword);
+            connector2.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
+            connector2.setSoLingerTime(-1);
+            connector2.setHost(host);
+            if (justSsl) {
+                connector2.setPort(port);
+            } else {
+                connector2.setPort(sslPort);
+            }
         }
 
-        // Set some timeout options to make debugging easier.
-        connector.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
-        connector.setSoLingerTime(-1);
-        connector.setHost(host);
-        connector.setPort(port);
+        if (connector1 != null) {
+            server = connector1.getServer();
+        } else {
+            server = connector2.getServer();
+        }
 
-        server = connector.getServer();
-        server.setConnectors(new Connector[] {connector});
+        if (connector1 != null && connector2 != null) {
+            server.setConnectors(new Connector[]{connector1, connector2});
+        } else if (connector1 != null) {
+            server.setConnectors(new Connector[]{connector1});
+        } else {
+            server.setConnectors(new Connector[]{connector2});
+        }
 
         ServletContextHandler webSocketServletContextHandler = null;
         if (webSocketHandlers != null) {
@@ -256,7 +287,7 @@ public class SparkServer {
             ResourceHandler resourceHandler = new ResourceHandler();
             Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
             resourceHandler.setBaseResource(staticResources);
-            resourceHandler.setWelcomeFiles(new String[] {"index.html"});
+            resourceHandler.setWelcomeFiles(new String[]{"index.html"});
             handlersInList.add(resourceHandler);
         }
     }
@@ -269,7 +300,7 @@ public class SparkServer {
         if (externalFilesRoute != null) {
             ResourceHandler externalResourceHandler = new ResourceHandler();
             externalResourceHandler.setResourceBase(externalFilesRoute);
-            externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
+            externalResourceHandler.setWelcomeFiles(new String[]{"index.html"});
             handlersInList.add(externalResourceHandler);
         }
     }

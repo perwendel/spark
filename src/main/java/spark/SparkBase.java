@@ -1,18 +1,17 @@
 package spark;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,17 +21,20 @@ import static java.util.Objects.requireNonNull;
 public abstract class SparkBase {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
     public static final int SPARK_DEFAULT_PORT = 4567;
+    public static final int SPARK_DEFAULT_PORT_SSL = 4568;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     protected static boolean initialized = false;
 
     protected static int port = SPARK_DEFAULT_PORT;
+    protected static int sslPort = SPARK_DEFAULT_PORT;
     protected static String ipAddress = "0.0.0.0";
 
     protected static String keystoreFile;
     protected static String keystorePassword;
     protected static String truststoreFile;
     protected static String truststorePassword;
+    protected static boolean justSsl;
 
     protected static String staticFileFolder = null;
     protected static String externalStaticFileFolder = null;
@@ -165,6 +167,31 @@ public abstract class SparkBase {
                                            String keystorePassword,
                                            String truststoreFile,
                                            String truststorePassword) {
+        secure(SPARK_DEFAULT_PORT_SSL, keystoreFile, keystorePassword, truststoreFile, truststorePassword, true);
+    }
+
+    /**
+     * Set the connection to be secure, using the specified keystore and
+     * truststore. This has to be called before any route mapping is done. You
+     * have to supply a keystore file, truststore file is optional (keystore
+     * will be reused).
+     * This method is only relevant when using embedded Jetty servers. It should
+     * not be used if you are using Servlets, where you will need to secure the
+     * connection in the servlet container
+     *
+     * @param port               Ssl port to use
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param truststoreFile     the truststore file location as string, leave null to reuse
+     *                           keystore
+     * @param truststorePassword the trust store password
+     */
+    public static synchronized void secure(int port,
+                                           String keystoreFile,
+                                           String keystorePassword,
+                                           String truststoreFile,
+                                           String truststorePassword,
+                                           boolean justSsl) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -174,10 +201,12 @@ public abstract class SparkBase {
                     "Must provide a keystore file to run secured");
         }
 
+        Spark.sslPort = port;
         Spark.keystoreFile = keystoreFile;
         Spark.keystorePassword = keystorePassword;
         Spark.truststoreFile = truststoreFile;
         Spark.truststorePassword = truststorePassword;
+        Spark.justSsl = justSsl;
     }
 
     /**
@@ -395,13 +424,13 @@ public abstract class SparkBase {
     protected static void addRoute(String httpMethod, RouteImpl route) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
-                                                   + "'", route.getAcceptType(), route);
+                + "'", route.getAcceptType(), route);
     }
 
     protected static void addFilter(String httpMethod, FilterImpl filter) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
-                                                   + "'", filter.getAcceptType(), filter);
+                + "'", filter.getAcceptType(), filter);
     }
 
     public static synchronized void init() {
@@ -414,10 +443,12 @@ public abstract class SparkBase {
                     server.ignite(
                             ipAddress,
                             port,
+                            sslPort,
                             keystoreFile,
                             keystorePassword,
                             truststoreFile,
                             truststorePassword,
+                            justSsl,
                             staticFileFolder,
                             externalStaticFileFolder,
                             latch,
