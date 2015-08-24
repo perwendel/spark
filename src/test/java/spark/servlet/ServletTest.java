@@ -16,6 +16,8 @@ import spark.Spark;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
+import java.util.concurrent.CountDownLatch;
+
 import static spark.util.SparkTestUtil.sleep;
 
 public class ServletTest {
@@ -33,7 +35,7 @@ public class ServletTest {
     }
 
     @BeforeClass
-    public static void setup() {
+    public static void setup() throws InterruptedException {
         testUtil = new SparkTestUtil(PORT);
 
         final Server server = new Server();
@@ -51,6 +53,7 @@ public class ServletTest {
         bb.setWar("src/test/webapp");
 
         server.setHandler(bb);
+        CountDownLatch latch = new CountDownLatch(1);
 
         new Thread(new Runnable() {
             @Override
@@ -58,6 +61,7 @@ public class ServletTest {
                 try {
                     LOGGER.info(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
                     server.start();
+                    latch.countDown();
                     System.in.read();
                     LOGGER.info(">>> STOPPING EMBEDDED JETTY SERVER");
                     server.stop();
@@ -69,7 +73,7 @@ public class ServletTest {
             }
         }).start();
 
-        sleep(1000);
+        latch.await();
     }
 
     @Test
