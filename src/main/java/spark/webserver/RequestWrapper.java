@@ -82,7 +82,7 @@ final class RequestWrapper extends Request {
     public String body() {
         return delegate.body();
     }
-    
+
     @Override
     public byte[] bodyAsBytes() {
         return delegate.bodyAsBytes();
@@ -131,6 +131,11 @@ final class RequestWrapper extends Request {
     @Override
     public String queryParams(String queryParam) {
         return delegate.queryParams(queryParam);
+    }
+
+    @Override
+    public String[] queryParamsValues(String queryParam) {
+        return delegate.queryParamsValues(queryParam);
     }
 
     @Override
@@ -189,7 +194,7 @@ final class RequestWrapper extends Request {
     }
 
     @Override
-    public Object attribute(String attribute) {
+    public <T> T attribute(String attribute) {
         return delegate.attribute(attribute);
     }
 

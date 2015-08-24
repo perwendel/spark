@@ -64,19 +64,14 @@ public class BodyAvailabilityTest {
     }
 
     @Test
-    public void testPost() {
-        try {
-            SparkTestUtil.UrlResponse response = testUtil.doMethod("POST", "/hello", BODY_CONTENT);
-            LOGGER.info(response.body);
-            Assert.assertEquals(200, response.status);
-            Assert.assertTrue(response.body.contains(BODY_CONTENT));
+    public void testPost() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("POST", "/hello", BODY_CONTENT);
+        LOGGER.info(response.body);
+        Assert.assertEquals(200, response.status);
+        Assert.assertTrue(response.body.contains(BODY_CONTENT));
 
-            Assert.assertEquals(BODY_CONTENT, beforeBody);
-            Assert.assertEquals(BODY_CONTENT, routeBody);
-            Assert.assertEquals(BODY_CONTENT, afterBody);
-
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        Assert.assertEquals(BODY_CONTENT, beforeBody);
+        Assert.assertEquals(BODY_CONTENT, routeBody);
+        Assert.assertEquals(BODY_CONTENT, afterBody);
     }
 }

@@ -1,7 +1,5 @@
 package spark;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -24,6 +22,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 import org.junit.Test;
@@ -31,31 +30,33 @@ import org.junit.Test;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
 
+import static org.junit.Assert.assertEquals;
+
 public class RequestTest {
 
     private static final String THE_SERVLET_PATH = "/the/servlet/path";
     private static final String THE_CONTEXT_PATH = "/the/context/path";
-    
-    RouteMatch match =  new RouteMatch(HttpMethod.get,null,"/hi","/hi", "text/html");
+
+    RouteMatch match = new RouteMatch(HttpMethod.get, null, "/hi", "/hi", "text/html");
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("name",new String[] {"Federico"});
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("name", new String[] {"Federico"});
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
-        Request request = new Request(match,servletRequest);
+        Request request = new Request(match, servletRequest);
         String name = request.queryParams("name");
-        assertEquals("Invalid name in query string","Federico",name);
+        assertEquals("Invalid name in query string", "Federico", name);
     }
-    
+
     @Test
     public void queryParamShouldBeParsedAsHashMap() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
-        params.put("user[name]",new String[] {"Federico"});
+        Map<String, String[]> params = new HashMap<String, String[]>();
+        params.put("user[name]", new String[] {"Federico"});
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
-        Request request = new Request(match,servletRequest);
+        Request request = new Request(match, servletRequest);
         String name = request.queryMap("user").value("name");
-        assertEquals("Invalid name in query string","Federico",name);
+        assertEquals("Invalid name in query string", "Federico", name);
     }
 
     @Test
@@ -69,7 +70,7 @@ public class RequestTest {
         Request request = new Request(match, servletRequest);
         assertEquals("Should have delegated getting the servlet path", THE_SERVLET_PATH, request.servletPath());
     }
-    
+
     @Test
     public void shouldBeAbleToGetTheContextPath() {
         HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<String, String[]>()) {
@@ -81,7 +82,7 @@ public class RequestTest {
         Request request = new Request(match, servletRequest);
         assertEquals("Should have delegated getting the context path", THE_CONTEXT_PATH, request.contextPath());
     }
-    
+
     public static class MockedHttpServletRequest implements HttpServletRequest {
         private Map<String, String[]> params;
 
@@ -353,76 +354,95 @@ public class RequestTest {
 
         @Override
         public void setAttribute(String name, Object o) {
-        	// do nothing
+            // do nothing
         }
 
         @Override
         public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
-        	// do nothing
+            // do nothing
         }
 
-		@Override
-		public ServletContext getServletContext() {
-			return null;
-		}
+        @Override
+        public ServletContext getServletContext() {
+            return null;
+        }
 
-		@Override
-		public AsyncContext startAsync() throws IllegalStateException {
-			return null;
-		}
+        @Override
+        public AsyncContext startAsync() throws IllegalStateException {
+            return null;
+        }
 
-		@Override
-		public AsyncContext startAsync(ServletRequest servletRequest,
-				ServletResponse servletResponse) throws IllegalStateException {
-			return null;
-		}
+        @Override
+        public AsyncContext startAsync(ServletRequest servletRequest,
+                                       ServletResponse servletResponse) throws IllegalStateException {
+            return null;
+        }
 
-		@Override
-		public boolean isAsyncStarted() {
-			return false;
-		}
+        @Override
+        public boolean isAsyncStarted() {
+            return false;
+        }
 
-		@Override
-		public boolean isAsyncSupported() {
-			return false;
-		}
+        @Override
+        public boolean isAsyncSupported() {
+            return false;
+        }
 
-		@Override
-		public AsyncContext getAsyncContext() {
-			return null;
-		}
+        @Override
+        public AsyncContext getAsyncContext() {
+            return null;
+        }
 
-		@Override
-		public DispatcherType getDispatcherType() {
-			return null;
-		}
+        @Override
+        public DispatcherType getDispatcherType() {
+            return null;
+        }
 
-		@Override
-		public boolean authenticate(HttpServletResponse response)
-				throws IOException, ServletException {
-			return false;
-		}
+        @Override
+        public boolean authenticate(HttpServletResponse response)
+                throws IOException, ServletException {
+            return false;
+        }
 
-		@Override
-		public void login(String username, String password)
-				throws ServletException {
-			// do nothing
-		}
+        @Override
+        public void login(String username, String password)
+                throws ServletException {
+            // do nothing
+        }
 
-		@Override
-		public void logout() throws ServletException {
-			// do nothing
-		}
+        @Override
+        public void logout() throws ServletException {
+            // do nothing
+        }
 
-		@Override
-		public Collection<Part> getParts() throws IOException, ServletException {
-			return null;
-		}
+        @Override
+        public Collection<Part> getParts() throws IOException, ServletException {
+            return null;
+        }
 
-		@Override
-		public Part getPart(String name) throws IOException, ServletException {
-			return null;
-		}
-        
+        @Override
+        public Part getPart(String name) throws IOException, ServletException {
+            return null;
+        }
+
+        @Override
+        public long getContentLengthLong() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public String changeSessionId() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass)
+                throws IOException, ServletException {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
     }
 }

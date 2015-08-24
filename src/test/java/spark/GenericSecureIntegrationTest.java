@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.servlet.ServletTest;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -79,129 +78,78 @@ public class GenericSecureIntegrationTest {
     }
 
     @Test
-    public void testGetHi() {
-        try {
-            SparkTestUtil.UrlResponse response = testUtil.doMethodSecure("GET",
-                                                                         "/hi", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("Hello World!", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetHi() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethodSecure("GET", "/hi", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Hello World!", response.body);
     }
 
     @Test
-    public void testHiHead() {
-        try {
-            UrlResponse response = testUtil.doMethodSecure("HEAD", "/hi", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testHiHead() throws Exception {
+        UrlResponse response = testUtil.doMethodSecure("HEAD", "/hi", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("", response.body);
     }
 
     @Test
-    public void testGetHiAfterFilter() {
-        try {
-            UrlResponse response = testUtil.doMethodSecure("GET", "/hi", null);
-            Assert.assertTrue(response.headers.get("after").contains("foobar"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetHiAfterFilter() throws Exception {
+        UrlResponse response = testUtil.doMethodSecure("GET", "/hi", null);
+        Assert.assertTrue(response.headers.get("after").contains("foobar"));
     }
 
     @Test
-    public void testGetRoot() {
-        try {
-            UrlResponse response = testUtil.doMethodSecure("GET", "/", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("Hello Root!", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetRoot() throws Exception {
+        UrlResponse response = testUtil.doMethodSecure("GET", "/", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Hello Root!", response.body);
     }
 
     @Test
-    public void testEchoParam1() {
-        try {
-            UrlResponse response = testUtil.doMethodSecure("GET", "/shizzy",
-                                                           null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("echo: shizzy", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testEchoParam1() throws Exception {
+        UrlResponse response = testUtil.doMethodSecure("GET", "/shizzy", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: shizzy", response.body);
     }
 
     @Test
-    public void testEchoParam2() {
-        try {
-            UrlResponse response = testUtil.doMethodSecure("GET", "/gunit",
-                                                           null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("echo: gunit", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testEchoParam2() throws Exception {
+        UrlResponse response = testUtil.doMethodSecure("GET", "/gunit", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: gunit", response.body);
     }
 
     @Test
-    public void testEchoParamWithMaj() {
-        try {
-            UrlResponse response = testUtil.doMethodSecure("GET",
-                                                           "/paramwithmaj/plop", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("echo: plop", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testEchoParamWithMaj() throws Exception {
+        UrlResponse response = testUtil.doMethodSecure("GET", "/paramwithmaj/plop", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: plop", response.body);
     }
 
     @Test
     public void testUnauthorized() throws Exception {
-        try {
-            UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/protected/resource", null);
-            Assert.assertTrue(urlResponse.status == 401);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/protected/resource", null);
+        Assert.assertTrue(urlResponse.status == 401);
     }
 
     @Test
     public void testNotFound() throws Exception {
-        try {
-            UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/no/resource", null);
-            Assert.assertTrue(urlResponse.status == 404);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        UrlResponse urlResponse = testUtil.doMethodSecure("GET", "/no/resource", null);
+        Assert.assertTrue(urlResponse.status == 404);
     }
 
     @Test
-    public void testPost() {
-        try {
-            UrlResponse response = testUtil.doMethodSecure("POST", "/poster",
-                                                           "Fo shizzy");
-            LOGGER.info(response.body);
-            Assert.assertEquals(201, response.status);
-            Assert.assertTrue(response.body.contains("Fo shizzy"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testPost() throws Exception {
+        UrlResponse response = testUtil.doMethodSecure("POST", "/poster", "Fo shizzy");
+        LOGGER.info(response.body);
+        Assert.assertEquals(201, response.status);
+        Assert.assertTrue(response.body.contains("Fo shizzy"));
     }
 
     @Test
-    public void testPatch() {
-        try {
-            UrlResponse response = testUtil.doMethodSecure("PATCH", "/patcher",
-                                                           "Fo shizzy");
-            LOGGER.info(response.body);
-            Assert.assertEquals(200, response.status);
-            Assert.assertTrue(response.body.contains("Fo shizzy"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testPatch() throws Exception {
+        UrlResponse response = testUtil.doMethodSecure("PATCH", "/patcher", "Fo shizzy");
+        LOGGER.info(response.body);
+        Assert.assertEquals(200, response.status);
+        Assert.assertTrue(response.body.contains("Fo shizzy"));
     }
-
 }

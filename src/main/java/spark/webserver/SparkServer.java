@@ -16,11 +16,12 @@
  */
 package spark.webserver;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -30,11 +31,17 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
+import org.eclipse.jetty.websocket.server.pathmap.ServletPathSpec;
+import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import spark.webserver.websocket.WebSocketCreatorFactory;
 
 /**
  * Spark server implementation
@@ -60,18 +67,19 @@ public class SparkServer {
      * Ignites the spark server, listening on the specified port, running SSL secured with the specified keystore
      * and truststore.  If truststore is null, keystore is reused.
      *
-     * @param host                    The address to listen on
-     * @param port                    - the port
-     * @param keystoreFile            - The keystore file location as string
-     * @param keystorePassword        - the password for the keystore
-     * @param truststoreFile          - the truststore file location as string, leave null to reuse keystore
-     * @param truststorePassword      - the trust store password
-     * @param staticFilesFolder       - the route to static files in classPath
-     * @param externalFilesFolder     - the route to static files external to classPath.
-     * @param latch                   - the countdown latch
-     * @param maxThreads              - max nbr of threads.
-     * @param minThreads              - min nbr of threads.
-     * @param threadIdleTimeoutMillis - idle timeout (ms).
+     * @param host                       The address to listen on
+     * @param port                       - the port
+     * @param keystoreFile               - The keystore file location as string
+     * @param keystorePassword           - the password for the keystore
+     * @param truststoreFile             - the truststore file location as string, leave null to reuse keystore
+     * @param truststorePassword         - the trust store password
+     * @param staticFilesFolder          - the route to static files in classPath
+     * @param externalFilesFolder        - the route to static files external to classPath.
+     * @param latch                      - the countdown latch
+     * @param maxThreads                 - max nbr of threads.
+     * @param minThreads                 - min nbr of threads.
+     * @param threadIdleTimeoutMillis    - idle timeout (ms).
+     * @param webSocketIdleTimeoutMillis - Optional WebSocket idle timeout (ms).
      */
     public void ignite(String host,
                        int port,
@@ -84,7 +92,9 @@ public class SparkServer {
                        CountDownLatch latch,
                        int maxThreads,
                        int minThreads,
-                       int threadIdleTimeoutMillis) {
+                       int threadIdleTimeoutMillis,
+                       Map<String, Class<?>> webSocketHandlers,
+                       Optional<Integer> webSocketIdleTimeoutMillis) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -115,8 +125,26 @@ public class SparkServer {
         server = connector.getServer();
         server.setConnectors(new Connector[] {connector});
 
+        ServletContextHandler webSocketServletContextHandler = null;
+        if (webSocketHandlers != null) {
+            try {
+                webSocketServletContextHandler = new ServletContextHandler(null, "/", true, false);
+                WebSocketUpgradeFilter wsfilter = WebSocketUpgradeFilter.configureContext(webSocketServletContextHandler);
+                if (webSocketIdleTimeoutMillis.isPresent()) {
+                    wsfilter.getFactory().getPolicy().setIdleTimeout(webSocketIdleTimeoutMillis.get());
+                }
+                for (String path : webSocketHandlers.keySet()) {
+                    WebSocketCreator wscreator = WebSocketCreatorFactory.create(webSocketHandlers.get(path));
+                    wsfilter.addMapping(new ServletPathSpec(path), wscreator);
+                }
+            } catch (Exception ex) {
+                logger.error("ignite failed", ex);
+                System.exit(100); // NOSONAR
+            }
+        }
+
         // Handle static file routes
-        if (staticFilesFolder == null && externalFilesFolder == null) {
+        if (staticFilesFolder == null && externalFilesFolder == null && webSocketServletContextHandler == null) {
             server.setHandler(handler);
         } else {
             List<Handler> handlersInList = new ArrayList<Handler>();
@@ -127,6 +155,11 @@ public class SparkServer {
 
             // Set external static file location
             setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
+
+            // WebSocket handler must be the last one
+            if (webSocketServletContextHandler != null) {
+                handlersInList.add(webSocketServletContextHandler);
+            }
 
             HandlerList handlers = new HandlerList();
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
@@ -234,16 +267,10 @@ public class SparkServer {
     private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute,
                                                                List<Handler> handlersInList) {
         if (externalFilesRoute != null) {
-            try {
-                ResourceHandler externalResourceHandler = new ResourceHandler();
-                Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
-                externalResourceHandler.setBaseResource(externalStaticResources);
-                externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
-                handlersInList.add(externalResourceHandler);
-            } catch (IOException exception) {
-                exception.printStackTrace(); // NOSONAR
-                System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
-            }
+            ResourceHandler externalResourceHandler = new ResourceHandler();
+            externalResourceHandler.setResourceBase(externalFilesRoute);
+            externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
+            handlersInList.add(externalResourceHandler);
         }
     }
 

@@ -48,12 +48,12 @@ public class FilterExampleAttributes {
         });
 
         after("/hi", (request, response) -> {
-            Object foo = request.attribute("foo");
+            String foo = request.attribute("foo");
             response.body(asXml("foo", foo));
         });
     }
 
-    private static String asXml(String name, Object value) {
+    private static String asXml(String name, String value) {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><" + name + ">" + value + "</" + name + ">";
     }
 
