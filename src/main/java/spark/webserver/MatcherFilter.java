@@ -129,8 +129,7 @@ public class MatcherFilter implements Filter {
 
             HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
 
-            RouteMatch match = null;
-            match = routeMatcher.findTargetForRequestedRoute(httpMethod, uri, acceptType);
+            RouteMatch match = routeMatcher.findTargetForRequestedRoute(httpMethod, uri, acceptType);
 
             Object target = null;
             if (match != null) {

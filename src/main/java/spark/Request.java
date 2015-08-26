@@ -126,7 +126,7 @@ public class Request {
             return null;
         }
 
-        if (param.startsWith(":")) {
+        if (param.charAt(0) == ':') {
             return params.get(param.toLowerCase()); // NOSONAR
         } else {
             return params.get(":" + param.toLowerCase()); // NOSONAR
@@ -460,10 +460,7 @@ public class Request {
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
             if (SparkUtils.isParam(matchedPart)) {
-                LOG.debug("matchedPart: "
-                                  + matchedPart
-                                  + " = "
-                                  + request.get(i));
+                LOG.debug("matchedPart: {} = {}", matchedPart, request.get(i));
                 params.put(matchedPart.toLowerCase(), request.get(i));
             }
         }

@@ -181,7 +181,7 @@ public class SimpleRouteMatcher {
         entry.path = url;
         entry.target = target;
         entry.acceptedType = acceptedType;
-        LOG.debug("Adds route: " + entry);
+        LOG.debug("Adds route: {}", entry);
         // Adds to end of list
         routes.add(entry);
     }
@@ -204,7 +204,7 @@ public class SimpleRouteMatcher {
     }
 
     private List<RouteEntry> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
-        List<RouteEntry> matchSet = new ArrayList<RouteEntry>();
+        List<RouteEntry> matchSet = new ArrayList<>();
         for (RouteEntry entry : routes) {
             if (entry.matches(httpMethod, path)) {
                 matchSet.add(entry);
