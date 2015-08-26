@@ -69,16 +69,6 @@ public abstract class StringUtils {
     }
 
     /**
-     * Checks if the given String is not empty
-     *
-     * @param str the candidate String
-     * @return if the String is not empty
-     */
-    public static boolean isNotEmpty(String str) {
-        return !isEmpty(str);
-    }
-
-    /**
      * Check that the given CharSequence is neither {@code null} nor of length 0.
      *
      * @param str the CharSequence to check (may be {@code null})

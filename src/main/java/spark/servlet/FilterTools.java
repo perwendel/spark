@@ -24,7 +24,7 @@ import java.net.URLDecoder;
 final class FilterTools {
 
     private static final String SLASH_WILDCARD = "/*";
-    private static final String SLASH = "/";
+    private static final char SLASH = '/';
     private static final String FILTER_MAPPING_PARAM = "filterMappingUrlPattern";
 
     private FilterTools() {
@@ -47,7 +47,7 @@ final class FilterTools {
             path = path.substring(filterPath.length());
         }
 
-        if (!path.startsWith(SLASH)) {
+        if (!path.startsWith(new String(new char[] {SLASH}))) {
             path = SLASH + path;
         }
 
@@ -63,7 +63,7 @@ final class FilterTools {
         String result = config.getInitParameter(FILTER_MAPPING_PARAM);
         if (result == null || result.equals(SLASH_WILDCARD)) {
             return "";
-        } else if (!result.startsWith(SLASH) || !result.endsWith(SLASH_WILDCARD)) {
+        } else if (result.charAt(0) != SLASH || !result.startsWith(SLASH_WILDCARD)) {
             throw new RuntimeException(
                     "The " + FILTER_MAPPING_PARAM + " must start with \"/\" and end with \"/*\". It's: "
                             + result
