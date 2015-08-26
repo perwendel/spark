@@ -51,6 +51,8 @@ public abstract class SparkBase {
     private static boolean servletStaticLocationSet;
     private static boolean servletExternalStaticLocationSet;
 
+    private static boolean clientSession;
+
     private static CountDownLatch latch = new CountDownLatch(1);
 
     /**
@@ -429,4 +431,11 @@ public abstract class SparkBase {
         }
     }
 
+    public static void setClientSession(boolean clientSession) {
+        SparkBase.clientSession = clientSession;
+    }
+
+    public static boolean isClientSession() {
+        return clientSession;
+    }
 }

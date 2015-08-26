@@ -41,6 +41,9 @@ public final class Spark extends SparkBase {
     private Spark() {
     }
 
+    public static synchronized void setClientSession(boolean activate) {
+        SparkBase.setClientSession(activate);
+    }
 
     /**
      * Map the route for HTTP GET requests

@@ -29,13 +29,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spark.Access;
-import spark.FilterImpl;
-import spark.HaltException;
-import spark.Request;
-import spark.RequestResponseFactory;
-import spark.Response;
-import spark.RouteImpl;
+import spark.*;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
@@ -256,8 +250,9 @@ public class MatcherFilter implements Filter {
         }
     }
 
+    @Override
     public void destroy() {
-        // TODO Auto-generated method stub
+        // No action required
     }
 
     private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";

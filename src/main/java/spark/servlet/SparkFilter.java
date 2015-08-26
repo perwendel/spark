@@ -16,31 +16,20 @@
  */
 package spark.servlet;
 
-import java.io.*;
-import java.util.*;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.*;
-import javax.xml.bind.DatatypeConverter;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.Access;
-import spark.resource.AbstractFileResolvingResource;
-import spark.resource.AbstractResourceHandler;
-import spark.resource.ClassPathResource;
-import spark.resource.ClassPathResourceHandler;
-import spark.resource.ExternalResource;
-import spark.resource.ExternalResourceHandler;
+import spark.Spark;
+import spark.resource.*;
 import spark.route.RouteMatcherFactory;
 import spark.utils.IOUtils;
 import spark.webserver.MatcherFilter;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Filter that can be configured to be used in a web.xml file.
@@ -105,17 +94,8 @@ public class SparkFilter implements Filter {
             LOG.debug(relativePath);
         }
 
-        HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(httpRequest) {
-            @Override
-            public String getPathInfo() {
-                return relativePath;
-            }
-
-            @Override
-            public String getRequestURI() {
-                return relativePath;
-            }
-        };
+        SparkFilterRequestWrapper requestWrapper =
+                new SparkFilterRequestWrapper((HttpServletRequest) request, Spark.isClientSession(), relativePath);
 
         // handle static resources
         if (staticResourceHandlers != null) {
