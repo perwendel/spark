@@ -54,7 +54,7 @@ class JettyHandler extends SessionHandler {
         try {
             // wrap the request so 'getInputStream()' can be called multiple times
             SparkHttpRequestWrapper sparkHttpRequestWrapper = new SparkHttpRequestWrapper(request, Spark.isClientSession());
-            SparkHttpResponseWrapper responseWrapper = new SparkHttpResponseWrapper(response);
+            SparkHttpResponseWrapper responseWrapper = new SparkHttpResponseWrapper(sparkHttpRequestWrapper, response);
 
             filter.doFilter(sparkHttpRequestWrapper, responseWrapper, null);
 

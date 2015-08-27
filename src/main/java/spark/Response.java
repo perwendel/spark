@@ -19,10 +19,12 @@ package spark;
 import java.io.IOException;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.session.CookieSessionHandler;
 
 /**
  * Provides functionality for modifying the response
@@ -36,17 +38,14 @@ public class Response {
      */
     private static final Logger LOG = LoggerFactory.getLogger(Response.class);
 
+    private HttpServletRequest request;
     private HttpServletResponse response;
     private String body;
 
-    protected Response() {
-        // Used by wrapper
-    }
-
-    Response(HttpServletResponse response) {
+    protected Response(HttpServletRequest request, HttpServletResponse response) {
+        this.request = request;
         this.response = response;
     }
-
 
     /**
      * Sets the status code for the

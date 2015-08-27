@@ -30,8 +30,8 @@ public final class RequestResponseFactory {
         return new Request(match, request);
     }
 
-    public static Response create(HttpServletResponse response) {
-        return new Response(response);
+    public static Response create(HttpServletRequest request, HttpServletResponse response) {
+        return new Response(request, response);
     }
 
 }

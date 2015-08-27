@@ -92,9 +92,9 @@ public class MatcherFilter implements Filter {
         Object bodyContent = null;
 
         RequestWrapper requestWrapper = new RequestWrapper();
-        ResponseWrapper responseWrapper = new ResponseWrapper();
+        ResponseWrapper responseWrapper = new ResponseWrapper(httpRequest, httpResponse);
 
-        Response response = RequestResponseFactory.create(httpResponse);
+        Response response = RequestResponseFactory.create(httpRequest, httpResponse);
 
         LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
         try {
@@ -226,7 +226,7 @@ public class MatcherFilter implements Filter {
         if (!consumed && !isServletContext) {
             LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            bodyContent = String.format(NOT_FOUND);
+            bodyContent = NOT_FOUND;
             consumed = true;
         }
 

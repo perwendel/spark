@@ -16,6 +16,7 @@
  */
 package spark.webserver;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import spark.Response;
@@ -25,6 +26,10 @@ class ResponseWrapper extends Response {
     private Response delegate;
 
     private boolean redirected = false;
+
+    ResponseWrapper(HttpServletRequest request, HttpServletResponse response) {
+        super(request, response);
+    }
 
     public void setDelegate(Response delegate) {
         this.delegate = delegate;

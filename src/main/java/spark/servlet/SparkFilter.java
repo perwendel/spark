@@ -98,7 +98,7 @@ public class SparkFilter implements Filter {
         SparkFilterRequestWrapper requestWrapper =
                 new SparkFilterRequestWrapper((HttpServletRequest) request, Spark.isClientSession(), relativePath);
 
-        SparkHttpResponseWrapper responseWrapper = new SparkHttpResponseWrapper((HttpServletResponse) response);
+        SparkHttpResponseWrapper responseWrapper = new SparkHttpResponseWrapper(requestWrapper, (HttpServletResponse) response);
 
         // handle static resources
         if (staticResourceHandlers != null) {
