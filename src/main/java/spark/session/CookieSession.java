@@ -1,45 +1,62 @@
-package spark.webserver.session;
+package spark.session;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
+import java.io.Serializable;
 import java.util.Enumeration;
+import java.util.Map;
 
 
 /**
  * Created by Tim Heinrich on 26.08.2015.
  */
-public class CookieSession implements HttpSession {
-    private HttpServletRequest request;
+public class CookieSession implements HttpSession, Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private CookieSessionStore session = new CookieSessionStore();
+    private transient HttpServletRequest request;
+
+    public CookieSession() { }
 
     public CookieSession(HttpServletRequest request) {
         this.request = request;
     }
 
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
+    public Map<String, Object> getAttributes() {
+        return session.getAttributes();
+    }
+
     @Override
     public long getCreationTime() {
-        return 0;
+        return session.getCreationTime();
     }
 
     @Override
     public String getId() {
-        return null;
+        return session.getId();
     }
 
     @Override
     public long getLastAccessedTime() {
-        return 0;
+        return session.getLastAccessedTime();
     }
 
     @Override
     public ServletContext getServletContext() {
-        return null;
+        return request.getServletContext();
     }
 
     @Override
     public void setMaxInactiveInterval(int i) {
-
+        throw new NotImplementedException();
     }
 
     @Override
@@ -52,12 +69,12 @@ public class CookieSession implements HttpSession {
      */
     @Override
     public HttpSessionContext getSessionContext() {
-        return null;
+        return request.getSession().getSessionContext();
     }
 
     @Override
     public Object getAttribute(String s) {
-        return null;
+        return session.getAttributes().get(s);
     }
 
     /**
@@ -66,12 +83,12 @@ public class CookieSession implements HttpSession {
      */
     @Override
     public Object getValue(String s) {
-        return null;
+        return session.getAttributes().get(s);
     }
 
     @Override
     public Enumeration<String> getAttributeNames() {
-        return null;
+        return (Enumeration<String>) session.getAttributes().keySet();
     }
 
     /**
@@ -79,12 +96,12 @@ public class CookieSession implements HttpSession {
      */
     @Override
     public String[] getValueNames() {
-        return new String[0];
+        return session.getAttributes().keySet().toArray(new String[0]);
     }
 
     @Override
     public void setAttribute(String s, Object o) {
-
+        session.getAttributes().put(s, o);
     }
 
     /**
@@ -94,12 +111,12 @@ public class CookieSession implements HttpSession {
      */
     @Override
     public void putValue(String s, Object o) {
-
+        setAttribute(s, o);
     }
 
     @Override
     public void removeAttribute(String s) {
-
+        session.getAttributes().remove(s);
     }
 
     /**
@@ -108,16 +125,16 @@ public class CookieSession implements HttpSession {
      */
     @Override
     public void removeValue(String s) {
-
+        removeAttribute(s);
     }
 
     @Override
     public void invalidate() {
-
+        session.getAttributes().clear();
     }
 
     @Override
     public boolean isNew() {
-        return false;
+        return session.isNew();
     }
 }

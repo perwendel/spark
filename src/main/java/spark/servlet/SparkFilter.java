@@ -22,11 +22,14 @@ import spark.Access;
 import spark.Spark;
 import spark.resource.*;
 import spark.route.RouteMatcherFactory;
+import spark.session.CookieSessionHandler;
 import spark.utils.IOUtils;
 import spark.webserver.MatcherFilter;
+import spark.webserver.SparkHttpResponseWrapper;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,25 +93,30 @@ public class SparkFilter implements Filter {
 
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(relativePath);
-        }
+        LOG.debug(relativePath);
 
         SparkFilterRequestWrapper requestWrapper =
                 new SparkFilterRequestWrapper((HttpServletRequest) request, Spark.isClientSession(), relativePath);
+
+        SparkHttpResponseWrapper responseWrapper = new SparkHttpResponseWrapper((HttpServletResponse) response);
 
         // handle static resources
         if (staticResourceHandlers != null) {
             for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
-                    IOUtils.copy(resource.getInputStream(), response.getOutputStream());
+                    IOUtils.copy(resource.getInputStream(), responseWrapper.getOutputStream());
                     return;
                 }
             }
         }
 
-        matcherFilter.doFilter(requestWrapper, response, chain);
+        matcherFilter.doFilter(requestWrapper, responseWrapper, chain);
+
+        if (Spark.isClientSession() && requestWrapper.isSessionInstantiated()) {
+            CookieSessionHandler.writeSession(requestWrapper, responseWrapper);
+        }
+        responseWrapper.flushBuffer();
     }
 
     /**

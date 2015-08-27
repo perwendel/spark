@@ -21,6 +21,7 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 import spark.Spark;
+import spark.session.CookieSessionHandler;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
@@ -53,7 +54,14 @@ class JettyHandler extends SessionHandler {
         try {
             // wrap the request so 'getInputStream()' can be called multiple times
             SparkHttpRequestWrapper sparkHttpRequestWrapper = new SparkHttpRequestWrapper(request, Spark.isClientSession());
-            filter.doFilter(sparkHttpRequestWrapper, response, null);
+            SparkHttpResponseWrapper responseWrapper = new SparkHttpResponseWrapper(response);
+
+            filter.doFilter(sparkHttpRequestWrapper, responseWrapper, null);
+
+            if (Spark.isClientSession() && sparkHttpRequestWrapper.isSessionInstantiated()) {
+                CookieSessionHandler.writeSession(sparkHttpRequestWrapper, responseWrapper);
+            }
+            responseWrapper.flushBuffer();
 
             baseRequest.setHandled(true);
         } catch (NotConsumedException ignore) {

@@ -1,8 +1,8 @@
 package spark.webserver;
 
-import spark.webserver.session.CookieSessionCreationStrategy;
-import spark.webserver.session.ISessionCreationStrategy;
-import spark.webserver.session.JettySessionCreationStrategy;
+import spark.session.CookieSessionCreationStrategy;
+import spark.session.ISessionCreationStrategy;
+import spark.session.JettySessionCreationStrategy;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
  */
 public class SparkHttpRequestWrapper extends HttpRequestWrapper {
     private ISessionCreationStrategy sessionCreationStrategy;
+    private HttpSession session;
 
     public SparkHttpRequestWrapper(HttpServletRequest request, boolean clientSession) {
         super(request);
@@ -22,13 +23,23 @@ public class SparkHttpRequestWrapper extends HttpRequestWrapper {
         }
     }
 
+    public boolean isSessionInstantiated() {
+        return session != null;
+    }
+
     @Override
     public HttpSession getSession() {
-        return sessionCreationStrategy.getSession((HttpServletRequest) getRequest(), true);
+        if (session == null) {
+            session = sessionCreationStrategy.getSession((HttpServletRequest) getRequest(), true);
+        }
+        return session;
     }
 
     @Override
     public HttpSession getSession(boolean create) {
-        return sessionCreationStrategy.getSession((HttpServletRequest) getRequest(), create);
+        if (session == null) {
+            session = sessionCreationStrategy.getSession((HttpServletRequest) getRequest(), create);
+        }
+        return session;
     }
 }

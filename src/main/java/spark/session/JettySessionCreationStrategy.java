@@ -1,4 +1,4 @@
-package spark.webserver.session;
+package spark.session;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
