@@ -242,6 +242,8 @@ public class MatcherFilter implements Filter {
 
                 // serialize the body to output stream
                 serializerChain.process(outputStream, bodyContent);
+
+                outputStream.flush();//needed for GZIP stream. Not sure where the HTTP response actually gets cleaned up
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
