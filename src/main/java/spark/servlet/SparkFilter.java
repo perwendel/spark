@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Access;
 import spark.Spark;
+import spark.SparkBase;
 import spark.resource.*;
 import spark.route.RouteMatcherFactory;
 import spark.session.CookieSessionHandler;
@@ -96,7 +97,7 @@ public class SparkFilter implements Filter {
         LOG.debug(relativePath);
 
         SparkFilterRequestWrapper requestWrapper =
-                new SparkFilterRequestWrapper((HttpServletRequest) request, Spark.isClientSession(), relativePath);
+                new SparkFilterRequestWrapper((HttpServletRequest) request, Spark.getSessionStrategy(), relativePath);
 
         SparkHttpResponseWrapper responseWrapper = new SparkHttpResponseWrapper(requestWrapper, (HttpServletResponse) response);
 
@@ -113,9 +114,6 @@ public class SparkFilter implements Filter {
 
         matcherFilter.doFilter(requestWrapper, responseWrapper, chain);
 
-        if (Spark.isClientSession() && requestWrapper.isSessionInstantiated()) {
-            CookieSessionHandler.writeSession(requestWrapper, responseWrapper);
-        }
         responseWrapper.flushBuffer();
     }
 

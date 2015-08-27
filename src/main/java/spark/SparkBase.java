@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
+import spark.session.ISessionStrategy;
+import spark.session.JettySessionStrategy;
+import spark.session.SessionFactory;
+import spark.session.SessionType;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
@@ -51,7 +55,7 @@ public abstract class SparkBase {
     private static boolean servletStaticLocationSet;
     private static boolean servletExternalStaticLocationSet;
 
-    private static boolean clientSession;
+    private static ISessionStrategy sessionStrategy = new JettySessionStrategy();
 
     private static CountDownLatch latch = new CountDownLatch(1);
 
@@ -431,11 +435,11 @@ public abstract class SparkBase {
         }
     }
 
-    public static void setClientSession(boolean clientSession) {
-        SparkBase.clientSession = clientSession;
+    protected static void setSessionStrategy(SessionType type) {
+        SparkBase.sessionStrategy = SessionFactory.getSession(type);
     }
 
-    public static boolean isClientSession() {
-        return clientSession;
+    protected static ISessionStrategy getSessionStrategy() {
+        return sessionStrategy;
     }
 }

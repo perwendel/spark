@@ -241,7 +241,8 @@ public class MatcherFilter implements Filter {
                 OutputStream outputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse);
 
                 // serialize the body to output stream
-                serializerChain.process(outputStream, bodyContent);
+                serializerChain.process(outputStream, bodyContent,
+                        (SparkHttpRequestWrapper) requestWrapper.raw(), responseWrapper.raw());
 
                 outputStream.flush();//needed for GZIP stream. Not sure where the HTTP response actually gets cleaned up
             }

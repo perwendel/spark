@@ -1,13 +1,7 @@
 package spark.webserver;
 
-import spark.Spark;
-import spark.session.CookieSession;
-import spark.session.CookieSessionHandler;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -17,9 +11,9 @@ import java.io.PrintWriter;
 public class SparkHttpResponseWrapper extends HttpServletResponseWrapper {
     private final WrappedServletOutputStream output;
     private final PrintWriter writer;
-    private final HttpServletRequest request;
+    private final SparkHttpRequestWrapper request;
 
-    public SparkHttpResponseWrapper(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public SparkHttpResponseWrapper(SparkHttpRequestWrapper request, HttpServletResponse response) throws IOException {
         super(response);
         this.request = request;
 
@@ -43,9 +37,7 @@ public class SparkHttpResponseWrapper extends HttpServletResponseWrapper {
 
     @Override
     public void sendRedirect(String location) throws IOException {
-        if (Spark.isClientSession()) {
-            CookieSessionHandler.writeSession(request, (HttpServletResponse) getResponse());
-        }
+        request.persistSession(this);
         super.sendRedirect(location);
     }
 }

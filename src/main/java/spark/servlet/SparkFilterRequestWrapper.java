@@ -1,5 +1,6 @@
 package spark.servlet;
 
+import spark.session.ISessionStrategy;
 import spark.webserver.SparkHttpRequestWrapper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 public class SparkFilterRequestWrapper extends SparkHttpRequestWrapper {
     private final String relativePath;
 
-    public SparkFilterRequestWrapper(HttpServletRequest request, boolean clientSession, String relativePath) {
-        super(request, clientSession);
+    public SparkFilterRequestWrapper(HttpServletRequest request, ISessionStrategy sessionStrategy, String relativePath) {
+        super(request, sessionStrategy);
         this.relativePath = relativePath;
     }
 

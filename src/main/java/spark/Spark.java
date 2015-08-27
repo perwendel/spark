@@ -19,6 +19,8 @@ package spark;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
+import spark.session.ISessionStrategy;
+import spark.session.SessionType;
 import spark.utils.SparkUtils;
 
 /**
@@ -41,8 +43,15 @@ public final class Spark extends SparkBase {
     private Spark() {
     }
 
-    public static synchronized void setClientSession(boolean activate) {
-        SparkBase.setClientSession(activate);
+    public static synchronized void setSessionType(SessionType type) {
+        if (initialized) {
+            throw new IllegalStateException("Cannot set session type after initialization.");
+        }
+        SparkBase.setSessionStrategy(type);
+    }
+
+    public static ISessionStrategy getSessionStrategy() {
+        return SparkBase.getSessionStrategy();
     }
 
     /**

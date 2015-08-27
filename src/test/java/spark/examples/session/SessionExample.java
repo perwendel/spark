@@ -2,7 +2,6 @@ package spark.examples.session;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
-import static spark.Spark.setClientSession;
 
 public class SessionExample {
     private static final String SESSION_NAME = "username";

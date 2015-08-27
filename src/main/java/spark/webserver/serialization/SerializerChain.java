@@ -16,6 +16,9 @@
  */
 package spark.webserver.serialization;
 
+import spark.webserver.SparkHttpRequestWrapper;
+
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -49,7 +52,9 @@ public class SerializerChain {
      * @param element the element to serialize.
      * @throws IOException in the case of IO error.
      */
-    public void process(OutputStream outputStream, Object element) throws IOException {
+    public void process(OutputStream outputStream, Object element,
+                        SparkHttpRequestWrapper request, HttpServletResponse response) throws IOException {
+        request.persistSession(response);
         this.root.processElement(outputStream, element);
     }
 

@@ -4,10 +4,11 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import spark.session.SessionType;
 import spark.util.SparkTestUtil;
 
 import static spark.Spark.get;
-import static spark.Spark.setClientSession;
+import static spark.SparkBase.setSessionStrategy;
 
 /**
  * Created by Tim Heinrich on 27.08.2015.
@@ -22,7 +23,7 @@ public class ClientSessionTest {
 
     @BeforeClass
     public static void setup() {
-        setClientSession(true);
+        setSessionStrategy(SessionType.Cookie);
 
         testUtil = new SparkTestUtil(4567);
 
@@ -55,7 +56,7 @@ public class ClientSessionTest {
         })));
 
         try {
-            Thread.sleep(2000);
+            Thread.sleep(500);
         } catch (Exception e) {
         }
     }
