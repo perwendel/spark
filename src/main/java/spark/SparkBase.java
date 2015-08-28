@@ -1,5 +1,9 @@
 package spark;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -17,6 +21,8 @@ import spark.session.SessionFactory;
 import spark.session.SessionType;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
+
+import javax.crypto.NoSuchPaddingException;
 
 import static java.util.Objects.requireNonNull;
 
@@ -435,8 +441,8 @@ public abstract class SparkBase {
         }
     }
 
-    protected static void setSessionStrategy(SessionType type) {
-        SparkBase.sessionStrategy = SessionFactory.getSession(type);
+    protected static void setSessionStrategy(SessionType type, KeyPair encryptionKeyPair, KeyPair signingKeyPair) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        SparkBase.sessionStrategy = SessionFactory.getSession(type, encryptionKeyPair, signingKeyPair);
     }
 
     protected static ISessionStrategy getSessionStrategy() {

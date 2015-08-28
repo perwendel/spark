@@ -23,6 +23,13 @@ import spark.session.ISessionStrategy;
 import spark.session.SessionType;
 import spark.utils.SparkUtils;
 
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * The main building block of a Spark application is a set of routes. A route is
  * made up of three simple pieces:
@@ -43,11 +50,12 @@ public final class Spark extends SparkBase {
     private Spark() {
     }
 
-    public static synchronized void setSessionType(SessionType type) {
+    public static synchronized void setSessionType(SessionType type, KeyPair encryptionKeyPair, KeyPair signingKeyPair)
+            throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         if (initialized) {
             throw new IllegalStateException("Cannot set session type after initialization.");
         }
-        SparkBase.setSessionStrategy(type);
+        SparkBase.setSessionStrategy(type, encryptionKeyPair, signingKeyPair);
     }
 
     public static ISessionStrategy getSessionStrategy() {

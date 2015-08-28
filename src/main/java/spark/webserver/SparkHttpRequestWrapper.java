@@ -19,14 +19,8 @@ public class SparkHttpRequestWrapper extends HttpRequestWrapper {
         this.sessionStrategy = sessionStrategy;
     }
 
-    public boolean isSessionInstantiated() {
-        return session != null;
-    }
-
     public void persistSession(HttpServletResponse response) throws IOException {
-        if (isSessionInstantiated()) {
-            sessionStrategy.writeSession(this, response);
-        }
+        sessionStrategy.writeSession(this, response);
     }
 
     @Override

@@ -7,6 +7,9 @@ import org.junit.Test;
 import spark.session.SessionType;
 import spark.util.SparkTestUtil;
 
+import javax.crypto.NoSuchPaddingException;
+import java.security.*;
+
 import static spark.Spark.after;
 import static spark.Spark.get;
 import static spark.SparkBase.setSessionStrategy;
@@ -23,8 +26,14 @@ public class ClientSessionTest {
     }
 
     @BeforeClass
-    public static void setup() {
-        setSessionStrategy(SessionType.Cookie);
+    public static void setup() throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        KeyPair encryptionKeyPair = keyPairGenerator.generateKeyPair();
+
+        KeyPairGenerator dsa = KeyPairGenerator.getInstance("DSA");
+        KeyPair signingKeyPair = dsa.generateKeyPair();
+
+        setSessionStrategy(SessionType.Cookie, encryptionKeyPair, signingKeyPair);
 
         testUtil = new SparkTestUtil(4567);
 

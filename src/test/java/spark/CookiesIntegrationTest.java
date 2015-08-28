@@ -26,7 +26,8 @@ public class CookiesIntegrationTest {
     @BeforeClass
     public static void initRoutes() throws InterruptedException {
         post("/assertNoCookies", (request, response) -> {
-            if (!request.cookies().isEmpty()) {
+            if (!request.cookies().isEmpty() &&
+                    !(request.cookies().size() == 1 && request.cookies().containsKey("session"))) {
                 halt(500);
             }
             return "";
