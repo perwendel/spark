@@ -1,6 +1,7 @@
 package spark.examples.session;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
@@ -8,7 +9,7 @@ import static spark.Spark.post;
 public class SessionExample {
     private static final String SESSION_NAME = "username";
 
-    public static void main(String[] args) throws NoSuchAlgorithmException {
+    public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException {
         get("/", (request, response) -> {
             String name = request.session().attribute(SESSION_NAME);
             if (name == null) {

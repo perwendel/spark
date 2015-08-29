@@ -20,7 +20,7 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
-import spark.Spark;
+import spark.SparkBase;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
@@ -52,7 +52,7 @@ class JettyHandler extends SessionHandler {
         LOG.debug("jettyhandler, handle();");
         try {
             // wrap the request so 'getInputStream()' can be called multiple times
-            SparkHttpRequestWrapper sparkHttpRequestWrapper = new SparkHttpRequestWrapper(request, Spark.getSessionStrategy());
+            SparkHttpRequestWrapper sparkHttpRequestWrapper = new SparkHttpRequestWrapper(request, SparkBase.getSessionStrategy());
             SparkHttpResponseWrapper responseWrapper = new SparkHttpResponseWrapper(sparkHttpRequestWrapper, response);
 
             filter.doFilter(sparkHttpRequestWrapper, responseWrapper, null);

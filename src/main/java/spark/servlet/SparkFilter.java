@@ -97,7 +97,7 @@ public class SparkFilter implements Filter {
         LOG.debug(relativePath);
 
         SparkFilterRequestWrapper requestWrapper =
-                new SparkFilterRequestWrapper((HttpServletRequest) request, Spark.getSessionStrategy(), relativePath);
+                new SparkFilterRequestWrapper((HttpServletRequest) request, SparkBase.getSessionStrategy(), relativePath);
 
         SparkHttpResponseWrapper responseWrapper = new SparkHttpResponseWrapper(requestWrapper, (HttpServletResponse) response);
 

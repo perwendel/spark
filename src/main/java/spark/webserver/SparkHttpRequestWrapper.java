@@ -38,4 +38,8 @@ public class SparkHttpRequestWrapper extends HttpRequestWrapper {
         }
         return session;
     }
+
+    public boolean sessionAccessed() {
+        return session != null;
+    }
 }

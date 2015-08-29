@@ -4,11 +4,11 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import spark.session.SessionType;
+import spark.session.CookieSessionStrategy;
 import spark.util.SparkTestUtil;
 
-import javax.crypto.NoSuchPaddingException;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 
 import static spark.Spark.after;
 import static spark.Spark.get;
@@ -26,14 +26,13 @@ public class ClientSessionTest {
     }
 
     @BeforeClass
-    public static void setup() throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
+    public static void setup() throws NoSuchAlgorithmException, InvalidKeySpecException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         KeyPair encryptionKeyPair = keyPairGenerator.generateKeyPair();
+        CookieSessionStrategy cookieSessionStrategy = new CookieSessionStrategy(encryptionKeyPair,
+                "This is your application secret, so set it accordingly!");
 
-        KeyPairGenerator dsa = KeyPairGenerator.getInstance("DSA");
-        KeyPair signingKeyPair = dsa.generateKeyPair();
-
-        setSessionStrategy(SessionType.Cookie, encryptionKeyPair, signingKeyPair);
+        setSessionStrategy(cookieSessionStrategy);
 
         testUtil = new SparkTestUtil(4567);
 

@@ -1,28 +1,19 @@
 package spark;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
 import spark.session.ISessionStrategy;
 import spark.session.JettySessionStrategy;
-import spark.session.SessionFactory;
-import spark.session.SessionType;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
-import javax.crypto.NoSuchPaddingException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 import static java.util.Objects.requireNonNull;
 
@@ -156,6 +147,10 @@ public abstract class SparkBase {
         Spark.keystorePassword = keystorePassword;
         Spark.truststoreFile = truststoreFile;
         Spark.truststorePassword = truststorePassword;
+    }
+
+    public static boolean isSecure() {
+        return keystoreFile != null;
     }
 
     /**
@@ -363,13 +358,12 @@ public abstract class SparkBase {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
         }
-        RouteImpl impl = new RouteImpl(path, acceptType) {
+        return new RouteImpl(path, acceptType) {
             @Override
             public Object handle(Request request, Response response) throws Exception {
                 return route.handle(request, response);
             }
         };
-        return impl;
     }
 
     /**
@@ -441,11 +435,20 @@ public abstract class SparkBase {
         }
     }
 
-    protected static void setSessionStrategy(SessionType type, KeyPair encryptionKeyPair, KeyPair signingKeyPair) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
-        SparkBase.sessionStrategy = SessionFactory.getSession(type, encryptionKeyPair, signingKeyPair);
+    /**
+     * By implementing ISessionStrategy another session implementation can be used.
+     * For an example see the CookieSessionStrategy which implements client-side session using cookies.
+     *
+     * @param sessionStrategy The provided session strategy
+     */
+    public static void setSessionStrategy(ISessionStrategy sessionStrategy) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        SparkBase.sessionStrategy = sessionStrategy;
     }
 
-    protected static ISessionStrategy getSessionStrategy() {
+    public static ISessionStrategy getSessionStrategy() {
         return sessionStrategy;
     }
 }
