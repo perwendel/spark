@@ -1,5 +1,6 @@
 package spark.session;
 
+import org.nustaq.serialization.FSTConfiguration;
 import spark.SparkBase;
 import spark.webserver.SparkHttpRequestWrapper;
 
@@ -21,10 +22,18 @@ public final class CookieSessionHandler {
     private static final String session = "session";
     private static final String symmetricEncryptionAlgorithm = "AES";
     private static final String hashFunction = "SHA1";
+    private static FSTConfiguration conf = FSTConfiguration.createDefaultConfiguration();
 
     private final String signatureAlgorithm;
     private final SecretKey symmetricEncryptionKey;
     private final KeyPair encryptionKeyPair;
+
+    static {
+        conf.setPreferSpeed(true);
+        conf.setStructMode(true);
+        conf.registerClass(String.class);
+        conf.registerClass(Integer.class);
+    }
 
     public CookieSessionHandler(KeyPair encryptionKeyPair, String symmetricEncryptionKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
         this.encryptionKeyPair = encryptionKeyPair;
@@ -33,19 +42,6 @@ public final class CookieSessionHandler {
         byte[] key = hash(symmetricEncryptionKey.getBytes());
         key = Arrays.copyOf(key, 16);
         this.symmetricEncryptionKey = new SecretKeySpec(key, symmetricEncryptionAlgorithm);
-    }
-
-    public byte[] decrypt(byte[] encrypted) throws NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
-        Cipher instance = Cipher.getInstance(encryptionKeyPair.getPrivate().getAlgorithm());
-        instance.init(Cipher.DECRYPT_MODE, encryptionKeyPair.getPrivate());
-        return instance.doFinal(encrypted);
-
-    }
-
-    public synchronized byte[] encrypt(byte[] decrypted) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
-        Cipher instance = Cipher.getInstance(encryptionKeyPair.getPublic().getAlgorithm());
-        instance.init(Cipher.ENCRYPT_MODE, encryptionKeyPair.getPublic());
-        return instance.doFinal(decrypted);
     }
 
     public CookieSession readSession(HttpServletRequest request) throws BadPaddingException, IllegalBlockSizeException, SignatureException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
@@ -62,27 +58,13 @@ public final class CookieSessionHandler {
             return new CookieSession(request);
         }
 
-        // first decode the password for decryption
-        byte[] symmetricalKey = Base64.getDecoder().decode(cookieSessionContent.getEncodedSymmetricalKey().getBytes());
-        symmetricalKey = decrypt(symmetricalKey);
-        SecretKey symmetricalSecretKey =
-                new SecretKeySpec(symmetricalKey, 0, symmetricalKey.length, symmetricEncryptionAlgorithm);
-
         // now decrypt the content
         Cipher symmetricalCipher = Cipher.getInstance(symmetricEncryptionAlgorithm);
-        symmetricalCipher.init(Cipher.DECRYPT_MODE, symmetricalSecretKey);
+        symmetricalCipher.init(Cipher.DECRYPT_MODE, symmetricEncryptionKey);
         decodedContent = symmetricalCipher.doFinal(decodedContent);
 
         // deserialize content
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(decodedContent);
-        try {
-            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-            CookieSession session = (CookieSession) objectInputStream.readObject();
-            session.setRequest(request);
-            return session;
-        } catch (Exception e) {
-            return new CookieSession(request);
-        }
+        return (CookieSession) conf.asObject(decodedContent);
     }
 
     public void writeSession(HttpServletRequest request, HttpServletResponse response)
@@ -92,15 +74,12 @@ public final class CookieSessionHandler {
         CookieSession session = (CookieSession) request.getSession();
 
         // serialize session
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-        objectOutputStream.writeObject(session);
-        objectOutputStream.flush();
+        byte[] sessionBytes = conf.asByteArray(session);
 
         // encrypt content
         Cipher symmetricalCipher = Cipher.getInstance(symmetricEncryptionAlgorithm);
         symmetricalCipher.init(Cipher.ENCRYPT_MODE, symmetricEncryptionKey);
-        byte[] encryptedBytes = symmetricalCipher.doFinal(outputStream.toByteArray());
+        byte[] encryptedBytes = symmetricalCipher.doFinal(sessionBytes);
 
         // sign content
         byte[] signature = sign(hash(encryptedBytes));
@@ -108,9 +87,8 @@ public final class CookieSessionHandler {
         // encode result
         String base64EncodedContent = Base64.getEncoder().encodeToString(encryptedBytes);
         String base64EncodedSignature = Base64.getEncoder().encodeToString(signature);
-        String base64EncodedPassword = Base64.getEncoder().encodeToString(encrypt(symmetricEncryptionKey.getEncoded()));
 
-        addCookie(base64EncodedContent, base64EncodedPassword, base64EncodedSignature, response);
+        addCookie(base64EncodedContent, base64EncodedSignature, response);
     }
 
     private byte[] hash(byte[] encryptedBytes) throws NoSuchAlgorithmException {
@@ -118,10 +96,8 @@ public final class CookieSessionHandler {
         return instance.digest(encryptedBytes);
     }
 
-    private void addCookie(String base64EncodedContent, String base64EncodedPassword,
-                           String base64EncodedSignature, HttpServletResponse response) {
-        String cookieContent = base64EncodedPassword.length() + "=" + base64EncodedSignature.length() + "=" +
-                base64EncodedPassword + base64EncodedSignature + base64EncodedContent;
+    private void addCookie(String base64EncodedContent, String base64EncodedSignature, HttpServletResponse response) {
+        String cookieContent = base64EncodedSignature.length() + "=" + base64EncodedSignature + base64EncodedContent;
 
         Cookie cookie = new Cookie(CookieSessionHandler.session, cookieContent);
         cookie.setSecure(SparkBase.isSecure());
@@ -130,14 +106,14 @@ public final class CookieSessionHandler {
         response.addCookie(cookie);
     }
 
-    private synchronized boolean verify(byte[] dataToVerify, byte[] signature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    private boolean verify(byte[] dataToVerify, byte[] signature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Signature instance = Signature.getInstance(signatureAlgorithm);
         instance.initVerify(encryptionKeyPair.getPublic());
         instance.update(dataToVerify);
         return instance.verify(signature);
     }
 
-    private synchronized byte[] sign(byte[] dataToSign) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    private byte[] sign(byte[] dataToSign) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         Signature instance = Signature.getInstance(signatureAlgorithm);
         instance.initSign(encryptionKeyPair.getPrivate());
         instance.update(dataToSign);

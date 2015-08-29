@@ -71,6 +71,13 @@
             <version>${jetty.version}</version>
         </dependency>
 
+        <!-- Cookie-based session dependency -->
+        <dependency>
+            <groupId>de.ruedigermoeller</groupId>
+            <artifactId>fst</artifactId>
+            <version>2.38</version>
+        </dependency>
+
         <!-- JUNIT DEPENDENCY FOR TESTING -->
         <dependency>
             <groupId>junit</groupId>
