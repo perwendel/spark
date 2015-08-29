@@ -28,10 +28,8 @@ public class ClientSessionTest {
 
     @BeforeClass
     public static void setup() throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        KeyPair encryptionKeyPair = keyPairGenerator.generateKeyPair();
-        CookieSessionStrategy cookieSessionStrategy = new CookieSessionStrategy(encryptionKeyPair,
-                "This is your application secret, so set it accordingly!");
+        CookieSessionStrategy cookieSessionStrategy =
+                new CookieSessionStrategy("This is your application secret, so set it accordingly!");
 
         setSessionStrategy(cookieSessionStrategy);
 

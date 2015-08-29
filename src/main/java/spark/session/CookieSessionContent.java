@@ -1,32 +1,28 @@
 package spark.session;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Base64;
 
 /**
  * Created by Tim Heinrich on 29.08.2015.
  */
 public class CookieSessionContent {
+    // last 20 bytes are the length of the signature
+    private static final int encodedSignatureLength = 20;
+
     private final byte[] content;
     private final byte[] signature;
 
     public CookieSessionContent(String sessionContent) {
         byte[] signatureAndContent = Base64.getDecoder().decode(sessionContent);
 
-        // first 4 bytes are the length of the signature
-        ByteBuffer byteBuffer = ByteBuffer.allocate(4).put(signatureAndContent, 0, 4);
-        byteBuffer.position(0);
-        int encodedSignatureLength = byteBuffer.getInt();
-
         signature = new byte[encodedSignatureLength];
-        int currentPosition = 4;
-        for (int i = 0; i < signature.length; i++) {
-            signature[i] = signatureAndContent[currentPosition++];
-        }
-        content = new byte[signatureAndContent.length - encodedSignatureLength - 4];
-        for (int i = 0; i < content.length; i ++) {
-            content[i] = signatureAndContent[currentPosition++];
-        }
+        content = new byte[signatureAndContent.length - encodedSignatureLength];
+
+        System.arraycopy(signatureAndContent, 0, content, 0, content.length);
+        System.arraycopy(signatureAndContent, signatureAndContent.length - signature.length,
+                signature, 0, signature.length);
     }
 
     public byte[] getContent() {

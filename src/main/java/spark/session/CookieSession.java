@@ -137,4 +137,8 @@ public class CookieSession implements HttpSession, Serializable {
     public boolean isNew() {
         return session.isNew();
     }
+
+    void setIsNew(boolean isNew) {
+        session.setIsNew(isNew);
+    }
 }

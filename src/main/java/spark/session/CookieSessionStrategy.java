@@ -21,8 +21,8 @@ public class CookieSessionStrategy implements ISessionStrategy {
     private final CookieSessionHandler sessionHandler;
     private static final Logger logger = LoggerFactory.getLogger(CookieSessionStrategy.class);
 
-    public CookieSessionStrategy(KeyPair encryptionKeyPair, String symmetricEncryptionKey) throws InvalidKeySpecException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
-        sessionHandler = new CookieSessionHandler(encryptionKeyPair, symmetricEncryptionKey);
+    public CookieSessionStrategy(String encryptionKey) throws NoSuchAlgorithmException {
+        sessionHandler = new CookieSessionHandler(encryptionKey);
     }
 
     @Override

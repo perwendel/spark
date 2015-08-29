@@ -9,10 +9,9 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.security.*;
-import java.security.spec.InvalidKeySpecException;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -22,30 +21,24 @@ import java.util.Base64;
 public final class CookieSessionHandler {
     private static final String session = "session";
     private static final String symmetricEncryptionAlgorithm = "AES";
-    private static final String hashFunction = "SHA1";
-    private static FSTConfiguration conf = FSTConfiguration.createDefaultConfiguration();
+    private static final FSTConfiguration conf = FSTConfiguration.createDefaultConfiguration();
 
-    private final String signatureAlgorithm;
     private final SecretKey symmetricEncryptionKey;
-    private final KeyPair encryptionKeyPair;
-    private final Cipher symmetricalCipher;
+    private final SecretKey hmacKey;
 
     static {
         conf.setPreferSpeed(true);
     }
 
-    public CookieSessionHandler(KeyPair encryptionKeyPair, String symmetricEncryptionKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException {
-        this.encryptionKeyPair = encryptionKeyPair;
-        this.signatureAlgorithm = hashFunction + "with" + encryptionKeyPair.getPublic().getAlgorithm();
+    public CookieSessionHandler(String encryptionKey) throws NoSuchAlgorithmException {
 
-        byte[] key = hash(symmetricEncryptionKey.getBytes());
+        byte[] key = hash(encryptionKey.getBytes());
         key = Arrays.copyOf(key, 16);
         this.symmetricEncryptionKey = new SecretKeySpec(key, symmetricEncryptionAlgorithm);
-
-        symmetricalCipher = Cipher.getInstance(symmetricEncryptionAlgorithm);
+        this.hmacKey = new SecretKeySpec(key, "HmacSHA1");
     }
 
-    public CookieSession readSession(HttpServletRequest request) throws BadPaddingException, IllegalBlockSizeException, SignatureException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
+    public CookieSession readSession(HttpServletRequest request) throws InvalidKeyException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, NoSuchPaddingException {
         Cookie sessionCookie = getCookie(request, CookieSessionHandler.session);
         if (sessionCookie == null) {
             return new CookieSession(request);
@@ -53,11 +46,12 @@ public final class CookieSessionHandler {
         CookieSessionContent cookieSessionContent = new CookieSessionContent(sessionCookie.getValue());
 
         // check the signature
-        if (!verify(hash(cookieSessionContent.getContent()), cookieSessionContent.getSignature())) {
+        if (!verify(cookieSessionContent.getContent(), cookieSessionContent.getSignature())) {
             return new CookieSession(request);
         }
 
         // now decrypt the content
+        final Cipher symmetricalCipher = Cipher.getInstance(symmetricEncryptionAlgorithm);
         symmetricalCipher.init(Cipher.DECRYPT_MODE, this.symmetricEncryptionKey);
         byte[] decodedContent = symmetricalCipher.doFinal(cookieSessionContent.getContent());
 
@@ -65,8 +59,7 @@ public final class CookieSessionHandler {
         return (CookieSession) conf.asObject(decodedContent);
     }
 
-    public void writeSession(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, BadPaddingException, IllegalBlockSizeException, SignatureException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public void writeSession(HttpServletRequest request, HttpServletResponse response) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         SparkHttpRequestWrapper sparkRequest = (SparkHttpRequestWrapper) request;
         if (!sparkRequest.sessionAccessed()) return;
         CookieSession session = (CookieSession) request.getSession();
@@ -75,23 +68,16 @@ public final class CookieSessionHandler {
         byte[] sessionBytes = conf.asByteArray(session);
 
         // encrypt content
+        final Cipher symmetricalCipher = Cipher.getInstance(symmetricEncryptionAlgorithm);
         symmetricalCipher.init(Cipher.ENCRYPT_MODE, this.symmetricEncryptionKey);
         byte[] encryptedBytes = symmetricalCipher.doFinal(sessionBytes);
 
         // sign content
-        byte[] signature = sign(hash(encryptedBytes));
+        byte[] signature = sign(encryptedBytes);
+        byte[] cookieContent = new byte[encryptedBytes.length + signature.length];
 
-        byte[] cookieContent = new byte[4 + encryptedBytes.length + signature.length];
-        ByteBuffer buffer = ByteBuffer.allocate(4).putInt(signature.length);
-        buffer.position(0);
-        buffer.get(cookieContent, 0, 4);
-        int bytePosition = 4;
-        for (int i = 0; i < signature.length; i++) {
-            cookieContent[bytePosition++] = signature[i];
-        }
-        for (int i = 0; i < encryptedBytes.length; i++) {
-            cookieContent[bytePosition++] = encryptedBytes[i];
-        }
+        System.arraycopy(encryptedBytes, 0, cookieContent, 0, encryptedBytes.length);
+        System.arraycopy(signature, 0, cookieContent, cookieContent.length - signature.length, signature.length);
 
         String base64CookieContent = Base64.getEncoder().encodeToString(cookieContent);
         addCookie(base64CookieContent, response);
@@ -110,18 +96,16 @@ public final class CookieSessionHandler {
         response.addCookie(cookie);
     }
 
-    private boolean verify(byte[] dataToVerify, byte[] signature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        Signature verifier = Signature.getInstance(signatureAlgorithm);
-        verifier.initVerify(encryptionKeyPair.getPublic());
-        verifier.update(dataToVerify);
-        return verifier.verify(signature);
+    private boolean verify(byte[] dataToVerify, byte[] signature) throws NoSuchAlgorithmException, InvalidKeyException {
+        Mac hmacSHA1 = Mac.getInstance("HmacSHA1");
+        hmacSHA1.init(this.hmacKey);
+        return Arrays.equals(hmacSHA1.doFinal(dataToVerify), signature);
     }
 
-    private byte[] sign(byte[] dataToSign) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        Signature instance = Signature.getInstance(signatureAlgorithm);
-        instance.initSign(encryptionKeyPair.getPrivate());
-        instance.update(dataToSign);
-        return instance.sign();
+    private byte[] sign(byte[] dataToSign) throws NoSuchAlgorithmException, InvalidKeyException {
+        Mac hmacSHA1 = Mac.getInstance("HmacSHA1");
+        hmacSHA1.init(this.hmacKey);
+        return hmacSHA1.doFinal(dataToSign);
     }
 
     private Cookie getCookie(HttpServletRequest request, String cookieName) {
