@@ -16,23 +16,14 @@
  */
 package spark;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import spark.route.RouteMatch;
+import spark.utils.IOUtils;
+import spark.utils.SparkUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import spark.route.RouteMatch;
-import spark.utils.IOUtils;
-import spark.utils.SparkUtils;
+import java.util.*;
 
 /**
  * Provides information about the HTTP request
@@ -51,11 +42,10 @@ public class Request {
 
     private HttpServletRequest servletRequest;
 
-    private Session session = null;
-
     /* Lazy loaded stuff */
     private String body = null;
     private byte[] bodyAsBytes = null;
+    private Session session = null;
 
     private Set<String> headers = null;
 
@@ -89,8 +79,8 @@ public class Request {
     /**
      * Constructor
      *
-     * @param match   the route match
-     * @param request the servlet request
+     * @param match          the route match
+     * @param request        the servlet request
      */
     Request(RouteMatch match, HttpServletRequest request) {
         this.servletRequest = request;
@@ -126,7 +116,7 @@ public class Request {
             return null;
         }
 
-        if (param.startsWith(":")) {
+        if (param.charAt(0) == ':') {
             return params.get(param.toLowerCase()); // NOSONAR
         } else {
             return params.get(":" + param.toLowerCase()); // NOSONAR
@@ -295,7 +285,7 @@ public class Request {
      */
     public Set<String> headers() {
         if (headers == null) {
-            headers = new TreeSet<String>();
+            headers = new TreeSet<>();
             Enumeration<String> enumeration = servletRequest.getHeaderNames();
             while (enumeration.hasMoreElements()) {
                 headers.add(enumeration.nextElement());
@@ -337,7 +327,7 @@ public class Request {
      */
     public Set<String> attributes() {
         Set<String> attrList = new HashSet<String>();
-        Enumeration<String> attributes = (Enumeration<String>) servletRequest.getAttributeNames();
+        Enumeration<String> attributes = servletRequest.getAttributeNames();
         while (attributes.hasMoreElements()) {
             attrList.add(attributes.nextElement());
         }
@@ -460,10 +450,7 @@ public class Request {
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
             if (SparkUtils.isParam(matchedPart)) {
-                LOG.debug("matchedPart: "
-                                  + matchedPart
-                                  + " = "
-                                  + request.get(i));
+                LOG.debug("matchedPart: {} = {}", matchedPart, request.get(i));
                 params.put(matchedPart.toLowerCase(), request.get(i));
             }
         }

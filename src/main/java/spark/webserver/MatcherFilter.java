@@ -29,13 +29,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spark.Access;
-import spark.FilterImpl;
-import spark.HaltException;
-import spark.Request;
-import spark.RequestResponseFactory;
-import spark.Response;
-import spark.RouteImpl;
+import spark.*;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
@@ -98,9 +92,9 @@ public class MatcherFilter implements Filter {
         Object bodyContent = null;
 
         RequestWrapper requestWrapper = new RequestWrapper();
-        ResponseWrapper responseWrapper = new ResponseWrapper();
+        ResponseWrapper responseWrapper = new ResponseWrapper(httpRequest, httpResponse);
 
-        Response response = RequestResponseFactory.create(httpResponse);
+        Response response = RequestResponseFactory.create(httpRequest, httpResponse);
 
         LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
         try {
@@ -129,8 +123,7 @@ public class MatcherFilter implements Filter {
 
             HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
 
-            RouteMatch match = null;
-            match = routeMatcher.findTargetForRequestedRoute(httpMethod, uri, acceptType);
+            RouteMatch match = routeMatcher.findTargetForRequestedRoute(httpMethod, uri, acceptType);
 
             Object target = null;
             if (match != null) {
@@ -233,7 +226,7 @@ public class MatcherFilter implements Filter {
         if (!consumed && !isServletContext) {
             LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            bodyContent = String.format(NOT_FOUND);
+            bodyContent = NOT_FOUND;
             consumed = true;
         }
 
@@ -248,17 +241,19 @@ public class MatcherFilter implements Filter {
                 OutputStream outputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse);
 
                 // serialize the body to output stream
-                serializerChain.process(outputStream, bodyContent);
+                serializerChain.process(outputStream, bodyContent,
+                        (SparkHttpRequestWrapper) requestWrapper.raw(), responseWrapper.raw());
 
-                outputStream.flush();//needed for GZIP stream. NOt sure where the HTTP response actually gets cleaned up
+                outputStream.flush();//needed for GZIP stream. Not sure where the HTTP response actually gets cleaned up
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
         }
     }
 
+    @Override
     public void destroy() {
-        // TODO Auto-generated method stub
+        // No action required
     }
 
     private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";

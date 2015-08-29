@@ -32,18 +32,28 @@ public final class SparkUtils {
     }
 
     public static List<String> convertRouteToList(String route) {
-        String[] pathArray = route.split("/");
-        List<String> path = new ArrayList<String>();
-        for (String p : pathArray) {
-            if (p.length() > 0) {
-                path.add(p);
+        List<String> path = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+        char[] chars = route.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if (c == '/') {
+                if (builder.length() > 0) {
+                    path.add(builder.toString());
+                    builder.setLength(0);
+                }
+            } else {
+                builder.append(c);
             }
+        }
+        if (builder.length() > 0) {
+            path.add(builder.toString());
         }
         return path;
     }
 
     public static boolean isParam(String routePart) {
-        return routePart.startsWith(":");
+        return routePart.charAt(0) == ':';
     }
 
     public static boolean isSplat(String routePart) {

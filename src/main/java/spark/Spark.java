@@ -19,7 +19,11 @@ package spark;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
 import spark.route.HttpMethod;
+import spark.session.ISessionStrategy;
 import spark.utils.SparkUtils;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * The main building block of a Spark application is a set of routes. A route is
@@ -40,7 +44,6 @@ public final class Spark extends SparkBase {
     // Hide constructor
     private Spark() {
     }
-
 
     /**
      * Map the route for HTTP GET requests

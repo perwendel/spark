@@ -1,18 +1,19 @@
 package spark;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spark.route.RouteMatcherFactory;
+import spark.route.SimpleRouteMatcher;
+import spark.servlet.SparkFilter;
+import spark.session.ISessionStrategy;
+import spark.session.JettySessionStrategy;
+import spark.webserver.SparkServer;
+import spark.webserver.SparkServerFactory;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import spark.route.RouteMatcherFactory;
-import spark.route.SimpleRouteMatcher;
-import spark.servlet.SparkFilter;
-import spark.webserver.SparkServer;
-import spark.webserver.SparkServerFactory;
 
 import static java.util.Objects.requireNonNull;
 
@@ -50,6 +51,8 @@ public abstract class SparkBase {
 
     private static boolean servletStaticLocationSet;
     private static boolean servletExternalStaticLocationSet;
+
+    private static ISessionStrategy sessionStrategy = new JettySessionStrategy();
 
     private static CountDownLatch latch = new CountDownLatch(1);
 
@@ -144,6 +147,10 @@ public abstract class SparkBase {
         Spark.keystorePassword = keystorePassword;
         Spark.truststoreFile = truststoreFile;
         Spark.truststorePassword = truststorePassword;
+    }
+
+    public static boolean isSecure() {
+        return keystoreFile != null;
     }
 
     /**
@@ -351,13 +358,12 @@ public abstract class SparkBase {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
         }
-        RouteImpl impl = new RouteImpl(path, acceptType) {
+        return new RouteImpl(path, acceptType) {
             @Override
             public Object handle(Request request, Response response) throws Exception {
                 return route.handle(request, response);
             }
         };
-        return impl;
     }
 
     /**
@@ -407,29 +413,42 @@ public abstract class SparkBase {
     public static synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    server = SparkServerFactory.create(hasMultipleHandlers());
-                    server.ignite(
-                            ipAddress,
-                            port,
-                            keystoreFile,
-                            keystorePassword,
-                            truststoreFile,
-                            truststorePassword,
-                            staticFileFolder,
-                            externalStaticFileFolder,
-                            latch,
-                            maxThreads,
-                            minThreads,
-                            threadIdleTimeoutMillis,
-                            webSocketHandlers,
-                            webSocketIdleTimeoutMillis);
-                }
+            new Thread(() -> {
+                server = SparkServerFactory.create(hasMultipleHandlers());
+                server.ignite(
+                        ipAddress,
+                        port,
+                        keystoreFile,
+                        keystorePassword,
+                        truststoreFile,
+                        truststorePassword,
+                        staticFileFolder,
+                        externalStaticFileFolder,
+                        latch,
+                        maxThreads,
+                        minThreads,
+                        threadIdleTimeoutMillis,
+                        webSocketHandlers,
+                        webSocketIdleTimeoutMillis);
             }).start();
             initialized = true;
         }
     }
 
+    /**
+     * By implementing ISessionStrategy another session implementation can be used.
+     * For an example see the CookieSessionStrategy which implements client-side session using cookies.
+     *
+     * @param sessionStrategy The provided session strategy
+     */
+    public static void setSessionStrategy(ISessionStrategy sessionStrategy) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        SparkBase.sessionStrategy = sessionStrategy;
+    }
+
+    public static ISessionStrategy getSessionStrategy() {
+        return sessionStrategy;
+    }
 }

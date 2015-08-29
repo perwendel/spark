@@ -16,15 +16,11 @@
  */
 package spark.examples.filter;
 
-import static spark.Spark.after;
-import static spark.Spark.get;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.Filter;
-import spark.Request;
-import spark.Response;
-import spark.Route;
+
+import static spark.Spark.after;
+import static spark.Spark.get;
 
 /**
  * Example showing the use of attributes

@@ -32,5 +32,4 @@ public final class SparkServerFactory {
         JettyHandler handler = new JettyHandler(matcherFilter);
         return new SparkServer(handler);
     }
-
 }

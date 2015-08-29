@@ -1,5 +1,22 @@
 package spark;
 
+import org.eclipse.jetty.util.URIUtil;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spark.examples.exception.BaseException;
+import spark.examples.exception.NotFoundException;
+import spark.examples.exception.SubclassOfBaseException;
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
+import spark.websocket.WebSocketTestClient;
+import spark.websocket.WebSocketTestHandler;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -11,31 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.util.URIUtil;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import spark.examples.exception.BaseException;
-import spark.examples.exception.NotFoundException;
-import spark.examples.exception.SubclassOfBaseException;
-import spark.util.SparkTestUtil;
-import spark.util.SparkTestUtil.UrlResponse;
-import spark.websocket.WebSocketTestClient;
-import spark.websocket.WebSocketTestHandler;
-
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.post;
+import static spark.Spark.*;
 import static spark.SparkBase.externalStaticFileLocation;
 import static spark.SparkBase.staticFileLocation;
 import static spark.SparkBase.webSocket;
