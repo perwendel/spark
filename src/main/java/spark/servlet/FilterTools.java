@@ -47,7 +47,7 @@ final class FilterTools {
             path = path.substring(filterPath.length());
         }
 
-        if (path.charAt(0) != SLASH) {
+        if (path.length() == 0 || path.charAt(0) != SLASH) {
             path = SLASH + path;
         }
 
