@@ -7,6 +7,7 @@ import org.junit.Test;
 import spark.session.CookieSessionStrategy;
 import spark.util.SparkTestUtil;
 
+import javax.crypto.NoSuchPaddingException;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 
@@ -26,7 +27,7 @@ public class ClientSessionTest {
     }
 
     @BeforeClass
-    public static void setup() throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public static void setup() throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         KeyPair encryptionKeyPair = keyPairGenerator.generateKeyPair();
         CookieSessionStrategy cookieSessionStrategy = new CookieSessionStrategy(encryptionKeyPair,

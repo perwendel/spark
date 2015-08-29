@@ -1,30 +1,39 @@
 package spark.session;
 
+import java.nio.ByteBuffer;
+import java.util.Base64;
+
 /**
  * Created by Tim Heinrich on 29.08.2015.
  */
 public class CookieSessionContent {
-    private final String encodedContent;
-    private final String encodedSignature;
+    private final byte[] content;
+    private final byte[] signature;
 
     public CookieSessionContent(String sessionContent) {
-        int offset = 0;
-        char[] buffer = new char[5];
-        char c;
-        while ((c = sessionContent.charAt(offset)) != '=') {
-            buffer[offset++] = c;
+        byte[] signatureAndContent = Base64.getDecoder().decode(sessionContent);
+
+        // first 4 bytes are the length of the signature
+        ByteBuffer byteBuffer = ByteBuffer.allocate(4).put(signatureAndContent, 0, 4);
+        byteBuffer.position(0);
+        int encodedSignatureLength = byteBuffer.getInt();
+
+        signature = new byte[encodedSignatureLength];
+        int currentPosition = 4;
+        for (int i = 0; i < signature.length; i++) {
+            signature[i] = signatureAndContent[currentPosition++];
         }
-        int encodedSignatureLength = Integer.parseInt(new String(buffer, 0, offset++));
-
-        encodedSignature = sessionContent.substring(offset, offset + encodedSignatureLength);
-        encodedContent = sessionContent.substring(offset + encodedSignatureLength);
+        content = new byte[signatureAndContent.length - encodedSignatureLength - 4];
+        for (int i = 0; i < content.length; i ++) {
+            content[i] = signatureAndContent[currentPosition++];
+        }
     }
 
-    public String getEncodedContent() {
-        return encodedContent;
+    public byte[] getContent() {
+        return content;
     }
 
-    public String getEncodedSignature() {
-        return encodedSignature;
+    public byte[] getSignature() {
+        return signature;
     }
 }

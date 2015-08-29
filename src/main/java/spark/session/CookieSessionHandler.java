@@ -9,7 +9,8 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
@@ -27,21 +28,21 @@ public final class CookieSessionHandler {
     private final String signatureAlgorithm;
     private final SecretKey symmetricEncryptionKey;
     private final KeyPair encryptionKeyPair;
+    private final Cipher symmetricalCipher;
 
     static {
         conf.setPreferSpeed(true);
-        conf.setStructMode(true);
-        conf.registerClass(String.class);
-        conf.registerClass(Integer.class);
     }
 
-    public CookieSessionHandler(KeyPair encryptionKeyPair, String symmetricEncryptionKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public CookieSessionHandler(KeyPair encryptionKeyPair, String symmetricEncryptionKey) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException {
         this.encryptionKeyPair = encryptionKeyPair;
         this.signatureAlgorithm = hashFunction + "with" + encryptionKeyPair.getPublic().getAlgorithm();
 
         byte[] key = hash(symmetricEncryptionKey.getBytes());
         key = Arrays.copyOf(key, 16);
         this.symmetricEncryptionKey = new SecretKeySpec(key, symmetricEncryptionAlgorithm);
+
+        symmetricalCipher = Cipher.getInstance(symmetricEncryptionAlgorithm);
     }
 
     public CookieSession readSession(HttpServletRequest request) throws BadPaddingException, IllegalBlockSizeException, SignatureException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException {
@@ -49,19 +50,16 @@ public final class CookieSessionHandler {
         if (sessionCookie == null) {
             return new CookieSession(request);
         }
-        String sessionContent = sessionCookie.getValue();
-        CookieSessionContent cookieSessionContent = new CookieSessionContent(sessionContent);
+        CookieSessionContent cookieSessionContent = new CookieSessionContent(sessionCookie.getValue());
 
         // check the signature
-        byte[] decodedContent = Base64.getDecoder().decode(cookieSessionContent.getEncodedContent().getBytes());
-        if (!verify(hash(decodedContent), Base64.getDecoder().decode(cookieSessionContent.getEncodedSignature()))) {
+        if (!verify(hash(cookieSessionContent.getContent()), cookieSessionContent.getSignature())) {
             return new CookieSession(request);
         }
 
         // now decrypt the content
-        Cipher symmetricalCipher = Cipher.getInstance(symmetricEncryptionAlgorithm);
-        symmetricalCipher.init(Cipher.DECRYPT_MODE, symmetricEncryptionKey);
-        decodedContent = symmetricalCipher.doFinal(decodedContent);
+        symmetricalCipher.init(Cipher.DECRYPT_MODE, this.symmetricEncryptionKey);
+        byte[] decodedContent = symmetricalCipher.doFinal(cookieSessionContent.getContent());
 
         // deserialize content
         return (CookieSession) conf.asObject(decodedContent);
@@ -77,18 +75,26 @@ public final class CookieSessionHandler {
         byte[] sessionBytes = conf.asByteArray(session);
 
         // encrypt content
-        Cipher symmetricalCipher = Cipher.getInstance(symmetricEncryptionAlgorithm);
-        symmetricalCipher.init(Cipher.ENCRYPT_MODE, symmetricEncryptionKey);
+        symmetricalCipher.init(Cipher.ENCRYPT_MODE, this.symmetricEncryptionKey);
         byte[] encryptedBytes = symmetricalCipher.doFinal(sessionBytes);
 
         // sign content
         byte[] signature = sign(hash(encryptedBytes));
 
-        // encode result
-        String base64EncodedContent = Base64.getEncoder().encodeToString(encryptedBytes);
-        String base64EncodedSignature = Base64.getEncoder().encodeToString(signature);
+        byte[] cookieContent = new byte[4 + encryptedBytes.length + signature.length];
+        ByteBuffer buffer = ByteBuffer.allocate(4).putInt(signature.length);
+        buffer.position(0);
+        buffer.get(cookieContent, 0, 4);
+        int bytePosition = 4;
+        for (int i = 0; i < signature.length; i++) {
+            cookieContent[bytePosition++] = signature[i];
+        }
+        for (int i = 0; i < encryptedBytes.length; i++) {
+            cookieContent[bytePosition++] = encryptedBytes[i];
+        }
 
-        addCookie(base64EncodedContent, base64EncodedSignature, response);
+        String base64CookieContent = Base64.getEncoder().encodeToString(cookieContent);
+        addCookie(base64CookieContent, response);
     }
 
     private byte[] hash(byte[] encryptedBytes) throws NoSuchAlgorithmException {
@@ -96,9 +102,7 @@ public final class CookieSessionHandler {
         return instance.digest(encryptedBytes);
     }
 
-    private void addCookie(String base64EncodedContent, String base64EncodedSignature, HttpServletResponse response) {
-        String cookieContent = base64EncodedSignature.length() + "=" + base64EncodedSignature + base64EncodedContent;
-
+    private void addCookie(String cookieContent, HttpServletResponse response) {
         Cookie cookie = new Cookie(CookieSessionHandler.session, cookieContent);
         cookie.setSecure(SparkBase.isSecure());
         cookie.setHttpOnly(true);
@@ -107,10 +111,10 @@ public final class CookieSessionHandler {
     }
 
     private boolean verify(byte[] dataToVerify, byte[] signature) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        Signature instance = Signature.getInstance(signatureAlgorithm);
-        instance.initVerify(encryptionKeyPair.getPublic());
-        instance.update(dataToVerify);
-        return instance.verify(signature);
+        Signature verifier = Signature.getInstance(signatureAlgorithm);
+        verifier.initVerify(encryptionKeyPair.getPublic());
+        verifier.update(dataToVerify);
+        return verifier.verify(signature);
     }
 
     private byte[] sign(byte[] dataToSign) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException {
