@@ -66,6 +66,7 @@ class ResponseWrapper extends Response {
 
     @Override
     public HttpServletResponse raw() {
+        if (delegate == null) return null;
         return delegate.raw();
     }
 

@@ -54,7 +54,9 @@ public class SerializerChain {
      */
     public void process(OutputStream outputStream, Object element,
                         SparkHttpRequestWrapper request, HttpServletResponse response) throws IOException {
-        request.persistSession(response);
+        if (request != null) {
+            request.persistSession(response);
+        }
         this.root.processElement(outputStream, element);
     }
 

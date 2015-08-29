@@ -160,6 +160,7 @@ final class RequestWrapper extends Request {
 
     @Override
     public HttpServletRequest raw() {
+        if (delegate == null) return null;
         return delegate.raw();
     }
 
