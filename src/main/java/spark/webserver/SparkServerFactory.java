@@ -16,6 +16,7 @@
  */
 package spark.webserver;
 
+import spark.exception.ExceptionMapper;
 import spark.route.RouteMatcherFactory;
 
 /**
@@ -27,7 +28,7 @@ public final class SparkServerFactory {
     }
 
     public static SparkServer create(boolean hasMultipleHandler) {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
+        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), ExceptionMapper.getInstance(), false, hasMultipleHandler);
         matcherFilter.init(null);
         JettyHandler handler = new JettyHandler(matcherFilter);
         return new SparkServer(handler);
