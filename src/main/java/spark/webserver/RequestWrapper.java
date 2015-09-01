@@ -25,7 +25,7 @@ import spark.Access;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Session;
-import spark.route.RouteMatch;
+import spark.routematch.RouteMatch;
 
 final class RequestWrapper extends Request {
 

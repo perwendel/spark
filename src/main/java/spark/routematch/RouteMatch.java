@@ -14,41 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.route;
+package spark.routematch;
 
 /**
  * @author Per Wendel
  */
 public class RouteMatch {
 
-    private HttpMethod httpMethod;
     private Object target;
     private String matchUri;
     private String requestURI;
     private String acceptType;
 
-    public RouteMatch(HttpMethod httpMethod, Object target, String matchUri, String requestUri, String acceptType) {
+    public RouteMatch(Object target, String matchUri, String requestUri, String acceptType) {
         super();
-        this.httpMethod = httpMethod;
         this.target = target;
         this.matchUri = matchUri;
         this.requestURI = requestUri;
         this.acceptType = acceptType;
     }
 
-
     /**
      * @return the accept type
      */
     public String getAcceptType() {
         return acceptType;
-    }
-
-    /**
-     * @return the httpMethod
-     */
-    public HttpMethod getHttpMethod() {
-        return httpMethod;
     }
 
     /**

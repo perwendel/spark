@@ -14,24 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.route.mapping;
+package spark;
 
-import spark.Filter;
-import spark.FilterImpl;
-import spark.ResponseTransformer;
-import spark.ResponseTransformerRouteImpl;
-import spark.Route;
-import spark.RouteImpl;
-import spark.TemplateEngine;
-import spark.TemplateViewRoute;
-import spark.TemplateViewRouteImpl;
 import spark.route.HttpMethod;
 import spark.utils.SparkUtils;
 
 /**
  * Routable interface. Lets implementing classes inherit default routable functionality.
  */
-public abstract class Routable {
+abstract class Routable {
 
     /**
      * Map the route for HTTP GET requests

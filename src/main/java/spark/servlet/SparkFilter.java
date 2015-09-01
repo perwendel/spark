@@ -30,12 +30,11 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.Access;
 import spark.globalstate.ServletFlag;
 import spark.resource.AbstractFileResolvingResource;
 import spark.resource.AbstractResourceHandler;
 import spark.route.RouteMatcherFactory;
-import spark.servlet.staticfiles.ServletStaticFiles;
+import spark.staticfiles.ServletStaticFiles;
 import spark.utils.IOUtils;
 import spark.webserver.MatcherFilter;
 

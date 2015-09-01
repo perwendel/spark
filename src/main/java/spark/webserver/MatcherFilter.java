@@ -36,10 +36,10 @@ import spark.Request;
 import spark.RequestResponseFactory;
 import spark.Response;
 import spark.RouteImpl;
-import spark.exception.ExceptionHandlerImpl;
-import spark.exception.ExceptionMapper;
+import spark.ExceptionHandlerImpl;
+import spark.ExceptionMapper;
 import spark.route.HttpMethod;
-import spark.route.RouteMatch;
+import spark.routematch.RouteMatch;
 import spark.route.SimpleRouteMatcher;
 import spark.utils.GzipUtils;
 import spark.webserver.serialization.SerializerChain;
@@ -82,6 +82,9 @@ public class MatcherFilter implements Filter {
         //
     }
 
+    /**
+     * TODO: Should be broken down.
+     */
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, // NOSONAR
                          FilterChain chain) throws IOException, ServletException { // NOSONAR
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest; // NOSONAR

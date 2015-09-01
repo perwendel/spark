@@ -16,8 +16,8 @@
  */
 package spark.webserver;
 
+import spark.SparkServer;
 import spark.route.RouteMatcherFactory;
-import spark.webserver.jetty.JettyHandler;
 
 /**
  * @author Per Wendel
@@ -31,7 +31,7 @@ public final class SparkServerFactory {
         MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
         matcherFilter.init(null);
         JettyHandler handler = new JettyHandler(matcherFilter);
-        return new SparkServer(handler);
+        return new JettySparkServer(handler);
     }
 
 }

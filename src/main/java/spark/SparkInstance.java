@@ -24,23 +24,19 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.exception.ExceptionHandlerImpl;
-import spark.exception.ExceptionMapper;
 import spark.globalstate.ServletFlag;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
-import spark.route.mapping.Routable;
-import spark.servlet.staticfiles.ServletStaticFiles;
-import spark.webserver.SparkServer;
+import spark.ssl.SslStores;
+import spark.staticfiles.ServletStaticFiles;
 import spark.webserver.SparkServerFactory;
-import spark.webserver.ssl.SslStores;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * Spark instance TODO: NAME
  */
-public final class SparkInstance extends Routable {
+final class SparkInstance extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
 
     public static final int SPARK_DEFAULT_PORT = 4567;

@@ -33,10 +33,11 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.SparkServer;
 import spark.webserver.jetty.JettyServerFactory;
 import spark.webserver.jetty.SocketConnectorFactory;
-import spark.webserver.ssl.SslStores;
-import spark.webserver.staticfiles.StaticFiles;
+import spark.ssl.SslStores;
+import spark.staticfiles.StaticFiles;
 import spark.webserver.websocket.WebSocketServletContextHandlerFactory;
 
 /**
@@ -44,7 +45,7 @@ import spark.webserver.websocket.WebSocketServletContextHandlerFactory;
  *
  * @author Per Wendel
  */
-public class SparkServer {
+public class JettySparkServer implements SparkServer {
 
     private static final int SPARK_DEFAULT_PORT = 4567;
     private static final String NAME = "Spark";
@@ -54,26 +55,15 @@ public class SparkServer {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public SparkServer(Handler handler) {
+    public JettySparkServer(Handler handler) {
         this.handler = handler;
         System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
     }
 
     /**
-     * Ignites the spark server, listening on the specified port, running SSL secured with the specified keystore
-     * and truststore.  If truststore is null, keystore is reused.
-     *
-     * @param host                       The address to listen on
-     * @param port                       - the port
-     * @param sslStores                  - The SSL sslStores.
-     * @param staticFilesFolder          - the route to static files in classPath
-     * @param externalFilesFolder        - the route to static files external to classPath.
-     * @param latch                      - the countdown latch
-     * @param maxThreads                 - max nbr of threads.
-     * @param minThreads                 - min nbr of threads.
-     * @param threadIdleTimeoutMillis    - idle timeout (ms).
-     * @param webSocketIdleTimeoutMillis - Optional WebSocket idle timeout (ms).
+     * {@inheritDoc}
      */
+    @Override
     public void ignite(String host,
                        int port,
                        SslStores sslStores,
@@ -147,7 +137,10 @@ public class SparkServer {
         }
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void stop() {
         logger.info(">>> {} shutting down ...", NAME);
         try {

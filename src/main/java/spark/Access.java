@@ -16,7 +16,7 @@
  */
 package spark;
 
-import spark.route.RouteMatch;
+import spark.routematch.RouteMatch;
 
 public final class Access {
 

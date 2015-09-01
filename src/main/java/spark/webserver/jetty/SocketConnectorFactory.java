@@ -23,7 +23,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import spark.utils.Assert;
-import spark.webserver.ssl.SslStores;
+import spark.ssl.SslStores;
 
 /**
  * Creates socket connectors.

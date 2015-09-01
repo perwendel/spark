@@ -30,7 +30,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import spark.route.RouteMatch;
+import spark.routematch.RouteMatch;
 import spark.utils.IOUtils;
 import spark.utils.SparkUtils;
 
