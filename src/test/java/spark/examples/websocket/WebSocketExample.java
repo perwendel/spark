@@ -16,8 +16,8 @@
  */
 package spark.examples.websocket;
 
-import static spark.SparkBase.init;
-import static spark.SparkBase.webSocket;
+import static spark.Spark.init;
+import static spark.Spark.webSocket;
 
 public class WebSocketExample {
 
