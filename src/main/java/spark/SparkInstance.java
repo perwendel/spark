@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 - Per Wendel
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package spark;
 
 import java.util.HashMap;
@@ -10,20 +26,21 @@ import org.slf4j.LoggerFactory;
 
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
-import spark.route.HttpMethod;
+import spark.globalstate.ServletFlag;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
-import spark.servlet.SparkFilter;
-import spark.utils.SparkUtils;
+import spark.route.mapping.Routable;
+import spark.servlet.staticfiles.ServletStaticFiles;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
+import spark.webserver.ssl.SslStores;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * Spark instance TODO: NAME
  */
-final class SparkInstance {
+public final class SparkInstance extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
 
     public static final int SPARK_DEFAULT_PORT = 4567;
@@ -34,10 +51,7 @@ final class SparkInstance {
     protected int port = SPARK_DEFAULT_PORT;
     protected String ipAddress = "0.0.0.0";
 
-    protected String keystoreFile;
-    protected String keystorePassword;
-    protected String truststoreFile;
-    protected String truststorePassword;
+    protected SslStores sslStores;
 
     protected String staticFileFolder = null;
     protected String externalStaticFileFolder = null;
@@ -51,7 +65,6 @@ final class SparkInstance {
 
     protected SparkServer server;
     protected SimpleRouteMatcher routeMatcher;
-    private boolean runFromServlet;
 
     private boolean servletStaticLocationSet;
     private boolean servletExternalStaticLocationSet;
@@ -136,19 +149,8 @@ final class SparkInstance {
                                        String keystorePassword,
                                        String truststoreFile,
                                        String truststorePassword) {
-        if (initialized) {
-            throwBeforeRouteMappingException();
-        }
 
-        if (keystoreFile == null) {
-            throw new IllegalArgumentException(
-                    "Must provide a keystore file to run secured");
-        }
-
-        this.keystoreFile = keystoreFile;
-        this.keystorePassword = keystorePassword;
-        this.truststoreFile = truststoreFile;
-        this.truststorePassword = truststorePassword;
+        secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 
     /**
@@ -179,10 +181,7 @@ final class SparkInstance {
                     "Must provide a keystore file to run secured");
         }
 
-        this.keystoreFile = keystoreFile;
-        this.keystorePassword = keystorePassword;
-        this.truststoreFile = truststoreFile;
-        this.truststorePassword = truststorePassword;
+        sslStores = SslStores.create(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 
     /**
@@ -218,13 +217,13 @@ final class SparkInstance {
      * @param folder the folder in classpath.
      */
     public synchronized void staticFileLocation(String folder) {
-        if (initialized && !runFromServlet) {
+        if (initialized && !ServletFlag.isIsRunFromServlet()) {
             throwBeforeRouteMappingException();
         }
         staticFileFolder = folder;
         if (!servletStaticLocationSet) {
-            if (runFromServlet) {
-                SparkFilter.configureStaticResources(staticFileFolder);
+            if (ServletFlag.isIsRunFromServlet()) {
+                ServletStaticFiles.configureStaticResources(staticFileFolder);
                 servletStaticLocationSet = true;
             }
         } else {
@@ -239,13 +238,13 @@ final class SparkInstance {
      * @param externalFolder the external folder serving static files.
      */
     public synchronized void externalStaticFileLocation(String externalFolder) {
-        if (initialized && !runFromServlet) {
+        if (initialized && !ServletFlag.isIsRunFromServlet()) {
             throwBeforeRouteMappingException();
         }
         externalStaticFileFolder = externalFolder;
         if (!servletExternalStaticLocationSet) {
-            if (runFromServlet) {
-                SparkFilter.configureExternalStaticResources(externalStaticFileFolder);
+            if (ServletFlag.isIsRunFromServlet()) {
+                ServletStaticFiles.configureExternalStaticResources(externalStaticFileFolder);
                 servletExternalStaticLocationSet = true;
             }
         } else {
@@ -267,7 +266,7 @@ final class SparkInstance {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        if (runFromServlet) {
+        if (ServletFlag.isIsRunFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
         if (webSocketHandlers == null) {
@@ -285,7 +284,7 @@ final class SparkInstance {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        if (runFromServlet) {
+        if (ServletFlag.isIsRunFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
         webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
@@ -325,840 +324,43 @@ final class SparkInstance {
         initialized = false;
     }
 
-    synchronized void runFromServlet() {
-        runFromServlet = true;
-        if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
-            initialized = true;
-        }
-    }
-
-    /**
-     * Wraps the route in RouteImpl
-     *
-     * @param path  the path
-     * @param route the route
-     * @return the wrapped route
-     */
-    protected static RouteImpl wrap(final String path, final Route route) {
-        return wrap(path, DEFAULT_ACCEPT_TYPE, route);
-    }
-
-    /**
-     * Wraps the route in RouteImpl
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      the route
-     * @return the wrapped route
-     */
-    protected static RouteImpl wrap(final String path, String acceptType, final Route route) {
-        if (acceptType == null) {
-            acceptType = DEFAULT_ACCEPT_TYPE;
-        }
-        return new RouteImpl(path, acceptType) {
-            @Override
-            public Object handle(Request request, Response response) throws Exception {
-                return route.handle(request, response);
-            }
-        };
-    }
-
-    /**
-     * Wraps the filter in FilterImpl
-     *
-     * @param path   the path
-     * @param filter the filter
-     * @return the wrapped route
-     */
-    protected static FilterImpl wrap(final String path, final Filter filter) {
-        return wrap(path, DEFAULT_ACCEPT_TYPE, filter);
-    }
-
-    /**
-     * Wraps the filter in FilterImpl
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param filter     the filter
-     * @return the wrapped route
-     */
-    protected static FilterImpl wrap(final String path, String acceptType, final Filter filter) {
-        if (acceptType == null) {
-            acceptType = DEFAULT_ACCEPT_TYPE;
-        }
-        return new FilterImpl(path, acceptType) {
-            @Override
-            public void handle(Request request, Response response) throws Exception {
-                filter.handle(request, response);
-            }
-        };
-    }
-
-    protected void addRoute(String httpMethod, RouteImpl route) {
+    @Override
+    public void addRoute(String httpMethod, RouteImpl route) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
-                                                   + "'", route.getAcceptType(), route);
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route.getAcceptType(), route);
     }
 
-    protected void addFilter(String httpMethod, FilterImpl filter) {
+    @Override
+    public void addFilter(String httpMethod, FilterImpl filter) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
-                                                   + "'", filter.getAcceptType(), filter);
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter.getAcceptType(), filter);
     }
 
     public synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
-            new Thread(() -> {
-                server = SparkServerFactory.create(hasMultipleHandlers());
-                server.ignite(
-                        ipAddress,
-                        port,
-                        keystoreFile,
-                        keystorePassword,
-                        truststoreFile,
-                        truststorePassword,
-                        staticFileFolder,
-                        externalStaticFileFolder,
-                        latch,
-                        maxThreads,
-                        minThreads,
-                        threadIdleTimeoutMillis,
-                        webSocketHandlers,
-                        webSocketIdleTimeoutMillis);
-            }).start();
+            if (!ServletFlag.isIsRunFromServlet()) {
+                new Thread(() -> {
+                    server = SparkServerFactory.create(hasMultipleHandlers());
+                    server.ignite(
+                            ipAddress,
+                            port,
+                            sslStores,
+                            staticFileFolder,
+                            externalStaticFileFolder,
+                            latch,
+                            maxThreads,
+                            minThreads,
+                            threadIdleTimeoutMillis,
+                            webSocketHandlers,
+                            webSocketIdleTimeoutMillis);
+                }).start();
+            }
             initialized = true;
         }
     }
 
     // TODO: BEGIN
-
-    /**
-     * Map the route for HTTP GET requests
-     *
-     * @param path  the path
-     * @param route The route
-     */
-    public synchronized void get(final String path, final Route route) {
-        addRoute(HttpMethod.get.name(), wrap(path, route));
-    }
-
-    /**
-     * Map the route for HTTP POST requests
-     *
-     * @param path  the path
-     * @param route The route
-     */
-    public synchronized void post(String path, Route route) {
-        addRoute(HttpMethod.post.name(), wrap(path, route));
-    }
-
-    /**
-     * Map the route for HTTP PUT requests
-     *
-     * @param path  the path
-     * @param route The route
-     */
-    public synchronized void put(String path, Route route) {
-        addRoute(HttpMethod.put.name(), wrap(path, route));
-    }
-
-    /**
-     * Map the route for HTTP PATCH requests
-     *
-     * @param path  the path
-     * @param route The route
-     */
-    public synchronized void patch(String path, Route route) {
-        addRoute(HttpMethod.patch.name(), wrap(path, route));
-    }
-
-    /**
-     * Map the route for HTTP DELETE requests
-     *
-     * @param path  the path
-     * @param route The route
-     */
-    public synchronized void delete(String path, Route route) {
-        addRoute(HttpMethod.delete.name(), wrap(path, route));
-    }
-
-    /**
-     * Map the route for HTTP HEAD requests
-     *
-     * @param path  the path
-     * @param route The route
-     */
-    public synchronized void head(String path, Route route) {
-        addRoute(HttpMethod.head.name(), wrap(path, route));
-    }
-
-    /**
-     * Map the route for HTTP TRACE requests
-     *
-     * @param path  the path
-     * @param route The route
-     */
-    public synchronized void trace(String path, Route route) {
-        addRoute(HttpMethod.trace.name(), wrap(path, route));
-    }
-
-    /**
-     * Map the route for HTTP CONNECT requests
-     *
-     * @param path  the path
-     * @param route The route
-     */
-    public synchronized void connect(String path, Route route) {
-        addRoute(HttpMethod.connect.name(), wrap(path, route));
-    }
-
-    /**
-     * Map the route for HTTP OPTIONS requests
-     *
-     * @param path  the path
-     * @param route The route
-     */
-    public synchronized void options(String path, Route route) {
-        addRoute(HttpMethod.options.name(), wrap(path, route));
-    }
-
-    /**
-     * Maps a filter to be executed before any matching routes
-     *
-     * @param path   the path
-     * @param filter The filter
-     */
-    public synchronized void before(String path, Filter filter) {
-        addFilter(HttpMethod.before.name(), wrap(path, filter));
-    }
-
-    /**
-     * Maps a filter to be executed after any matching routes
-     *
-     * @param path   the path
-     * @param filter The filter
-     */
-    public synchronized void after(String path, Filter filter) {
-        addFilter(HttpMethod.after.name(), wrap(path, filter));
-    }
-
-    //////////////////////////////////////////////////
-    // BEGIN route/filter mapping with accept type
-    //////////////////////////////////////////////////
-
-    /**
-     * Map the route for HTTP GET requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     */
-    public synchronized void get(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.get.name(), wrap(path, acceptType, route));
-    }
-
-    /**
-     * Map the route for HTTP POST requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     */
-    public synchronized void post(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.post.name(), wrap(path, acceptType, route));
-    }
-
-    /**
-     * Map the route for HTTP PUT requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     */
-    public synchronized void put(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.put.name(), wrap(path, acceptType, route));
-    }
-
-    /**
-     * Map the route for HTTP PATCH requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     */
-    public synchronized void patch(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.patch.name(), wrap(path, acceptType, route));
-    }
-
-    /**
-     * Map the route for HTTP DELETE requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     */
-    public synchronized void delete(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.delete.name(), wrap(path, acceptType, route));
-    }
-
-    /**
-     * Map the route for HTTP HEAD requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     */
-    public synchronized void head(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.head.name(), wrap(path, acceptType, route));
-    }
-
-    /**
-     * Map the route for HTTP TRACE requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     */
-    public synchronized void trace(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.trace.name(), wrap(path, acceptType, route));
-    }
-
-    /**
-     * Map the route for HTTP CONNECT requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     */
-    public synchronized void connect(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.connect.name(), wrap(path, acceptType, route));
-    }
-
-    /**
-     * Map the route for HTTP OPTIONS requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     */
-    public synchronized void options(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.options.name(), wrap(path, acceptType, route));
-    }
-
-
-    /**
-     * Maps a filter to be executed before any matching routes
-     *
-     * @param filter The filter
-     */
-    public synchronized void before(Filter filter) {
-        addFilter(HttpMethod.before.name(), wrap(SparkUtils.ALL_PATHS, filter));
-    }
-
-    /**
-     * Maps a filter to be executed after any matching routes
-     *
-     * @param filter The filter
-     */
-    public synchronized void after(Filter filter) {
-        addFilter(HttpMethod.after.name(), wrap(SparkUtils.ALL_PATHS, filter));
-    }
-
-    /**
-     * Maps a filter to be executed before any matching routes
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param filter     The filter
-     */
-    public synchronized void before(String path, String acceptType, Filter filter) {
-        addFilter(HttpMethod.before.name(), wrap(path, acceptType, filter));
-    }
-
-    /**
-     * Maps a filter to be executed after any matching routes
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param filter     The filter
-     */
-    public synchronized void after(String path, String acceptType, Filter filter) {
-        addFilter(HttpMethod.after.name(), wrap(path, acceptType, filter));
-    }
-
-    //////////////////////////////////////////////////
-    // END route/filter mapping with accept type
-    //////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////
-    // BEGIN Template View Routes
-    //////////////////////////////////////////////////
-
-    /**
-     * Map the route for HTTP GET requests
-     *
-     * @param path   the path
-     * @param route  The route
-     * @param engine the template engine
-     */
-    public synchronized void get(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.get.name(), TemplateViewRouteImpl.create(path, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP GET requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     * @param engine     the template engine
-     */
-    public synchronized void get(String path,
-                                 String acceptType,
-                                 TemplateViewRoute route,
-                                 TemplateEngine engine) {
-        addRoute(HttpMethod.get.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP POST requests
-     *
-     * @param path   the path
-     * @param route  The route
-     * @param engine the template engine
-     */
-    public synchronized void post(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.post.name(), TemplateViewRouteImpl.create(path, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP POST requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     * @param engine     the template engine
-     */
-    public synchronized void post(String path,
-                                  String acceptType,
-                                  TemplateViewRoute route,
-                                  TemplateEngine engine) {
-        addRoute(HttpMethod.post.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP PUT requests
-     *
-     * @param path   the path
-     * @param route  The route
-     * @param engine the template engine
-     */
-    public synchronized void put(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.put.name(), TemplateViewRouteImpl.create(path, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP PUT requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     * @param engine     the template engine
-     */
-    public synchronized void put(String path,
-                                 String acceptType,
-                                 TemplateViewRoute route,
-                                 TemplateEngine engine) {
-        addRoute(HttpMethod.put.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP DELETE requests
-     *
-     * @param path   the path
-     * @param route  The route
-     * @param engine the template engine
-     */
-    public synchronized void delete(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.delete.name(), TemplateViewRouteImpl.create(path, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP DELETE requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     * @param engine     the template engine
-     */
-    public synchronized void delete(String path,
-                                    String acceptType,
-                                    TemplateViewRoute route,
-                                    TemplateEngine engine) {
-        addRoute(HttpMethod.delete.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP PATCH requests
-     *
-     * @param path   the path
-     * @param route  The route
-     * @param engine the template engine
-     */
-    public synchronized void patch(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.patch.name(), TemplateViewRouteImpl.create(path, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP PATCH requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     * @param engine     the template engine
-     */
-    public synchronized void patch(String path,
-                                   String acceptType,
-                                   TemplateViewRoute route,
-                                   TemplateEngine engine) {
-        addRoute(HttpMethod.patch.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP HEAD requests
-     *
-     * @param path   the path
-     * @param route  The route
-     * @param engine the template engine
-     */
-    public synchronized void head(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.head.name(), TemplateViewRouteImpl.create(path, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP HEAD requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     * @param engine     the template engine
-     */
-    public synchronized void head(String path,
-                                  String acceptType,
-                                  TemplateViewRoute route,
-                                  TemplateEngine engine) {
-        addRoute(HttpMethod.head.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP TRACE requests
-     *
-     * @param path   the path
-     * @param route  The route
-     * @param engine the template engine
-     */
-    public synchronized void trace(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.trace.name(), TemplateViewRouteImpl.create(path, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP TRACE requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     * @param engine     the template engine
-     */
-    public synchronized void trace(String path,
-                                   String acceptType,
-                                   TemplateViewRoute route,
-                                   TemplateEngine engine) {
-        addRoute(HttpMethod.trace.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP CONNECT requests
-     *
-     * @param path   the path
-     * @param route  The route
-     * @param engine the template engine
-     */
-    public synchronized void connect(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.connect.name(), TemplateViewRouteImpl.create(path, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP CONNECT requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     * @param engine     the template engine
-     */
-    public synchronized void connect(String path,
-                                     String acceptType,
-                                     TemplateViewRoute route,
-                                     TemplateEngine engine) {
-        addRoute(HttpMethod.connect.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP OPTIONS requests
-     *
-     * @param path   the path
-     * @param route  The route
-     * @param engine the template engine
-     */
-    public synchronized void options(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.options.name(), TemplateViewRouteImpl.create(path, route, engine));
-    }
-
-    /**
-     * Map the route for HTTP OPTIONS requests
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      The route
-     * @param engine     the template engine
-     */
-    public synchronized void options(String path,
-                                     String acceptType,
-                                     TemplateViewRoute route,
-                                     TemplateEngine engine) {
-        addRoute(HttpMethod.options.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
-    }
-
-    //////////////////////////////////////////////////
-    // END Template View Routes
-    //////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////
-    // BEGIN Response Transforming Routes
-    //////////////////////////////////////////////////
-
-    /**
-     * Map the route for HTTP GET requests
-     *
-     * @param path        the path
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void get(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.get.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP GET requests
-     *
-     * @param path        the path
-     * @param acceptType  the accept type
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void get(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.get.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP POST requests
-     *
-     * @param path        the path
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void post(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.post.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP POST requests
-     *
-     * @param path        the path
-     * @param acceptType  the accept type
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void post(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.post.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP PUT requests
-     *
-     * @param path        the path
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void put(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.put.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP PUT requests
-     *
-     * @param path        the path
-     * @param acceptType  the accept type
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void put(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.put.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP DELETE requests
-     *
-     * @param path        the path
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void delete(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.delete.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP DELETE requests
-     *
-     * @param path        the path
-     * @param acceptType  the accept type
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void delete(String path,
-                                    String acceptType,
-                                    Route route,
-                                    ResponseTransformer transformer) {
-        addRoute(HttpMethod.delete.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP HEAD requests
-     *
-     * @param path        the path
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void head(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.head.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP HEAD requests
-     *
-     * @param path        the path
-     * @param acceptType  the accept type
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void head(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.head.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP CONNECT requests
-     *
-     * @param path        the path
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void connect(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.connect.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP CONNECT requests
-     *
-     * @param path        the path
-     * @param acceptType  the accept type
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void connect(String path,
-                                     String acceptType,
-                                     Route route,
-                                     ResponseTransformer transformer) {
-        addRoute(HttpMethod.connect.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP TRACE requests
-     *
-     * @param path        the path
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void trace(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.trace.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP TRACE requests
-     *
-     * @param path        the path
-     * @param acceptType  the accept type
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void trace(String path,
-                                   String acceptType,
-                                   Route route,
-                                   ResponseTransformer transformer) {
-        addRoute(HttpMethod.trace.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP OPTIONS requests
-     *
-     * @param path        the path
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void options(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.options.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP OPTIONS requests
-     *
-     * @param path        the path
-     * @param acceptType  the accept type
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void options(String path,
-                                     String acceptType,
-                                     Route route,
-                                     ResponseTransformer transformer) {
-        addRoute(HttpMethod.options.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP PATCH requests
-     *
-     * @param path        the path
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void patch(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.patch.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
-    }
-
-    /**
-     * Map the route for HTTP PATCH requests
-     *
-     * @param path        the path
-     * @param acceptType  the accept type
-     * @param route       The route
-     * @param transformer the response transformer
-     */
-    public synchronized void patch(String path,
-                                   String acceptType,
-                                   Route route,
-                                   ResponseTransformer transformer) {
-        addRoute(HttpMethod.patch.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
-    }
 
     //////////////////////////////////////////////////
     // END Response Transforming Routes
@@ -1232,23 +434,5 @@ final class SparkInstance {
     public void halt(int status, String body) {
         throw new HaltException(status, body);
     }
-
-    //////////////////////////////////////////////////
-    // model and view helper method
-    //////////////////////////////////////////////////
-
-
-    /**
-     * Constructs a ModelAndView with the provided model and view name
-     *
-     * @param model    the model
-     * @param viewName the view name
-     * @return the model and view
-     */
-    public ModelAndView modelAndView(Object model, String viewName) {
-        return new ModelAndView(model, viewName);
-    }
-
-    // TODO: END
 
 }

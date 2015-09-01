@@ -1,10 +1,10 @@
 /*
- * Copyright 2011- Per Wendel
+ * Copyright 2015 - Per Wendel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,24 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver;
-
-import spark.route.RouteMatcherFactory;
-import spark.webserver.jetty.JettyHandler;
+package spark.globalstate;
 
 /**
- * @author Per Wendel
+ * Holds the global information if Spark was run from an "external" web application server.
  */
-public final class SparkServerFactory {
+public class ServletFlag {
 
-    private SparkServerFactory() {
+    private static boolean isRunFromServlet = false;
+
+    /**
+     * Tells the system that Spark was run from an "external" web application server.
+     */
+    public static void runFromServlet() {
+        isRunFromServlet = true;
     }
 
-    public static SparkServer create(boolean hasMultipleHandler) {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
-        matcherFilter.init(null);
-        JettyHandler handler = new JettyHandler(matcherFilter);
-        return new SparkServer(handler);
+    /**
+     * @return true if Spark was run from an "external" web application server.
+     */
+    public static boolean isIsRunFromServlet() {
+        return isRunFromServlet;
     }
 
 }

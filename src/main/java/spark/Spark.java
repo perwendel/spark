@@ -16,9 +16,6 @@
  */
 package spark;
 
-import spark.exception.ExceptionHandlerImpl;
-import spark.exception.ExceptionMapper;
-
 /**
  * The main building block of a Spark application is a set of routes. A route is
  * made up of three simple pieces:
@@ -794,15 +791,7 @@ public final class Spark {
      * @param handler        The handler
      */
     public static synchronized void exception(Class<? extends Exception> exceptionClass, ExceptionHandler handler) {
-        // wrap
-        ExceptionHandlerImpl wrapper = new ExceptionHandlerImpl(exceptionClass) {
-            @Override
-            public void handle(Exception exception, Request request, Response response) {
-                handler.handle(exception, request, response);
-            }
-        };
-
-        ExceptionMapper.getInstance().map(exceptionClass, wrapper);
+        getInstance().exception(exceptionClass, handler);
     }
 
     //////////////////////////////////////////////////
@@ -1016,10 +1005,6 @@ public final class Spark {
      */
     public static synchronized void stop() {
         getInstance().stop();
-    }
-
-    static synchronized void runFromServlet() {
-        getInstance().runFromServlet();
     }
 
     // WEBSOCKETS TODO:

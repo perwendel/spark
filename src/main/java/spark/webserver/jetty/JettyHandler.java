@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver;
+package spark.webserver.jetty;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -33,13 +33,14 @@ import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
 import spark.utils.IOUtils;
+import spark.webserver.NotConsumedException;
 
 /**
  * Simple Jetty Handler
  *
  * @author Per Wendel
  */
-class JettyHandler extends SessionHandler {
+public class JettyHandler extends SessionHandler {
 
     private static final Logger LOG = Log.getLogger(JettyHandler.class);
 
@@ -55,7 +56,7 @@ class JettyHandler extends SessionHandler {
             Request baseRequest,
             HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
-        LOG.debug("jettyhandler, handle();");
+
         try {
             // wrap the request so 'getInputStream()' can be called multiple times
             filter.doFilter(new HttpRequestWrapper(request), response, null);
@@ -66,7 +67,7 @@ class JettyHandler extends SessionHandler {
         }
     }
 
-    private class HttpRequestWrapper extends HttpServletRequestWrapper {
+    private static class HttpRequestWrapper extends HttpServletRequestWrapper {
         private byte[] cachedBytes;
 
         public HttpRequestWrapper(HttpServletRequest request) {
@@ -85,7 +86,7 @@ class JettyHandler extends SessionHandler {
             cachedBytes = IOUtils.toByteArray(super.getInputStream());
         }
 
-        public class CachedServletInputStream extends ServletInputStream {
+        private class CachedServletInputStream extends ServletInputStream {
             private ByteArrayInputStream byteArrayInputStream;
 
             public CachedServletInputStream() {

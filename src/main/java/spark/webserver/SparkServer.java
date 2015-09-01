@@ -23,25 +23,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
-import org.eclipse.jetty.websocket.server.pathmap.ServletPathSpec;
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.webserver.websocket.WebSocketCreatorFactory;
+import spark.webserver.jetty.JettyServerFactory;
+import spark.webserver.jetty.SocketConnectorFactory;
+import spark.webserver.ssl.SslStores;
+import spark.webserver.staticfiles.StaticFiles;
+import spark.webserver.websocket.WebSocketServletContextHandlerFactory;
 
 /**
  * Spark server implementation
@@ -69,10 +65,7 @@ public class SparkServer {
      *
      * @param host                       The address to listen on
      * @param port                       - the port
-     * @param keystoreFile               - The keystore file location as string
-     * @param keystorePassword           - the password for the keystore
-     * @param truststoreFile             - the truststore file location as string, leave null to reuse keystore
-     * @param truststorePassword         - the trust store password
+     * @param sslStores                  - The SSL sslStores.
      * @param staticFilesFolder          - the route to static files in classPath
      * @param externalFilesFolder        - the route to static files external to classPath.
      * @param latch                      - the countdown latch
@@ -83,10 +76,7 @@ public class SparkServer {
      */
     public void ignite(String host,
                        int port,
-                       String keystoreFile,
-                       String keystorePassword,
-                       String truststoreFile,
-                       String truststorePassword,
+                       SslStores sslStores,
                        String staticFilesFolder,
                        String externalFilesFolder,
                        CountDownLatch latch,
@@ -105,56 +95,34 @@ public class SparkServer {
             }
         }
 
-        server = createServer(maxThreads, minThreads, threadIdleTimeoutMillis);
+        server = JettyServerFactory.createServer(maxThreads, minThreads, threadIdleTimeoutMillis);
 
         ServerConnector connector;
 
-        if (keystoreFile == null) {
-            connector = createSocketConnector(server);
+        if (sslStores == null) {
+            connector = SocketConnectorFactory.createSocketConnector(server, host, port);
         } else {
-            connector = createSecureSocketConnector(server, keystoreFile,
-                                                    keystorePassword, truststoreFile, truststorePassword);
+            connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
         }
-
-        // Set some timeout options to make debugging easier.
-        connector.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
-        connector.setSoLingerTime(-1);
-        connector.setHost(host);
-        connector.setPort(port);
 
         server = connector.getServer();
         server.setConnectors(new Connector[] {connector});
 
-        ServletContextHandler webSocketServletContextHandler = null;
-        if (webSocketHandlers != null) {
-            try {
-                webSocketServletContextHandler = new ServletContextHandler(null, "/", true, false);
-                WebSocketUpgradeFilter wsfilter = WebSocketUpgradeFilter.configureContext(webSocketServletContextHandler);
-                if (webSocketIdleTimeoutMillis.isPresent()) {
-                    wsfilter.getFactory().getPolicy().setIdleTimeout(webSocketIdleTimeoutMillis.get());
-                }
-                for (String path : webSocketHandlers.keySet()) {
-                    WebSocketCreator wscreator = WebSocketCreatorFactory.create(webSocketHandlers.get(path));
-                    wsfilter.addMapping(new ServletPathSpec(path), wscreator);
-                }
-            } catch (Exception ex) {
-                logger.error("ignite failed", ex);
-                System.exit(100); // NOSONAR
-            }
-        }
+        ServletContextHandler webSocketServletContextHandler =
+                WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
 
         // Handle static file routes
         if (staticFilesFolder == null && externalFilesFolder == null && webSocketServletContextHandler == null) {
             server.setHandler(handler);
         } else {
-            List<Handler> handlersInList = new ArrayList<Handler>();
+            List<Handler> handlersInList = new ArrayList<>();
             handlersInList.add(handler);
 
             // Set static file location
-            setStaticFileLocationIfPresent(staticFilesFolder, handlersInList);
+            StaticFiles.setLocationIfPresent(staticFilesFolder, handlersInList);
 
             // Set external static file location
-            setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
+            StaticFiles.setExternalLocationIfPresent(externalFilesFolder, handlersInList);
 
             // WebSocket handler must be the last one
             if (webSocketServletContextHandler != null) {
@@ -179,6 +147,7 @@ public class SparkServer {
         }
     }
 
+
     public void stop() {
         logger.info(">>> {} shutting down ...", NAME);
         try {
@@ -192,86 +161,5 @@ public class SparkServer {
         logger.info("done");
     }
 
-    /**
-     * Creates a secure jetty socket connector. Keystore required, truststore
-     * optional. If truststore not specifed keystore will be reused.
-     *
-     * @param server             Jetty server
-     * @param keystoreFile       The keystore file location as string
-     * @param keystorePassword   the password for the keystore
-     * @param truststoreFile     the truststore file location as string, leave null to reuse keystore
-     * @param truststorePassword the trust store password
-     * @return a secure socket connector
-     */
-    private static ServerConnector createSecureSocketConnector(Server server,
-                                                               String keystoreFile,
-                                                               String keystorePassword,
-                                                               String truststoreFile,
-                                                               String truststorePassword) {
-
-        SslContextFactory sslContextFactory = new SslContextFactory(
-                keystoreFile);
-
-        if (keystorePassword != null) {
-            sslContextFactory.setKeyStorePassword(keystorePassword);
-        }
-        if (truststoreFile != null) {
-            sslContextFactory.setTrustStorePath(truststoreFile);
-        }
-        if (truststorePassword != null) {
-            sslContextFactory.setTrustStorePassword(truststorePassword);
-        }
-        return new ServerConnector(server, sslContextFactory);
-    }
-
-    /**
-     * Creates an ordinary, non-secured Jetty server connector.
-     *
-     * @param server Jetty server
-     * @return - a server connector
-     */
-    private static ServerConnector createSocketConnector(Server server) {
-        return new ServerConnector(server);
-    }
-
-    private static Server createServer(int maxThreads, int minThreads, int threadTimeoutMillis) {
-        Server server;
-
-        if (maxThreads > 0) {
-            int max = (maxThreads > 0) ? maxThreads : 200;
-            int min = (minThreads > 0) ? minThreads : 8;
-            int idleTimeout = (threadTimeoutMillis > 0) ? threadTimeoutMillis : 60000;
-            server = new Server(new QueuedThreadPool(max, min, idleTimeout));
-        } else {
-            server = new Server();
-        }
-        return server;
-    }
-
-    /**
-     * Sets static file location if present
-     */
-    private static void setStaticFileLocationIfPresent(String staticFilesRoute, List<Handler> handlersInList) {
-        if (staticFilesRoute != null) {
-            ResourceHandler resourceHandler = new ResourceHandler();
-            Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
-            resourceHandler.setBaseResource(staticResources);
-            resourceHandler.setWelcomeFiles(new String[] {"index.html"});
-            handlersInList.add(resourceHandler);
-        }
-    }
-
-    /**
-     * Sets external static file location if present
-     */
-    private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute,
-                                                               List<Handler> handlersInList) {
-        if (externalFilesRoute != null) {
-            ResourceHandler externalResourceHandler = new ResourceHandler();
-            externalResourceHandler.setResourceBase(externalFilesRoute);
-            externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
-            handlersInList.add(externalResourceHandler);
-        }
-    }
 
 }
