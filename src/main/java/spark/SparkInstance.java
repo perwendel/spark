@@ -34,7 +34,7 @@ import spark.webserver.SparkServerFactory;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Spark instance TODO: NAME
+ * Holds the implementation of the Spark API. (previously in Spark and SparkBase).
  */
 final class SparkInstance extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
