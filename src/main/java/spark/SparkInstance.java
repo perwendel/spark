@@ -276,7 +276,7 @@ final class SparkInstance extends Routable {
      *
      * @param timeoutMillis The max idle timeout in milliseconds.
      */
-    public void webSocketIdleTimeoutMillis(int timeoutMillis) {
+    public synchronized void webSocketIdleTimeoutMillis(int timeoutMillis) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -355,12 +355,6 @@ final class SparkInstance extends Routable {
             initialized = true;
         }
     }
-
-    // TODO: BEGIN
-
-    //////////////////////////////////////////////////
-    // END Response Transforming Routes
-    //////////////////////////////////////////////////
 
     //////////////////////////////////////////////////
     // EXCEPTION mapper

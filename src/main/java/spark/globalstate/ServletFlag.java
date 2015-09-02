@@ -16,25 +16,27 @@
  */
 package spark.globalstate;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Holds the global information if Spark was run from an "external" web application server.
  */
 public class ServletFlag {
 
-    private static boolean isRunFromServlet = false;
+    private static AtomicBoolean isRunFromServlet = new AtomicBoolean(false);
 
     /**
      * Tells the system that Spark was run from an "external" web application server.
      */
     public static void runFromServlet() {
-        isRunFromServlet = true;
+        isRunFromServlet.compareAndSet(false, true);
     }
 
     /**
      * @return true if Spark was run from an "external" web application server.
      */
     public static boolean isIsRunFromServlet() {
-        return isRunFromServlet;
+        return isRunFromServlet.get();
     }
 
 }
