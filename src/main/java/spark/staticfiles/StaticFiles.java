@@ -57,7 +57,7 @@ public class StaticFiles {
      */
     public static void setExternalLocationIfPresent(String externalFileLocation,
                                                     List<Handler> handlersInList) {
-        
+
         Assert.notNull(handlersInList, "'handlersInList' must not be null");
 
         if (externalFileLocation != null) {
