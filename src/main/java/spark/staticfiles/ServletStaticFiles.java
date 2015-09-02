@@ -28,6 +28,7 @@ import spark.resource.ClassPathResource;
 import spark.resource.ClassPathResourceHandler;
 import spark.resource.ExternalResource;
 import spark.resource.ExternalResourceHandler;
+import spark.utils.Assert;
 
 /**
  * Holds the static file information when Spark is run from Servlet.
@@ -58,25 +59,26 @@ public class ServletStaticFiles {
      * @param folder the location
      */
     public static void configureStaticResources(String folder) {
+        Assert.notNull(folder, "'folder' must not be null");
+
         if (!isStaticResourcesSet()) {
-            if (folder != null) {
-                try {
-                    ClassPathResource resource = new ClassPathResource(folder);
-                    if (resource.getFile().isDirectory()) {
-                        if (staticResourceHandlers == null) {
-                            staticResourceHandlers = new ArrayList<>();
-                        }
-                        staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
-                        LOG.info("StaticResourceHandler configured with folder = " + folder);
-                    } else {
-                        LOG.error("Static resource location must be a folder");
+            try {
+                ClassPathResource resource = new ClassPathResource(folder);
+                if (resource.getFile().isDirectory()) {
+                    if (staticResourceHandlers == null) {
+                        staticResourceHandlers = new ArrayList<>();
                     }
-                } catch (IOException e) {
-                    LOG.error("Error when creating StaticResourceHandler", e);
+                    staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
+                    LOG.info("StaticResourceHandler configured with folder = " + folder);
+                } else {
+                    LOG.error("Static resource location must be a folder");
                 }
+            } catch (IOException e) {
+                LOG.error("Error when creating StaticResourceHandler", e);
             }
             staticResourcesSet = true;
         }
+
     }
 
     /**
@@ -85,25 +87,26 @@ public class ServletStaticFiles {
      * @param folder the location
      */
     public static void configureExternalStaticResources(String folder) {
+        Assert.notNull(folder, "'folder' must not be null");
+
         if (!isExternalStaticResourcesSet()) {
-            if (folder != null) {
-                try {
-                    ExternalResource resource = new ExternalResource(folder);
-                    if (resource.getFile().isDirectory()) {
-                        if (staticResourceHandlers == null) {
-                            staticResourceHandlers = new ArrayList<>();
-                        }
-                        staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
-                        LOG.info("External StaticResourceHandler configured with folder = " + folder);
-                    } else {
-                        LOG.error("External Static resource location must be a folder");
+            try {
+                ExternalResource resource = new ExternalResource(folder);
+                if (resource.getFile().isDirectory()) {
+                    if (staticResourceHandlers == null) {
+                        staticResourceHandlers = new ArrayList<>();
                     }
-                } catch (IOException e) {
-                    LOG.error("Error when creating external StaticResourceHandler", e);
+                    staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
+                    LOG.info("External StaticResourceHandler configured with folder = " + folder);
+                } else {
+                    LOG.error("External Static resource location must be a folder");
                 }
+            } catch (IOException e) {
+                LOG.error("Error when creating external StaticResourceHandler", e);
             }
             externalStaticResourcesSet = true;
         }
+        
     }
 
 }

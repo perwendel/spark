@@ -22,6 +22,8 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 
+import spark.utils.Assert;
+
 /**
  * Utility methods for setting internal and external static file locations.
  */
@@ -33,7 +35,11 @@ public class StaticFiles {
      * @param staticFileLocation staticFileLocation
      * @param handlersInList     handlersInList
      */
-    public static void setLocationIfPresent(String staticFileLocation, List<Handler> handlersInList) {
+    public static void setLocationIfPresent(String staticFileLocation,
+                                            List<Handler> handlersInList) {
+
+        Assert.notNull(handlersInList, "'handlersInList' must not be null");
+
         if (staticFileLocation != null) {
             ResourceHandler resourceHandler = new ResourceHandler();
             Resource staticResources = Resource.newClassPathResource(staticFileLocation);
@@ -51,6 +57,9 @@ public class StaticFiles {
      */
     public static void setExternalLocationIfPresent(String externalFileLocation,
                                                     List<Handler> handlersInList) {
+        
+        Assert.notNull(handlersInList, "'handlersInList' must not be null");
+
         if (externalFileLocation != null) {
             ResourceHandler externalResourceHandler = new ResourceHandler();
             externalResourceHandler.setResourceBase(externalFileLocation);
