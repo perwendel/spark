@@ -213,12 +213,12 @@ final class SparkInstance extends Routable {
      * @param folder the folder in classpath.
      */
     public synchronized void staticFileLocation(String folder) {
-        if (initialized && !ServletFlag.isIsRunFromServlet()) {
+        if (initialized && !ServletFlag.isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
         staticFileFolder = folder;
         if (!servletStaticLocationSet) {
-            if (ServletFlag.isIsRunFromServlet()) {
+            if (ServletFlag.isRunningFromServlet()) {
                 ServletStaticFiles.configureStaticResources(staticFileFolder);
                 servletStaticLocationSet = true;
             }
@@ -234,12 +234,12 @@ final class SparkInstance extends Routable {
      * @param externalFolder the external folder serving static files.
      */
     public synchronized void externalStaticFileLocation(String externalFolder) {
-        if (initialized && !ServletFlag.isIsRunFromServlet()) {
+        if (initialized && !ServletFlag.isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
         externalStaticFileFolder = externalFolder;
         if (!servletExternalStaticLocationSet) {
-            if (ServletFlag.isIsRunFromServlet()) {
+            if (ServletFlag.isRunningFromServlet()) {
                 ServletStaticFiles.configureExternalStaticResources(externalStaticFileFolder);
                 servletExternalStaticLocationSet = true;
             }
@@ -262,7 +262,7 @@ final class SparkInstance extends Routable {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        if (ServletFlag.isIsRunFromServlet()) {
+        if (ServletFlag.isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
         if (webSocketHandlers == null) {
@@ -280,7 +280,7 @@ final class SparkInstance extends Routable {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        if (ServletFlag.isIsRunFromServlet()) {
+        if (ServletFlag.isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
         webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
@@ -335,7 +335,7 @@ final class SparkInstance extends Routable {
     public synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
-            if (!ServletFlag.isIsRunFromServlet()) {
+            if (!ServletFlag.isRunningFromServlet()) {
                 new Thread(() -> {
                     server = SparkServerFactory.create(hasMultipleHandlers());
                     server.ignite(
