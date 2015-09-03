@@ -10,3 +10,4 @@ bin
 *.ipr
 *.iws
 reports
+.java-version

@@ -8,10 +8,9 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import spark.Spark;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
@@ -69,125 +68,84 @@ public class ServletTest {
             }
         }).start();
 
-        sleep(1000);
-    }
-
-    @Test
-    public void testGetHi() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/hi", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("Hello World!", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
+        while (!server.isStarted()) {
+            sleep(1000);
+            LOGGER.info(">>> WAITING FOR EMBEDDED JETTY SERVER TO START");
         }
     }
 
     @Test
-    public void testHiHead() {
-        try {
-            UrlResponse response = testUtil.doMethod("HEAD", SOMEPATH + "/hi", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetHi() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/hi", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Hello World!", response.body);
     }
 
     @Test
-    public void testGetHiAfterFilter() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/hi", null);
-            Assert.assertTrue(response.headers.get("after").contains("foobar"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testHiHead() throws Exception {
+        UrlResponse response = testUtil.doMethod("HEAD", SOMEPATH + "/hi", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("", response.body);
     }
 
     @Test
-    public void testGetRoot() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("Hello Root!", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetHiAfterFilter() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/hi", null);
+        Assert.assertTrue(response.headers.get("after").contains("foobar"));
     }
 
     @Test
-    public void testEchoParam1() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/shizzy", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("echo: shizzy", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testGetRoot() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Hello Root!", response.body);
     }
 
     @Test
-    public void testEchoParam2() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/gunit", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertEquals("echo: gunit", response.body);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testEchoParam1() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/shizzy", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: shizzy", response.body);
+    }
+
+    @Test
+    public void testEchoParam2() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/gunit", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: gunit", response.body);
     }
 
     @Test
     public void testUnauthorized() throws Exception {
-        try {
-            UrlResponse urlResponse = testUtil.doMethod("GET", SOMEPATH + "/protected/resource", null);
-            Assert.assertTrue(urlResponse.status == 401);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        UrlResponse urlResponse = testUtil.doMethod("GET", SOMEPATH + "/protected/resource", null);
+        Assert.assertTrue(urlResponse.status == 401);
     }
 
     @Test
     public void testNotFound() throws Exception {
-        try {
-            UrlResponse urlResponse = testUtil.doMethod("GET", SOMEPATH + "/no/resource", null);
-            Assert.assertTrue(urlResponse.status == 404);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        UrlResponse urlResponse = testUtil.doMethod("GET", SOMEPATH + "/no/resource", null);
+        Assert.assertTrue(urlResponse.status == 404);
     }
 
     @Test
-    public void testPost() {
-        try {
-            UrlResponse response = testUtil.doMethod("POST", SOMEPATH + "/poster", "Fo shizzy");
-            Assert.assertEquals(201, response.status);
-            Assert.assertTrue(response.body.contains("Fo shizzy"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testPost() throws Exception {
+        UrlResponse response = testUtil.doMethod("POST", SOMEPATH + "/poster", "Fo shizzy");
+        Assert.assertEquals(201, response.status);
+        Assert.assertTrue(response.body.contains("Fo shizzy"));
     }
 
     @Test
-    public void testStaticResource() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/css/style.css", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertTrue(response.body.contains("Content of css file"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testStaticResource() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/css/style.css", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertTrue(response.body.contains("Content of css file"));
     }
 
     @Test
-    public void testStaticWelcomeResource() {
-        try {
-            UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/pages/", null);
-            Assert.assertEquals(200, response.status);
-            Assert.assertTrue(response.body.contains("<html><body>Hello Static World!</body></html>"));
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+    public void testStaticWelcomeResource() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/pages/", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertTrue(response.body.contains("<html><body>Hello Static World!</body></html>"));
     }
 
     @Test

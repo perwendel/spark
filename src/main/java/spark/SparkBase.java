@@ -1,5 +1,10 @@
 package spark;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +13,8 @@ import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Spark base class
@@ -30,12 +37,21 @@ public abstract class SparkBase {
     protected static String staticFileFolder = null;
     protected static String externalStaticFileFolder = null;
 
+    protected static Map<String, Class<?>> webSocketHandlers = null;
+
+    protected static int maxThreads = -1;
+    protected static int minThreads = -1;
+    protected static int threadIdleTimeoutMillis = -1;
+    protected static Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
+
     protected static SparkServer server;
     protected static SimpleRouteMatcher routeMatcher;
     private static boolean runFromServlet;
 
     private static boolean servletStaticLocationSet;
     private static boolean servletExternalStaticLocationSet;
+
+    private static CountDownLatch latch = new CountDownLatch(1);
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -165,6 +181,32 @@ public abstract class SparkBase {
     }
 
     /**
+     * Configures the embedded web server's thread pool.
+     *
+     * @param maxThreads max nbr of threads.
+     */
+    public static synchronized void threadPool(int maxThreads) {
+        threadPool(maxThreads, -1, -1);
+    }
+
+    /**
+     * Configures the embedded web server's thread pool.
+     *
+     * @param maxThreads        max nbr of threads.
+     * @param minThreads        min nbr of threads.
+     * @param idleTimeoutMillis thread idle timeout (ms).
+     */
+    public static synchronized void threadPool(int maxThreads, int minThreads, int idleTimeoutMillis) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+
+        Spark.maxThreads = maxThreads;
+        Spark.minThreads = minThreads;
+        Spark.threadIdleTimeoutMillis = idleTimeoutMillis;
+    }
+
+    /**
      * Sets the folder in classpath serving static files. Observe: this method
      * must be called before all other methods.
      *
@@ -206,6 +248,56 @@ public abstract class SparkBase {
         }
     }
 
+    /**
+     * Maps the given path to the given WebSocket handler.
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param path    the WebSocket path.
+     * @param handler the handler class that will manage the WebSocket connection to the given path.
+     */
+    public static synchronized void webSocket(String path, Class<?> handler) {
+        requireNonNull(path, "WebSocket path cannot be null");
+        requireNonNull(handler, "WebSocket handler class cannot be null");
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        if (runFromServlet) {
+            throw new IllegalStateException("WebSockets are only supported in the embedded server");
+        }
+        if (webSocketHandlers == null) {
+            webSocketHandlers = new HashMap<>();
+        }
+        webSocketHandlers.put(path, handler);
+    }
+
+    /**
+     * Sets the max idle timeout in milliseconds for WebSocket connections.
+     *
+     * @param timeoutMillis The max idle timeout in milliseconds.
+     */
+    public static void webSocketIdleTimeoutMillis(int timeoutMillis) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        if (runFromServlet) {
+            throw new IllegalStateException("WebSockets are only supported in the embedded server");
+        }
+        webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
+    }
+
+    /**
+     * Waits for the spark server to be initialized.
+     * If it's already initialized will return immediately
+     */
+    public static void awaitInitialization() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            LOG.info("Interrupted by another thread");
+        }
+    }
+
     private static void throwBeforeRouteMappingException() {
         throw new IllegalStateException(
                 "This must be done before route mapping has begun");
@@ -223,6 +315,7 @@ public abstract class SparkBase {
         if (server != null) {
             routeMatcher.clearRoutes();
             server.stop();
+            latch = new CountDownLatch(1);
         }
         initialized = false;
     }
@@ -311,7 +404,7 @@ public abstract class SparkBase {
                                                    + "'", filter.getAcceptType(), filter);
     }
 
-    private static synchronized void init() {
+    public static synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
             new Thread(new Runnable() {
@@ -326,7 +419,13 @@ public abstract class SparkBase {
                             truststoreFile,
                             truststorePassword,
                             staticFileFolder,
-                            externalStaticFileFolder);
+                            externalStaticFileFolder,
+                            latch,
+                            maxThreads,
+                            minThreads,
+                            threadIdleTimeoutMillis,
+                            webSocketHandlers,
+                            webSocketIdleTimeoutMillis);
                 }
             }).start();
             initialized = true;

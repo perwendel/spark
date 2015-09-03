@@ -16,7 +16,6 @@
  */
 package spark;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -225,26 +224,25 @@ public class Request {
      */
     public String body() {
         if (body == null) {
-            readBody();
+            body = new String(bodyAsBytes());
         }
         return body;
     }
-    
+
     public byte[] bodyAsBytes() {
         if (bodyAsBytes == null) {
-            readBody();
+            readBodyAsBytes();
         }
         return bodyAsBytes;
     }
-    
-    private void readBody() {
-		try {
-			bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
-			body = new String(bodyAsBytes);
-		} catch (Exception e) {
-			LOG.warn("Exception when reading body", e);
-		}
-	}
+
+    private void readBodyAsBytes() {
+        try {
+            bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
+        } catch (Exception e) {
+            LOG.warn("Exception when reading body", e);
+        }
+    }
 
     /**
      * @return the length of request.body
@@ -254,7 +252,7 @@ public class Request {
     }
 
     /**
-     * gets the query param
+     * Gets the query param
      *
      * @param queryParam the query parameter
      * @return the value of the provided queryParam
@@ -262,7 +260,18 @@ public class Request {
      */
     public String queryParams(String queryParam) {
         return servletRequest.getParameter(queryParam);
-    } 
+    }
+
+    /**
+     * Gets all the values of the query param
+     * Example: query parameter 'id' from the following request URI: /hello?id=foo&id=bar
+     *
+     * @param queryParam the query parameter
+     * @return the values of the provided queryParam, null if it doesn't exists
+     */
+    public String[] queryParamsValues(String queryParam) {
+        return servletRequest.getParameterValues(queryParam);
+    }
 
     /**
      * Gets the value for the provided header
@@ -318,8 +327,8 @@ public class Request {
      * @param attribute The attribute value or null if not present
      * @return the value for the provided attribute
      */
-    public Object attribute(String attribute) {
-        return servletRequest.getAttribute(attribute);
+    public <T> T attribute(String attribute) {
+        return (T) servletRequest.getAttribute(attribute);
     }
 
 

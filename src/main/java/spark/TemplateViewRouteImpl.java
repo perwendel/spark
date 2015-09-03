@@ -80,7 +80,7 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
 
 
     @Override
-    public String render(Object object) {
+    public Object render(Object object) {
         ModelAndView modelAndView = (ModelAndView) object;
         return render(modelAndView);
     }
@@ -102,6 +102,6 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
      * @param modelAndView object where object (mostly a POJO) and the name of the view to render are set.
      * @return message that it is sent to client.
      */
-    public abstract String render(ModelAndView modelAndView);
+    public abstract Object render(ModelAndView modelAndView);
 
 }
