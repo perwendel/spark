@@ -1,5 +1,5 @@
 /*
- * Copyright 2011- Per Wendel
+ * Copyright 2015 - Per Wendel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,36 +17,48 @@
 
 package spark;
 
-import spark.utils.SparkUtils;
-
-
 /**
- * A Filter is built up by a path (for url-matching) and the implementation of the 'handle' method.
- * When a request is made, if present, the matching routes 'handle' method is invoked.
+ * FilterImpl is created from a path, acceptType and Filter. This is encapsulate the information needed in the route
+ * matcher in a single container.
  *
  * @author Per Wendel
  */
 public abstract class FilterImpl implements Filter {
 
-    private static final String DEFAUT_CONTENT_TYPE = "text/html";
+    static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     private String path;
     private String acceptType;
 
     /**
-     * Constructs a filter that matches on everything
+     * Wraps the filter in FilterImpl
+     *
+     * @param path   the path
+     * @param filter the filter
+     * @return the wrapped route
      */
-    protected FilterImpl() {
-        this(SparkUtils.ALL_PATHS);
+    static FilterImpl create(final String path, final Filter filter) {
+        return create(path, DEFAULT_ACCEPT_TYPE, filter);
     }
 
     /**
-     * Constructor
+     * Wraps the filter in FilterImpl
      *
-     * @param path The filter path which is used for matching. (e.g. /hello, users/:name)
+     * @param path       the path
+     * @param acceptType the accept type
+     * @param filter     the filter
+     * @return the wrapped route
      */
-    protected FilterImpl(String path) {
-        this(path, DEFAUT_CONTENT_TYPE);
+    static FilterImpl create(final String path, String acceptType, final Filter filter) {
+        if (acceptType == null) {
+            acceptType = DEFAULT_ACCEPT_TYPE;
+        }
+        return new FilterImpl(path, acceptType) {
+            @Override
+            public void handle(Request request, Response response) throws Exception {
+                filter.handle(request, response);
+            }
+        };
     }
 
     protected FilterImpl(String path, String acceptType) {

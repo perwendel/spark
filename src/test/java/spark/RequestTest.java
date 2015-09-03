@@ -27,8 +27,7 @@ import javax.servlet.http.Part;
 
 import org.junit.Test;
 
-import spark.route.HttpMethod;
-import spark.route.RouteMatch;
+import spark.routematch.RouteMatch;
 
 import static org.junit.Assert.assertEquals;
 
@@ -37,7 +36,7 @@ public class RequestTest {
     private static final String THE_SERVLET_PATH = "/the/servlet/path";
     private static final String THE_CONTEXT_PATH = "/the/context/path";
 
-    RouteMatch match = new RouteMatch(HttpMethod.get, null, "/hi", "/hi", "text/html");
+    RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html");
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 - Per Wendel
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package spark;
 
 import java.util.HashMap;
@@ -8,50 +24,48 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.globalstate.ServletFlag;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
-import spark.servlet.SparkFilter;
-import spark.webserver.SparkServer;
+import spark.ssl.SslStores;
+import spark.staticfiles.ServletStaticFiles;
 import spark.webserver.SparkServerFactory;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Spark base class
+ * Holds the implementation of the Spark API. (previously in Spark and SparkBase).
  */
-public abstract class SparkBase {
+final class SparkInstance extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
+
     public static final int SPARK_DEFAULT_PORT = 4567;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
-    protected static boolean initialized = false;
+    protected boolean initialized = false;
 
-    protected static int port = SPARK_DEFAULT_PORT;
-    protected static String ipAddress = "0.0.0.0";
+    protected int port = SPARK_DEFAULT_PORT;
+    protected String ipAddress = "0.0.0.0";
 
-    protected static String keystoreFile;
-    protected static String keystorePassword;
-    protected static String truststoreFile;
-    protected static String truststorePassword;
+    protected SslStores sslStores;
 
-    protected static String staticFileFolder = null;
-    protected static String externalStaticFileFolder = null;
+    protected String staticFileFolder = null;
+    protected String externalStaticFileFolder = null;
 
-    protected static Map<String, Class<?>> webSocketHandlers = null;
+    protected Map<String, Class<?>> webSocketHandlers = null;
 
-    protected static int maxThreads = -1;
-    protected static int minThreads = -1;
-    protected static int threadIdleTimeoutMillis = -1;
-    protected static Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
+    protected int maxThreads = -1;
+    protected int minThreads = -1;
+    protected int threadIdleTimeoutMillis = -1;
+    protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
 
-    protected static SparkServer server;
-    protected static SimpleRouteMatcher routeMatcher;
-    private static boolean runFromServlet;
+    protected SparkServer server;
+    protected SimpleRouteMatcher routeMatcher;
 
-    private static boolean servletStaticLocationSet;
-    private static boolean servletExternalStaticLocationSet;
+    private boolean servletStaticLocationSet;
+    private boolean servletExternalStaticLocationSet;
 
-    private static CountDownLatch latch = new CountDownLatch(1);
+    private CountDownLatch latch = new CountDownLatch(1);
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -61,11 +75,11 @@ public abstract class SparkBase {
      * @param ipAddress The ipAddress
      * @deprecated replaced by {@link #ipAddress(String)}
      */
-    public static synchronized void setIpAddress(String ipAddress) {
+    public synchronized void setIpAddress(String ipAddress) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        Spark.ipAddress = ipAddress;
+        this.ipAddress = ipAddress;
     }
 
     /**
@@ -75,11 +89,11 @@ public abstract class SparkBase {
      *
      * @param ipAddress The ipAddress
      */
-    public static synchronized void ipAddress(String ipAddress) {
+    public synchronized void ipAddress(String ipAddress) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        Spark.ipAddress = ipAddress;
+        this.ipAddress = ipAddress;
     }
 
     /**
@@ -90,11 +104,11 @@ public abstract class SparkBase {
      * @param port The port number
      * @deprecated replaced by {@link #port(int)}
      */
-    public static synchronized void setPort(int port) {
+    public synchronized void setPort(int port) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        Spark.port = port;
+        this.port = port;
     }
 
     /**
@@ -104,11 +118,11 @@ public abstract class SparkBase {
      *
      * @param port The port number
      */
-    public static synchronized void port(int port) {
+    public synchronized void port(int port) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        Spark.port = port;
+        this.port = port;
     }
 
     /**
@@ -127,23 +141,12 @@ public abstract class SparkBase {
      * @param truststorePassword the trust store password
      * @deprecated replaced by {@link #secure(String, String, String, String)}
      */
-    public static synchronized void setSecure(String keystoreFile,
-                                              String keystorePassword,
-                                              String truststoreFile,
-                                              String truststorePassword) {
-        if (initialized) {
-            throwBeforeRouteMappingException();
-        }
+    public synchronized void setSecure(String keystoreFile,
+                                       String keystorePassword,
+                                       String truststoreFile,
+                                       String truststorePassword) {
 
-        if (keystoreFile == null) {
-            throw new IllegalArgumentException(
-                    "Must provide a keystore file to run secured");
-        }
-
-        Spark.keystoreFile = keystoreFile;
-        Spark.keystorePassword = keystorePassword;
-        Spark.truststoreFile = truststoreFile;
-        Spark.truststorePassword = truststorePassword;
+        secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 
     /**
@@ -161,10 +164,10 @@ public abstract class SparkBase {
      *                           keystore
      * @param truststorePassword the trust store password
      */
-    public static synchronized void secure(String keystoreFile,
-                                           String keystorePassword,
-                                           String truststoreFile,
-                                           String truststorePassword) {
+    public synchronized void secure(String keystoreFile,
+                                    String keystorePassword,
+                                    String truststoreFile,
+                                    String truststorePassword) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -174,10 +177,7 @@ public abstract class SparkBase {
                     "Must provide a keystore file to run secured");
         }
 
-        Spark.keystoreFile = keystoreFile;
-        Spark.keystorePassword = keystorePassword;
-        Spark.truststoreFile = truststoreFile;
-        Spark.truststorePassword = truststorePassword;
+        sslStores = SslStores.create(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 
     /**
@@ -185,7 +185,7 @@ public abstract class SparkBase {
      *
      * @param maxThreads max nbr of threads.
      */
-    public static synchronized void threadPool(int maxThreads) {
+    public synchronized void threadPool(int maxThreads) {
         threadPool(maxThreads, -1, -1);
     }
 
@@ -196,14 +196,14 @@ public abstract class SparkBase {
      * @param minThreads        min nbr of threads.
      * @param idleTimeoutMillis thread idle timeout (ms).
      */
-    public static synchronized void threadPool(int maxThreads, int minThreads, int idleTimeoutMillis) {
+    public synchronized void threadPool(int maxThreads, int minThreads, int idleTimeoutMillis) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
 
-        Spark.maxThreads = maxThreads;
-        Spark.minThreads = minThreads;
-        Spark.threadIdleTimeoutMillis = idleTimeoutMillis;
+        this.maxThreads = maxThreads;
+        this.minThreads = minThreads;
+        this.threadIdleTimeoutMillis = idleTimeoutMillis;
     }
 
     /**
@@ -212,14 +212,14 @@ public abstract class SparkBase {
      *
      * @param folder the folder in classpath.
      */
-    public static synchronized void staticFileLocation(String folder) {
-        if (initialized && !runFromServlet) {
+    public synchronized void staticFileLocation(String folder) {
+        if (initialized && !ServletFlag.isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
         staticFileFolder = folder;
         if (!servletStaticLocationSet) {
-            if (runFromServlet) {
-                SparkFilter.configureStaticResources(staticFileFolder);
+            if (ServletFlag.isRunningFromServlet()) {
+                ServletStaticFiles.configureStaticResources(staticFileFolder);
                 servletStaticLocationSet = true;
             }
         } else {
@@ -233,14 +233,14 @@ public abstract class SparkBase {
      *
      * @param externalFolder the external folder serving static files.
      */
-    public static synchronized void externalStaticFileLocation(String externalFolder) {
-        if (initialized && !runFromServlet) {
+    public synchronized void externalStaticFileLocation(String externalFolder) {
+        if (initialized && !ServletFlag.isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
         externalStaticFileFolder = externalFolder;
         if (!servletExternalStaticLocationSet) {
-            if (runFromServlet) {
-                SparkFilter.configureExternalStaticResources(externalStaticFileFolder);
+            if (ServletFlag.isRunningFromServlet()) {
+                ServletStaticFiles.configureExternalStaticResources(externalStaticFileFolder);
                 servletExternalStaticLocationSet = true;
             }
         } else {
@@ -256,13 +256,13 @@ public abstract class SparkBase {
      * @param path    the WebSocket path.
      * @param handler the handler class that will manage the WebSocket connection to the given path.
      */
-    public static synchronized void webSocket(String path, Class<?> handler) {
+    public synchronized void webSocket(String path, Class<?> handler) {
         requireNonNull(path, "WebSocket path cannot be null");
         requireNonNull(handler, "WebSocket handler class cannot be null");
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        if (runFromServlet) {
+        if (ServletFlag.isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
         if (webSocketHandlers == null) {
@@ -276,11 +276,11 @@ public abstract class SparkBase {
      *
      * @param timeoutMillis The max idle timeout in milliseconds.
      */
-    public static void webSocketIdleTimeoutMillis(int timeoutMillis) {
+    public synchronized void webSocketIdleTimeoutMillis(int timeoutMillis) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        if (runFromServlet) {
+        if (ServletFlag.isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
         webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
@@ -290,7 +290,7 @@ public abstract class SparkBase {
      * Waits for the spark server to be initialized.
      * If it's already initialized will return immediately
      */
-    public static void awaitInitialization() {
+    public void awaitInitialization() {
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -298,12 +298,12 @@ public abstract class SparkBase {
         }
     }
 
-    private static void throwBeforeRouteMappingException() {
+    private void throwBeforeRouteMappingException() {
         throw new IllegalStateException(
                 "This must be done before route mapping has begun");
     }
 
-    private static boolean hasMultipleHandlers() {
+    private boolean hasMultipleHandlers() {
         return staticFileFolder != null || externalStaticFileFolder != null;
     }
 
@@ -311,7 +311,7 @@ public abstract class SparkBase {
     /**
      * Stops the Spark server and clears all routes
      */
-    public static synchronized void stop() {
+    public synchronized void stop() {
         if (server != null) {
             routeMatcher.clearRoutes();
             server.stop();
@@ -320,104 +320,28 @@ public abstract class SparkBase {
         initialized = false;
     }
 
-    static synchronized void runFromServlet() {
-        runFromServlet = true;
+    @Override
+    public void addRoute(String httpMethod, RouteImpl route) {
+        init();
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route.getAcceptType(), route);
+    }
+
+    @Override
+    public void addFilter(String httpMethod, FilterImpl filter) {
+        init();
+        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter.getAcceptType(), filter);
+    }
+
+    public synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
-            initialized = true;
-        }
-    }
-
-    /**
-     * Wraps the route in RouteImpl
-     *
-     * @param path  the path
-     * @param route the route
-     * @return the wrapped route
-     */
-    protected static RouteImpl wrap(final String path, final Route route) {
-        return wrap(path, DEFAULT_ACCEPT_TYPE, route);
-    }
-
-    /**
-     * Wraps the route in RouteImpl
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      the route
-     * @return the wrapped route
-     */
-    protected static RouteImpl wrap(final String path, String acceptType, final Route route) {
-        if (acceptType == null) {
-            acceptType = DEFAULT_ACCEPT_TYPE;
-        }
-        RouteImpl impl = new RouteImpl(path, acceptType) {
-            @Override
-            public Object handle(Request request, Response response) throws Exception {
-                return route.handle(request, response);
-            }
-        };
-        return impl;
-    }
-
-    /**
-     * Wraps the filter in FilterImpl
-     *
-     * @param path   the path
-     * @param filter the filter
-     * @return the wrapped route
-     */
-    protected static FilterImpl wrap(final String path, final Filter filter) {
-        return wrap(path, DEFAULT_ACCEPT_TYPE, filter);
-    }
-
-    /**
-     * Wraps the filter in FilterImpl
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param filter     the filter
-     * @return the wrapped route
-     */
-    protected static FilterImpl wrap(final String path, String acceptType, final Filter filter) {
-        if (acceptType == null) {
-            acceptType = DEFAULT_ACCEPT_TYPE;
-        }
-        FilterImpl impl = new FilterImpl(path, acceptType) {
-            @Override
-            public void handle(Request request, Response response) throws Exception {
-                filter.handle(request, response);
-            }
-        };
-        return impl;
-    }
-
-    protected static void addRoute(String httpMethod, RouteImpl route) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
-                                                   + "'", route.getAcceptType(), route);
-    }
-
-    protected static void addFilter(String httpMethod, FilterImpl filter) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
-                                                   + "'", filter.getAcceptType(), filter);
-    }
-
-    public static synchronized void init() {
-        if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+            if (!ServletFlag.isRunningFromServlet()) {
+                new Thread(() -> {
                     server = SparkServerFactory.create(hasMultipleHandlers());
                     server.ignite(
                             ipAddress,
                             port,
-                            keystoreFile,
-                            keystorePassword,
-                            truststoreFile,
-                            truststorePassword,
+                            sslStores,
                             staticFileFolder,
                             externalStaticFileFolder,
                             latch,
@@ -426,10 +350,79 @@ public abstract class SparkBase {
                             threadIdleTimeoutMillis,
                             webSocketHandlers,
                             webSocketIdleTimeoutMillis);
-                }
-            }).start();
+                }).start();
+            }
             initialized = true;
         }
+    }
+
+    //////////////////////////////////////////////////
+    // EXCEPTION mapper
+    //////////////////////////////////////////////////
+
+    /**
+     * Maps an exception handler to be executed when an exception occurs during routing
+     *
+     * @param exceptionClass the exception class
+     * @param handler        The handler
+     */
+    public synchronized void exception(Class<? extends Exception> exceptionClass, ExceptionHandler handler) {
+        // wrap
+        ExceptionHandlerImpl wrapper = new ExceptionHandlerImpl(exceptionClass) {
+            @Override
+            public void handle(Exception exception, Request request, Response response) {
+                handler.handle(exception, request, response);
+            }
+        };
+
+        ExceptionMapper.getInstance().map(exceptionClass, wrapper);
+    }
+
+    //////////////////////////////////////////////////
+    // HALT methods
+    //////////////////////////////////////////////////
+
+    /**
+     * Immediately stops a request within a filter or route
+     * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
+     * halt will not work
+     */
+    public void halt() {
+        throw new HaltException();
+    }
+
+    /**
+     * Immediately stops a request within a filter or route with specified status code
+     * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
+     * halt will not work
+     *
+     * @param status the status code
+     */
+    public void halt(int status) {
+        throw new HaltException(status);
+    }
+
+    /**
+     * Immediately stops a request within a filter or route with specified body content
+     * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
+     * halt will not work
+     *
+     * @param body The body content
+     */
+    public void halt(String body) {
+        throw new HaltException(body);
+    }
+
+    /**
+     * Immediately stops a request within a filter or route with specified status code and body content
+     * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
+     * halt will not work
+     *
+     * @param status The status code
+     * @param body   The body content
+     */
+    public void halt(int status, String body) {
+        throw new HaltException(status, body);
     }
 
 }

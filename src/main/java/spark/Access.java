@@ -16,7 +16,7 @@
  */
 package spark;
 
-import spark.route.RouteMatch;
+import spark.routematch.RouteMatch;
 
 public final class Access {
 
@@ -25,10 +25,6 @@ public final class Access {
 
     public static String getBody(Response response) {
         return response.body();
-    }
-
-    public static void runFromServlet() {
-        Spark.runFromServlet();
     }
 
     public static void changeMatch(Request request, RouteMatch match) {

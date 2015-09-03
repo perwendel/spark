@@ -36,9 +36,9 @@ import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.post;
-import static spark.SparkBase.externalStaticFileLocation;
-import static spark.SparkBase.staticFileLocation;
-import static spark.SparkBase.webSocket;
+import static spark.Spark.externalStaticFileLocation;
+import static spark.Spark.staticFileLocation;
+import static spark.Spark.webSocket;
 
 public class GenericIntegrationTest {
 
