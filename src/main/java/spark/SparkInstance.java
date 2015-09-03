@@ -304,7 +304,7 @@ final class SparkInstance extends Routable {
     }
 
     private boolean hasMultipleHandlers() {
-        return staticFileFolder != null || externalStaticFileFolder != null;
+        return staticFileFolder != null || externalStaticFileFolder != null || webSocketHandlers != null;
     }
 
 
