@@ -178,10 +178,7 @@ public class GenericIntegrationTest {
             response.body(NOT_FOUND_BRO);
         });
 
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
-        }
+        Spark.awaitInitialization();
     }
 
     @Test
