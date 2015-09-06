@@ -16,33 +16,20 @@
  */
 package spark.webserver;
 
+import spark.*;
+import spark.route.HttpMethod;
+import spark.route.SimpleRouteMatcher;
+import spark.routematch.RouteMatch;
+import spark.utils.GzipUtils;
+import spark.webserver.serialization.SerializerChain;
+
+import javax.servlet.Filter;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import spark.Access;
-import spark.FilterImpl;
-import spark.HaltException;
-import spark.Request;
-import spark.RequestResponseFactory;
-import spark.Response;
-import spark.RouteImpl;
-import spark.ExceptionHandlerImpl;
-import spark.ExceptionMapper;
-import spark.route.HttpMethod;
-import spark.routematch.RouteMatch;
-import spark.route.SimpleRouteMatcher;
-import spark.utils.GzipUtils;
-import spark.webserver.serialization.SerializerChain;
 
 /**
  * Filter for matching of filters and routes.
@@ -105,7 +92,8 @@ public class MatcherFilter implements Filter {
 
         Response response = RequestResponseFactory.create(httpResponse);
 
-        LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
+        LOG.debug("httpMethod: {}, uri: {}", httpMethodStr, uri);
+        boolean consumedAsException = false;
         try {
             // BEFORE filters
             List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri, acceptType);
@@ -210,6 +198,7 @@ public class MatcherFilter implements Filter {
         } catch (Exception e) {
             ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(e);
             if (handler != null) {
+                consumedAsException = true;
                 handler.handle(e, requestWrapper, responseWrapper);
                 String bodyAfterFilter = Access.getBody(responseWrapper.getDelegate());
                 if (bodyAfterFilter != null) {
@@ -233,7 +222,7 @@ public class MatcherFilter implements Filter {
             throw new NotConsumedException();
         }
 
-        if (!consumed && !isServletContext) {
+        if (!consumed && !isServletContext && !consumedAsException) {
             LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
             bodyContent = String.format(NOT_FOUND);
