@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.protocol.HTTP;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.util.log.Log;
@@ -72,9 +73,19 @@ public class JettyHandler extends SessionHandler {
         public HttpRequestWrapper(HttpServletRequest request) {
             super(request);
         }
+        
+        private HttpServletRequest _getHttpServletRequest() {
+            return (HttpServletRequest) super.getRequest();
+        }
 
         @Override
         public ServletInputStream getInputStream() throws IOException {
+        	final String transferEncoding = _getHttpServletRequest().getHeader(HTTP.TRANSFER_ENCODING);
+        	if (HTTP.CHUNK_CODING.equals(transferEncoding)) {
+        		// disable stream cache for chuncked transfer encoding
+        		return super.getInputStream();
+        	}
+        	
             if (cachedBytes == null) {
                 cacheInputStream();
             }
