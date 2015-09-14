@@ -16,15 +16,11 @@
  */
 package spark.route;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import spark.routematch.RouteMatch;
 import spark.utils.MimeParse;
 import spark.utils.StringUtils;
+
+import java.util.*;
 
 /**
  * Simple route matcher that is supposed to work exactly as Sinatra's
@@ -63,16 +59,12 @@ public class SimpleRouteMatcher {
             try {
                 method = HttpMethod.valueOf(httpMethod);
             } catch (IllegalArgumentException e) {
-                LOG.error("The @Route value: "
-                                  + route
-                                  + " has an invalid HTTP method part: "
-                                  + httpMethod
-                                  + ".");
+                LOG.error("The @Route value: {} has an invalid HTTP method part: {}.", route, httpMethod);
                 return;
             }
             addRoute(method, url, acceptType, target);
         } catch (Exception e) {
-            LOG.error("The @Route value: " + route + " is not in the correct format", e);
+            LOG.error("The @Route value: {} is not in the correct format: ", route, e);
         }
     }
 
@@ -178,7 +170,7 @@ public class SimpleRouteMatcher {
         entry.path = url;
         entry.target = target;
         entry.acceptedType = acceptedType;
-        LOG.debug("Adds route: " + entry);
+        LOG.debug("Adds route: {}", entry);
         // Adds to end of list
         routes.add(entry);
     }

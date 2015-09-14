@@ -10,7 +10,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.Spark;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
@@ -51,20 +50,17 @@ public class ServletTest {
 
         server.setHandler(bb);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    LOGGER.info(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
-                    server.start();
-                    System.in.read();
-                    LOGGER.info(">>> STOPPING EMBEDDED JETTY SERVER");
-                    server.stop();
-                    server.join();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(100);
-                }
+        new Thread(() -> {
+            try {
+                LOGGER.info(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
+                server.start();
+                System.in.read();
+                LOGGER.info(">>> STOPPING EMBEDDED JETTY SERVER");
+                server.stop();
+                server.join();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(100);
             }
         }).start();
 

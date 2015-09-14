@@ -10,12 +10,7 @@ import org.slf4j.LoggerFactory;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 public class GenericSecureIntegrationTest {
 
@@ -70,6 +65,11 @@ public class GenericSecureIntegrationTest {
             return "Body was: " + body;
         });
 
+        head("/hi", (request, response) -> {
+            response.body("ololo");
+            return null;
+        });
+
         after("/hi", (request, response) -> {
             response.header("after", "foobar");
         });
@@ -91,7 +91,6 @@ public class GenericSecureIntegrationTest {
     public void testHiHead() throws Exception {
         UrlResponse response = testUtil.doMethodSecure("HEAD", "/hi", null);
         Assert.assertEquals(200, response.status);
-        Assert.assertEquals("", response.body);
     }
 
     @Test

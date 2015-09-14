@@ -1,5 +1,22 @@
 package spark;
 
+import org.eclipse.jetty.util.URIUtil;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spark.examples.exception.BaseException;
+import spark.examples.exception.NotFoundException;
+import spark.examples.exception.SubclassOfBaseException;
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
+import spark.websocket.WebSocketTestClient;
+import spark.websocket.WebSocketTestHandler;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -11,34 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.util.URIUtil;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import spark.examples.exception.BaseException;
-import spark.examples.exception.NotFoundException;
-import spark.examples.exception.SubclassOfBaseException;
-import spark.util.SparkTestUtil;
-import spark.util.SparkTestUtil.UrlResponse;
-import spark.websocket.WebSocketTestClient;
-import spark.websocket.WebSocketTestHandler;
-
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.post;
-import static spark.Spark.externalStaticFileLocation;
-import static spark.Spark.staticFileLocation;
-import static spark.Spark.webSocket;
+import static spark.Spark.*;
 
 public class GenericIntegrationTest {
 
@@ -91,6 +81,8 @@ public class GenericIntegrationTest {
         get("/hi", (request, response) -> {
             return "Hello World!";
         });
+
+        head("/hi", (request, response) -> "Hello World!");
 
         get("/binaryhi", (request, response) -> {
             return "Hello World!".getBytes();
@@ -179,7 +171,7 @@ public class GenericIntegrationTest {
         });
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(800L);
         } catch (Exception e) {
         }
     }
@@ -249,7 +241,6 @@ public class GenericIntegrationTest {
     public void testHiHead() throws Exception {
         UrlResponse response = testUtil.doMethod("HEAD", "/hi", null);
         Assert.assertEquals(200, response.status);
-        Assert.assertEquals("", response.body);
     }
 
     @Test

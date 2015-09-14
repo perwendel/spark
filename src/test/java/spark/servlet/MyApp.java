@@ -2,15 +2,8 @@ package spark.servlet;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.externalStaticFileLocation;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.post;
-import static spark.Spark.staticFileLocation;
+import static spark.Spark.*;
 
 public class MyApp implements SparkApplication {
 
@@ -50,6 +43,8 @@ public class MyApp implements SparkApplication {
             response.status(201); // created
             return "Body was: " + body;
         });
+
+        head("/hi", (request, response) -> "Ololo");
 
         after("/hi", (request, response) -> {
             response.header("after", "foobar");
