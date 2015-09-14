@@ -8,17 +8,19 @@ import org.junit.Test;
 import spark.util.SparkTestUtil;
 
 import static org.junit.Assert.assertEquals;
+import static spark.Spark.delete;
 import static spark.Spark.exception;
 import static spark.Spark.get;
 
 /**
  * @author Tradunsky V.V.
  */
-public class ExceptionHandlerIntegrationTest {
+public class RouteHandleIntegrationTest {
     private static final String THROW_AN_EXCEPTION_ROUTE = "/throw";
     private static final String EXCEPTION_BODY_MESSAGE = "It's bad idea";
     private static final String GOOD_ROUTE = "/good";
     private static final String GOOD_BODY_MESSAGE = "Something good";
+    public static final String UNKNOWN_REOUTE = "unknown";
 
     private static SparkTestUtil testUtil;
 
@@ -35,6 +37,11 @@ public class ExceptionHandlerIntegrationTest {
         });
 
         get(GOOD_ROUTE, (request, response) -> GOOD_BODY_MESSAGE);
+
+        delete(GOOD_ROUTE, (request, response) -> {
+            response.status(Response.SC_NO_CONTENT);
+            return null;
+        });
 
         try {
             Thread.sleep(500);
@@ -59,5 +66,17 @@ public class ExceptionHandlerIntegrationTest {
         SparkTestUtil.UrlResponse response = testUtil.doMethod(HttpMethod.GET.asString(), GOOD_ROUTE, null);
         assertEquals("Should handle a status of response", Response.SC_OK, response.status);
         assertEquals("Should handle a body of response", GOOD_BODY_MESSAGE, response.body);
+    }
+
+    @Test
+    public void shouldSetAsNotFoundForUnhandledRoute() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod(HttpMethod.GET.asString(), UNKNOWN_REOUTE, null);
+        assertEquals("Should handle a status of response", Response.SC_NOT_FOUND, response.status);
+    }
+
+    @Test
+    public void shouldSuccessProcessedWithNoContent() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod(HttpMethod.DELETE.asString(), GOOD_ROUTE, null);
+        assertEquals("Should handle a status of response", Response.SC_NO_CONTENT, response.status);
     }
 }
