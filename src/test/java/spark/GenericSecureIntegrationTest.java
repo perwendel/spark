@@ -74,10 +74,7 @@ public class GenericSecureIntegrationTest {
             response.header("after", "foobar");
         });
 
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
-        }
+        Spark.awaitInitialization();
     }
 
     @Test

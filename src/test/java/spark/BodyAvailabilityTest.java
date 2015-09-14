@@ -60,10 +60,7 @@ public class BodyAvailabilityTest {
             afterBody = req.body();
         });
 
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
-        }
+        Spark.awaitInitialization();
     }
 
     @Test

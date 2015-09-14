@@ -55,10 +55,7 @@ public class BooksIntegrationTest {
             response.header("FOO", "BAR");
         });
 
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
-        }
+        Spark.awaitInitialization();
     }
 
     @Test
