@@ -20,7 +20,7 @@ public class RouteHandleIntegrationTest {
     private static final String EXCEPTION_BODY_MESSAGE = "It's bad idea";
     private static final String GOOD_ROUTE = "/good";
     private static final String GOOD_BODY_MESSAGE = "Something good";
-    public static final String UNKNOWN_REOUTE = "unknown";
+    public static final String UNKNOWN_ROUTE = "unknown";
 
     private static SparkTestUtil testUtil;
 
@@ -70,7 +70,7 @@ public class RouteHandleIntegrationTest {
 
     @Test
     public void shouldSetAsNotFoundForUnhandledRoute() throws Exception {
-        SparkTestUtil.UrlResponse response = testUtil.doMethod(HttpMethod.GET.asString(), UNKNOWN_REOUTE, null);
+        SparkTestUtil.UrlResponse response = testUtil.doMethod(HttpMethod.GET.asString(), UNKNOWN_ROUTE, null);
         assertEquals("Should handle a status of response", Response.SC_NOT_FOUND, response.status);
     }
 
