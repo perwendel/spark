@@ -32,11 +32,11 @@ import spark.websocket.WebSocketTestHandler;
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.exception;
+import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.post;
-import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.staticFileLocation;
 import static spark.Spark.webSocket;
 

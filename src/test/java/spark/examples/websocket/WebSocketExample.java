@@ -22,8 +22,8 @@ import static spark.Spark.webSocket;
 public class WebSocketExample {
 
     public static void main(String[] args) {
-	webSocket("/echo", EchoWebSocket.class);
-	webSocket("/ping", PingWebSocket.class);
-	init();
+        webSocket("/echo", EchoWebSocket.class);
+        webSocket("/ping", PingWebSocket.class);
+        init();
     }
 }

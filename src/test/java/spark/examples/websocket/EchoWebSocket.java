@@ -29,18 +29,18 @@ public class EchoWebSocket {
     private Session session;
 
     @OnWebSocketConnect
-    public void onConnect(Session session) {
-	this.session = session;
+    public void connected(Session session) {
+        this.session = session;
     }
 
     @OnWebSocketClose
-    public void onClose(int statusCode, String reason) {
-	this.session = null;
+    public void closed(int statusCode, String reason) {
+        this.session = null;
     }
 
     @OnWebSocketMessage
-    public void onMessage(String message) throws IOException {
-	System.out.println("Got: " + message);
-	session.getRemote().sendString(message);
+    public void message(String message) throws IOException {
+        System.out.println("Got: " + message);
+        session.getRemote().sendString(message);
     }
 }
