@@ -1,30 +1,11 @@
 package spark.util;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.KeyStore;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpPatch;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpTrace;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -33,6 +14,18 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.KeyStore;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.text.MessageFormat.format;
 
 public class SparkTestUtil {
 
@@ -100,7 +93,12 @@ public class SparkTestUtil {
                                           String acceptType, Map<String, String> reqHeaders) {
         try {
             String protocol = secureConnection ? "https" : "http";
-            String uri = protocol + "://localhost:" + port + path;
+            String uri;
+            if (path != null && !path.startsWith("/")) {
+                uri = format("{0}://localhost:{1,number,#}/{2}", protocol, port, path);
+            } else {
+                uri = format("{0}://localhost:{1,number,#}{2}", protocol, port, path);
+            }
 
             if (requestMethod.equals("GET")) {
                 HttpGet httpGet = new HttpGet(uri);

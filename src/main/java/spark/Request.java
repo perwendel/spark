@@ -16,23 +16,14 @@
  */
 package spark;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import spark.routematch.RouteMatch;
+import spark.utils.IOUtils;
+import spark.utils.SparkUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import spark.routematch.RouteMatch;
-import spark.utils.IOUtils;
-import spark.utils.SparkUtils;
+import java.util.*;
 
 /**
  * Provides information about the HTTP request

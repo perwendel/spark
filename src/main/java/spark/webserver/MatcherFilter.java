@@ -16,33 +16,20 @@
  */
 package spark.webserver;
 
+import spark.*;
+import spark.route.HttpMethod;
+import spark.route.SimpleRouteMatcher;
+import spark.routematch.RouteMatch;
+import spark.utils.GzipUtils;
+import spark.webserver.serialization.SerializerChain;
+
+import javax.servlet.Filter;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import spark.Access;
-import spark.FilterImpl;
-import spark.HaltException;
-import spark.Request;
-import spark.RequestResponseFactory;
-import spark.Response;
-import spark.RouteImpl;
-import spark.ExceptionHandlerImpl;
-import spark.ExceptionMapper;
-import spark.route.HttpMethod;
-import spark.routematch.RouteMatch;
-import spark.route.SimpleRouteMatcher;
-import spark.utils.GzipUtils;
-import spark.webserver.serialization.SerializerChain;
 
 /**
  * Filter for matching of filters and routes.
@@ -105,7 +92,7 @@ public class MatcherFilter implements Filter {
 
         Response response = RequestResponseFactory.create(httpResponse);
 
-        LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
+        LOG.debug("httpMethod: {}, uri: {}", httpMethodStr, uri);
         try {
             // BEFORE filters
             List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri, acceptType);
@@ -146,6 +133,7 @@ public class MatcherFilter implements Filter {
 
             if (target != null) {
                 try {
+                    responseWrapper.state = ResponseWrapper.State.PROCESSED;
                     Object result = null;
                     if (target instanceof RouteImpl) {
                         RouteImpl route = ((RouteImpl) target);
@@ -201,46 +189,39 @@ public class MatcherFilter implements Filter {
 
         } catch (HaltException hEx) {
             LOG.debug("halt performed");
+            responseWrapper.state = ResponseWrapper.State.HALT;
             httpResponse.setStatus(hEx.getStatusCode());
             if (hEx.getBody() != null) {
                 bodyContent = hEx.getBody();
-            } else {
-                bodyContent = "";
             }
         } catch (Exception e) {
             ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(e);
             if (handler != null) {
                 handler.handle(e, requestWrapper, responseWrapper);
+                responseWrapper.state = ResponseWrapper.State.EXCEPTION_HANDLED;
                 String bodyAfterFilter = Access.getBody(responseWrapper.getDelegate());
                 if (bodyAfterFilter != null) {
                     bodyContent = bodyAfterFilter;
                 }
             } else {
-                LOG.error("", e);
+                LOG.error("Unhandled error: ", e);
+                responseWrapper.state = ResponseWrapper.State.EXCEPTION_UNHANDLED;
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 bodyContent = INTERNAL_ERROR;
             }
         }
 
-        // If redirected and content is null set to empty string to not throw NotConsumedException
-        if (bodyContent == null && responseWrapper.isRedirected()) {
-            bodyContent = "";
-        }
-
-        boolean consumed = bodyContent != null;
-
-        if (!consumed && hasOtherHandlers) {
+        if (responseWrapper.state.notConsumed() && hasOtherHandlers) {
             throw new NotConsumedException();
         }
 
-        if (!consumed && !isServletContext) {
-            LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
+        if (responseWrapper.state.notConsumed() && !isServletContext) {
+            LOG.info("The requested route [{}] has not been mapped in Spark", uri);
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            bodyContent = String.format(NOT_FOUND);
-            consumed = true;
+            bodyContent = NOT_FOUND;
         }
 
-        if (consumed) {
+        if (responseWrapper.state.consumed() && bodyContent != null) {
             // Write body content
             if (!httpResponse.isCommitted()) {
                 if (httpResponse.getContentType() == null) {
@@ -253,7 +234,7 @@ public class MatcherFilter implements Filter {
                 // serialize the body to output stream
                 serializerChain.process(outputStream, bodyContent);
 
-                outputStream.flush();//needed for GZIP stream. NOt sure where the HTTP response actually gets cleaned up
+                outputStream.flush();//needed for GZIP stream. Not sure where the HTTP response actually gets cleaned up
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
