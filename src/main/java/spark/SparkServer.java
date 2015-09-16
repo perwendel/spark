@@ -24,19 +24,20 @@ public interface SparkServer {
      * @param maxThreads                 - max nbr of threads.
      * @param minThreads                 - min nbr of threads.
      * @param threadIdleTimeoutMillis    - idle timeout (ms).
+     * @param webSocketHandlers          - web socket handlers.
      * @param webSocketIdleTimeoutMillis - Optional WebSocket idle timeout (ms).
      */
     void ignite(String host,
-                       int port,
-                       SslStores sslStores,
-                       String staticFilesFolder,
-                       String externalFilesFolder,
-                       CountDownLatch latch,
-                       int maxThreads,
-                       int minThreads,
-                       int threadIdleTimeoutMillis,
-                       Map<String, Class<?>> webSocketHandlers,
-                       Optional<Integer> webSocketIdleTimeoutMillis);
+                int port,
+                SslStores sslStores,
+                String staticFilesFolder,
+                String externalFilesFolder,
+                CountDownLatch latch,
+                int maxThreads,
+                int minThreads,
+                int threadIdleTimeoutMillis,
+                Map<String, Class<?>> webSocketHandlers,
+                Optional<Integer> webSocketIdleTimeoutMillis);
 
     void stop();
 }

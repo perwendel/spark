@@ -325,6 +325,7 @@ public class Request {
      * Gets the value of the provided attribute
      *
      * @param attribute The attribute value or null if not present
+     * @param <T> the type parameter.
      * @return the value for the provided attribute
      */
     public <T> T attribute(String attribute) {
