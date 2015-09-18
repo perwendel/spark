@@ -9,7 +9,7 @@ NEWS: Spark 2.3 is now available on Maven central! :
     <dependency>
         <groupId>com.sparkjava</groupId>
         <artifactId>spark-core</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
     </dependency>
 ```
 
