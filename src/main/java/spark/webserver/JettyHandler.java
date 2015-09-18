@@ -72,9 +72,19 @@ public class JettyHandler extends SessionHandler {
         public HttpRequestWrapper(HttpServletRequest request) {
             super(request);
         }
+        
+        private HttpServletRequest _getHttpServletRequest() {
+            return (HttpServletRequest) super.getRequest();
+        }
 
         @Override
         public ServletInputStream getInputStream() throws IOException {
+        	final String transferEncoding = _getHttpServletRequest().getHeader("Transfer-Encoding");
+        	if ("chunked".equals(transferEncoding)) {
+        		// disable stream cache for chuncked transfer encoding
+        		return super.getInputStream();
+        	}
+        	
             if (cachedBytes == null) {
                 cacheInputStream();
             }
