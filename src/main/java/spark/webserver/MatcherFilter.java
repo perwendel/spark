@@ -30,17 +30,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import spark.Access;
+import spark.ExceptionHandlerImpl;
+import spark.ExceptionMapper;
 import spark.FilterImpl;
 import spark.HaltException;
 import spark.Request;
 import spark.RequestResponseFactory;
 import spark.Response;
 import spark.RouteImpl;
-import spark.ExceptionHandlerImpl;
-import spark.ExceptionMapper;
 import spark.route.HttpMethod;
-import spark.routematch.RouteMatch;
 import spark.route.SimpleRouteMatcher;
+import spark.routematch.RouteMatch;
 import spark.utils.GzipUtils;
 import spark.webserver.serialization.SerializerChain;
 
@@ -230,7 +230,7 @@ public class MatcherFilter implements Filter {
         boolean consumed = bodyContent != null;
 
         if (!consumed && hasOtherHandlers) {
-            throw new NotConsumedException();
+            throw NotConsumedException.DEFAULT;
         }
 
         if (!consumed && !isServletContext) {

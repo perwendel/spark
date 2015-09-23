@@ -22,5 +22,7 @@ package spark.webserver;
  * @author Yan Bonnel
  */
 public class NotConsumedException extends RuntimeException {
+    public static final NotConsumedException DEFAULT = new NotConsumedException();
+
     private static final long serialVersionUID = 6748899505989134484L;
 }
