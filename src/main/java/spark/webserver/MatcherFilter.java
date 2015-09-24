@@ -130,7 +130,7 @@ public class MatcherFilter implements Filter {
             }
             // BEFORE filters, END
 
-            HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
+            HttpMethod httpMethod = HttpMethod.parseString(httpMethodStr);
 
             RouteMatch match = null;
             match = routeMatcher.findTargetForRequestedRoute(httpMethod, uri, acceptType);

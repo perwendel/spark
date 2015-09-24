@@ -20,5 +20,13 @@ package spark.route;
  * @author Per Wendel
  */
 public enum HttpMethod {
-    get, post, put, patch, delete, head, trace, connect, options, before, after
+    get, post, put, patch, delete, head, trace, connect, options, before, after, unknownMethod;
+
+    public static HttpMethod parseString(String httpMethodStr) {
+    	try {
+    		return HttpMethod.valueOf(httpMethodStr);
+    	} catch (IllegalArgumentException e) {
+    		return unknownMethod;
+    	}
+    }
 }
