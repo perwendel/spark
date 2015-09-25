@@ -230,7 +230,10 @@ public class MatcherFilter implements Filter {
         boolean consumed = bodyContent != null;
 
         if (!consumed && hasOtherHandlers) {
-            throw NotConsumedException.DEFAULT;
+            if (servletRequest instanceof HttpRequestWrapper) {
+                ((HttpRequestWrapper) servletRequest).notConsumed(true);
+                return;
+            }
         }
 
         if (!consumed && !isServletContext) {
