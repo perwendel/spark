@@ -16,20 +16,33 @@
  */
 package spark.webserver;
 
-import spark.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import spark.Access;
+import spark.ExceptionHandlerImpl;
+import spark.ExceptionMapper;
+import spark.FilterImpl;
+import spark.HaltException;
+import spark.Request;
+import spark.RequestResponseFactory;
+import spark.Response;
+import spark.RouteImpl;
 import spark.route.HttpMethod;
 import spark.route.SimpleRouteMatcher;
 import spark.routematch.RouteMatch;
 import spark.utils.GzipUtils;
 import spark.webserver.serialization.SerializerChain;
-
-import javax.servlet.Filter;
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
 
 /**
  * Filter for matching of filters and routes.
@@ -126,6 +139,7 @@ public class MatcherFilter implements Filter {
             if (match != null) {
                 target = match.getTarget();
             } else if (httpMethod == HttpMethod.head && bodyContent == null) {
+                responseWrapper.state = ResponseWrapper.State.PROCESSED;
                 // See if get is mapped to provide default head mapping
                 bodyContent =
                         routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri, acceptType) != null ? "" : null;
@@ -205,7 +219,6 @@ public class MatcherFilter implements Filter {
                 }
             } else {
                 LOG.error("Unhandled error: ", e);
-                responseWrapper.state = ResponseWrapper.State.EXCEPTION_UNHANDLED;
                 httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 bodyContent = INTERNAL_ERROR;
             }
@@ -216,7 +229,8 @@ public class MatcherFilter implements Filter {
         }
 
         if (responseWrapper.state.notConsumed() && !isServletContext) {
-            LOG.info("The requested route [{}] has not been mapped in Spark", uri);
+            LOG.info("The requested route {} [{}] has not been mapped in Spark",
+                     httpMethodStr.toUpperCase(), uri);
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
             bodyContent = NOT_FOUND;
         }

@@ -16,9 +16,9 @@
  */
 package spark.webserver;
 
-import spark.Response;
-
 import javax.servlet.http.HttpServletResponse;
+
+import spark.Response;
 
 class ResponseWrapper extends Response {
 
@@ -123,7 +123,7 @@ class ResponseWrapper extends Response {
     }
 
     public enum State{
-        NOT_PROCESSED, PROCESSED, EXCEPTION_HANDLED, EXCEPTION_UNHANDLED, HALT, REDIRECTED;
+        NOT_PROCESSED, PROCESSED, EXCEPTION_HANDLED, HALT, REDIRECTED;
 
         public boolean consumed(){
             return this == PROCESSED
