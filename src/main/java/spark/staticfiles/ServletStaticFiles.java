@@ -51,8 +51,8 @@ public class ServletStaticFiles {
      */
     public static boolean consumeStaticResources(HttpServletRequest httpRequest,
                                                  ServletResponse servletResponse) throws IOException {
-        if (staticResourceHandlers != null) {
-            for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
+        if (staticResourceHandlers() != null) {
+            for (AbstractResourceHandler staticResourceHandler : ServletStaticFiles.staticResourceHandlers()) {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
                     IOUtils.copy(resource.getInputStream(), servletResponse.getOutputStream());
@@ -71,7 +71,7 @@ public class ServletStaticFiles {
     public static void configureStaticResources(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
-        if (staticResourcesSet) {
+        if (!isStaticResourcesSet()) {
             try {
                 ClassPathResource resource = new ClassPathResource(folder);
                 if (!resource.getFile().isDirectory()) {
@@ -101,7 +101,7 @@ public class ServletStaticFiles {
     public static void configureExternalStaticResources(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
-        if (externalStaticResourcesSet) {
+        if (!isExternalStaticResourcesSet()) {
             try {
                 ExternalResource resource = new ExternalResource(folder);
                 if (!resource.getFile().isDirectory()) {
@@ -120,6 +120,20 @@ public class ServletStaticFiles {
             externalStaticResourcesSet = true;
         }
 
+    }
+
+    // PRIVATE //
+
+    private static boolean isStaticResourcesSet() {
+        return staticResourcesSet;
+    }
+
+    private static boolean isExternalStaticResourcesSet() {
+        return externalStaticResourcesSet;
+    }
+
+    private static List<AbstractResourceHandler> staticResourceHandlers() {
+        return staticResourceHandlers;
     }
 
 }
