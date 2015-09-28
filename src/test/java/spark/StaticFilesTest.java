@@ -46,8 +46,8 @@ public class StaticFilesTest {
     public static final String CONTENT_OF_EXTERNAL_FILE = "Content of external file";
     public static final String SUB_DIR = "subdir";
 
-    static SparkTestUtil testUtil;
-    static File tmpExternalFile;
+    private static SparkTestUtil testUtil;
+    private static File tmpExternalFile;
 
     @AfterClass
     public static void tearDown() {

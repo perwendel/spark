@@ -148,7 +148,7 @@ public class ServletTest {
 
     @Test
     public void testExternalStaticFile() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/externalFile.html", null);
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/" + MyApp.EXTERNAL_FILE, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of external file", response.body);
     }

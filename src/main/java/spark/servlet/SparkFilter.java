@@ -31,11 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.globalstate.ServletFlag;
-import spark.resource.AbstractFileResolvingResource;
-import spark.resource.AbstractResourceHandler;
 import spark.route.RouteMatcherFactory;
-import spark.staticfiles.ServletStaticFiles;
-import spark.utils.IOUtils;
+import spark.staticfiles.StaticFiles;
 import spark.webserver.MatcherFilter;
 
 /**
@@ -109,7 +106,7 @@ public class SparkFilter implements Filter {
         };
 
         // handle static resources
-        boolean consumed = ServletStaticFiles.consumeStaticResources(httpRequest, response);
+        boolean consumed = StaticFiles.consume(httpRequest, response);
         if (consumed) {
             return;
         }

@@ -14,13 +14,15 @@ import static spark.Spark.staticFileLocation;
 
 public class MyApp implements SparkApplication {
 
+    public static final String EXTERNAL_FILE = "externalFileServlet.html";
+
     @Override
     public void init() {
         try {
             externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
             staticFileLocation("/public");
 
-            File tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
+            File tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), EXTERNAL_FILE);
             FileWriter writer = new FileWriter(tmpExternalFile);
             writer.write("Content of external file");
             writer.flush();

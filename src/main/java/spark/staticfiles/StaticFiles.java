@@ -36,10 +36,10 @@ import spark.utils.Assert;
 import spark.utils.IOUtils;
 
 /**
- * Holds the static file information when Spark is run from Servlet.
+ * Holds the static file configuration.
  */
-public class ServletStaticFiles {
-    private static final Logger LOG = LoggerFactory.getLogger(ServletStaticFiles.class);
+public class StaticFiles {
+    private static final Logger LOG = LoggerFactory.getLogger(StaticFiles.class);
 
     private static List<AbstractResourceHandler> staticResourceHandlers = null;
 
@@ -49,10 +49,10 @@ public class ServletStaticFiles {
     /**
      * @return true if consumed, false otherwise.
      */
-    public static boolean consumeStaticResources(HttpServletRequest httpRequest,
-                                                 ServletResponse servletResponse) throws IOException {
+    public static boolean consume(HttpServletRequest httpRequest,
+                                  ServletResponse servletResponse) throws IOException {
         if (staticResourceHandlers() != null) {
-            for (AbstractResourceHandler staticResourceHandler : ServletStaticFiles.staticResourceHandlers()) {
+            for (AbstractResourceHandler staticResourceHandler : StaticFiles.staticResourceHandlers()) {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
                     IOUtils.copy(resource.getInputStream(), servletResponse.getOutputStream());
@@ -61,6 +61,18 @@ public class ServletStaticFiles {
             }
         }
         return false;
+    }
+
+    /**
+     * Clears all static file configuration
+     */
+    public static void clear() {
+        if (staticResourceHandlers != null) {
+            staticResourceHandlers.clear();
+            staticResourceHandlers = null;
+        }
+        staticResourcesSet = false;
+        externalStaticResourcesSet = false;
     }
 
     /**
