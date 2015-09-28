@@ -37,8 +37,7 @@ class InputStreamSerializer extends Serializer {
     @Override
     public void process(OutputStream outputStream, Object element)
             throws IOException {
-        String content = IOUtils.toString((InputStream) element);
-        outputStream.write(content.getBytes("utf-8"));
+        IOUtils.copy((InputStream) element, outputStream);
     }
 
 }
