@@ -95,7 +95,6 @@ public class StaticFiles {
                     staticResourceHandlers = new ArrayList<>();
                 }
                 staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
-                System.out.println("StaticResourceHandler configured with folder = " + folder);
                 LOG.info("StaticResourceHandler configured with folder = " + folder);
             } catch (IOException e) {
                 LOG.error("Error when creating StaticResourceHandler", e);

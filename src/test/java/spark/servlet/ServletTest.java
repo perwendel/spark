@@ -28,6 +28,10 @@ public class ServletTest {
     @AfterClass
     public static void tearDown() {
         Spark.stop();
+        if (MyApp.tmpExternalFile != null) {
+            LOGGER.debug("tearDown().deleting: " + MyApp.tmpExternalFile);
+            MyApp.tmpExternalFile.delete();
+        }
     }
 
     @BeforeClass

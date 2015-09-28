@@ -43,17 +43,25 @@ public class StaticFilesTest {
 
     private static final String EXTERNAL_FILE_NAME_HTML = "externalFile.html";
     private static final String EXTERNAL_FILE_NAME_CSS = "stylish.css";
-    public static final String CONTENT_OF_EXTERNAL_FILE = "Content of external file";
-    public static final String SUB_DIR = "subdir";
+
+    private static final String CONTENT_OF_EXTERNAL_FILE = "Content of external file";
+    private static final String SUB_DIR = "subdir";
 
     private static SparkTestUtil testUtil;
+
     private static File tmpExternalFile;
+    private static File tmpExternalFolder;
 
     @AfterClass
     public static void tearDown() {
         Spark.stop();
         if (tmpExternalFile != null) {
+            LOGGER.debug("tearDown().deleting: " + tmpExternalFile);
             tmpExternalFile.delete();
+        }
+        if (tmpExternalFolder != null) {
+            LOGGER.debug("tearDown().deleting: " + tmpExternalFolder);
+            tmpExternalFolder.delete();
         }
     }
 
@@ -63,8 +71,6 @@ public class StaticFilesTest {
 
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), EXTERNAL_FILE_NAME_HTML);
         createExternalSubDirectoryAndFile(System.getProperty("java.io.tmpdir") + SUB_DIR);
-
-        System.out.println("System.getProperty(\"java.io.tmpdir\" = " + System.getProperty("java.io.tmpdir"));
 
         FileWriter writer = new FileWriter(tmpExternalFile);
         writer.write(CONTENT_OF_EXTERNAL_FILE);
@@ -80,15 +86,15 @@ public class StaticFilesTest {
     }
 
     private static void createExternalSubDirectoryAndFile(String directoryName) throws IOException {
-        File directory = new File(directoryName);
+        tmpExternalFolder = new File(directoryName);
 
         // if the directory does not exist, create it
-        if (!directory.exists()) {
+        if (!tmpExternalFolder.exists()) {
             System.out.println("creating directory: " + directoryName);
             boolean result = false;
 
             try {
-                directory.mkdir();
+                tmpExternalFolder.mkdir();
                 result = true;
             } catch (SecurityException se) {
                 //handle it
