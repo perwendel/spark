@@ -27,8 +27,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.examples.exception.NotFoundException;
 import spark.util.SparkTestUtil;
 
+import static spark.Spark.exception;
 import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.get;
 import static spark.Spark.staticFileLocation;
@@ -39,7 +41,9 @@ import static spark.Spark.staticFileLocation;
 public class StaticFilesTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StaticFilesTest.class);
+
     private static final String FO_SHIZZY = "Fo shizzy";
+    private static final String NOT_FOUND_BRO = "Not found bro";
 
     private static final String EXTERNAL_FILE_NAME_HTML = "externalFile.html";
     private static final String EXTERNAL_FILE_NAME_CSS = "stylish.css";
@@ -81,6 +85,15 @@ public class StaticFilesTest {
         externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
 
         get("/hello", (q, a) -> FO_SHIZZY);
+
+        get("/*", (q, a) -> {
+            throw new NotFoundException();
+        });
+
+        exception(NotFoundException.class, (e, request, response) -> {
+            response.status(404);
+            response.body(NOT_FOUND_BRO);
+        });
 
         Spark.awaitInitialization();
     }
@@ -166,6 +179,14 @@ public class StaticFilesTest {
 
         Assert.assertEquals(200, response.status);
         Assert.assertTrue(response.body.contains(FO_SHIZZY));
+    }
+
+    @Test
+    public void testExceptionMapping404() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/filethatdoesntexist.html", null);
+
+        Assert.assertEquals(404, response.status);
+        Assert.assertEquals(NOT_FOUND_BRO, response.body);
     }
 
 }
