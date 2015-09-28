@@ -76,6 +76,10 @@ public class JettySparkServer implements SparkServer {
                        Map<String, Class<?>> webSocketHandlers,
                        Optional<Integer> webSocketIdleTimeoutMillis) {
 
+        // TODO
+        staticFilesFolder = null;
+        externalFilesFolder = null;
+
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
                 port = s.getLocalPort();

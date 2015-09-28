@@ -38,11 +38,11 @@ import static spark.Spark.staticFileLocation;
  */
 public class StaticFilesTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericIntegrationTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StaticFilesTest.class);
     private static final String FO_SHIZZY = "Fo shizzy";
 
     private static final String EXTERNAL_FILE_NAME_HTML = "externalFile.html";
-    private static final String EXTERNAL_FILE_NAME_CSS = "style.css";
+    private static final String EXTERNAL_FILE_NAME_CSS = "stylish.css";
     public static final String CONTENT_OF_EXTERNAL_FILE = "Content of external file";
     public static final String SUB_DIR = "subdir";
 
@@ -144,7 +144,8 @@ public class StaticFilesTest {
 
     @Test
     public void testExternalStaticFileSubdirStyleCss() throws Exception {
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/" + SUB_DIR + "/style.css", null);
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/" + SUB_DIR + "/stylish.css", null);
+
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of external file", response.body);
 
@@ -156,7 +157,7 @@ public class StaticFilesTest {
      */
     private static void testGet() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
-        LOGGER.info(response.body);
+
         Assert.assertEquals(200, response.status);
         Assert.assertTrue(response.body.contains(FO_SHIZZY));
     }

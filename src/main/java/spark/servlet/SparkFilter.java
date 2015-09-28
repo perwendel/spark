@@ -109,14 +109,9 @@ public class SparkFilter implements Filter {
         };
 
         // handle static resources
-        if (ServletStaticFiles.staticResourceHandlers() != null) {
-            for (AbstractResourceHandler staticResourceHandler : ServletStaticFiles.staticResourceHandlers()) {
-                AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
-                if (resource != null && resource.isReadable()) {
-                    IOUtils.copy(resource.getInputStream(), response.getOutputStream());
-                    return;
-                }
-            }
+        boolean consumed = ServletStaticFiles.consumeStaticResources(httpRequest, response);
+        if (consumed) {
+            return;
         }
 
         matcherFilter.doFilter(requestWrapper, response, chain);

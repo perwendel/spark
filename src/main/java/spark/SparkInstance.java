@@ -221,6 +221,10 @@ final class SparkInstance extends Routable {
             if (ServletFlag.isRunningFromServlet()) {
                 ServletStaticFiles.configureStaticResources(staticFileFolder);
                 servletStaticLocationSet = true;
+            } else {
+                System.out.println("DO SAME THING HERE");
+                ServletStaticFiles.configureStaticResources(staticFileFolder);
+                servletStaticLocationSet = true;
             }
         } else {
             LOG.warn("Static file location has already been set");
@@ -240,6 +244,10 @@ final class SparkInstance extends Routable {
         externalStaticFileFolder = externalFolder;
         if (!servletExternalStaticLocationSet) {
             if (ServletFlag.isRunningFromServlet()) {
+                ServletStaticFiles.configureExternalStaticResources(externalStaticFileFolder);
+                servletExternalStaticLocationSet = true;
+            } else {
+                System.out.println("DO SAME THING HERE 2");
                 ServletStaticFiles.configureExternalStaticResources(externalStaticFileFolder);
                 servletExternalStaticLocationSet = true;
             }

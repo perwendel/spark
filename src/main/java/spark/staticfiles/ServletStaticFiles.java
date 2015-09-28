@@ -20,15 +20,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.resource.AbstractFileResolvingResource;
 import spark.resource.AbstractResourceHandler;
 import spark.resource.ClassPathResource;
 import spark.resource.ClassPathResourceHandler;
 import spark.resource.ExternalResource;
 import spark.resource.ExternalResourceHandler;
 import spark.utils.Assert;
+import spark.utils.IOUtils;
 
 /**
  * Holds the static file information when Spark is run from Servlet.
@@ -41,16 +46,21 @@ public class ServletStaticFiles {
     private static boolean staticResourcesSet = false;
     private static boolean externalStaticResourcesSet = false;
 
-    public static boolean isStaticResourcesSet() {
-        return staticResourcesSet;
-    }
-
-    public static boolean isExternalStaticResourcesSet() {
-        return externalStaticResourcesSet;
-    }
-
-    public static List<AbstractResourceHandler> staticResourceHandlers() {
-        return staticResourceHandlers;
+    /**
+     * @return true if consumed, false otherwise.
+     */
+    public static boolean consumeStaticResources(HttpServletRequest httpRequest,
+                                                 ServletResponse servletResponse) throws IOException {
+        if (staticResourceHandlers != null) {
+            for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
+                AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
+                if (resource != null && resource.isReadable()) {
+                    IOUtils.copy(resource.getInputStream(), servletResponse.getOutputStream());
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -61,7 +71,7 @@ public class ServletStaticFiles {
     public static void configureStaticResources(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
-        if (!isStaticResourcesSet()) {
+        if (staticResourcesSet) {
             try {
                 ClassPathResource resource = new ClassPathResource(folder);
                 if (!resource.getFile().isDirectory()) {
@@ -73,6 +83,7 @@ public class ServletStaticFiles {
                     staticResourceHandlers = new ArrayList<>();
                 }
                 staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
+                System.out.println("StaticResourceHandler configured with folder = " + folder);
                 LOG.info("StaticResourceHandler configured with folder = " + folder);
             } catch (IOException e) {
                 LOG.error("Error when creating StaticResourceHandler", e);
@@ -90,7 +101,7 @@ public class ServletStaticFiles {
     public static void configureExternalStaticResources(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
-        if (!isExternalStaticResourcesSet()) {
+        if (externalStaticResourcesSet) {
             try {
                 ExternalResource resource = new ExternalResource(folder);
                 if (!resource.getFile().isDirectory()) {

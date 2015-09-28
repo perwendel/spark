@@ -38,10 +38,14 @@ import spark.Request;
 import spark.RequestResponseFactory;
 import spark.Response;
 import spark.RouteImpl;
+import spark.resource.AbstractFileResolvingResource;
+import spark.resource.AbstractResourceHandler;
 import spark.route.HttpMethod;
 import spark.route.SimpleRouteMatcher;
 import spark.routematch.RouteMatch;
+import spark.staticfiles.ServletStaticFiles;
 import spark.utils.GzipUtils;
+import spark.utils.IOUtils;
 import spark.webserver.serialization.SerializerChain;
 
 /**
@@ -89,6 +93,12 @@ public class MatcherFilter implements Filter {
                          FilterChain chain) throws IOException, ServletException { // NOSONAR
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest; // NOSONAR
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+
+        // handle static resources
+        boolean consumedByStaticResources = ServletStaticFiles.consumeStaticResources(httpRequest, httpResponse);
+        if (consumedByStaticResources) {
+            return;
+        }
 
         String method = httpRequest.getHeader(HTTP_METHOD_OVERRIDE_HEADER);
         if (method == null) {
