@@ -46,15 +46,12 @@ public class StaticFilesTest {
     private static final String NOT_FOUND_BRO = "Not found bro";
 
     private static final String EXTERNAL_FILE_NAME_HTML = "externalFile.html";
-    private static final String EXTERNAL_FILE_NAME_CSS = "stylish.css";
 
     private static final String CONTENT_OF_EXTERNAL_FILE = "Content of external file";
-    private static final String SUB_DIR = "subdir";
 
     private static SparkTestUtil testUtil;
 
     private static File tmpExternalFile;
-    private static File tmpExternalFolder;
 
     @AfterClass
     public static void tearDown() {
@@ -63,10 +60,6 @@ public class StaticFilesTest {
             LOGGER.debug("tearDown().deleting: " + tmpExternalFile);
             tmpExternalFile.delete();
         }
-        if (tmpExternalFolder != null) {
-            LOGGER.debug("tearDown().deleting: " + tmpExternalFolder);
-            tmpExternalFolder.delete();
-        }
     }
 
     @BeforeClass
@@ -74,7 +67,6 @@ public class StaticFilesTest {
         testUtil = new SparkTestUtil(4567);
 
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), EXTERNAL_FILE_NAME_HTML);
-        createExternalSubDirectoryAndFile(System.getProperty("java.io.tmpdir") + SUB_DIR);
 
         FileWriter writer = new FileWriter(tmpExternalFile);
         writer.write(CONTENT_OF_EXTERNAL_FILE);
@@ -97,33 +89,6 @@ public class StaticFilesTest {
 
         Spark.awaitInitialization();
     }
-
-    private static void createExternalSubDirectoryAndFile(String directoryName) throws IOException {
-        tmpExternalFolder = new File(directoryName);
-
-        // if the directory does not exist, create it
-        if (!tmpExternalFolder.exists()) {
-            System.out.println("creating directory: " + directoryName);
-            boolean result = false;
-
-            try {
-                tmpExternalFolder.mkdir();
-                result = true;
-            } catch (SecurityException se) {
-                //handle it
-            }
-            if (result) {
-                System.out.println("DIR created");
-            }
-        }
-
-        File tmpExternalFile = new File(directoryName, EXTERNAL_FILE_NAME_CSS);
-        FileWriter writer = new FileWriter(tmpExternalFile);
-        writer.write(CONTENT_OF_EXTERNAL_FILE);
-        writer.flush();
-        writer.close();
-    }
-
 
     @Test
     public void testStaticFileCssStyleCss() throws Exception {
@@ -155,16 +120,6 @@ public class StaticFilesTest {
     @Test
     public void testExternalStaticFile() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/externalFile.html", null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals("Content of external file", response.body);
-
-        testGet();
-    }
-
-    @Test
-    public void testExternalStaticFileSubdirStyleCss() throws Exception {
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/" + SUB_DIR + "/stylish.css", null);
-
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of external file", response.body);
 
