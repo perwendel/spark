@@ -2,7 +2,6 @@ package spark.servlet;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
