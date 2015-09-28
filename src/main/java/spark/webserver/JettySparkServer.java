@@ -37,7 +37,6 @@ import spark.SparkServer;
 import spark.webserver.jetty.JettyServerFactory;
 import spark.webserver.jetty.SocketConnectorFactory;
 import spark.ssl.SslStores;
-import spark.staticfiles.StaticFiles;
 import spark.webserver.websocket.WebSocketServletContextHandlerFactory;
 
 /**
@@ -67,18 +66,12 @@ public class JettySparkServer implements SparkServer {
     public void ignite(String host,
                        int port,
                        SslStores sslStores,
-                       String staticFilesFolder,
-                       String externalFilesFolder,
                        CountDownLatch latch,
                        int maxThreads,
                        int minThreads,
                        int threadIdleTimeoutMillis,
                        Map<String, Class<?>> webSocketHandlers,
                        Optional<Integer> webSocketIdleTimeoutMillis) {
-
-        // TODO
-        staticFilesFolder = null;
-        externalFilesFolder = null;
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -105,18 +98,12 @@ public class JettySparkServer implements SparkServer {
         ServletContextHandler webSocketServletContextHandler =
                 WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
 
-        // Handle static file routes
-        if (staticFilesFolder == null && externalFilesFolder == null && webSocketServletContextHandler == null) {
+        // Handle web socket routes
+        if (webSocketServletContextHandler == null) {
             server.setHandler(handler);
         } else {
             List<Handler> handlersInList = new ArrayList<>();
             handlersInList.add(handler);
-
-            // Set static file location
-            StaticFiles.setLocationIfPresent(staticFilesFolder, handlersInList);
-
-            // Set external static file location
-            StaticFiles.setExternalLocationIfPresent(externalFilesFolder, handlersInList);
 
             // WebSocket handler must be the last one
             if (webSocketServletContextHandler != null) {

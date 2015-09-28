@@ -18,8 +18,6 @@ public interface SparkServer {
      * @param host                       The address to listen on
      * @param port                       - the port
      * @param sslStores                  - The SSL sslStores.
-     * @param staticFilesFolder          - the route to static files in classPath
-     * @param externalFilesFolder        - the route to static files external to classPath.
      * @param latch                      - the countdown latch
      * @param maxThreads                 - max nbr of threads.
      * @param minThreads                 - min nbr of threads.
@@ -30,8 +28,6 @@ public interface SparkServer {
     void ignite(String host,
                 int port,
                 SslStores sslStores,
-                String staticFilesFolder,
-                String externalFilesFolder,
                 CountDownLatch latch,
                 int maxThreads,
                 int minThreads,
