@@ -51,8 +51,8 @@ public class StaticFiles {
      */
     public static boolean consume(HttpServletRequest httpRequest,
                                   ServletResponse servletResponse) throws IOException {
-        if (staticResourceHandlers() != null) {
-            for (AbstractResourceHandler staticResourceHandler : StaticFiles.staticResourceHandlers()) {
+        if (staticResourceHandlers != null) {
+            for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
                     IOUtils.copy(resource.getInputStream(), servletResponse.getOutputStream());
@@ -83,7 +83,7 @@ public class StaticFiles {
     public static void configureStaticResources(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
-        if (!isStaticResourcesSet()) {
+        if (!staticResourcesSet) {
             try {
                 ClassPathResource resource = new ClassPathResource(folder);
                 if (!resource.getFile().isDirectory()) {
@@ -112,7 +112,7 @@ public class StaticFiles {
     public static void configureExternalStaticResources(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
-        if (!isExternalStaticResourcesSet()) {
+        if (!externalStaticResourcesSet) {
             try {
                 ExternalResource resource = new ExternalResource(folder);
                 if (!resource.getFile().isDirectory()) {
@@ -131,20 +131,6 @@ public class StaticFiles {
             externalStaticResourcesSet = true;
         }
 
-    }
-
-    // PRIVATE //
-
-    private static boolean isStaticResourcesSet() {
-        return staticResourcesSet;
-    }
-
-    private static boolean isExternalStaticResourcesSet() {
-        return externalStaticResourcesSet;
-    }
-
-    private static List<AbstractResourceHandler> staticResourceHandlers() {
-        return staticResourceHandlers;
     }
 
 }
