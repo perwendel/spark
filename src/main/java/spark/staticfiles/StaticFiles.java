@@ -37,6 +37,9 @@ import spark.utils.IOUtils;
 
 /**
  * Holds the static file configuration.
+ *
+ * TODO: Cache-Control and ETAG
+ * TODO: Is global state a problem here?
  */
 public class StaticFiles {
     private static final Logger LOG = LoggerFactory.getLogger(StaticFiles.class);
