@@ -16,56 +16,124 @@
  */
 package spark.staticfiles;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.Resource;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import spark.resource.AbstractFileResolvingResource;
+import spark.resource.AbstractResourceHandler;
+import spark.resource.ClassPathResource;
+import spark.resource.ClassPathResourceHandler;
+import spark.resource.ExternalResource;
+import spark.resource.ExternalResourceHandler;
 import spark.utils.Assert;
+import spark.utils.IOUtils;
 
 /**
- * Utility methods for setting internal and external static file locations.
+ * Holds the static file configuration.
+ *
+ * TODO: Cache-Control and ETAG
+ * TODO: Is global state a problem here?
  */
 public class StaticFiles {
+    private static final Logger LOG = LoggerFactory.getLogger(StaticFiles.class);
+
+    private static List<AbstractResourceHandler> staticResourceHandlers = null;
+
+    private static boolean staticResourcesSet = false;
+    private static boolean externalStaticResourcesSet = false;
 
     /**
-     * Adds static file location to 'handlersInList' if present
-     *
-     * @param staticFileLocation staticFileLocation
-     * @param handlersInList     handlersInList
+     * @return true if consumed, false otherwise.
      */
-    public static void setLocationIfPresent(String staticFileLocation,
-                                            List<Handler> handlersInList) {
-
-        Assert.notNull(handlersInList, "'handlersInList' must not be null");
-
-        if (staticFileLocation != null) {
-            ResourceHandler resourceHandler = new ResourceHandler();
-            Resource staticResources = Resource.newClassPathResource(staticFileLocation);
-            resourceHandler.setBaseResource(staticResources);
-            resourceHandler.setWelcomeFiles(new String[] {"index.html"});
-            handlersInList.add(resourceHandler);
+    public static boolean consume(HttpServletRequest httpRequest,
+                                  ServletResponse servletResponse) throws IOException {
+        if (staticResourceHandlers != null) {
+            for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
+                AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
+                if (resource != null && resource.isReadable()) {
+                    IOUtils.copy(resource.getInputStream(), servletResponse.getOutputStream());
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
     /**
-     * Adds external static file location to 'handlersInList' if present
-     *
-     * @param externalFileLocation externalFileLocation
-     * @param handlersInList       handlersInList
+     * Clears all static file configuration
      */
-    public static void setExternalLocationIfPresent(String externalFileLocation,
-                                                    List<Handler> handlersInList) {
-
-        Assert.notNull(handlersInList, "'handlersInList' must not be null");
-
-        if (externalFileLocation != null) {
-            ResourceHandler externalResourceHandler = new ResourceHandler();
-            externalResourceHandler.setResourceBase(externalFileLocation);
-            externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
-            handlersInList.add(externalResourceHandler);
+    public static void clear() {
+        if (staticResourceHandlers != null) {
+            staticResourceHandlers.clear();
+            staticResourceHandlers = null;
         }
+        staticResourcesSet = false;
+        externalStaticResourcesSet = false;
+    }
+
+    /**
+     * Configures location for static resources
+     *
+     * @param folder the location
+     */
+    public static void configureStaticResources(String folder) {
+        Assert.notNull(folder, "'folder' must not be null");
+
+        if (!staticResourcesSet) {
+            try {
+                ClassPathResource resource = new ClassPathResource(folder);
+                if (!resource.getFile().isDirectory()) {
+                    LOG.error("Static resource location must be a folder");
+                    return;
+                }
+
+                if (staticResourceHandlers == null) {
+                    staticResourceHandlers = new ArrayList<>();
+                }
+                staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
+                LOG.info("StaticResourceHandler configured with folder = " + folder);
+            } catch (IOException e) {
+                LOG.error("Error when creating StaticResourceHandler", e);
+            }
+            staticResourcesSet = true;
+        }
+
+    }
+
+    /**
+     * Configures location for static resources
+     *
+     * @param folder the location
+     */
+    public static void configureExternalStaticResources(String folder) {
+        Assert.notNull(folder, "'folder' must not be null");
+
+        if (!externalStaticResourcesSet) {
+            try {
+                ExternalResource resource = new ExternalResource(folder);
+                if (!resource.getFile().isDirectory()) {
+                    LOG.error("External Static resource location must be a folder");
+                    return;
+                }
+
+                if (staticResourceHandlers == null) {
+                    staticResourceHandlers = new ArrayList<>();
+                }
+                staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
+                LOG.info("External StaticResourceHandler configured with folder = " + folder);
+            } catch (IOException e) {
+                LOG.error("Error when creating external StaticResourceHandler", e);
+            }
+            externalStaticResourcesSet = true;
+        }
+
     }
 
 }

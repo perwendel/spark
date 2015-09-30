@@ -1,5 +1,7 @@
 package spark.servlet;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -15,19 +17,21 @@ import spark.Spark;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
-import java.util.concurrent.CountDownLatch;
-
 public class ServletTest {
 
     private static final String SOMEPATH = "/somepath";
     private static final int PORT = 9393;
     private static final Logger LOGGER = LoggerFactory.getLogger(ServletTest.class);
 
-    static SparkTestUtil testUtil;
+    private static SparkTestUtil testUtil;
 
     @AfterClass
     public static void tearDown() {
         Spark.stop();
+        if (MyApp.tmpExternalFile != null) {
+            LOGGER.debug("tearDown().deleting: " + MyApp.tmpExternalFile);
+            MyApp.tmpExternalFile.delete();
+        }
     }
 
     @BeforeClass
@@ -148,7 +152,7 @@ public class ServletTest {
 
     @Test
     public void testExternalStaticFile() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/externalFile.html", null);
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/" + MyApp.EXTERNAL_FILE, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of external file", response.body);
     }

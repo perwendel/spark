@@ -28,7 +28,7 @@ import spark.globalstate.ServletFlag;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.ssl.SslStores;
-import spark.staticfiles.ServletStaticFiles;
+import spark.staticfiles.StaticFiles;
 import spark.webserver.SparkServerFactory;
 
 import static java.util.Objects.requireNonNull;
@@ -218,10 +218,8 @@ final class SparkInstance extends Routable {
         }
         staticFileFolder = folder;
         if (!servletStaticLocationSet) {
-            if (ServletFlag.isRunningFromServlet()) {
-                ServletStaticFiles.configureStaticResources(staticFileFolder);
-                servletStaticLocationSet = true;
-            }
+            StaticFiles.configureStaticResources(staticFileFolder);
+            servletStaticLocationSet = true;
         } else {
             LOG.warn("Static file location has already been set");
         }
@@ -239,10 +237,8 @@ final class SparkInstance extends Routable {
         }
         externalStaticFileFolder = externalFolder;
         if (!servletExternalStaticLocationSet) {
-            if (ServletFlag.isRunningFromServlet()) {
-                ServletStaticFiles.configureExternalStaticResources(externalStaticFileFolder);
-                servletExternalStaticLocationSet = true;
-            }
+            StaticFiles.configureExternalStaticResources(externalStaticFileFolder);
+            servletExternalStaticLocationSet = true;
         } else {
             LOG.warn("External static file location has already been set");
         }
@@ -304,7 +300,7 @@ final class SparkInstance extends Routable {
     }
 
     private boolean hasMultipleHandlers() {
-        return staticFileFolder != null || externalStaticFileFolder != null || webSocketHandlers != null;
+        return webSocketHandlers != null;
     }
 
 
@@ -317,6 +313,7 @@ final class SparkInstance extends Routable {
             server.stop();
             latch = new CountDownLatch(1);
         }
+        StaticFiles.clear();
         initialized = false;
     }
 
@@ -342,8 +339,6 @@ final class SparkInstance extends Routable {
                             ipAddress,
                             port,
                             sslStores,
-                            staticFileFolder,
-                            externalStaticFileFolder,
                             latch,
                             maxThreads,
                             minThreads,
