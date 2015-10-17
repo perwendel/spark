@@ -246,7 +246,13 @@ public class MatcherFilter implements Filter {
                 if (httpResponse.getContentType() == null) {
                     httpResponse.setContentType("text/html; charset=utf-8");
                 }
-
+                if(bodyContent instanceof String){
+                    byte[] bytes=((String)bodyContent).getBytes("utf-8");
+                    if(httpResponse.getHeader("Content-Length")==null){
+                        httpResponse.setHeader("Content-Length", new Integer(bytes.length).toString());
+                    }
+                 
+                }
                 // Check if gzip is wanted/accepted and in that case handle that
                 OutputStream outputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse);
 
