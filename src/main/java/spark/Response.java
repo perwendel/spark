@@ -167,10 +167,22 @@ public class Response {
      * @param value   value of the cookie
      * @param maxAge  max age of the cookie in seconds (negative for the not persistent cookie, zero - deletes the cookie)
      * @param secured if true : cookie will be secured
-     *                zero - deletes the cookie)
      */
     public void cookie(String name, String value, int maxAge, boolean secured) {
-        cookie("", name, value, maxAge, secured);
+        cookie(name, value, maxAge, secured, false);
+    }
+
+    /**
+     * Adds cookie to the response. Can be invoked multiple times to insert more than one cookie.
+     *
+     * @param name     name of the cookie
+     * @param value    value of the cookie
+     * @param maxAge   max age of the cookie in seconds (negative for the not persistent cookie, zero - deletes the cookie)
+     * @param secured  if true : cookie will be secured
+     * @param httpOnly if true: cookie will be marked as http only
+     */
+    public void cookie(String name, String value, int maxAge, boolean secured, boolean httpOnly) {
+        cookie("", name, value, maxAge, secured, httpOnly);
     }
 
     /**
@@ -181,13 +193,27 @@ public class Response {
      * @param value   value of the cookie
      * @param maxAge  max age of the cookie in seconds (negative for the not persistent cookie, zero - deletes the cookie)
      * @param secured if true : cookie will be secured
-     *                zero - deletes the cookie)
      */
     public void cookie(String path, String name, String value, int maxAge, boolean secured) {
+        cookie(path, name, value, maxAge, secured, false);
+    }
+
+    /**
+     * Adds cookie to the response. Can be invoked multiple times to insert more than one cookie.
+     *
+     * @param path     path of the cookie
+     * @param name     name of the cookie
+     * @param value    value of the cookie
+     * @param maxAge   max age of the cookie in seconds (negative for the not persistent cookie, zero - deletes the cookie)
+     * @param secured  if true : cookie will be secured
+     * @param httpOnly if true: cookie will be marked as http only
+     */
+    public void cookie(String path, String name, String value, int maxAge, boolean secured, boolean httpOnly) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath(path);
         cookie.setMaxAge(maxAge);
         cookie.setSecure(secured);
+        cookie.setHttpOnly(httpOnly);
         response.addCookie(cookie);
     }
 
