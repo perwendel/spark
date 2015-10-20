@@ -16,11 +16,7 @@
  */
 package spark.route;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import spark.routematch.RouteMatch;
 import spark.utils.MimeParse;
@@ -104,13 +100,13 @@ public class SimpleRouteMatcher {
 
         for (RouteEntry routeEntry : routeEntries) {
             if (acceptType != null) {
-                String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
+                String bestMatch = MimeParse.bestMatch(Collections.singletonList(routeEntry.acceptedType), acceptType);
 
                 if (routeWithGivenAcceptType(bestMatch)) {
                     matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType));
                 }
             } else {
-                matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType));
+                matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, null));
             }
         }
 
