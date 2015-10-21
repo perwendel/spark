@@ -16,14 +16,13 @@
  */
 package spark.route;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import spark.routematch.RouteMatch;
 import spark.utils.MimeParse;
 import spark.utils.StringUtils;
 
-import static java.util.stream.Collectors.*;
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Simple route matcher that is supposed to work exactly as Sinatra's
@@ -186,9 +185,9 @@ public class SimpleRouteMatcher {
     private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
         Map<String, RouteEntry> acceptedTypes = new HashMap<>();
 
-        routes.stream().filter(routeEntry -> !acceptedTypes.containsKey(routeEntry.acceptedType)).forEach(routeEntry -> {
-            acceptedTypes.put(routeEntry.acceptedType, routeEntry);
-        });
+        routes.stream().filter(routeEntry -> !acceptedTypes.containsKey(routeEntry.acceptedType)).forEach(routeEntry ->
+                        acceptedTypes.put(routeEntry.acceptedType, routeEntry)
+        );
 
         return acceptedTypes;
     }
@@ -209,35 +208,22 @@ public class SimpleRouteMatcher {
 
             if (routeWithGivenAcceptType(bestMatch)) {
                 return acceptedMimeTypes.get(bestMatch);
-            } else {
-                return null;
-            }
-        } else {
-            if (routeMatches.size() > 0) {
-                return routeMatches.get(0);
             }
         }
 
-        return null;
+        return routeMatches.size() > 0 ? routeMatches.get(0) : null;
     }
 
     private boolean removeRoute(HttpMethod httpMethod, String path) {
         List<RouteEntry> forRemoval = new ArrayList<>();
 
-        for (RouteEntry routeEntry : routes) {
-            HttpMethod httpMethodToMatch = httpMethod;
-
-            if (httpMethod == null) {
+        routes.stream().filter(routeEntry ->
                 // Use the routeEntry's HTTP method if none was given, so that only path is used to match.
-                httpMethodToMatch = routeEntry.httpMethod;
-            }
-
-            if (routeEntry.matches(httpMethodToMatch, path)) {
-                LOG.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
-
-                forRemoval.add(routeEntry);
-            }
-        }
+                httpMethod != null ? routeEntry.matches(httpMethod, path) : routeEntry.matches(routeEntry.httpMethod, path))
+                .forEach(routeEntry -> {
+                    LOG.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
+                    forRemoval.add(routeEntry);
+                });
 
         return routes.removeAll(forRemoval);
     }
