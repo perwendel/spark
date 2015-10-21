@@ -58,9 +58,9 @@ public class StaticFilesTest {
         Spark.stop();
         if (tmpExternalFile != null) {
             LOGGER.debug("tearDown().deleting: " + tmpExternalFile);
-            if (tmpExternalFile.delete()){
+            if (tmpExternalFile.delete()) {
                 LOGGER.debug("tearDown().deleted: " + tmpExternalFile);
-            }else{
+            } else {
                 LOGGER.debug("tearDown().deletion has failed: " + tmpExternalFile);
             }
         }
@@ -92,6 +92,16 @@ public class StaticFilesTest {
         });
 
         Spark.awaitInitialization();
+    }
+
+    /**
+     * Used to verify that "normal" functionality works after static files mapping
+     */
+    private static void testGet() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
+
+        Assert.assertEquals(200, response.status);
+        Assert.assertTrue(response.body.contains(FO_SHIZZY));
     }
 
     @Test
@@ -128,16 +138,6 @@ public class StaticFilesTest {
         Assert.assertEquals("Content of external file", response.body);
 
         testGet();
-    }
-
-    /**
-     * Used to verify that "normal" functionality works after static files mapping
-     */
-    private static void testGet() throws Exception {
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
-
-        Assert.assertEquals(200, response.status);
-        Assert.assertTrue(response.body.contains(FO_SHIZZY));
     }
 
     @Test

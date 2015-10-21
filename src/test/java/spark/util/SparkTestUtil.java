@@ -51,6 +51,55 @@ public class SparkTestUtil {
         this.httpClient = new DefaultHttpClient(connMrg);
     }
 
+    /**
+     * Return JVM param set keystore or default if not set.
+     *
+     * @return Keystore location as string
+     */
+    public static String getKeyStoreLocation() {
+        String keyStoreLoc = System.getProperty("javax.net.ssl.keyStore");
+        return keyStoreLoc == null ? "./src/test/resources/keystore.jks" : keyStoreLoc;
+    }
+
+    /**
+     * Return JVM param set keystore password or default if not set.
+     *
+     * @return Keystore password as string
+     */
+    public static String getKeystorePassword() {
+        String password = System.getProperty("javax.net.ssl.keyStorePassword");
+        return password == null ? "password" : password;
+    }
+
+    /**
+     * Return JVM param set truststore location, or keystore location if not
+     * set. if keystore not set either, returns default
+     *
+     * @return truststore location as string
+     */
+    public static String getTrustStoreLocation() {
+        String trustStoreLoc = System.getProperty("javax.net.ssl.trustStore");
+        return trustStoreLoc == null ? getKeyStoreLocation() : trustStoreLoc;
+    }
+
+    /**
+     * Return JVM param set truststore password or keystore password if not set.
+     * If still not set, will return default password
+     *
+     * @return truststore password as string
+     */
+    public static String getTrustStorePassword() {
+        String password = System.getProperty("javax.net.ssl.trustStorePassword");
+        return password == null ? getKeystorePassword() : password;
+    }
+
+    public static void sleep(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (Exception e) {
+        }
+    }
+
     public UrlResponse doMethodSecure(String requestMethod, String path, String body)
             throws Exception {
         return doMethod(requestMethod, path, body, true, "text/html");
@@ -189,7 +238,7 @@ public class SparkTestUtil {
      * So these can be used to specify other key/trust stores if required.
      *
      * @return an SSL Socket Factory using either provided keystore OR the
-     *         keystore specified in JVM params
+     * keystore specified in JVM params
      */
     private SSLSocketFactory getSslFactory() {
         KeyStore keyStore = null;
@@ -211,60 +260,11 @@ public class SparkTestUtil {
         return null;
     }
 
-    /**
-     * Return JVM param set keystore or default if not set.
-     *
-     * @return Keystore location as string
-     */
-    public static String getKeyStoreLocation() {
-        String keyStoreLoc = System.getProperty("javax.net.ssl.keyStore");
-        return keyStoreLoc == null ? "./src/test/resources/keystore.jks" : keyStoreLoc;
-    }
-
-    /**
-     * Return JVM param set keystore password or default if not set.
-     *
-     * @return Keystore password as string
-     */
-    public static String getKeystorePassword() {
-        String password = System.getProperty("javax.net.ssl.keyStorePassword");
-        return password == null ? "password" : password;
-    }
-
-    /**
-     * Return JVM param set truststore location, or keystore location if not
-     * set. if keystore not set either, returns default
-     *
-     * @return truststore location as string
-     */
-    public static String getTrustStoreLocation() {
-        String trustStoreLoc = System.getProperty("javax.net.ssl.trustStore");
-        return trustStoreLoc == null ? getKeyStoreLocation() : trustStoreLoc;
-    }
-
-    /**
-     * Return JVM param set truststore password or keystore password if not set.
-     * If still not set, will return default password
-     *
-     * @return truststore password as string
-     */
-    public static String getTrustStorePassword() {
-        String password = System.getProperty("javax.net.ssl.trustStorePassword");
-        return password == null ? getKeystorePassword() : password;
-    }
-
     public static class UrlResponse {
 
         public Map<String, String> headers;
         public String body;
         public int status;
-    }
-
-    public static void sleep(long time) {
-        try {
-            Thread.sleep(time);
-        } catch (Exception e) {
-        }
     }
 
 }

@@ -1,11 +1,5 @@
 package spark;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static spark.Spark.after;
-import static spark.Spark.before;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -23,6 +17,12 @@ import org.junit.Test;
 import spark.examples.books.Books;
 import spark.utils.IOUtils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static spark.Spark.after;
+import static spark.Spark.before;
+
 public class BooksIntegrationTest {
 
     private static int PORT = 4567;
@@ -38,11 +38,6 @@ public class BooksIntegrationTest {
         Spark.stop();
     }
 
-    @After
-    public void clearBooks() {
-        Books.books.clear();
-    }
-
     @BeforeClass
     public static void setup() {
         before((request, response) -> {
@@ -56,6 +51,35 @@ public class BooksIntegrationTest {
         });
 
         Spark.awaitInitialization();
+    }
+
+    private static UrlResponse doMethod(String requestMethod, String path, String body) {
+        UrlResponse response = new UrlResponse();
+
+        try {
+            getResponse(requestMethod, path, response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    private static void getResponse(String requestMethod, String path, UrlResponse response)
+            throws MalformedURLException, IOException, ProtocolException {
+        URL url = new URL("http://localhost:" + PORT + path);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod(requestMethod);
+        connection.connect();
+        String res = IOUtils.toString(connection.getInputStream());
+        response.body = res;
+        response.status = connection.getResponseCode();
+        response.headers = connection.getHeaderFields();
+    }
+
+    @After
+    public void clearBooks() {
+        Books.books.clear();
     }
 
     @Test
@@ -146,36 +170,6 @@ public class BooksIntegrationTest {
         getResponse("GET", "/books/" + bookId, null);
     }
 
-    private static UrlResponse doMethod(String requestMethod, String path, String body) {
-        UrlResponse response = new UrlResponse();
-
-        try {
-            getResponse(requestMethod, path, response);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return response;
-    }
-
-    private static void getResponse(String requestMethod, String path, UrlResponse response)
-            throws MalformedURLException, IOException, ProtocolException {
-        URL url = new URL("http://localhost:" + PORT + path);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod(requestMethod);
-        connection.connect();
-        String res = IOUtils.toString(connection.getInputStream());
-        response.body = res;
-        response.status = connection.getResponseCode();
-        response.headers = connection.getHeaderFields();
-    }
-
-    private static class UrlResponse {
-        public Map<String, List<String>> headers;
-        private String body;
-        private int status;
-    }
-
     private UrlResponse createBookViaPOST() {
         return doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE, null);
     }
@@ -190,5 +184,11 @@ public class BooksIntegrationTest {
 
     private boolean beforeFilterIsSet(UrlResponse response) {
         return response.headers.get("FOZ").get(0).equals("BAZ");
+    }
+
+    private static class UrlResponse {
+        public Map<String, List<String>> headers;
+        private String body;
+        private int status;
     }
 }

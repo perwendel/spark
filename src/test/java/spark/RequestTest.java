@@ -231,6 +231,11 @@ public class RequestTest {
         }
 
         @Override
+        public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
+            // do nothing
+        }
+
+        @Override
         public int getContentLength() {
             return 0;
         }
@@ -353,11 +358,6 @@ public class RequestTest {
 
         @Override
         public void setAttribute(String name, Object o) {
-            // do nothing
-        }
-
-        @Override
-        public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
             // do nothing
         }
 

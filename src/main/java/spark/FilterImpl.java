@@ -30,6 +30,11 @@ public abstract class FilterImpl implements Filter {
     private String path;
     private String acceptType;
 
+    protected FilterImpl(String path, String acceptType) {
+        this.path = path;
+        this.acceptType = acceptType;
+    }
+
     /**
      * Wraps the filter in FilterImpl
      *
@@ -59,11 +64,6 @@ public abstract class FilterImpl implements Filter {
                 filter.handle(request, response);
             }
         };
-    }
-
-    protected FilterImpl(String path, String acceptType) {
-        this.path = path;
-        this.acceptType = acceptType;
     }
 
     /**

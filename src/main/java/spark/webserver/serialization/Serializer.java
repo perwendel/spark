@@ -41,7 +41,7 @@ public abstract class Serializer {
      * Wraps {@link Serializer#process(java.io.OutputStream, Object)} and calls next serializer in chain.
      *
      * @param outputStream the output stream.
-     * @param element the element to process.
+     * @param element      the element to process.
      * @throws IOException IOException in case of IO error.
      */
     public void processElement(OutputStream outputStream, Object element) throws IOException {

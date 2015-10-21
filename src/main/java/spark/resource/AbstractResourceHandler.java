@@ -31,44 +31,6 @@ import org.eclipse.jetty.util.URIUtil;
 public abstract class AbstractResourceHandler {
 
     /**
-     * Gets a resource from a servlet request
-     *
-     * @param request the servlet request
-     * @return the resource or null if not found
-     * @throws java.net.MalformedURLException thrown when malformed URL.
-     */
-    public AbstractFileResolvingResource getResource(HttpServletRequest request) throws MalformedURLException {
-        String servletPath;
-        String pathInfo;
-        boolean included = request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) != null;
-
-        if (included) {
-            servletPath = (String) request.getAttribute(RequestDispatcher.INCLUDE_SERVLET_PATH);
-            pathInfo = (String) request.getAttribute(RequestDispatcher.INCLUDE_PATH_INFO);
-
-            if (servletPath == null && pathInfo == null) {
-                servletPath = request.getServletPath();
-                pathInfo = request.getPathInfo();
-            }
-        } else {
-            servletPath = request.getServletPath();
-            pathInfo = request.getPathInfo();
-        }
-
-        String pathInContext = URIUtil.addPaths(servletPath, pathInfo);
-        return getResource(pathInContext);
-    }
-
-    /**
-     * Gets resource from path
-     *
-     * @param path the path
-     * @return the resource or null if resource doesn't exist
-     * @throws java.net.MalformedURLException thrown when malformed URL.
-     */
-    protected abstract AbstractFileResolvingResource getResource(String path) throws MalformedURLException;
-
-    /**
      * Add two URI path segments.
      * Handles null and empty paths, path and query params (eg ?a=b or
      * ;JSESSIONID=xxx) and avoids duplicate '/'
@@ -120,5 +82,43 @@ public abstract class AbstractResourceHandler {
 
         return buf.toString();
     }
+
+    /**
+     * Gets a resource from a servlet request
+     *
+     * @param request the servlet request
+     * @return the resource or null if not found
+     * @throws java.net.MalformedURLException thrown when malformed URL.
+     */
+    public AbstractFileResolvingResource getResource(HttpServletRequest request) throws MalformedURLException {
+        String servletPath;
+        String pathInfo;
+        boolean included = request.getAttribute(RequestDispatcher.INCLUDE_REQUEST_URI) != null;
+
+        if (included) {
+            servletPath = (String) request.getAttribute(RequestDispatcher.INCLUDE_SERVLET_PATH);
+            pathInfo = (String) request.getAttribute(RequestDispatcher.INCLUDE_PATH_INFO);
+
+            if (servletPath == null && pathInfo == null) {
+                servletPath = request.getServletPath();
+                pathInfo = request.getPathInfo();
+            }
+        } else {
+            servletPath = request.getServletPath();
+            pathInfo = request.getPathInfo();
+        }
+
+        String pathInContext = URIUtil.addPaths(servletPath, pathInfo);
+        return getResource(pathInContext);
+    }
+
+    /**
+     * Gets resource from path
+     *
+     * @param path the path
+     * @return the resource or null if resource doesn't exist
+     * @throws java.net.MalformedURLException thrown when malformed URL.
+     */
+    protected abstract AbstractFileResolvingResource getResource(String path) throws MalformedURLException;
 
 }

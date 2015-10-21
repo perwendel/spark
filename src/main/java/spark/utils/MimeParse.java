@@ -17,27 +17,7 @@ public class MimeParse {
      */
     public static final String NO_MIME_TYPE = "";
 
-    /**
-     * Parse results container
-     */
-    private static class ParseResults {
-        String type;
-
-        String subType;
-
-        // !a dictionary of all the parameters for the media range
-        Map<String, String> params;
-
-        @Override
-        public String toString() {
-            StringBuilder s = new StringBuilder("('");
-            s.append(type).append("', '").append(subType).append("', {");
-
-            for (String k : params.keySet()) {
-                s.append("'").append(k).append("':'").append(params.get(k)).append("',");
-            }
-            return s.append("})").toString();
-        }
+    private MimeParse() {
     }
 
     /**
@@ -97,34 +77,6 @@ public class MimeParse {
             results.params.put("q", "1");
         }
         return results;
-    }
-
-    /**
-     * Structure for holding a fitness/quality combo
-     */
-    private static class FitnessAndQuality implements Comparable<FitnessAndQuality> {
-        int fitness;
-
-        float quality;
-
-        String mimeType; // optionally used
-
-        private FitnessAndQuality(int fitness, float quality) {
-            this.fitness = fitness;
-            this.quality = quality;
-        }
-
-        public int compareTo(FitnessAndQuality o) {
-            if (fitness == o.fitness) {
-                if (quality == o.quality) {
-                    return 0;
-                } else {
-                    return quality < o.quality ? -1 : 1;
-                }
-            } else {
-                return fitness < o.fitness ? -1 : 1;
-            }
-        }
     }
 
     /**
@@ -205,7 +157,55 @@ public class MimeParse {
         }
     }
 
-    private MimeParse() {
+    /**
+     * Parse results container
+     */
+    private static class ParseResults {
+        String type;
+
+        String subType;
+
+        // !a dictionary of all the parameters for the media range
+        Map<String, String> params;
+
+        @Override
+        public String toString() {
+            StringBuilder s = new StringBuilder("('");
+            s.append(type).append("', '").append(subType).append("', {");
+
+            for (String k : params.keySet()) {
+                s.append("'").append(k).append("':'").append(params.get(k)).append("',");
+            }
+            return s.append("})").toString();
+        }
+    }
+
+    /**
+     * Structure for holding a fitness/quality combo
+     */
+    private static class FitnessAndQuality implements Comparable<FitnessAndQuality> {
+        int fitness;
+
+        float quality;
+
+        String mimeType; // optionally used
+
+        private FitnessAndQuality(int fitness, float quality) {
+            this.fitness = fitness;
+            this.quality = quality;
+        }
+
+        public int compareTo(FitnessAndQuality o) {
+            if (fitness == o.fitness) {
+                if (quality == o.quality) {
+                    return 0;
+                } else {
+                    return quality < o.quality ? -1 : 1;
+                }
+            } else {
+                return fitness < o.fitness ? -1 : 1;
+            }
+        }
     }
 
 }

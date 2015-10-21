@@ -31,9 +31,7 @@ import java.util.Set;
  * @author Rob Harrop
  * @author Sam Brannen
  * @since 1.1
- *
  * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
- *
  */
 public abstract class ClassUtils {
 

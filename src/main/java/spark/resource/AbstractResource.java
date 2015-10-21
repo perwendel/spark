@@ -35,7 +35,7 @@ import spark.utils.ResourceUtils;
  * throw an exception; and "toString" will return the description.
  *
  * @author Juergen Hoeller
- * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
+ *         Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
  */
 public abstract class AbstractResource implements Resource {
 
@@ -51,7 +51,7 @@ public abstract class AbstractResource implements Resource {
             return getFile().exists();
         } catch (IOException ex) {
             // Fall back to stream existence: can we open the stream?
-            try(InputStream is = getInputStream()) {
+            try (InputStream is = getInputStream()) {
                 return true;
             } catch (Throwable isEx) {
                 return false;
@@ -117,7 +117,7 @@ public abstract class AbstractResource implements Resource {
      */
     @Override
     public long contentLength() throws IOException {
-        try(InputStream is = this.getInputStream()) {
+        try (InputStream is = this.getInputStream()) {
             Assert.state(is != null, "resource input stream must not be null");
             long size = 0;
             byte[] buf = new byte[255];

@@ -31,12 +31,12 @@ final class RequestWrapper extends Request {
 
     private Request delegate;
 
-    public void setDelegate(Request delegate) {
-        this.delegate = delegate;
-    }
-
     Request getDelegate() {
         return delegate;
+    }
+
+    public void setDelegate(Request delegate) {
+        this.delegate = delegate;
     }
 
     public void changeMatch(RouteMatch match) {

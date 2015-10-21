@@ -27,8 +27,8 @@ public class JettyServerFactory {
     /**
      * Creates a Jetty server.
      *
-     * @param maxThreads maxThreads
-     * @param minThreads minThreads
+     * @param maxThreads          maxThreads
+     * @param minThreads          minThreads
      * @param threadTimeoutMillis threadTimeoutMillis
      * @return a new jetty server instance
      */

@@ -181,6 +181,19 @@ public class GenericIntegrationTest {
         Spark.awaitInitialization();
     }
 
+    private static void registerEchoRoute(final String routePart) {
+        get("/tworoutes/" + routePart + "/:param", (request, response) -> {
+            return routePart + " route: " + request.params(":param");
+        });
+    }
+
+    private static void assertEchoRoute(String routePart) throws Exception {
+        final String expected = "expected";
+        UrlResponse response = testUtil.doMethod("GET", "/tworoutes/" + routePart + "/" + expected, null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals(routePart + " route: " + expected, response.body);
+    }
+
     @Test
     public void filters_should_be_accept_type_aware() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/protected/resource", null, "application/json");
@@ -309,19 +322,6 @@ public class GenericIntegrationTest {
         registerEchoRoute(upperCasedRoutePart);
         assertEchoRoute(lowerCasedRoutePart);
         assertEchoRoute(upperCasedRoutePart);
-    }
-
-    private static void registerEchoRoute(final String routePart) {
-        get("/tworoutes/" + routePart + "/:param", (request, response) -> {
-            return routePart + " route: " + request.params(":param");
-        });
-    }
-
-    private static void assertEchoRoute(String routePart) throws Exception {
-        final String expected = "expected";
-        UrlResponse response = testUtil.doMethod("GET", "/tworoutes/" + routePart + "/" + expected, null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals(routePart + " route: " + expected, response.body);
     }
 
     @Test

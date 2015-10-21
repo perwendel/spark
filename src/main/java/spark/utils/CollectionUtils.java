@@ -17,7 +17,6 @@
 package spark.utils;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Miscellaneous collection utility methods.
@@ -26,9 +25,7 @@ import java.util.Map;
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Arjen Poutsma
- *
- * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
- *
+ *         Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
  */
 public abstract class CollectionUtils {
 

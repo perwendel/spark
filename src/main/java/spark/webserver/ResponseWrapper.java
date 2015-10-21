@@ -26,12 +26,12 @@ class ResponseWrapper extends Response {
 
     private boolean redirected = false;
 
-    public void setDelegate(Response delegate) {
-        this.delegate = delegate;
-    }
-
     Response getDelegate() {
         return delegate;
+    }
+
+    public void setDelegate(Response delegate) {
+        this.delegate = delegate;
     }
 
     @Override

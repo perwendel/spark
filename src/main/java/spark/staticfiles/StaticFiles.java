@@ -37,7 +37,6 @@ import spark.utils.IOUtils;
 
 /**
  * Holds the static file configuration.
- *
  * TODO: Cache-Control and ETAG
  * TODO: Is global state a problem here?
  */

@@ -17,7 +17,7 @@
 package spark.examples.filter;
 
 import static spark.Spark.before;
-import static spark.Spark.*;
+import static spark.Spark.halt;
 
 
 public class FilterExampleWildcard {

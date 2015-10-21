@@ -41,6 +41,11 @@ public class JettyLogger implements Logger {
     }
 
     @Override
+    public void setDebugEnabled(boolean enabled) {
+        //
+    }
+
+    @Override
     public void warn(String msg, Throwable th) {
         logger.warn(msg, th);
     }
@@ -89,11 +94,6 @@ public class JettyLogger implements Logger {
     @Override
     public void info(String msg, Throwable thrown) {
         logger.info(msg, thrown);
-    }
-
-    @Override
-    public void setDebugEnabled(boolean enabled) {
-        // 
     }
 
     @Override

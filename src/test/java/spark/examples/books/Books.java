@@ -16,14 +16,14 @@
  */
 package spark.examples.books;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
 import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.put;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * A simple RESTful example showing howto create, get, update and delete book resources.

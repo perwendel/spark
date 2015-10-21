@@ -54,16 +54,16 @@ public class MatcherFilter implements Filter {
 
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
     private static final String HTTP_METHOD_OVERRIDE_HEADER = "X-HTTP-Method-Override";
-
-    private SimpleRouteMatcher routeMatcher;
-    private SerializerChain serializerChain;
-    private boolean isServletContext;
-    private boolean hasOtherHandlers;
-
     /**
      * The logger.
      */
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MatcherFilter.class);
+    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
+    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
+    private SimpleRouteMatcher routeMatcher;
+    private SerializerChain serializerChain;
+    private boolean isServletContext;
+    private boolean hasOtherHandlers;
 
     /**
      * Constructor
@@ -274,7 +274,4 @@ public class MatcherFilter implements Filter {
     public void destroy() {
         // TODO Auto-generated method stub
     }
-
-    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
-    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
 }

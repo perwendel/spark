@@ -22,15 +22,15 @@ package spark.examples.books;
  * @author Per Wendel
  */
 public class Book {
-    
+
     private String author;
     private String title;
-    
+
     public Book(String author, String title) {
         this.author = author;
         this.title = title;
     }
-    
+
     /**
      * @return the author
      */
@@ -38,14 +38,6 @@ public class Book {
         return author;
     }
 
-    
-    /**
-     * @return the title
-     */
-    public String getTitle() {
-        return title;
-    }
-    
     /**
      * @param author the author to set
      */
@@ -53,7 +45,13 @@ public class Book {
         this.author = author;
     }
 
-    
+    /**
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
     /**
      * @param title the title to set
      */

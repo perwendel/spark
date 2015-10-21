@@ -16,7 +16,8 @@
  */
 package spark.examples.simple;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.halt;
 import static spark.Spark.post;
 
 /**

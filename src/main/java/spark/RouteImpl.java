@@ -30,6 +30,26 @@ public abstract class RouteImpl implements Route {
     private String acceptType;
 
     /**
+     * Constructor
+     *
+     * @param path The route path which is used for matching. (e.g. /hello, users/:name)
+     */
+    protected RouteImpl(String path) {
+        this(path, DEFAULT_ACCEPT_TYPE);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param path       The route path which is used for matching. (e.g. /hello, users/:name)
+     * @param acceptType The accept type which is used for matching.
+     */
+    protected RouteImpl(String path, String acceptType) {
+        this.path = path;
+        this.acceptType = acceptType;
+    }
+
+    /**
      * Wraps the route in RouteImpl
      *
      * @param path  the path
@@ -58,26 +78,6 @@ public abstract class RouteImpl implements Route {
                 return route.handle(request, response);
             }
         };
-    }
-
-    /**
-     * Constructor
-     *
-     * @param path The route path which is used for matching. (e.g. /hello, users/:name)
-     */
-    protected RouteImpl(String path) {
-        this(path, DEFAULT_ACCEPT_TYPE);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param path       The route path which is used for matching. (e.g. /hello, users/:name)
-     * @param acceptType The accept type which is used for matching.
-     */
-    protected RouteImpl(String path, String acceptType) {
-        this.path = path;
-        this.acceptType = acceptType;
     }
 
     /**

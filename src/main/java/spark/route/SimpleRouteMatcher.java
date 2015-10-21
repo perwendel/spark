@@ -16,11 +16,15 @@
  */
 package spark.route;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import spark.routematch.RouteMatch;
 import spark.utils.MimeParse;
 import spark.utils.StringUtils;
-
-import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -186,7 +190,7 @@ public class SimpleRouteMatcher {
         Map<String, RouteEntry> acceptedTypes = new HashMap<>();
 
         routes.stream().filter(routeEntry -> !acceptedTypes.containsKey(routeEntry.acceptedType)).forEach(routeEntry ->
-                        acceptedTypes.put(routeEntry.acceptedType, routeEntry)
+                                                                                                                  acceptedTypes.put(routeEntry.acceptedType, routeEntry)
         );
 
         return acceptedTypes;
@@ -218,8 +222,9 @@ public class SimpleRouteMatcher {
         List<RouteEntry> forRemoval = new ArrayList<>();
 
         routes.stream().filter(routeEntry ->
-                // Use the routeEntry's HTTP method if none was given, so that only path is used to match.
-                httpMethod != null ? routeEntry.matches(httpMethod, path) : routeEntry.matches(routeEntry.httpMethod, path))
+                                       // Use the routeEntry's HTTP method if none was given, so that only path is used to match.
+                                       httpMethod
+                                               != null ? routeEntry.matches(httpMethod, path) : routeEntry.matches(routeEntry.httpMethod, path))
                 .forEach(routeEntry -> {
                     LOG.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
                     forRemoval.add(routeEntry);

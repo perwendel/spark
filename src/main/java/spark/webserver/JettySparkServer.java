@@ -34,9 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.SparkServer;
+import spark.ssl.SslStores;
 import spark.webserver.jetty.JettyServerFactory;
 import spark.webserver.jetty.SocketConnectorFactory;
-import spark.ssl.SslStores;
 import spark.webserver.websocket.WebSocketServletContextHandlerFactory;
 
 /**
@@ -48,11 +48,9 @@ public class JettySparkServer implements SparkServer {
 
     private static final int SPARK_DEFAULT_PORT = 4567;
     private static final String NAME = "Spark";
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Handler handler;
     private Server server;
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public JettySparkServer(Handler handler) {
         this.handler = handler;
