@@ -17,10 +17,13 @@
 package spark.route;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import spark.routematch.RouteMatch;
 import spark.utils.MimeParse;
 import spark.utils.StringUtils;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * Simple route matcher that is supposed to work exactly as Sinatra's
@@ -183,11 +186,9 @@ public class SimpleRouteMatcher {
     private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
         Map<String, RouteEntry> acceptedTypes = new HashMap<>();
 
-        for (RouteEntry routeEntry : routes) {
-            if (!acceptedTypes.containsKey(routeEntry.acceptedType)) {
-                acceptedTypes.put(routeEntry.acceptedType, routeEntry);
-            }
-        }
+        routes.stream().filter(routeEntry -> !acceptedTypes.containsKey(routeEntry.acceptedType)).forEach(routeEntry -> {
+            acceptedTypes.put(routeEntry.acceptedType, routeEntry);
+        });
 
         return acceptedTypes;
     }
@@ -197,13 +198,7 @@ public class SimpleRouteMatcher {
     }
 
     private List<RouteEntry> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
-        List<RouteEntry> matchSet = new ArrayList<RouteEntry>();
-        for (RouteEntry entry : routes) {
-            if (entry.matches(httpMethod, path)) {
-                matchSet.add(entry);
-            }
-        }
-        return matchSet;
+        return routes.stream().filter(entry -> entry.matches(httpMethod, path)).collect(toList());
     }
 
     // TODO: I believe this feature has impacted performance. Optimization?
