@@ -408,7 +408,7 @@ public class Request {
     }
 
     /**
-     * @return request cookies (or empty Map if cookies dosn't present)
+     * @return request cookies (or empty Map if cookies aren't present)
      */
     public Map<String, String> cookies() {
         Map<String, String> result = new HashMap<String, String>();

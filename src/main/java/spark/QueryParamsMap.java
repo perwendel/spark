@@ -139,7 +139,7 @@ public class QueryParamsMap {
     }
 
     /**
-     * Retruns and element fro the specified key. <br>
+     * Returns an element from the specified key. <br>
      * For querystring: <br>
      * <br>
      * user[name]=fede
