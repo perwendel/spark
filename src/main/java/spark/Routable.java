@@ -22,7 +22,7 @@ import spark.utils.SparkUtils;
 /**
  * Routable abstract class. Lets extending classes inherit default routable functionality.
  */
-abstract class Routable {
+public abstract class Routable {
 
     /**
      * Adds a route
