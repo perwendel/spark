@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
+import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,8 @@ final class SparkInstance extends Routable {
 
     public static final int SPARK_DEFAULT_PORT = 4567;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    protected static final String INVALID_WEBSOCKET_HANDLER_MESSAGE =
+    		"WebSocket handler must implement 'WebSocketListener' or be annotated as '@WebSocket'";
 
     protected boolean initialized = false;
 
@@ -52,7 +56,7 @@ final class SparkInstance extends Routable {
     protected String staticFileFolder = null;
     protected String externalStaticFileFolder = null;
 
-    protected Map<String, Class<?>> webSocketHandlers = null;
+    protected Map<String, Object> webSocketHandlers = null;
 
     protected int maxThreads = -1;
     protected int minThreads = -1;
@@ -250,12 +254,50 @@ final class SparkInstance extends Routable {
      * This is currently only available in the embedded server mode.
      *
      * @param path    the WebSocket path.
+     * @param handler the handler that will manage the WebSocket connection to the given path.
+     */
+    public void webSocket(String path, Class<?> handlerClass) {
+    	requireNonNull(handlerClass, "WebSocket handler class cannot be null");
+    	validateWebSocketHandler(handlerClass);
+    	try {
+            Object handler = handlerClass.newInstance();
+            addWebSocketHandler(path, handler);
+        } catch (InstantiationException | IllegalAccessException ex) {
+            throw new RuntimeException("Could not instantiate websocket handler", ex);
+        }
+    }
+    
+    /**
+     * Maps the given path to the given WebSocket handler class.
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param path    the WebSocket path.
      * @param handler the handler class that will manage the WebSocket connection to the given path.
      */
-    public synchronized void webSocket(String path, Class<?> handler) {
-        requireNonNull(path, "WebSocket path cannot be null");
-        requireNonNull(handler, "WebSocket handler class cannot be null");
-        if (initialized) {
+    public void webSocket(String path, Object handler) {
+        requireNonNull(handler, "WebSocket handler cannot be null");
+        validateWebSocketHandler(handler.getClass());
+        addWebSocketHandler(path, handler);
+    }
+    
+    /**
+     * Validates that the handler can actually handle the WebSocket connection.
+     *
+     * @param handlerClass The handler class to validate.
+     * @throws IllegalArgumentException if the class is not a valid handler class.
+     */
+    private void validateWebSocketHandler(Class<?> handlerClass) {
+        boolean valid = WebSocketListener.class.isAssignableFrom(handlerClass)
+                || handlerClass.isAnnotationPresent(WebSocket.class);
+        if (!valid) {
+            throw new IllegalArgumentException(INVALID_WEBSOCKET_HANDLER_MESSAGE);
+        }
+    }
+    
+    private synchronized void addWebSocketHandler(String path, Object handler) {
+    	requireNonNull(path, "WebSocket path cannot be null");
+    	if (initialized) {
             throwBeforeRouteMappingException();
         }
         if (ServletFlag.isRunningFromServlet()) {

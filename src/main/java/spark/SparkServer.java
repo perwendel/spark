@@ -32,7 +32,7 @@ public interface SparkServer {
                 int maxThreads,
                 int minThreads,
                 int threadIdleTimeoutMillis,
-                Map<String, Class<?>> webSocketHandlers,
+                Map<String, Object> webSocketHandlers,
                 Optional<Integer> webSocketIdleTimeoutMillis);
 
     void stop();

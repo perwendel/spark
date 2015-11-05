@@ -70,7 +70,7 @@ public class JettySparkServer implements SparkServer {
                        int maxThreads,
                        int minThreads,
                        int threadIdleTimeoutMillis,
-                       Map<String, Class<?>> webSocketHandlers,
+                       Map<String, Object> webSocketHandlers,
                        Optional<Integer> webSocketIdleTimeoutMillis) {
 
         if (port == 0) {
