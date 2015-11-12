@@ -36,7 +36,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Holds the implementation of the Spark API. (previously in Spark and SparkBase).
  */
-final class SparkInstance extends Routable {
+public final class SparkInstance extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
 
     public static final int SPARK_DEFAULT_PORT = 4567;
