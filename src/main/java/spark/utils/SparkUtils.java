@@ -47,7 +47,7 @@ public final class SparkUtils {
     }
 
     public static boolean isSplat(String routePart) {
-        return routePart.equals("*");
+        return "*".equals(routePart);
     }
 
 }
