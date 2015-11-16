@@ -83,7 +83,7 @@ public class StaticFiles {
      *
      * @param folder the location
      */
-    public static void configureStaticResources(String folder) {
+    public synchronized static void configureStaticResources(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
         if (!staticResourcesSet) {
@@ -112,7 +112,7 @@ public class StaticFiles {
      *
      * @param folder the location
      */
-    public static void configureExternalStaticResources(String folder) {
+    public synchronized static void configureExternalStaticResources(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
         if (!externalStaticResourcesSet) {

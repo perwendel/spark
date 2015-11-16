@@ -18,7 +18,7 @@ public class MyApp implements SparkApplication {
     static File tmpExternalFile;
 
     @Override
-    public void init() {
+    public synchronized void init() {
         try {
             externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
             staticFileLocation("/public");
