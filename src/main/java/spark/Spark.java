@@ -32,7 +32,7 @@ package spark;
  * @author Per Wendel
  */
 public final class Spark {
-	
+
     // Hide constructor
     private Spark() {
     }
@@ -44,7 +44,7 @@ public final class Spark {
         private static final SparkInstance INSTANCE = new SparkInstance();
     }
 
-    public static SparkInstance getInstance() {
+    private static SparkInstance getInstance() {
         return SingletonHolder.INSTANCE;
     }
 
@@ -331,9 +331,9 @@ public final class Spark {
      * @param engine     the template engine
      */
     public static void get(String path,
-                                        String acceptType,
-                                        TemplateViewRoute route,
-                                        TemplateEngine engine) {
+                           String acceptType,
+                           TemplateViewRoute route,
+                           TemplateEngine engine) {
         getInstance().get(path, acceptType, route, engine);
     }
 
@@ -357,9 +357,9 @@ public final class Spark {
      * @param engine     the template engine
      */
     public static void post(String path,
-                                         String acceptType,
-                                         TemplateViewRoute route,
-                                         TemplateEngine engine) {
+                            String acceptType,
+                            TemplateViewRoute route,
+                            TemplateEngine engine) {
         getInstance().post(path, acceptType, route, engine);
     }
 
@@ -383,9 +383,9 @@ public final class Spark {
      * @param engine     the template engine
      */
     public static void put(String path,
-                                        String acceptType,
-                                        TemplateViewRoute route,
-                                        TemplateEngine engine) {
+                           String acceptType,
+                           TemplateViewRoute route,
+                           TemplateEngine engine) {
         getInstance().put(path, acceptType, route, engine);
     }
 
@@ -409,9 +409,9 @@ public final class Spark {
      * @param engine     the template engine
      */
     public static void delete(String path,
-                                           String acceptType,
-                                           TemplateViewRoute route,
-                                           TemplateEngine engine) {
+                              String acceptType,
+                              TemplateViewRoute route,
+                              TemplateEngine engine) {
         getInstance().delete(path, acceptType, route, engine);
     }
 
@@ -435,9 +435,9 @@ public final class Spark {
      * @param engine     the template engine
      */
     public static void patch(String path,
-                                          String acceptType,
-                                          TemplateViewRoute route,
-                                          TemplateEngine engine) {
+                             String acceptType,
+                             TemplateViewRoute route,
+                             TemplateEngine engine) {
         getInstance().patch(path, acceptType, route, engine);
     }
 
@@ -461,9 +461,9 @@ public final class Spark {
      * @param engine     the template engine
      */
     public static void head(String path,
-                                         String acceptType,
-                                         TemplateViewRoute route,
-                                         TemplateEngine engine) {
+                            String acceptType,
+                            TemplateViewRoute route,
+                            TemplateEngine engine) {
         getInstance().head(path, acceptType, route, engine);
     }
 
@@ -487,9 +487,9 @@ public final class Spark {
      * @param engine     the template engine
      */
     public static void trace(String path,
-                                          String acceptType,
-                                          TemplateViewRoute route,
-                                          TemplateEngine engine) {
+                             String acceptType,
+                             TemplateViewRoute route,
+                             TemplateEngine engine) {
         getInstance().trace(path, acceptType, route, engine);
     }
 
@@ -513,9 +513,9 @@ public final class Spark {
      * @param engine     the template engine
      */
     public static void connect(String path,
-                                            String acceptType,
-                                            TemplateViewRoute route,
-                                            TemplateEngine engine) {
+                               String acceptType,
+                               TemplateViewRoute route,
+                               TemplateEngine engine) {
         getInstance().connect(path, acceptType, route, engine);
     }
 
@@ -539,9 +539,9 @@ public final class Spark {
      * @param engine     the template engine
      */
     public static void options(String path,
-                                            String acceptType,
-                                            TemplateViewRoute route,
-                                            TemplateEngine engine) {
+                               String acceptType,
+                               TemplateViewRoute route,
+                               TemplateEngine engine) {
         getInstance().options(path, acceptType, route, engine);
     }
 
@@ -642,9 +642,9 @@ public final class Spark {
      * @param transformer the response transformer
      */
     public static void delete(String path,
-                                           String acceptType,
-                                           Route route,
-                                           ResponseTransformer transformer) {
+                              String acceptType,
+                              Route route,
+                              ResponseTransformer transformer) {
         getInstance().delete(path, acceptType, route, transformer);
     }
 
@@ -691,9 +691,9 @@ public final class Spark {
      * @param transformer the response transformer
      */
     public static void connect(String path,
-                                            String acceptType,
-                                            Route route,
-                                            ResponseTransformer transformer) {
+                               String acceptType,
+                               Route route,
+                               ResponseTransformer transformer) {
         getInstance().connect(path, acceptType, route, transformer);
     }
 
@@ -717,9 +717,9 @@ public final class Spark {
      * @param transformer the response transformer
      */
     public static void trace(String path,
-                                          String acceptType,
-                                          Route route,
-                                          ResponseTransformer transformer) {
+                             String acceptType,
+                             Route route,
+                             ResponseTransformer transformer) {
         getInstance().trace(path, acceptType, route, transformer);
     }
 
@@ -743,9 +743,9 @@ public final class Spark {
      * @param transformer the response transformer
      */
     public static void options(String path,
-                                            String acceptType,
-                                            Route route,
-                                            ResponseTransformer transformer) {
+                               String acceptType,
+                               Route route,
+                               ResponseTransformer transformer) {
         getInstance().options(path, acceptType, route, transformer);
     }
 
@@ -769,9 +769,9 @@ public final class Spark {
      * @param transformer the response transformer
      */
     public static void patch(String path,
-                                          String acceptType,
-                                          Route route,
-                                          ResponseTransformer transformer) {
+                             String acceptType,
+                             Route route,
+                             ResponseTransformer transformer) {
         getInstance().patch(path, acceptType, route, transformer);
     }
 
@@ -903,9 +903,9 @@ public final class Spark {
      * @deprecated replaced by {@link #secure(String, String, String, String)}
      */
     public static void setSecure(String keystoreFile,
-                                              String keystorePassword,
-                                              String truststoreFile,
-                                              String truststorePassword) {
+                                 String keystorePassword,
+                                 String truststoreFile,
+                                 String truststorePassword) {
         getInstance().setSecure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 
@@ -925,9 +925,9 @@ public final class Spark {
      * @param truststorePassword the trust store password
      */
     public static void secure(String keystoreFile,
-                                           String keystorePassword,
-                                           String truststoreFile,
-                                           String truststorePassword) {
+                              String keystorePassword,
+                              String truststoreFile,
+                              String truststorePassword) {
         getInstance().secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 

@@ -49,7 +49,7 @@ public class SocketConnectorFactory {
 
     /**
      * Creates a ssl jetty socket jetty. Keystore required, truststore
-     * optional. If truststore not specifed keystore will be reused.
+     * optional. If truststore not specified keystore will be reused.
      *
      * @param server    Jetty server
      * @param sslStores the security sslStores.
