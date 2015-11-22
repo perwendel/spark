@@ -1,9 +1,9 @@
 Spark - a Sinatra inspired web framework
 ==============================================
 
-For more detailed documentation please go to: http://sparkjava.com
+For more detailed documentation please go to: http://sparkjava.com/documentation
 
-NEWS: Spark 2.3 is now available on Maven central! :
+NEWS: Spark 2.3 is now available on Maven central!
 
 ```xml
     <dependency>
@@ -13,10 +13,9 @@ NEWS: Spark 2.3 is now available on Maven central! :
     </dependency>
 ```
 
-NEWS: Spark google group created:
-https://groups.google.com/d/forum/sparkjava
+For questions about using Spark, post on our Google Group: https://groups.google.com/d/forum/sparkjava
 
-Temporary API Docs: http://spark.screenisland.com
+Temporary javadoc: http://spark.screenisland.com
 
 Getting started
 ---------------
@@ -33,7 +32,6 @@ public class HelloWorld {
 
 View at: http://localhost:4567/hello
 
-More documentation is on the way!
 
 Check out and try the examples in the source code.
 You can also check out the javadoc. After getting the source from
@@ -58,7 +56,7 @@ public class SimpleExample {
 
     public static void main(String[] args) {
 
-        //  port(5678); <- Uncomment this if you want spark to listen on a port different than 4567
+        //  port(5678); <- Uncomment this if you want spark to listen to port 5678 in stead of the default 4567
 
         get("/hello", (request, response) -> "Hello World!");
 
