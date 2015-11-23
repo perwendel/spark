@@ -95,7 +95,6 @@ public class MatcherFilter implements Filter {
         boolean consumedByStaticFile = StaticFiles.consume(httpRequest, httpResponse);
 
         if (consumedByStaticFile) {
-            // TODO: GzipUtils.checkAndWrap?
             return;
         }
 

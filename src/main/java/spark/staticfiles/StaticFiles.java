@@ -17,11 +17,12 @@
 package spark.staticfiles;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +34,12 @@ import spark.resource.ClassPathResourceHandler;
 import spark.resource.ExternalResource;
 import spark.resource.ExternalResourceHandler;
 import spark.utils.Assert;
+import spark.utils.GzipUtils;
 import spark.utils.IOUtils;
 
 /**
  * Holds the static file configuration.
- *
  * TODO: Cache-Control and ETAG
- * TODO: Is global state a problem here?
  */
 public class StaticFiles {
     private static final Logger LOG = LoggerFactory.getLogger(StaticFiles.class);
@@ -53,12 +53,14 @@ public class StaticFiles {
      * @return true if consumed, false otherwise.
      */
     public static boolean consume(HttpServletRequest httpRequest,
-                                  ServletResponse servletResponse) throws IOException {
+                                  HttpServletResponse httpResponse) throws IOException {
         if (staticResourceHandlers != null) {
             for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
-                    IOUtils.copy(resource.getInputStream(), servletResponse.getOutputStream());
+                    // TODO: Test case for this
+                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse);
+                    IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
                     return true;
                 }
             }
