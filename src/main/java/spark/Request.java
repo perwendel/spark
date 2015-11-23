@@ -414,9 +414,11 @@ public class Request {
      */
     public Map<String, String> cookies() {
         Cookie[] cookies = servletRequest.getCookies();
-        return (cookies == null)
-                ? new HashMap<>()
-                : Arrays.stream(cookies).collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+        Map<String, String> result = new HashMap<>();
+        if (cookies != null) {
+            result = Arrays.stream(cookies).collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+        }
+        return result;
     }
 
     /**
