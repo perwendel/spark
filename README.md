@@ -1,3 +1,7 @@
+![](https://img.shields.io/travis/perwendel/spark.svg) 
+![](https://img.shields.io/github/license/perwendel/spark.svg)
+![](https://img.shields.io/maven-central/v/com.sparkjava/spark-core.svg)
+
 Spark - a Sinatra inspired web framework
 ==============================================
 
@@ -6,11 +10,11 @@ For more detailed documentation please go to: http://sparkjava.com/documentation
 NEWS: Spark 2.3 is now available on Maven central!
 
 ```xml
-    <dependency>
-        <groupId>com.sparkjava</groupId>
-        <artifactId>spark-core</artifactId>
-        <version>2.3</version>
-    </dependency>
+<dependency>
+    <groupId>com.sparkjava</groupId>
+    <artifactId>spark-core</artifactId>
+    <version>2.3</version>
+</dependency>
 ```
 
 For questions about using Spark, post on our Google Group: https://groups.google.com/d/forum/sparkjava
