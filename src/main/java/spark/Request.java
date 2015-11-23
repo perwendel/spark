@@ -17,6 +17,7 @@
 package spark;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -325,7 +327,7 @@ public class Request {
      * Gets the value of the provided attribute
      *
      * @param attribute The attribute value or null if not present
-     * @param <T> the type parameter.
+     * @param <T>       the type parameter.
      * @return the value for the provided attribute
      */
     public <T> T attribute(String attribute) {
@@ -411,14 +413,10 @@ public class Request {
      * @return request cookies (or empty Map if cookies aren't present)
      */
     public Map<String, String> cookies() {
-        Map<String, String> result = new HashMap<String, String>();
         Cookie[] cookies = servletRequest.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                result.put(cookie.getName(), cookie.getValue());
-            }
-        }
-        return result;
+        return (cookies == null)
+                ? new HashMap<>()
+                : Arrays.stream(cookies).collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
     }
 
     /**
@@ -429,14 +427,9 @@ public class Request {
      */
     public String cookie(String name) {
         Cookie[] cookies = servletRequest.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(name)) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
+        return (cookies == null)
+                ? null
+                : Arrays.stream(cookies).filter(c -> c.getName().equals(name)).findFirst().get().getValue();
     }
 
     /**
