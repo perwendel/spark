@@ -30,7 +30,7 @@ public class ExceptionMapper {
      *
      * @return Default instance
      */
-    public static ExceptionMapper getInstance() {
+    public synchronized static ExceptionMapper getInstance() {
         if (defaultInstance == null) {
             defaultInstance = new ExceptionMapper();
         }
