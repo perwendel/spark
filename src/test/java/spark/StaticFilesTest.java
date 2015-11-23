@@ -58,7 +58,11 @@ public class StaticFilesTest {
         Spark.stop();
         if (tmpExternalFile != null) {
             LOGGER.debug("tearDown().deleting: " + tmpExternalFile);
-            tmpExternalFile.delete();
+            if (tmpExternalFile.delete()){
+                LOGGER.debug("tearDown().deleted: " + tmpExternalFile);
+            }else{
+                LOGGER.debug("tearDown().deletion has failed: " + tmpExternalFile);
+            }
         }
     }
 

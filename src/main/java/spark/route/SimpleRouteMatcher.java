@@ -16,15 +16,13 @@
  */
 package spark.route;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import spark.routematch.RouteMatch;
 import spark.utils.MimeParse;
 import spark.utils.StringUtils;
+
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Simple route matcher that is supposed to work exactly as Sinatra's
@@ -104,13 +102,13 @@ public class SimpleRouteMatcher {
 
         for (RouteEntry routeEntry : routeEntries) {
             if (acceptType != null) {
-                String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
+                String bestMatch = MimeParse.bestMatch(Collections.singletonList(routeEntry.acceptedType), acceptType);
 
                 if (routeWithGivenAcceptType(bestMatch)) {
                     matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType));
                 }
             } else {
-                matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType));
+                matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, null));
             }
         }
 
@@ -187,11 +185,9 @@ public class SimpleRouteMatcher {
     private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
         Map<String, RouteEntry> acceptedTypes = new HashMap<>();
 
-        for (RouteEntry routeEntry : routes) {
-            if (!acceptedTypes.containsKey(routeEntry.acceptedType)) {
-                acceptedTypes.put(routeEntry.acceptedType, routeEntry);
-            }
-        }
+        routes.stream().filter(routeEntry -> !acceptedTypes.containsKey(routeEntry.acceptedType)).forEach(routeEntry ->
+                        acceptedTypes.put(routeEntry.acceptedType, routeEntry)
+        );
 
         return acceptedTypes;
     }
@@ -201,13 +197,7 @@ public class SimpleRouteMatcher {
     }
 
     private List<RouteEntry> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
-        List<RouteEntry> matchSet = new ArrayList<RouteEntry>();
-        for (RouteEntry entry : routes) {
-            if (entry.matches(httpMethod, path)) {
-                matchSet.add(entry);
-            }
-        }
-        return matchSet;
+        return routes.stream().filter(entry -> entry.matches(httpMethod, path)).collect(toList());
     }
 
     // TODO: I believe this feature has impacted performance. Optimization?
@@ -218,35 +208,22 @@ public class SimpleRouteMatcher {
 
             if (routeWithGivenAcceptType(bestMatch)) {
                 return acceptedMimeTypes.get(bestMatch);
-            } else {
-                return null;
-            }
-        } else {
-            if (routeMatches.size() > 0) {
-                return routeMatches.get(0);
             }
         }
 
-        return null;
+        return routeMatches.size() > 0 ? routeMatches.get(0) : null;
     }
 
     private boolean removeRoute(HttpMethod httpMethod, String path) {
         List<RouteEntry> forRemoval = new ArrayList<>();
 
-        for (RouteEntry routeEntry : routes) {
-            HttpMethod httpMethodToMatch = httpMethod;
-
-            if (httpMethod == null) {
+        routes.stream().filter(routeEntry ->
                 // Use the routeEntry's HTTP method if none was given, so that only path is used to match.
-                httpMethodToMatch = routeEntry.httpMethod;
-            }
-
-            if (routeEntry.matches(httpMethodToMatch, path)) {
-                LOG.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
-
-                forRemoval.add(routeEntry);
-            }
-        }
+                httpMethod != null ? routeEntry.matches(httpMethod, path) : routeEntry.matches(routeEntry.httpMethod, path))
+                .forEach(routeEntry -> {
+                    LOG.debug("Removing path {}", path, httpMethod == null ? "" : " with HTTP method " + httpMethod);
+                    forRemoval.add(routeEntry);
+                });
 
         return routes.removeAll(forRemoval);
     }

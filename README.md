@@ -94,7 +94,7 @@ public class SimpleExample {
 
 -------------------------------
 
-A simple CRUD example showing howto create, get, update and delete book resources
+A simple CRUD example showing how to create, get, update and delete book resources
 
 ```java
 import static spark.Spark.*;
@@ -104,7 +104,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * A simple CRUD example showing howto create, get, update and delete book resources.
+ * A simple CRUD example showing how to create, get, update and delete book resources.
  */
 public class Books {
 
@@ -223,7 +223,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Example showing a very simple (and stupid) autentication filter that is
+ * Example showing a very simple (and stupid) authentication filter that is
  * executed before all other resources.
  *
  * When requesting the resource with e.g.
