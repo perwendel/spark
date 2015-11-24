@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +87,7 @@ public class SparkFilter implements Filter {
                                                                                               IOException,
                                                                                               ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request; // NOSONAR
+        HttpServletResponse httpResponse = (HttpServletResponse) response; // NOSONAR
 
         final String relativePath = FilterTools.getRelativePath(httpRequest, filterPath);
 
@@ -106,7 +108,7 @@ public class SparkFilter implements Filter {
         };
 
         // handle static resources
-        boolean consumed = StaticFiles.consume(httpRequest, response);
+        boolean consumed = StaticFiles.consume(httpRequest, httpResponse);
         if (consumed) {
             return;
         }
