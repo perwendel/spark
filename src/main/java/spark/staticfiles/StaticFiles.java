@@ -58,9 +58,10 @@ public class StaticFiles {
             for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
-                    // TODO: Test case for this
-                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse);
+                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
                     IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
+                    wrappedOutputStream.flush();
+                    wrappedOutputStream.close();
                     return true;
                 }
             }

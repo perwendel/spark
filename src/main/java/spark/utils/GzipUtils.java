@@ -49,22 +49,27 @@ public class GzipUtils {
      * Checks if the HTTP request/response accepts and wants GZIP and i that case wraps the response output stream in a
      * {@link java.util.zip.GZIPOutputStream}.
      *
-     * @param httpRequest  the HTTP servlet request.
-     * @param httpResponse the HTTP servlet response.
+     * @param httpRequest        the HTTP servlet request.
+     * @param httpResponse       the HTTP servlet response.
+     * @param requireWantsHeader if wants header is required
      * @return if accepted and wanted a {@link java.util.zip.GZIPOutputStream} otherwise the unchanged response
      * output stream.
      * @throws IOException in case of IO error.
      */
-    public static OutputStream checkAndWrap(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws
-                                                                                                              IOException {
+    public static OutputStream checkAndWrap(HttpServletRequest httpRequest,
+                                            HttpServletResponse httpResponse,
+                                            boolean requireWantsHeader) throws
+                                                                        IOException {
         OutputStream outputStream = httpResponse.getOutputStream();
 
         // GZIP Support handled here. First we must ensure that we want to use gzip, and that the client supports gzip
         boolean acceptsGzip = Collections.list(httpRequest.getHeaders(ACCEPT_ENCODING)).stream().anyMatch(STRING_MATCH);
         boolean wantGzip = httpResponse.getHeaders(CONTENT_ENCODING).contains(GZIP);
 
-        if (acceptsGzip && wantGzip) {
-            outputStream = new GZIPOutputStream(outputStream, true);
+        if (acceptsGzip) {
+            if (wantGzip || !requireWantsHeader) {
+                outputStream = new GZIPOutputStream(outputStream, true);
+            }
         }
 
         return outputStream;
