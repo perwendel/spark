@@ -60,19 +60,19 @@ public class GzipUtils {
                                             HttpServletResponse httpResponse,
                                             boolean requireWantsHeader) throws
                                                                         IOException {
-        OutputStream outputStream = httpResponse.getOutputStream();
+        OutputStream responseStream = httpResponse.getOutputStream();
 
         // GZIP Support handled here. First we must ensure that we want to use gzip, and that the client supports gzip
         boolean acceptsGzip = Collections.list(httpRequest.getHeaders(ACCEPT_ENCODING)).stream().anyMatch(STRING_MATCH);
         boolean wantGzip = httpResponse.getHeaders(CONTENT_ENCODING).contains(GZIP);
 
         if (acceptsGzip) {
-            if (wantGzip || !requireWantsHeader) {
-                outputStream = new GZIPOutputStream(outputStream, true);
+            if (!requireWantsHeader || wantGzip) {
+                responseStream = new GZIPOutputStream(responseStream, true);
             }
         }
 
-        return outputStream;
+        return responseStream;
     }
 
     /**

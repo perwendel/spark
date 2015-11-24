@@ -259,13 +259,13 @@ public class MatcherFilter implements Filter {
                 }
 
                 // Check if gzip is wanted/accepted and in that case handle that
-                OutputStream outputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, true);
+                OutputStream responseStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, true);
 
                 // serialize the body to output stream
-                serializerChain.process(outputStream, bodyContent);
+                serializerChain.process(responseStream, bodyContent);
 
-                outputStream.flush(); // needed for GZIP stream. NOt sure where the HTTP response actually gets cleaned up
-                outputStream.close(); // needed for GZIP
+                responseStream.flush(); // needed for GZIP stream. NOt sure where the HTTP response actually gets cleaned up
+                responseStream.close(); // needed for GZIP
             }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
