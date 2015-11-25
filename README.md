@@ -121,7 +121,8 @@ public class Books {
         final Random random = new Random();
 
         // Creates a new book resource, will return the ID to the created resource
-        // author and title are sent in the post body x-www-urlencoded  e.g. author=Foo&title=Bar
+        // author and title are sent in the post body as x-www-urlencoded values e.g. author=Foo&title=Bar
+        // you get them by using request.queryParams("valuename")
         post("/books", (request, response) -> {
             String author = request.queryParams("author");
             String title = request.queryParams("title");
@@ -147,6 +148,7 @@ public class Books {
 
         // Updates the book resource for the provided id with new information
         // author and title are sent in the request body as x-www-urlencoded values e.g. author=Foo&title=Bar
+        // you get them by using request.queryParams("valuename")
         put("/books/:id", (request, response) -> {
             String id = request.params(":id");
             Book book = books.get(id);
