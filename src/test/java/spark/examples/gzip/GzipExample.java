@@ -18,9 +18,10 @@ package spark.examples.gzip;
 
 import static spark.Spark.awaitInitialization;
 import static spark.Spark.get;
+import static spark.Spark.staticFileLocation;
 
 /**
- * Created by Per Wendel on 2015-11-24.
+ * Example showing off the different GZIP features in Spark.
  */
 public class GzipExample {
 
@@ -30,11 +31,12 @@ public class GzipExample {
     private static final String PATH = "/zipped";
 
     public static void main(String[] args) throws Exception {
+        addStaticFileLocation();
         addRoutes();
         awaitInitialization();
 
         String response = getAndDecompress();
-        System.out.println("compressed = " + response);
+        System.out.println("response = " + response);
         System.exit(0);
     }
 
@@ -44,6 +46,10 @@ public class GzipExample {
             resp.header("Content-Encoding", "gzip");
             return CONTENT;
         });
+    }
+
+    public static void addStaticFileLocation() {
+        staticFileLocation("/public");
     }
 
     public static String getAndDecompress() throws Exception {

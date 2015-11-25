@@ -37,7 +37,7 @@ public class GzipTest {
 
     @BeforeClass
     public static void setup() {
-        staticFileLocation("/public");
+        GzipExample.addStaticFileLocation();
         GzipExample.addRoutes();
         awaitInitialization();
     }
