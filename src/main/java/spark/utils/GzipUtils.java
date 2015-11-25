@@ -69,10 +69,17 @@ public class GzipUtils {
         if (acceptsGzip) {
             if (!requireWantsHeader || wantGzip) {
                 responseStream = new GZIPOutputStream(responseStream, true);
+                addContentEncodingHeaderIfMissing(httpResponse, wantGzip);
             }
         }
 
         return responseStream;
+    }
+
+    private static void addContentEncodingHeaderIfMissing(HttpServletResponse response, boolean wantsGzip) {
+        if (!wantsGzip) {
+            response.setHeader(CONTENT_ENCODING, GZIP);
+        }
     }
 
     /**
