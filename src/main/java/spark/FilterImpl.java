@@ -40,7 +40,23 @@ public abstract class FilterImpl implements Filter {
     static FilterImpl create(final String path, final Filter filter) {
         return create(path, DEFAULT_ACCEPT_TYPE, filter);
     }
-
+    
+    /**
+     * Wraps the finally filter in FilterImpl
+     *
+     * @param path   the path
+     * @param filter the filter
+     * @return the wrapped route
+     */
+    static FinallyFilter createFinally(final String path, final Filter filter) {
+    	return new FinallyFilter(path, DEFAULT_ACCEPT_TYPE) {
+    		@Override
+    		public void handle(Request request, Response response) throws Exception {
+    			filter.handle(request, response);
+    		}
+    	};
+	}
+    
     /**
      * Wraps the filter in FilterImpl
      *

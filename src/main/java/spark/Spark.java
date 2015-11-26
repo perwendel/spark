@@ -158,7 +158,29 @@ public final class Spark {
     public static void after(String path, Filter filter) {
         getInstance().after(path, filter);
     }
-
+    
+    /**
+     * 
+     * Execute after route even if the route throws exception
+     * 
+     * @param path
+     * @param filter
+     */
+    public static synchronized void afterFinally(String path, Filter filter) {
+    	getInstance().afterFinally(path, filter);
+    }
+    
+    /**
+     * 
+     * Execute after any matching route even if the route throws exception
+     * 
+     * @param path
+     * @param filter
+     */
+    public static synchronized void afterFinally(Filter filter) {
+    	getInstance().afterFinally(filter);
+    }
+    
     //////////////////////////////////////////////////
     // BEGIN route/filter mapping with accept type
     //////////////////////////////////////////////////

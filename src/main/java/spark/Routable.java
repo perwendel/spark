@@ -296,7 +296,25 @@ abstract class Routable {
     public void after(String path, String acceptType, Filter filter) {
         addFilter(HttpMethod.after.name(), FilterImpl.create(path, acceptType, filter));
     }
-
+    
+    /**
+     * Maps a filter to be executed after any matching routes even if the route throws any exception
+     *
+     * @param filter The filter
+     */
+    public void afterFinally(Filter filter) {
+        addFilter(HttpMethod.after.name(), FilterImpl.createFinally(SparkUtils.ALL_PATHS, filter));
+    }
+    
+    /**
+     * Maps a filter to be executed after any matching routes even if the route throws any exception
+     *
+     * @param filter The filter
+     */
+    public void afterFinally(String path, Filter filter) {
+        addFilter(HttpMethod.after.name(), FilterImpl.createFinally(path, filter));
+    }
+    
     //////////////////////////////////////////////////
     // END route/filter mapping with accept type
     //////////////////////////////////////////////////
