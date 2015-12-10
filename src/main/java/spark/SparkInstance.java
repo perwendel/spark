@@ -313,6 +313,11 @@ final class SparkInstance extends Routable {
             server.stop();
             latch = new CountDownLatch(1);
         }
+        sslStores = null;
+        externalStaticFileFolder = null;
+        servletExternalStaticLocationSet = false;
+        staticFileFolder = null;
+        servletStaticLocationSet = false;
         StaticFiles.clear();
         initialized = false;
     }
