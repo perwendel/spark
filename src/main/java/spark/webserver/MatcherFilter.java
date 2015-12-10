@@ -170,6 +170,7 @@ public class MatcherFilter implements Filter {
                         Object element = route.handle(requestWrapper, responseWrapper);
 
                         result = route.render(element);
+                        result = result!=null?result:"";
                         // result = element.toString(); // TODO: Remove later when render fixed
                     }
                     if (result != null) {
