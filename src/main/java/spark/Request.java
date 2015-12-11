@@ -128,7 +128,10 @@ public class Request {
 
         if (param.startsWith(":")) {
             return params.get(param.toLowerCase()); // NOSONAR
-        } else {
+        }  else if(params.startsWith("{") && params.endsWith("}")) {
++            return params.get(":" + params.substring(1, param.length() - 1));
++        }
+        else {
             return params.get(":" + param.toLowerCase()); // NOSONAR
         }
     }
