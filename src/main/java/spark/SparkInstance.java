@@ -323,6 +323,26 @@ final class SparkInstance extends Routable {
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route.getAcceptType(), route);
     }
 
+    /**
+     * Removes the routes associated to the provided httpMethod and path
+     * @param httpMethod
+     * @param path
+     */
+    public void removeRoute(String httpMethod, String path) {
+    	init();
+    	routeMatcher.removeRoute(path, httpMethod);
+    }
+    
+    /**
+     * Removes all the routes associated to the provided path
+     * @param httpMethod
+     * @param path
+     */
+    public void removeRoute(String path) {
+    	init();
+    	routeMatcher.removeRoute(path);
+    }
+    
     @Override
     public void addFilter(String httpMethod, FilterImpl filter) {
         init();
