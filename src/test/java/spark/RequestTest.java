@@ -1,14 +1,10 @@
 package spark;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -29,7 +25,9 @@ import org.junit.Test;
 
 import spark.routematch.RouteMatch;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class RequestTest {
 
@@ -81,6 +79,381 @@ public class RequestTest {
         Request request = new Request(match, servletRequest);
         assertEquals("Should have delegated getting the context path", THE_CONTEXT_PATH, request.contextPath());
     }
+
+    @Test
+    public void testSessionNoParams_whenSessionIsNull() {
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+
+        HttpSession httpSession = mock(HttpSession.class);
+        when(servletRequest.getSession()).thenReturn(httpSession);
+
+        HttpSession expectedSession = servletRequest.getSession();
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("A Session with an HTTPSession from the Request should have been created",
+                expectedSession, request.session().raw());
+    }
+
+    @Test
+    public void testSession_whenCreateIsTrue() {
+
+        HttpSession httpSession = mock(HttpSession.class);
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getSession(true)).thenReturn(httpSession);
+
+        HttpSession expectedSession = servletRequest.getSession(true);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("A Session with an HTTPSession from the Request should have been created because create parameter " +
+                        "was set to true",
+                expectedSession, request.session(true).raw());
+
+    }
+
+    @Test
+    public void testSession_whenCreateIsFalse() {
+
+        HttpSession httpSession = mock(HttpSession.class);
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getSession(true)).thenReturn(httpSession);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("A Session should not have been created because create parameter was set to false",
+                null, request.session(false));
+
+    }
+
+    @Test
+    public void testCookies_whenCookiesArePresent() {
+
+        Collection<Cookie> cookies = new ArrayList<>();
+        cookies.add(new Cookie("cookie1", "cookie1value"));
+        cookies.add(new Cookie("cookie2", "cookie2value"));
+
+        Map<String, String> expected = new HashMap<>();
+        for(Cookie cookie : cookies) {
+            expected.put(cookie.getName(), cookie.getValue());
+        }
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        Cookie[] cookieArray = cookies.toArray(new Cookie[cookies.size()]);
+
+        when(servletRequest.getCookies()).thenReturn(cookieArray);
+
+        Request request = new Request(match, servletRequest);
+
+        assertTrue("The count of cookies returned should be the same as those in the request",
+                request.cookies().size() == 2);
+
+        assertEquals("A Map of Cookies should have been returned because they exist", expected, request.cookies());
+
+    }
+
+    @Test
+    public void testCookies_whenCookiesAreNotPresent() {
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getCookies()).thenReturn(null);
+
+        Request request = new Request(match, servletRequest);
+
+        assertNotNull("A Map of Cookies should have been instantiated even if cookies are not present in the request",
+                request.cookies());
+
+        assertTrue("The Map of cookies should be empty because cookies are not present in the request",
+                request.cookies().size() == 0);
+
+    }
+
+    @Test
+    public void testCookie_whenCookiesArePresent() {
+
+        final String cookieKey = "cookie1";
+        final String cookieValue = "cookie1value";
+
+        Collection<Cookie> cookies = new ArrayList<>();
+        cookies.add(new Cookie(cookieKey, cookieValue));
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        Cookie[] cookieArray = cookies.toArray(new Cookie[cookies.size()]);
+
+        when(servletRequest.getCookies()).thenReturn(cookieArray);
+
+        Request request = new Request(match, servletRequest);
+
+        assertNotNull("A value for the key provided should exist because a cookie with the same key is present",
+                request.cookie(cookieKey));
+
+        assertEquals("The correct value for the cookie key supplied should be returned",
+                cookieValue, request.cookie(cookieKey));
+
+    }
+
+    @Test
+    public void testCookie_whenCookiesAreNotPresent() {
+
+        final String cookieKey = "nonExistentCookie";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+
+        when(servletRequest.getCookies()).thenReturn(null);
+
+        Request request = new Request(match, servletRequest);
+
+        assertNull("A null value should have been returned because the cookie with that key does not exist",
+                request.cookie(cookieKey));
+
+    }
+
+    @Test
+    public void testRequestMethod() {
+
+        final String requestMethod = "GET";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+
+        when(servletRequest.getMethod()).thenReturn(requestMethod);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The request method of the underlying servlet request should be returned",
+                requestMethod, request.requestMethod());
+
+    }
+
+    @Test
+    public void testScheme() {
+
+        final String scheme = "http";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getScheme()).thenReturn(scheme);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The scheme of the underlying servlet request should be returned",
+                scheme, request.scheme());
+
+    }
+
+    @Test
+    public void testHost() {
+
+        final String host = "www.google.com";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getHeader("host")).thenReturn(host);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The value of the host header of the underlying servlet request should be returned",
+                host, request.host());
+
+    }
+
+    @Test
+    public void testUserAgent() {
+
+        final String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getHeader("user-agent")).thenReturn(userAgent);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The value of the user agent header of the underlying servlet request should be returned",
+                userAgent, request.userAgent());
+
+    }
+
+    @Test
+    public void testPort() {
+
+        final int port = 80;
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getServerPort()).thenReturn(80);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The server port of the the underlying servlet request should be returned",
+                port, request.port());
+
+    }
+
+    @Test
+    public void testPathInfo() {
+
+        final String pathInfo = "/path/to/resource";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getPathInfo()).thenReturn(pathInfo);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The path info of the underlying servlet request should be returned",
+                pathInfo, request.pathInfo());
+
+    }
+
+    @Test
+    public void testServletPath() {
+
+        final String servletPath = "/api";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getServletPath()).thenReturn(servletPath);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The servlet path of the underlying servlet request should be returned",
+                servletPath, request.servletPath());
+
+    }
+
+    @Test
+    public void testContextPath() {
+
+        final String contextPath = "/my-app";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getContextPath()).thenReturn(contextPath);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The context path of the underlying servlet request should be returned",
+                contextPath, request.contextPath());
+
+    }
+
+    @Test
+    public void testUrl() {
+
+        final String url = "http://www.myapp.com/myapp/a";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getRequestURL()).thenReturn(new StringBuffer(url));
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The request url of the underlying servlet request should be returned",
+                url, request.url());
+
+    }
+
+    @Test
+    public void testContentType() {
+
+        final String contentType = "image/jpeg";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getContentType()).thenReturn(contentType);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The content type of the underlying servlet request should be returned",
+                contentType, request.contentType());
+
+    }
+
+    @Test
+    public void testIp() {
+
+        final String ip = "216.58.197.106:80";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getRemoteAddr()).thenReturn(ip);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The remote IP of the underlying servlet request should be returned",
+                ip, request.ip());
+
+    }
+
+    @Test
+    public void testContentLength() {
+
+        final int contentLength = 500;
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getContentLength()).thenReturn(contentLength);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The content length the underlying servlet request should be returned",
+                contentLength, request.contentLength());
+
+    }
+
+    @Test
+    public void testHeaders() {
+
+        final String headerKey = "host";
+        final String host = "www.google.com";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getHeader(headerKey)).thenReturn(host);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The value of the header specified should be returned",
+                host, request.headers(headerKey));
+
+    }
+
+    // todo : do this with Powermock
+//    @Test
+//    public void testBodyAsBytes() {
+//
+//        final String body = "response body";
+//        InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
+//
+//        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+//        when(servletRequest.getContentLength()).thenReturn(stream);
+//
+//        Request request = new Request(match, servletRequest);
+//
+//        assertEquals("The content length the underlying servlet request should be returned",
+//                body, request.bodyAsBytes());
+//
+//    }
+
+    @Test
+    public void testQueryParamsValues_whenParamExists() {
+
+        final String[] paramValues = {"foo", "bar"};
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getParameterValues("id")).thenReturn(paramValues);
+
+        Request request = new Request(match, servletRequest);
+
+        assertArrayEquals("An array of Strings for a parameter with multiple values should be returned",
+                paramValues, request.queryParamsValues("id"));
+
+    }
+
+    @Test
+    public void testQueryParamsValues_whenParamDoesNotExists() {
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getParameterValues("id")).thenReturn(null);
+
+        Request request = new Request(match, servletRequest);
+
+        assertNull("Null should be returned because the parameter specified does not exist in the request",
+                request.queryParamsValues("id"));
+
+    }
+
+
 
     public static class MockedHttpServletRequest implements HttpServletRequest {
         private Map<String, String[]> params;
