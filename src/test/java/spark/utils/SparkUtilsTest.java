@@ -19,6 +19,7 @@ public class SparkUtilsTest {
         List<String> actual = SparkUtils.convertRouteToList("/api/person/:id");
 
         assertThat("Should return route as a list of individual elements that path is made of",
+                actual,
                 is(expected));
 
     }
