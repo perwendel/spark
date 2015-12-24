@@ -126,7 +126,7 @@ class ClassPathResourceHandlerTest {
 	}
 	
 	@Test
-	public void testGetResource_whenResourcePathExists_andGetFileFromResourceThrowsException_thenReturnNull() throws Exception {
+	public void testGetResource_whenResourcePathExists_andResourceThrowsException_thenReturnNull() throws Exception {
 		ClassPathResource resourceMock = PowerMockito.mock(ClassPathResource.class);
 		PowerMockito.whenNew(ClassPathResource.class).withArguments("/public/index.html").thenReturn(resourceMock);
 		
