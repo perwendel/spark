@@ -1,5 +1,6 @@
 package spark.route;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -19,16 +20,37 @@ public class SimpleRouteMatcherTest {
 		expectedRouteEntry.httpMethod = HttpMethod.get;
 		expectedRouteEntry.path = "/hello";
 		expectedRouteEntry.target = target;
+		List<RouteEntry> expectedRoutes = new ArrayList<>();
+		expectedRoutes.add(expectedRouteEntry);
 		
 		SimpleRouteMatcher simpleRouteMatcher = new SimpleRouteMatcher();
 		simpleRouteMatcher.parseValidateAddRoute(route, acceptType, target);
 		
 		List<RouteEntry> routes = Whitebox.getInternalState(simpleRouteMatcher, "routes");
-	    assertEquals(routes.size(),1);
-	    assertEquals(routes.get(0).acceptedType,expectedRouteEntry.acceptedType);
-	    assertEquals(routes.get(0).httpMethod,expectedRouteEntry.httpMethod);
-	    assertEquals(routes.get(0).path,expectedRouteEntry.path);
-	    assertEquals(routes.get(0).target,expectedRouteEntry.target);
+		assertTrue("Should return true because http method is valid and the route should be added to the list",
+				    equalsRouteEntryList(routes, expectedRoutes));
+	    
+	}
+	
+	private boolean equalsRouteEntryList(List<RouteEntry> routes, List<RouteEntry> expectedRoutes) {
+		if(routes.size() != expectedRoutes.size()) {
+			return false;
+		}
+		for(int i=0;i < routes.size();i++) {
+			if(!routes.get(i).acceptedType.equals(expectedRoutes.get(i).acceptedType)) {
+				return false;
+			}
+			if(!routes.get(i).httpMethod.equals(expectedRoutes.get(i).httpMethod)) {
+				return false;
+			}
+			if(!routes.get(i).path.equals(expectedRoutes.get(i).path)) {
+				return false;
+			}
+			if(!routes.get(i).target.equals(expectedRoutes.get(i).target)) {
+				return false;
+			}
+		}
+	    return true;
 	}
 	
 	@Test
@@ -41,6 +63,7 @@ public class SimpleRouteMatcherTest {
 		simpleRouteMatcher.parseValidateAddRoute(route, acceptType, target);
 		
 		List<RouteEntry> routes = Whitebox.getInternalState(simpleRouteMatcher, "routes");
-	    assertEquals(routes.size(),0);
+	    assertEquals("Should return 0 because test is not a valid http method, so the route is not added to the list", 
+	    		      routes.size(),0);
 	}
 }

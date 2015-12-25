@@ -3,11 +3,9 @@ package spark.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.junit.Test;
@@ -52,7 +50,7 @@ public class ExternalResourceHandlerTest {
 		
 		ExternalResourceHandler externalResourceHandler = new ExternalResourceHandler("/public", "index.html");
 		String returnedPath = ((ExternalResource) externalResourceHandler.getResource("/folder")).getPath();
-		assertEquals(returnedPath,"/public/folder/index.html");
+		assertEquals("Should be equals because the resource path exists and it's a directory and welcome file is not null", returnedPath,"/public/folder/index.html");
 		
 		PowerMockito.verifyNew(ExternalResource.class).withArguments("/public/folder");
 		PowerMockito.verifyNew(ExternalResource.class).withArguments("/public/folder/index.html");
@@ -105,7 +103,7 @@ public class ExternalResourceHandlerTest {
 		
 		ExternalResourceHandler externalResourceHandler = new ExternalResourceHandler("/public", null);
 		String returnedPath = ((ExternalResource)externalResourceHandler.getResource("/index.html")).getPath();
-		assertEquals(returnedPath, "/public/index.html");
+		assertEquals("Should be equals because the resource exists", returnedPath, "/public/index.html");
 		
 		PowerMockito.verifyNew(ExternalResource.class).withArguments("/public/index.html");
 		verify(resourceMock,times(2)).exists();

@@ -58,7 +58,8 @@ class ClassPathResourceHandlerTest {
 		
 		ClassPathResourceHandler classPathResourceHandler = new ClassPathResourceHandler("/public", "index.html");
 		String returnedPath = ((ClassPathResource) classPathResourceHandler.getResource("/folder")).getPath();
-		assertEquals(returnedPath,"/public/folder/index.html");
+		assertEquals("Should be equals because the resource path exists and it's a directory and welcome file is not null",
+				      returnedPath,"/public/folder/index.html");
 		
 		PowerMockito.verifyNew(ClassPathResource.class).withArguments("/public/folder");
 		PowerMockito.verifyNew(ClassPathResource.class).withArguments("/public/folder/index.html");
@@ -117,7 +118,7 @@ class ClassPathResourceHandlerTest {
 		
 		ClassPathResourceHandler classPathResourceHandler = new ClassPathResourceHandler("/public", null);
 		String returnedPath = ((ClassPathResource)classPathResourceHandler.getResource("/index.html")).getPath();
-		assertEquals(returnedPath, "/public/index.html");
+		assertEquals("Should be equals because the resource exists",returnedPath, "/public/index.html");
 		
 		PowerMockito.verifyNew(ClassPathResource.class).withArguments("/public/index.html");
 		verify(resourceMock,times(2)).exists();

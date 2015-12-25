@@ -24,7 +24,7 @@ public class ResourceUtilsTest {
 	public void testGetFile_whenURLProtocolIsFile_thenReturnFileObject() throws MalformedURLException, FileNotFoundException, URISyntaxException {
 		URL url = new URL("file://public/file.txt");
 		File file = ResourceUtils.getFile(url, "Some description");
-		assertEquals(file, new File(ResourceUtils.toURI(url).getSchemeSpecificPart()));
+		assertEquals("Should be equals because URL protocol is file", file, new File(ResourceUtils.toURI(url).getSchemeSpecificPart()));
 	}
 
 }
