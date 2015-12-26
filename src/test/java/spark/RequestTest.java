@@ -453,6 +453,53 @@ public class RequestTest {
 
     }
 
+    @Test
+    public void testQueryParams() {
+
+        Map<String, String[]> params = new HashMap<>();
+        params.put("sort", new String[]{"asc"});
+        params.put("items", new String[]{"10"});
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getParameterMap()).thenReturn(params);
+
+        Request request = new Request(match, servletRequest);
+
+        Set<String> result = request.queryParams();
+
+        assertArrayEquals("Should return the query parameter names", params.keySet().toArray(), result.toArray());
+
+    }
+
+    @Test
+    public void testURI() {
+
+        final String requestURI = "http://localhost:8080/myapp/";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getRequestURI()).thenReturn(requestURI);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The request URI should be returned",
+                requestURI, request.uri());
+
+    }
+
+    @Test
+    public void testProtocol() {
+
+        final String protocol = "HTTP/1.1";
+
+        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
+        when(servletRequest.getProtocol()).thenReturn(protocol);
+
+        Request request = new Request(match, servletRequest);
+
+        assertEquals("The underlying request protocol should be returned",
+                protocol, request.protocol());
+
+    }
 
 
     public static class MockedHttpServletRequest implements HttpServletRequest {
