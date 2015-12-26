@@ -8,7 +8,9 @@ import static org.mockito.Mockito.verify;
 
 import java.net.MalformedURLException;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -70,7 +72,7 @@ public class ExternalResourceHandlerTest {
 		doReturn(true).when(resourceMock).isDirectory();
 		
 		ExternalResourceHandler externalResourceHandler = new ExternalResourceHandler("/public", null);
-		assertNull(externalResourceHandler.getResource("/folder"));
+		assertNull("Should return null because the resource path doesn't point to a file", externalResourceHandler.getResource("/folder"));
 		
 		PowerMockito.verifyNew(ExternalResource.class).withArguments("/public/folder");
 		verify(resourceMock).exists();
@@ -85,7 +87,7 @@ public class ExternalResourceHandlerTest {
 		doReturn(false).when(resourceMock).exists();
 		
 		ExternalResourceHandler externalResourceHandler = new ExternalResourceHandler("/public", null);
-		assertNull(externalResourceHandler.getResource("/folder"));
+		assertNull("Should return null because the resource path doesn't exists", externalResourceHandler.getResource("/folder"));
 		
 		PowerMockito.verifyNew(ExternalResource.class).withArguments("/public/folder");
 		verify(resourceMock,times(2)).exists();

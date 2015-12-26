@@ -82,7 +82,7 @@ class ClassPathResourceHandlerTest {
 		doReturn(true).when(fileMock).isDirectory();
 		
 		ClassPathResourceHandler classPathResourceHandler = new ClassPathResourceHandler("/public", null);
-		assertNull(classPathResourceHandler.getResource("/folder"));
+		assertNull("Should return null because the resource path doesn't point to a file", classPathResourceHandler.getResource("/folder"));
 		
 		PowerMockito.verifyNew(ClassPathResource.class).withArguments("/public/folder");
 		verify(resourceMock).exists();
@@ -98,7 +98,7 @@ class ClassPathResourceHandlerTest {
 		doReturn(false).when(resourceMock).exists();
 		
 		ClassPathResourceHandler classPathResourceHandler = new ClassPathResourceHandler("/public", null);
-		assertNull(classPathResourceHandler.getResource("/folder"));
+		assertNull("Should return null because the resource path doesn't exists", classPathResourceHandler.getResource("/folder"));
 		
 		PowerMockito.verifyNew(ClassPathResource.class).withArguments("/public/folder");
 		verify(resourceMock,times(2)).exists();
