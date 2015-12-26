@@ -408,23 +408,6 @@ public class RequestTest {
 
     }
 
-    // todo : do this with Powermock
-//    @Test
-//    public void testBodyAsBytes() {
-//
-//        final String body = "response body";
-//        InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
-//
-//        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
-//        when(servletRequest.getContentLength()).thenReturn(stream);
-//
-//        Request request = new Request(match, servletRequest);
-//
-//        assertEquals("The content length the underlying servlet request should be returned",
-//                body, request.bodyAsBytes());
-//
-//    }
-
     @Test
     public void testQueryParamsValues_whenParamExists() {
 
