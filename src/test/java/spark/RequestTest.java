@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import spark.routematch.RouteMatch;
@@ -34,7 +35,18 @@ public class RequestTest {
     private static final String THE_SERVLET_PATH = "/the/servlet/path";
     private static final String THE_CONTEXT_PATH = "/the/context/path";
 
+    HttpServletRequest servletRequest;
+    HttpSession httpSession;
+
     RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html");
+
+    @Before
+    public void setup() {
+
+        servletRequest = mock(HttpServletRequest.class);
+        httpSession = mock(HttpSession.class);
+
+    }
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {
@@ -83,43 +95,30 @@ public class RequestTest {
     @Test
     public void testSessionNoParams_whenSessionIsNull() {
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
-
-        HttpSession httpSession = mock(HttpSession.class);
         when(servletRequest.getSession()).thenReturn(httpSession);
-
-        HttpSession expectedSession = servletRequest.getSession();
 
         Request request = new Request(match, servletRequest);
 
         assertEquals("A Session with an HTTPSession from the Request should have been created",
-                expectedSession, request.session().raw());
+                httpSession, request.session().raw());
     }
 
     @Test
     public void testSession_whenCreateIsTrue() {
 
-        HttpSession httpSession = mock(HttpSession.class);
-
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getSession(true)).thenReturn(httpSession);
-
-        HttpSession expectedSession = servletRequest.getSession(true);
 
         Request request = new Request(match, servletRequest);
 
         assertEquals("A Session with an HTTPSession from the Request should have been created because create parameter " +
                         "was set to true",
-                expectedSession, request.session(true).raw());
+                httpSession, request.session(true).raw());
 
     }
 
     @Test
     public void testSession_whenCreateIsFalse() {
 
-        HttpSession httpSession = mock(HttpSession.class);
-
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getSession(true)).thenReturn(httpSession);
 
         Request request = new Request(match, servletRequest);
@@ -158,7 +157,6 @@ public class RequestTest {
     @Test
     public void testCookies_whenCookiesAreNotPresent() {
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getCookies()).thenReturn(null);
 
         Request request = new Request(match, servletRequest);
@@ -180,9 +178,7 @@ public class RequestTest {
         Collection<Cookie> cookies = new ArrayList<>();
         cookies.add(new Cookie(cookieKey, cookieValue));
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         Cookie[] cookieArray = cookies.toArray(new Cookie[cookies.size()]);
-
         when(servletRequest.getCookies()).thenReturn(cookieArray);
 
         Request request = new Request(match, servletRequest);
@@ -200,8 +196,6 @@ public class RequestTest {
 
         final String cookieKey = "nonExistentCookie";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
-
         when(servletRequest.getCookies()).thenReturn(null);
 
         Request request = new Request(match, servletRequest);
@@ -215,8 +209,6 @@ public class RequestTest {
     public void testRequestMethod() {
 
         final String requestMethod = "GET";
-
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
 
         when(servletRequest.getMethod()).thenReturn(requestMethod);
 
@@ -232,7 +224,6 @@ public class RequestTest {
 
         final String scheme = "http";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getScheme()).thenReturn(scheme);
 
         Request request = new Request(match, servletRequest);
@@ -247,7 +238,6 @@ public class RequestTest {
 
         final String host = "www.google.com";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getHeader("host")).thenReturn(host);
 
         Request request = new Request(match, servletRequest);
@@ -262,7 +252,6 @@ public class RequestTest {
 
         final String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getHeader("user-agent")).thenReturn(userAgent);
 
         Request request = new Request(match, servletRequest);
@@ -277,7 +266,6 @@ public class RequestTest {
 
         final int port = 80;
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getServerPort()).thenReturn(80);
 
         Request request = new Request(match, servletRequest);
@@ -292,7 +280,6 @@ public class RequestTest {
 
         final String pathInfo = "/path/to/resource";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getPathInfo()).thenReturn(pathInfo);
 
         Request request = new Request(match, servletRequest);
@@ -307,7 +294,6 @@ public class RequestTest {
 
         final String servletPath = "/api";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getServletPath()).thenReturn(servletPath);
 
         Request request = new Request(match, servletRequest);
@@ -322,7 +308,6 @@ public class RequestTest {
 
         final String contextPath = "/my-app";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getContextPath()).thenReturn(contextPath);
 
         Request request = new Request(match, servletRequest);
@@ -337,7 +322,6 @@ public class RequestTest {
 
         final String url = "http://www.myapp.com/myapp/a";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getRequestURL()).thenReturn(new StringBuffer(url));
 
         Request request = new Request(match, servletRequest);
@@ -352,7 +336,6 @@ public class RequestTest {
 
         final String contentType = "image/jpeg";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getContentType()).thenReturn(contentType);
 
         Request request = new Request(match, servletRequest);
@@ -367,7 +350,6 @@ public class RequestTest {
 
         final String ip = "216.58.197.106:80";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getRemoteAddr()).thenReturn(ip);
 
         Request request = new Request(match, servletRequest);
@@ -382,7 +364,6 @@ public class RequestTest {
 
         final int contentLength = 500;
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getContentLength()).thenReturn(contentLength);
 
         Request request = new Request(match, servletRequest);
@@ -398,7 +379,6 @@ public class RequestTest {
         final String headerKey = "host";
         final String host = "www.google.com";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getHeader(headerKey)).thenReturn(host);
 
         Request request = new Request(match, servletRequest);
@@ -413,7 +393,6 @@ public class RequestTest {
 
         final String[] paramValues = {"foo", "bar"};
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getParameterValues("id")).thenReturn(paramValues);
 
         Request request = new Request(match, servletRequest);
@@ -426,7 +405,6 @@ public class RequestTest {
     @Test
     public void testQueryParamsValues_whenParamDoesNotExists() {
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getParameterValues("id")).thenReturn(null);
 
         Request request = new Request(match, servletRequest);
@@ -443,7 +421,6 @@ public class RequestTest {
         params.put("sort", new String[]{"asc"});
         params.put("items", new String[]{"10"});
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getParameterMap()).thenReturn(params);
 
         Request request = new Request(match, servletRequest);
@@ -459,7 +436,6 @@ public class RequestTest {
 
         final String requestURI = "http://localhost:8080/myapp/";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getRequestURI()).thenReturn(requestURI);
 
         Request request = new Request(match, servletRequest);
@@ -474,7 +450,6 @@ public class RequestTest {
 
         final String protocol = "HTTP/1.1";
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         when(servletRequest.getProtocol()).thenReturn(protocol);
 
         Request request = new Request(match, servletRequest);
