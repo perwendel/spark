@@ -37,6 +37,7 @@ public class RequestTest {
 
     HttpServletRequest servletRequest;
     HttpSession httpSession;
+    Request request;
 
     RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html");
 
@@ -45,6 +46,8 @@ public class RequestTest {
 
         servletRequest = mock(HttpServletRequest.class);
         httpSession = mock(HttpSession.class);
+
+        request = new Request(match, servletRequest);
 
     }
 
@@ -97,8 +100,6 @@ public class RequestTest {
 
         when(servletRequest.getSession()).thenReturn(httpSession);
 
-        Request request = new Request(match, servletRequest);
-
         assertEquals("A Session with an HTTPSession from the Request should have been created",
                 httpSession, request.session().raw());
     }
@@ -107,8 +108,6 @@ public class RequestTest {
     public void testSession_whenCreateIsTrue() {
 
         when(servletRequest.getSession(true)).thenReturn(httpSession);
-
-        Request request = new Request(match, servletRequest);
 
         assertEquals("A Session with an HTTPSession from the Request should have been created because create parameter " +
                         "was set to true",
@@ -120,8 +119,6 @@ public class RequestTest {
     public void testSession_whenCreateIsFalse() {
 
         when(servletRequest.getSession(true)).thenReturn(httpSession);
-
-        Request request = new Request(match, servletRequest);
 
         assertEquals("A Session should not have been created because create parameter was set to false",
                 null, request.session(false));
@@ -140,12 +137,9 @@ public class RequestTest {
             expected.put(cookie.getName(), cookie.getValue());
         }
 
-        HttpServletRequest servletRequest = mock(HttpServletRequest.class);
         Cookie[] cookieArray = cookies.toArray(new Cookie[cookies.size()]);
 
         when(servletRequest.getCookies()).thenReturn(cookieArray);
-
-        Request request = new Request(match, servletRequest);
 
         assertTrue("The count of cookies returned should be the same as those in the request",
                 request.cookies().size() == 2);
@@ -158,8 +152,6 @@ public class RequestTest {
     public void testCookies_whenCookiesAreNotPresent() {
 
         when(servletRequest.getCookies()).thenReturn(null);
-
-        Request request = new Request(match, servletRequest);
 
         assertNotNull("A Map of Cookies should have been instantiated even if cookies are not present in the request",
                 request.cookies());
@@ -181,8 +173,6 @@ public class RequestTest {
         Cookie[] cookieArray = cookies.toArray(new Cookie[cookies.size()]);
         when(servletRequest.getCookies()).thenReturn(cookieArray);
 
-        Request request = new Request(match, servletRequest);
-
         assertNotNull("A value for the key provided should exist because a cookie with the same key is present",
                 request.cookie(cookieKey));
 
@@ -198,8 +188,6 @@ public class RequestTest {
 
         when(servletRequest.getCookies()).thenReturn(null);
 
-        Request request = new Request(match, servletRequest);
-
         assertNull("A null value should have been returned because the cookie with that key does not exist",
                 request.cookie(cookieKey));
 
@@ -211,8 +199,6 @@ public class RequestTest {
         final String requestMethod = "GET";
 
         when(servletRequest.getMethod()).thenReturn(requestMethod);
-
-        Request request = new Request(match, servletRequest);
 
         assertEquals("The request method of the underlying servlet request should be returned",
                 requestMethod, request.requestMethod());
@@ -226,8 +212,6 @@ public class RequestTest {
 
         when(servletRequest.getScheme()).thenReturn(scheme);
 
-        Request request = new Request(match, servletRequest);
-
         assertEquals("The scheme of the underlying servlet request should be returned",
                 scheme, request.scheme());
 
@@ -239,8 +223,6 @@ public class RequestTest {
         final String host = "www.google.com";
 
         when(servletRequest.getHeader("host")).thenReturn(host);
-
-        Request request = new Request(match, servletRequest);
 
         assertEquals("The value of the host header of the underlying servlet request should be returned",
                 host, request.host());
@@ -254,8 +236,6 @@ public class RequestTest {
 
         when(servletRequest.getHeader("user-agent")).thenReturn(userAgent);
 
-        Request request = new Request(match, servletRequest);
-
         assertEquals("The value of the user agent header of the underlying servlet request should be returned",
                 userAgent, request.userAgent());
 
@@ -267,8 +247,6 @@ public class RequestTest {
         final int port = 80;
 
         when(servletRequest.getServerPort()).thenReturn(80);
-
-        Request request = new Request(match, servletRequest);
 
         assertEquals("The server port of the the underlying servlet request should be returned",
                 port, request.port());
@@ -282,8 +260,6 @@ public class RequestTest {
 
         when(servletRequest.getPathInfo()).thenReturn(pathInfo);
 
-        Request request = new Request(match, servletRequest);
-
         assertEquals("The path info of the underlying servlet request should be returned",
                 pathInfo, request.pathInfo());
 
@@ -295,8 +271,6 @@ public class RequestTest {
         final String servletPath = "/api";
 
         when(servletRequest.getServletPath()).thenReturn(servletPath);
-
-        Request request = new Request(match, servletRequest);
 
         assertEquals("The servlet path of the underlying servlet request should be returned",
                 servletPath, request.servletPath());
@@ -310,8 +284,6 @@ public class RequestTest {
 
         when(servletRequest.getContextPath()).thenReturn(contextPath);
 
-        Request request = new Request(match, servletRequest);
-
         assertEquals("The context path of the underlying servlet request should be returned",
                 contextPath, request.contextPath());
 
@@ -323,8 +295,6 @@ public class RequestTest {
         final String url = "http://www.myapp.com/myapp/a";
 
         when(servletRequest.getRequestURL()).thenReturn(new StringBuffer(url));
-
-        Request request = new Request(match, servletRequest);
 
         assertEquals("The request url of the underlying servlet request should be returned",
                 url, request.url());
@@ -338,8 +308,6 @@ public class RequestTest {
 
         when(servletRequest.getContentType()).thenReturn(contentType);
 
-        Request request = new Request(match, servletRequest);
-
         assertEquals("The content type of the underlying servlet request should be returned",
                 contentType, request.contentType());
 
@@ -352,8 +320,6 @@ public class RequestTest {
 
         when(servletRequest.getRemoteAddr()).thenReturn(ip);
 
-        Request request = new Request(match, servletRequest);
-
         assertEquals("The remote IP of the underlying servlet request should be returned",
                 ip, request.ip());
 
@@ -365,8 +331,6 @@ public class RequestTest {
         final int contentLength = 500;
 
         when(servletRequest.getContentLength()).thenReturn(contentLength);
-
-        Request request = new Request(match, servletRequest);
 
         assertEquals("The content length the underlying servlet request should be returned",
                 contentLength, request.contentLength());
@@ -381,8 +345,6 @@ public class RequestTest {
 
         when(servletRequest.getHeader(headerKey)).thenReturn(host);
 
-        Request request = new Request(match, servletRequest);
-
         assertEquals("The value of the header specified should be returned",
                 host, request.headers(headerKey));
 
@@ -395,8 +357,6 @@ public class RequestTest {
 
         when(servletRequest.getParameterValues("id")).thenReturn(paramValues);
 
-        Request request = new Request(match, servletRequest);
-
         assertArrayEquals("An array of Strings for a parameter with multiple values should be returned",
                 paramValues, request.queryParamsValues("id"));
 
@@ -406,8 +366,6 @@ public class RequestTest {
     public void testQueryParamsValues_whenParamDoesNotExists() {
 
         when(servletRequest.getParameterValues("id")).thenReturn(null);
-
-        Request request = new Request(match, servletRequest);
 
         assertNull("Null should be returned because the parameter specified does not exist in the request",
                 request.queryParamsValues("id"));
@@ -423,8 +381,6 @@ public class RequestTest {
 
         when(servletRequest.getParameterMap()).thenReturn(params);
 
-        Request request = new Request(match, servletRequest);
-
         Set<String> result = request.queryParams();
 
         assertArrayEquals("Should return the query parameter names", params.keySet().toArray(), result.toArray());
@@ -438,8 +394,6 @@ public class RequestTest {
 
         when(servletRequest.getRequestURI()).thenReturn(requestURI);
 
-        Request request = new Request(match, servletRequest);
-
         assertEquals("The request URI should be returned",
                 requestURI, request.uri());
 
@@ -451,8 +405,6 @@ public class RequestTest {
         final String protocol = "HTTP/1.1";
 
         when(servletRequest.getProtocol()).thenReturn(protocol);
-
-        Request request = new Request(match, servletRequest);
 
         assertEquals("The underlying request protocol should be returned",
                 protocol, request.protocol());
