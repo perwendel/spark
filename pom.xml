@@ -31,6 +31,8 @@
     <properties>
         <jetty.version>9.3.2.v20150730</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <powermock.version>1.6.4</powermock.version>
+        <mockito.version>1.10.19</mockito.version>
     </properties>
 
     <dependencies>
@@ -78,6 +80,24 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+      		<groupId>org.powermock</groupId>
+      		<artifactId>powermock-module-junit4</artifactId>
+      		<version>${powermock.version}</version>
+      		<scope>test</scope>
+   		</dependency>
+   			<dependency>
+      		<groupId>org.powermock</groupId>
+      		<artifactId>powermock-api-mockito</artifactId>
+      		<version>${powermock.version}</version>
+      		<scope>test</scope>
+   		</dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
