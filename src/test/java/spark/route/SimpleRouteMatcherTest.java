@@ -11,6 +11,7 @@ public class SimpleRouteMatcherTest {
 
 	@Test
 	public void testParseValidateAddRoute_whenHttpMethodIsValid_thenAddRoute() {
+		//given
 		String route = "get'/hello'";
 		String acceptType="*/*";
 		Object target = new Object(); 
@@ -26,35 +27,16 @@ public class SimpleRouteMatcherTest {
 		SimpleRouteMatcher simpleRouteMatcher = new SimpleRouteMatcher();
 		simpleRouteMatcher.parseValidateAddRoute(route, acceptType, target);
 		
+		//then
 		List<RouteEntry> routes = Whitebox.getInternalState(simpleRouteMatcher, "routes");
 		assertTrue("Should return true because http method is valid and the route should be added to the list",
-				    equalsRouteEntryList(routes, expectedRoutes));
+				    Util.equals(routes, expectedRoutes));
 	    
-	}
-	
-	private boolean equalsRouteEntryList(List<RouteEntry> routes, List<RouteEntry> expectedRoutes) {
-		if(routes.size() != expectedRoutes.size()) {
-			return false;
-		}
-		for(int i=0;i < routes.size();i++) {
-			if(!routes.get(i).acceptedType.equals(expectedRoutes.get(i).acceptedType)) {
-				return false;
-			}
-			if(!routes.get(i).httpMethod.equals(expectedRoutes.get(i).httpMethod)) {
-				return false;
-			}
-			if(!routes.get(i).path.equals(expectedRoutes.get(i).path)) {
-				return false;
-			}
-			if(!routes.get(i).target.equals(expectedRoutes.get(i).target)) {
-				return false;
-			}
-		}
-	    return true;
 	}
 	
 	@Test
 	public void testParseValidateAddRoute_whenHttpMethodIsInvalid_thenDoNotAddRoute() {
+		//given
 		String route = "test'/hello'";
 		String acceptType="*/*";
 		Object target = new Object(); 
@@ -62,6 +44,7 @@ public class SimpleRouteMatcherTest {
 		SimpleRouteMatcher simpleRouteMatcher = new SimpleRouteMatcher();
 		simpleRouteMatcher.parseValidateAddRoute(route, acceptType, target);
 		
+		//then
 		List<RouteEntry> routes = Whitebox.getInternalState(simpleRouteMatcher, "routes");
 	    assertEquals("Should return 0 because test is not a valid http method, so the route is not added to the list", 
 	    		      routes.size(),0);
