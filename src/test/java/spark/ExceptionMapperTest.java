@@ -9,15 +9,21 @@ public class ExceptionMapperTest {
 	
 	@Test
 	public void testGetInstance_whenDefaultInstanceIsNull() {
+		//given
 		ExceptionMapper exceptionMapper = null;
 		Whitebox.setInternalState(ExceptionMapper.class, "defaultInstance", exceptionMapper);
+		
+		//then
 		exceptionMapper = ExceptionMapper.getInstance();
 		assertEquals("Should be equals because ExceptionMapper is a singleton",Whitebox.getInternalState(ExceptionMapper.class, "defaultInstance"), exceptionMapper);
 	}
 	
 	@Test
 	public void testGetInstance_whenDefaultInstanceIsNotNull() {
-		ExceptionMapper.getInstance();
+		//given
+		ExceptionMapper.getInstance(); //initialize Singleton
+		
+		//then
 		ExceptionMapper exceptionMapper = ExceptionMapper.getInstance();
 		assertEquals("Should be equals because ExceptionMapper is a singleton",Whitebox.getInternalState(ExceptionMapper.class, "defaultInstance"), exceptionMapper);
 	}
