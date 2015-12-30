@@ -29,18 +29,18 @@ public class RouteImplTest {
                 return null;
             }
         };
-        assertEquals("Path is not equal", PATH_TEST, route.getPath());
+        assertEquals("Should return path specified", PATH_TEST, route.getPath());
     }
 
     @Test
-    public void testGets() throws Exception {
+    public void testGets_thenReturnGetPathAndGetAcceptTypeSuccessfully() throws Exception {
         route = RouteImpl.create(PATH_TEST, ACCEPT_TYPE_TEST, null);
-        assertEquals("Path is not equal", PATH_TEST, route.getPath());
-        assertEquals("Accept type is not equal", ACCEPT_TYPE_TEST, route.getAcceptType());
+        assertEquals("Should return path specified", PATH_TEST, route.getPath());
+        assertEquals("Should return accept type specified", ACCEPT_TYPE_TEST, route.getAcceptType());
     }
 
     @Test
-    public void testHandle() throws Exception {
+    public void testHandle_thenReturnObjectValid() throws Exception {
         Route routeMock = EasyMock.createMock(Route.class);
         RouteImpl route = RouteImpl.create(PATH_TEST, routeMock);
 
@@ -50,35 +50,36 @@ public class RouteImplTest {
         Object value = route.handle(null, null);
         EasyMock.verify(routeMock);
 
-        assertNotNull("Value is null", value);
+        assertNotNull("Should return null because the request and response from handle are null", value);
     }
 
     @Test
-    public void testCreate_withOutAssignAcceptTypeInTheParameters(){
+    public void testCreate_whenOutAssignAcceptTypeInTheParameters_thenReturnPathAndAcceptTypeSuccessfully(){
         route = RouteImpl.create(PATH_TEST, null);
-        assertEquals("Path is not equal", PATH_TEST, route.getPath());
-        assertEquals("Accept type is not equal", RouteImpl.DEFAULT_ACCEPT_TYPE, route.getAcceptType());
+        assertEquals("Should return path specified", PATH_TEST, route.getPath());
+        assertEquals("Should return accept type specified", RouteImpl.DEFAULT_ACCEPT_TYPE, route.getAcceptType());
     }
 
     @Test
-    public void testCreate_withAcceptTypeNullValueInTheParameters(){
+    public void testCreate_whenAcceptTypeNullValueInTheParameters_thenReturnPathAndAcceptTypeSuccessfully(){
         route = RouteImpl.create(PATH_TEST, null, null);
-        assertEquals("Path is not equal", PATH_TEST, route.getPath());
-        assertEquals("Accept type is not equal", RouteImpl.DEFAULT_ACCEPT_TYPE, route.getAcceptType());
+        assertEquals("Should return path specified", PATH_TEST, route.getPath());
+        assertEquals("Should return accept type specified", RouteImpl.DEFAULT_ACCEPT_TYPE, route.getAcceptType());
     }
 
     @Test
-    public void testRender_withElementParameterValid_thenReturnValidObject() throws Exception {
+    public void testRender_whenElementParameterValid_thenReturnValidObject() throws Exception {
+        String finalObjValue = "object_value";
         route = RouteImpl.create(PATH_TEST, null);
-        Object value = route.render("object_value");
-        assertNotNull("Value is null", value);
-        assertEquals("Value is not equal", "object_value", value.toString());
+        Object value = route.render(finalObjValue);
+        assertNotNull("Should return an Object because we configured it to have one", value);
+        assertEquals("Should return a string object specified", finalObjValue, value.toString());
     }
 
     @Test
-    public void testRender_withElementParameterIsNull_thenReturnNull() throws Exception {
+    public void testRender_whenElementParameterIsNull_thenReturnNull() throws Exception {
         route = RouteImpl.create(PATH_TEST, null);
         Object value = route.render(null);
-        assertNull("Value is not null", value);
+        assertNull("Should return null because the element from render is null", value);
     }
 }
