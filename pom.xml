@@ -31,6 +31,8 @@
     <properties>
         <jetty.version>9.3.6.v20151106</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <easymock.version>3.2</easymock.version>
+        <powermock.version>1.6.4</powermock.version>
     </properties>
 
     <dependencies>
@@ -77,6 +79,18 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>${easymock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock.tests</groupId>
+            <artifactId>powermock-tests-utils</artifactId>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
