@@ -5,11 +5,20 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.mockito.internal.creation.instance.InstantationException;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import spark.examples.websocket.PingWebSocket;
 import spark.webserver.websocket.WebSocketCreatorFactory.SparkWebSocketCreator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyObject;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 public class WebSocketCreatorFactoryTest {
 
@@ -34,6 +43,23 @@ public class WebSocketCreatorFactoryTest {
                     "WebSocket handler must implement 'WebSocketListener' or be annotated as '@WebSocket'",
                     ex.getMessage());
         }
+    }
+
+    @Test
+    public void testCreate_whenInstantiationException() throws Exception {
+
+        try {
+            WebSocketCreator annotated = WebSocketCreatorFactory.create(FailingHandler.class);
+            fail("Handler creation should have thrown a RunTimeException");
+        } catch(RuntimeException ex) {
+            assertEquals("Could not instantiate websocket handler", ex.getMessage());
+        }
+
+    }
+
+    @WebSocket
+    class FailingHandler {
+
     }
 
     @WebSocket
