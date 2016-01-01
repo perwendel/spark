@@ -34,7 +34,7 @@
         <powermock.version>1.6.4</powermock.version>
         <mockito.version>1.10.19</mockito.version>
     </properties>
-    
+
     <dependencies>
         <!-- LOGGING DEPENDENCIES -->
         <dependency>

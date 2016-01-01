@@ -20,9 +20,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class ExternalResourceHandlerTest {
 
 	private ExternalResource resourceMock;
-	
-	public ExternalResourceHandlerTest() {}
-	
+
 	@Before
 	public void setUp() {
 		resourceMock = PowerMockito.mock(ExternalResource.class);

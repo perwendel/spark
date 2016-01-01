@@ -28,7 +28,7 @@ class ClassPathResourceHandlerTest {
 	private File fileMock;
 	
 	public ClassPathResourceHandlerTest() {}
-	
+
 	@Before
 	public void setUp() {
 		this.resourceMock = PowerMockito.mock(ClassPathResource.class);
