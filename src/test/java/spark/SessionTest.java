@@ -2,18 +2,17 @@ package spark;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.exceptions.base.MockitoAssertionError;
 import org.powermock.reflect.Whitebox;
 
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 public class SessionTest {
 
@@ -33,7 +32,7 @@ public class SessionTest {
         try {
 
             Session session = new Session(null);
-            fail("Session instantiation with a null HttpSession should throw na IllegalArgumentException");
+            fail("Session instantiation with a null HttpSession should throw an IllegalArgumentException");
 
         } catch(IllegalArgumentException ex) {
 
