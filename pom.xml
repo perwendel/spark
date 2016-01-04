@@ -29,8 +29,9 @@
     </developers>
 
     <properties>
-        <jetty.version>9.3.2.v20150730</jetty.version>
+        <jetty.version>9.3.6.v20151106</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <powermock.version>1.6.4</powermock.version>
     </properties>
 
     <dependencies>
@@ -38,13 +39,14 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.12</version>
+            <version>1.7.13</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.12</version>
+            <version>1.7.13</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- JETTY DEPENDENCIES -->
@@ -79,9 +81,15 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5</version>
+            <version>4.5.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -93,13 +101,19 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.3.1</version>
+            <version>2.4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>websocket-client</artifactId>
             <version>${jetty.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock.tests</groupId>
+            <artifactId>powermock-tests-utils</artifactId>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
