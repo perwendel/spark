@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import spark.util.SparkTestUtil;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.post;
+import static spark.Spark.*;
 
 public class BodyAvailabilityTest {
 
@@ -60,6 +58,8 @@ public class BodyAvailabilityTest {
             afterBody = req.body();
         });
 
+        get("/return_null", ((request, response) -> null));
+
         Spark.awaitInitialization();
     }
 
@@ -73,5 +73,13 @@ public class BodyAvailabilityTest {
         Assert.assertEquals(BODY_CONTENT, beforeBody);
         Assert.assertEquals(BODY_CONTENT, routeBody);
         Assert.assertEquals(BODY_CONTENT, afterBody);
+    }
+
+    @Test
+    public void testReturnNull() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET","/return_null",null);
+        Assert.assertEquals(200,response.status);
+        Assert.assertEquals("",response.body);
+        Assert.assertTrue(response.body.isEmpty());
     }
 }
