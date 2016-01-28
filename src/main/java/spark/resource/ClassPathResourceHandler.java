@@ -52,6 +52,7 @@ public class ClassPathResourceHandler extends AbstractResourceHandler {
      */
     public ClassPathResourceHandler(String baseResource, String welcomeFile) {
         Assert.notNull(baseResource);
+
         this.baseResource = baseResource;
         this.welcomeFile = welcomeFile;
     }

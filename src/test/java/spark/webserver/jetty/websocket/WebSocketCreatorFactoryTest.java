@@ -1,23 +1,16 @@
-package spark.webserver.websocket;
+package spark.webserver.jetty.websocket;
 
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.junit.Test;
 
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.internal.creation.instance.InstantationException;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import spark.examples.websocket.PingWebSocket;
-import spark.webserver.websocket.WebSocketCreatorFactory.SparkWebSocketCreator;
+import spark.webserver.jetty.websocket.WebSocketCreatorFactory;
+import spark.webserver.jetty.websocket.WebSocketCreatorFactory.SparkWebSocketCreator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyObject;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 public class WebSocketCreatorFactoryTest {

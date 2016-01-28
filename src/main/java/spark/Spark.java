@@ -849,7 +849,7 @@ public final class Spark {
      * @deprecated replaced by {@link #ipAddress(String)}
      */
     public static void setIpAddress(String ipAddress) {
-        getInstance().setIpAddress(ipAddress);
+        getInstance().ipAddress(ipAddress);
     }
 
     /**
@@ -872,7 +872,7 @@ public final class Spark {
      * @deprecated replaced by {@link #port(int)}
      */
     public static void setPort(int port) {
-        getInstance().setPort(port);
+        getInstance().port(port);
     }
 
     /**
@@ -906,7 +906,7 @@ public final class Spark {
                                  String keystorePassword,
                                  String truststoreFile,
                                  String truststorePassword) {
-        getInstance().setSecure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
+        getInstance().secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 
     /**

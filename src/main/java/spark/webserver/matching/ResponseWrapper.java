@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver;
+package spark.webserver.matching;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,9 +22,17 @@ import spark.Response;
 
 class ResponseWrapper extends Response {
 
+    static ResponseWrapper create() {
+        return new ResponseWrapper();
+    }
+
     private Response delegate;
 
     private boolean redirected = false;
+
+    private ResponseWrapper() {
+        // hidden
+    }
 
     public void setDelegate(Response delegate) {
         this.delegate = delegate;

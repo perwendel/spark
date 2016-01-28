@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver;
+package spark.webserver.jetty;
 
 import java.io.IOException;
 
@@ -25,8 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
+
+import spark.webserver.HttpRequestWrapper;
 
 /**
  * Simple Jetty Handler
@@ -34,8 +34,6 @@ import org.eclipse.jetty.util.log.Logger;
  * @author Per Wendel
  */
 public class JettyHandler extends SessionHandler {
-
-    private static final Logger LOG = Log.getLogger(JettyHandler.class);
 
     private Filter filter;
 

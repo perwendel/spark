@@ -1,4 +1,4 @@
-package spark.websocket;
+package spark.webserver.jetty.websocket;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;

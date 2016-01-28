@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver.websocket;
+package spark.webserver.jetty.websocket;
 
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;

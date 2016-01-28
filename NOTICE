@@ -100,6 +100,7 @@ Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0) and the
 * AbstractResourceHandler.java. Copyright 1995-2013 Mort Bay Consulting Pty. Ltd.
 * ClassPathResourceHandler.java. Copyright 1995-2013 Mort Bay Consulting Pty. Ltd.
 * ExternalResourceHandler.java. Copyright 1995-2013 Mort Bay Consulting Pty. Ltd.
+* UriPath.java. Copyright 1995-2013 Mort Bay Consulting Pty. Ltd.
 
 ARJEN POUTSMA
 This product includes the following software developed by Arjen Poutsma which is licensed under the terms of the

@@ -1,10 +1,10 @@
 /*
- * Copyright 2011- Per Wendel
+ * Copyright 2016 - Per Wendel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,22 +16,13 @@
  */
 package spark.webserver;
 
-import spark.SparkServer;
-import spark.route.RouteMatcherFactory;
-
 /**
  * @author Per Wendel
  */
-public final class SparkServerFactory {
+public interface EmbeddedServerFactory {
 
-    private SparkServerFactory() {
-    }
-
-    public static SparkServer create(boolean hasMultipleHandler) {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), false, hasMultipleHandler);
-        matcherFilter.init(null);
-        JettyHandler handler = new JettyHandler(matcherFilter);
-        return new JettySparkServer(handler);
-    }
-
+    /**
+     * Creates an embedded server instance.
+     */
+    public EmbeddedServer create(boolean hasMultipleHandler);
 }

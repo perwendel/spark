@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver;
+package spark.webserver.jetty;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -33,18 +33,16 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.SparkServer;
-import spark.webserver.jetty.JettyServerFactory;
-import spark.webserver.jetty.SocketConnectorFactory;
 import spark.ssl.SslStores;
-import spark.webserver.websocket.WebSocketServletContextHandlerFactory;
+import spark.webserver.EmbeddedServer;
+import spark.webserver.jetty.websocket.WebSocketServletContextHandlerFactory;
 
 /**
  * Spark server implementation
  *
  * @author Per Wendel
  */
-public class JettySparkServer implements SparkServer {
+public class EmbeddedJettyServer implements EmbeddedServer {
 
     private static final int SPARK_DEFAULT_PORT = 4567;
     private static final String NAME = "Spark";
@@ -54,9 +52,19 @@ public class JettySparkServer implements SparkServer {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public JettySparkServer(Handler handler) {
+    private Map<String, Class<?>> webSocketHandlers;
+    private Optional<Integer> webSocketIdleTimeoutMillis;
+
+    public EmbeddedJettyServer(Handler handler) {
         this.handler = handler;
-        System.setProperty("org.mortbay.log.class", "spark.JettyLogger");
+    }
+
+    @Override
+    public void configureWebSockets(Map<String, Class<?>> webSocketHandlers,
+                                    Optional<Integer> webSocketIdleTimeoutMillis) {
+
+        this.webSocketHandlers = webSocketHandlers;
+        this.webSocketIdleTimeoutMillis = webSocketIdleTimeoutMillis;
     }
 
     /**
@@ -69,9 +77,7 @@ public class JettySparkServer implements SparkServer {
                        CountDownLatch latch,
                        int maxThreads,
                        int minThreads,
-                       int threadIdleTimeoutMillis,
-                       Map<String, Class<?>> webSocketHandlers,
-                       Optional<Integer> webSocketIdleTimeoutMillis) {
+                       int threadIdleTimeoutMillis) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -82,7 +88,7 @@ public class JettySparkServer implements SparkServer {
             }
         }
 
-        server = JettyServerFactory.createServer(maxThreads, minThreads, threadIdleTimeoutMillis);
+        server = JettyServerFactory.create(maxThreads, minThreads, threadIdleTimeoutMillis);
 
         ServerConnector connector;
 
@@ -132,7 +138,7 @@ public class JettySparkServer implements SparkServer {
      * {@inheritDoc}
      */
     @Override
-    public void stop() {
+    public void extinguish() {
         logger.info(">>> {} shutting down ...", NAME);
         try {
             if (server != null) {

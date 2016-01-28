@@ -2,7 +2,6 @@ package spark.webserver.jetty;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
 
@@ -13,7 +12,7 @@ public class JettyServerFactoryTest {
     @Test
     public void testCreateServer_useDefaults() throws Exception {
 
-        Server server = JettyServerFactory.createServer(0, 0, 0);
+        Server server = JettyServerFactory.create(0, 0, 0);
 
         QueuedThreadPool threadPool = (QueuedThreadPool) server.getThreadPool();
 
@@ -30,7 +29,7 @@ public class JettyServerFactoryTest {
     @Test
     public void testCreateServer_whenNonDefaultMaxThreadOnly_thenUseDefaultMinThreadAndTimeout() throws Exception {
 
-        Server server = JettyServerFactory.createServer(1, 0, 0);
+        Server server = JettyServerFactory.create(1, 0, 0);
 
         QueuedThreadPool threadPool = (QueuedThreadPool) server.getThreadPool();
 

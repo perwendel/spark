@@ -1,4 +1,4 @@
-package spark.websocket;
+package spark.webserver.jetty.websocket;
 
 import static java.util.Collections.synchronizedList;
 

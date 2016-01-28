@@ -46,7 +46,7 @@ public class SerializerChain {
      * Process the output.
      *
      * @param outputStream the output stream to write to.
-     * @param element the element to serialize.
+     * @param element      the element to serialize.
      * @throws IOException in the case of IO error.
      */
     public void process(OutputStream outputStream, Object element) throws IOException {

@@ -1,17 +1,15 @@
-package spark.webserver.websocket;
+package spark.webserver.jetty.websocket;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.server.WebSocketServerFactory;
 import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
 import org.eclipse.jetty.websocket.server.pathmap.PathMappings;
 import org.eclipse.jetty.websocket.server.pathmap.PathSpec;
-import org.eclipse.jetty.websocket.server.pathmap.ServletPathSpec;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import spark.websocket.WebSocketTestHandler;
 
 import java.util.HashMap;
 import java.util.Map;

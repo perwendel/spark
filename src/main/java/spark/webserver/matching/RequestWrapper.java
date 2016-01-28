@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.webserver;
+package spark.webserver.matching;
 
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +29,15 @@ import spark.routematch.RouteMatch;
 
 final class RequestWrapper extends Request {
 
+    static RequestWrapper create() {
+        return new RequestWrapper();
+    }
+
     private Request delegate;
+
+    private RequestWrapper() {
+        // hidden
+    }
 
     public void setDelegate(Request delegate) {
         this.delegate = delegate;
