@@ -24,7 +24,7 @@ class ResponseWrapper extends Response {
 
     private Response delegate;
 
-    private boolean redirected = false;
+    private State state = State.NOT_PROCESSED;
 
     public void setDelegate(Response delegate) {
         this.delegate = delegate;
@@ -66,13 +66,13 @@ class ResponseWrapper extends Response {
 
     @Override
     public void redirect(String location) {
-        redirected = true;
+        state = State.REDIRECTED;
         delegate.redirect(location);
     }
 
     @Override
     public void redirect(String location, int httpStatusCode) {
-        redirected = true;
+        state = State.REDIRECTED;
         delegate.redirect(location, httpStatusCode);
     }
 
@@ -80,7 +80,7 @@ class ResponseWrapper extends Response {
      * @return true if redirected has been done
      */
     boolean isRedirected() {
-        return redirected;
+        return state == State.REDIRECTED;
     }
 
     @Override
@@ -121,5 +121,43 @@ class ResponseWrapper extends Response {
     @Override
     public void removeCookie(String name) {
         delegate.removeCookie(name);
+    }
+
+    public void changeStateTo(State newState){
+        this.state = newState;
+    }
+
+    public boolean inStateOf(State possibleState){
+        return this.state == possibleState;
+    }
+
+    public boolean isNotInStateOf(State possibleState){
+        return this.state != possibleState;
+    }
+
+    public boolean isNotPrepared(){
+        return state.notPrepared();
+    }
+
+    public boolean isPrepared(){
+        return state.prepared();
+    }
+
+    public enum State{
+        NOT_PROCESSED, PROCESSED,
+        EXCEPTION_HANDLED, EXCEPTION_NOT_HANDLED,
+        HALT,
+        REDIRECTED;
+
+        public boolean prepared(){
+            return this == PROCESSED
+                    || this == EXCEPTION_HANDLED
+                    || this == HALT
+                    || this == REDIRECTED;
+        }
+
+        public boolean notPrepared(){
+            return !prepared();
+        }
     }
 }
