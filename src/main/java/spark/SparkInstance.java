@@ -29,8 +29,8 @@ import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.ssl.SslStores;
 import spark.staticfiles.StaticFiles;
-import spark.webserver.EmbeddedServer;
-import spark.webserver.EmbeddedServers;
+import spark.embeddedserver.EmbeddedServer;
+import spark.embeddedserver.EmbeddedServers;
 
 import static java.util.Objects.requireNonNull;
 

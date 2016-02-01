@@ -26,8 +26,8 @@ import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
-import spark.webserver.jetty.websocket.WebSocketTestClient;
-import spark.webserver.jetty.websocket.WebSocketTestHandler;
+import spark.embeddedserver.jetty.websocket.WebSocketTestClient;
+import spark.embeddedserver.jetty.websocket.WebSocketTestHandler;
 
 import static spark.Spark.after;
 import static spark.Spark.before;

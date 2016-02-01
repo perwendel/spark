@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import spark.globalstate.ServletFlag;
 import spark.route.RouteMatcherFactory;
 import spark.staticfiles.StaticFiles;
-import spark.webserver.matching.MatcherFilter;
+import spark.http.matching.MatcherFilter;
 
 /**
  * Filter that can be configured to be used in a web.xml file.
