@@ -29,10 +29,10 @@ import spark.routematch.RouteMatch;
 
 final class RequestWrapper extends Request {
 
-    private Request delegate;
+    final private Request delegate;
 
-    public void setDelegate(Request delegate) {
-        this.delegate = delegate;
+    public RequestWrapper(Request request) {
+        delegate = request;
     }
 
     Request getDelegate() {

@@ -38,6 +38,11 @@ public class Response {
 
     private HttpServletResponse response;
     private String body;
+    /**
+     * The payload is the body only in case it is a standard string
+     * In case of binary or stream, then the body would be <code>null</code>
+     */
+    private Object payload;
 
     protected Response() {
         // Used by wrapper
@@ -72,7 +77,7 @@ public class Response {
      * @param body the body
      */
     public void body(String body) {
-        this.body = body;
+        this.payload = this.body = body;
     }
 
     /**
@@ -84,6 +89,30 @@ public class Response {
         return this.body;
     }
 
+    /**
+     * Sets the payload
+     *
+     * @param payload the payload
+     */
+    public void payload(Object payload) {
+        if (payload instanceof String) {
+            this.body((String) payload);
+        }
+        else {
+            this.body = null;
+            this.payload = payload;
+        }
+    }
+
+    /**
+     * returns the payload
+     *
+     * @return the payload
+     */
+    public Object payload() {
+        return this.payload;
+    }
+    
     /**
      * @return the raw response object handed in by Jetty
      */

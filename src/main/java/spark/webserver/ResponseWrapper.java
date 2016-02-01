@@ -22,14 +22,14 @@ import spark.Response;
 
 class ResponseWrapper extends Response {
 
-    private Response delegate;
+    private final Response delegate;
 
     private boolean redirected = false;
 
-    public void setDelegate(Response delegate) {
-        this.delegate = delegate;
+    public ResponseWrapper(Response wrapped) {
+        delegate = wrapped;
     }
-
+    
     Response getDelegate() {
         return delegate;
     }

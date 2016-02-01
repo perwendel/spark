@@ -86,6 +86,10 @@ public class Request {
         // Used by wrapper
     }
 
+    Request(HttpServletRequest request) {
+        servletRequest = request;
+    }
+
     /**
      * Constructor
      *
@@ -93,7 +97,7 @@ public class Request {
      * @param request the servlet request
      */
     Request(RouteMatch match, HttpServletRequest request) {
-        this.servletRequest = request;
+        this(request);
         changeMatch(match);
     }
 

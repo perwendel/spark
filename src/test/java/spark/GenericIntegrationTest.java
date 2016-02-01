@@ -153,6 +153,30 @@ public class GenericIntegrationTest {
             response.header("after", "foobar");
         });
 
+        post("/chained_filters", (request, response) -> {
+            String body = request.body();
+            response.status(201); // created
+            return body;
+        });
+
+        before("/chained_filters", (request, response) -> {
+            response.header("X-body-before1", request.body());
+        });
+        
+        before("/chained_filters", (request, response) -> {
+            response.header("X-body-before2", request.body());
+        });
+
+        after("/chained_filters", (request, response) -> {
+            response.body(response.body() + " after1");
+            response.header("X-body-after1", response.body());
+        });
+        
+        after("/chained_filters", (request, response) -> {
+            response.body(response.body() + " after2");
+            response.header("X-body-after2", response.body());
+        });
+
         get("/throwexception", (request, response) -> {
             throw new UnsupportedOperationException();
         });
@@ -255,6 +279,17 @@ public class GenericIntegrationTest {
         Assert.assertTrue(response.headers.get("after").contains("foobar"));
     }
 
+    @Test
+    public void testChainedFilters() throws Exception {
+        UrlResponse response = testUtil.doMethod("POST", "/chained_filters", "Hello World!");
+        Assert.assertEquals(201, response.status);
+        Assert.assertEquals("Hello World!", response.headers.get("X-body-before1"));
+        Assert.assertEquals("Hello World!", response.headers.get("X-body-before2"));
+        Assert.assertEquals("Hello World! after1", response.headers.get("X-body-after1"));
+        Assert.assertEquals("Hello World! after1 after2", response.headers.get("X-body-after2"));
+    }
+
+    
     @Test
     public void testGetRoot() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/", null);
