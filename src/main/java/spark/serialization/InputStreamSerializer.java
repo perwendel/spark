@@ -1,10 +1,10 @@
 /*
- * Copyright 2011- Per Wendel
+ * Copyright 2015 - Per Wendel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,21 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark;
+package spark.serialization;
 
-import spark.routematch.RouteMatch;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import spark.utils.IOUtils;
 
 /**
- * Provides access to package protected methods. JUST FOR INTERNAL USE. NOT PART OF PUBLIC SPARK API.
+ * Input stream serializer.
+ *
+ * @author alex
  */
-public final class Access {
+class InputStreamSerializer extends Serializer {
 
-    private Access() {
-        // hidden
+    @Override
+    public boolean canProcess(Object element) {
+        return element instanceof InputStream;
     }
 
-    public static void changeMatch(Request request, RouteMatch match) {
-        request.changeMatch(match);
+    @Override
+    public void process(OutputStream outputStream, Object element)
+            throws IOException {
+        IOUtils.copy((InputStream) element, outputStream);
     }
 
 }

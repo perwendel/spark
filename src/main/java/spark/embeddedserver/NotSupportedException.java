@@ -1,10 +1,10 @@
 /*
- * Copyright 2011- Per Wendel
+ * Copyright 2016 - Per Wendel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -14,21 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark;
-
-import spark.routematch.RouteMatch;
+package spark.embeddedserver;
 
 /**
- * Provides access to package protected methods. JUST FOR INTERNAL USE. NOT PART OF PUBLIC SPARK API.
+ * Used to indicate that a feature is not supported for the specific embedded server.
  */
-public final class Access {
+public class NotSupportedException extends RuntimeException {
 
-    private Access() {
-        // hidden
+    /**
+     * Raises a NotSupportedException for the provided class name and feature name.
+     */
+    public static void raise(String clazz, String feature) {
+        throw new NotSupportedException(clazz, feature);
     }
 
-    public static void changeMatch(Request request, RouteMatch match) {
-        request.changeMatch(match);
+    private NotSupportedException(String clazz, String feature) {
+        super("'" + clazz + "' doesn't support '" + feature + "'");
+
     }
 
 }
