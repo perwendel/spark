@@ -29,7 +29,8 @@ import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.ssl.SslStores;
 import spark.staticfiles.StaticFiles;
-import spark.webserver.SparkServerFactory;
+import spark.embeddedserver.EmbeddedServer;
+import spark.embeddedserver.EmbeddedServers;
 
 import static java.util.Objects.requireNonNull;
 
@@ -59,13 +60,15 @@ final class SparkInstance extends Routable {
     protected int threadIdleTimeoutMillis = -1;
     protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
 
-    protected SparkServer server;
+    protected EmbeddedServer server;
     protected SimpleRouteMatcher routeMatcher;
 
     private boolean servletStaticLocationSet;
     private boolean servletExternalStaticLocationSet;
 
     private CountDownLatch latch = new CountDownLatch(1);
+
+    private Object embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -255,15 +258,19 @@ final class SparkInstance extends Routable {
     public synchronized void webSocket(String path, Class<?> handler) {
         requireNonNull(path, "WebSocket path cannot be null");
         requireNonNull(handler, "WebSocket handler class cannot be null");
+
         if (initialized) {
             throwBeforeRouteMappingException();
         }
+
         if (ServletFlag.isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
+
         if (webSocketHandlers == null) {
             webSocketHandlers = new HashMap<>();
         }
+
         webSocketHandlers.put(path, handler);
     }
 
@@ -310,7 +317,7 @@ final class SparkInstance extends Routable {
     public synchronized void stop() {
         if (server != null) {
             routeMatcher.clearRoutes();
-            server.stop();
+            server.extinguish();
             latch = new CountDownLatch(1);
         }
         StaticFiles.clear();
@@ -332,9 +339,13 @@ final class SparkInstance extends Routable {
     public synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
+
             if (!ServletFlag.isRunningFromServlet()) {
                 new Thread(() -> {
-                    server = SparkServerFactory.create(hasMultipleHandlers());
+
+                    server = EmbeddedServers.create(embeddedServerIdentifier, hasMultipleHandlers());
+                    server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+
                     server.ignite(
                             ipAddress,
                             port,
@@ -342,9 +353,7 @@ final class SparkInstance extends Routable {
                             latch,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis,
-                            webSocketHandlers,
-                            webSocketIdleTimeoutMillis);
+                            threadIdleTimeoutMillis);
                 }).start();
             }
             initialized = true;
