@@ -1,12 +1,5 @@
 package spark.staticfiles;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.mock;
-
 import java.io.File;
 import java.util.List;
 
@@ -21,6 +14,13 @@ import org.powermock.reflect.Whitebox;
 import spark.resource.AbstractResourceHandler;
 import spark.resource.ClassPathResource;
 import spark.resource.ExternalResource;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(StaticFiles.class)
