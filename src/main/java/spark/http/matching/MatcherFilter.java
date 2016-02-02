@@ -30,11 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 import spark.HaltException;
 import spark.RequestResponseFactory;
 import spark.Response;
+import spark.embeddedserver.jetty.HttpRequestWrapper;
 import spark.route.HttpMethod;
 import spark.route.SimpleRouteMatcher;
-import spark.staticfiles.StaticFiles;
-import spark.embeddedserver.jetty.HttpRequestWrapper;
 import spark.serialization.SerializerChain;
+import spark.staticfiles.StaticFiles;
 
 /**
  * Matches Spark routes and filters.
@@ -101,7 +101,7 @@ public class MatcherFilter implements Filter {
 
         Response response = RequestResponseFactory.create(httpResponse);
 
-        HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
+        HttpMethod httpMethod = HttpMethod.get(httpMethodStr);
 
         RouteContext context = RouteContext.create()
                 .withMatcher(routeMatcher)

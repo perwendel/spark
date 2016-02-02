@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.Map;
+import java.net.URI;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -16,6 +17,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -158,6 +160,12 @@ public class SparkTestUtil {
                 return httpOptions;
             }
 
+            if (requestMethod.equals("LOCK")) {
+                HttpLock httpLock = new HttpLock(uri);
+                addHeaders(reqHeaders, httpLock);
+                return httpLock;
+            }
+            
             throw new IllegalArgumentException("Unknown method " + requestMethod);
 
         } catch (UnsupportedEncodingException e) {
@@ -264,6 +272,20 @@ public class SparkTestUtil {
         try {
             Thread.sleep(time);
         } catch (Exception e) {
+        }
+    }
+
+    static class HttpLock extends HttpRequestBase {
+        public final static String METHOD_NAME = "LOCK";
+
+        public HttpLock(final String uri) {
+            super();
+            setURI(URI.create(uri));
+        }
+
+        @Override
+        public String getMethod() {
+            return METHOD_NAME;
         }
     }
 
