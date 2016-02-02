@@ -16,6 +16,7 @@
  */
 package spark;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -224,7 +225,15 @@ public class Request {
      */
     public String body() {
         if (body == null) {
-            body = new String(bodyAsBytes());
+            if (servletRequest.getCharacterEncoding() != null) {
+                try {
+                    body = new String(bodyAsBytes(), servletRequest.getCharacterEncoding());
+                } catch (UnsupportedEncodingException e) {
+                    body = new String(bodyAsBytes());
+                }
+            } else {
+                body = new String(bodyAsBytes());
+            }
         }
         return body;
     }
