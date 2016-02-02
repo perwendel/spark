@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public abstract class AbstractResourceHandler {
 
-	public static final String SLASH="/";
-	
+    protected static final String SLASH = "/";
+
     /**
      * Gets a resource from a servlet request
      *
