@@ -22,14 +22,14 @@ import java.net.MalformedURLException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.jetty.util.URIUtil;
-
 /**
  * Abstract class providing functionality for finding resources based on an Http Servlet request.
  * Code snippets copied from Eclipse Jetty source. Modifications made by Per Wendel.
  */
 public abstract class AbstractResourceHandler {
 
+	public static final String SLASH="/";
+	
     /**
      * Gets a resource from a servlet request
      *
@@ -55,7 +55,7 @@ public abstract class AbstractResourceHandler {
             pathInfo = request.getPathInfo();
         }
 
-        String pathInContext = URIUtil.addPaths(servletPath, pathInfo);
+        String pathInContext = addPaths(servletPath, pathInfo);
         return getResource(pathInContext);
     }
 
@@ -103,14 +103,14 @@ public abstract class AbstractResourceHandler {
         buf.append(segment1);
 
         if (buf.charAt(split - 1) == '/') {
-            if (segment2.startsWith(URIUtil.SLASH)) {
+            if (segment2.startsWith(SLASH)) {
                 buf.deleteCharAt(split - 1);
                 buf.insert(split - 1, segment2);
             } else {
                 buf.insert(split, segment2);
             }
         } else {
-            if (segment2.startsWith(URIUtil.SLASH)) {
+            if (segment2.startsWith(SLASH)) {
                 buf.insert(split, segment2);
             } else {
                 buf.insert(split, '/');
