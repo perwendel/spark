@@ -16,6 +16,8 @@
  */
 package spark;
 
+import spark.route.RedirectStatus;
+
 /**
  * The main building block of a Spark application is a set of routes. A route is
  * made up of three simple pieces:
@@ -778,6 +780,39 @@ public final class Spark {
     //////////////////////////////////////////////////
     // END Response Transforming Routes
     //////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////
+    // Redirect
+    //////////////////////////////////////////////////
+
+    /**
+     * Redirect from path to a get-path
+     *
+     * @param fromPath the path to redirect from
+     * @param toPath   the path to redirect to
+     * @param status   the redirect status
+     */
+    public static void redirectGet(String fromPath, String toPath, RedirectStatus status) {
+        get(fromPath, redirectRoute(toPath, status));
+    }
+
+    /**
+     * Redirect from path to a post-path
+     *
+     * @param fromPath the path to redirect from
+     * @param toPath   the path to redirect to
+     * @param status   the redirect status
+     */
+    public static void redirectPost(String fromPath, String toPath, RedirectStatus status) {
+        post(fromPath, redirectRoute(toPath, status));
+    }
+
+    private static Route redirectRoute(String toPath, RedirectStatus status) {
+        return (req, res) -> {
+            res.redirect(toPath, status.getIntValue());
+            return null;
+        };
+    }
 
     //////////////////////////////////////////////////
     // EXCEPTION mapper
