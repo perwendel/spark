@@ -45,8 +45,6 @@ final class AfterFilters {
                 if (context.requestWrapper().getDelegate() == null) {
                     Request request = RequestResponseFactory.create(filterMatch, context.httpRequest());
                     context.requestWrapper().setDelegate(request);
-                } else {
-                    context.requestWrapper().changeMatch(filterMatch);
                 }
 
                 context.responseWrapper().setDelegate(context.response());
