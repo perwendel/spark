@@ -68,7 +68,7 @@ public class GzipUtils {
 
         if (acceptsGzip) {
             if (!requireWantsHeader || wantGzip) {
-                responseStream = new GZIPOutputStream(responseStream, true);
+                //responseStream = new GZIPOutputStream(responseStream, true);
                 addContentEncodingHeaderIfMissing(httpResponse, wantGzip);
             }
         }
