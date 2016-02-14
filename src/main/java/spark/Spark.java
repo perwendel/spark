@@ -16,6 +16,7 @@
  */
 package spark;
 
+import spark.route.HttpMethod;
 import spark.route.RedirectStatus;
 
 /**
@@ -786,30 +787,60 @@ public final class Spark {
     //////////////////////////////////////////////////
 
     /**
-     * Redirect from path to a get-path
+     * Redirect from a get-path to another path
      *
      * @param fromPath the path to redirect from
      * @param toPath   the path to redirect to
-     * @param status   the redirect status
      */
-    public static void redirectGet(String fromPath, String toPath, RedirectStatus status) {
+    public static void redirect(String fromPath, String toPath) {
+        get(fromPath, redirectRoute(toPath, null));
+    }
+
+    /**
+     * Redirect from a get-path to another path
+     *
+     * @param fromPath the path to redirect from
+     * @param toPath   the path to redirect to
+     * @param status   the redirect status (3XX)
+     */
+    public static void redirect(String fromPath, String toPath, RedirectStatus status) {
         get(fromPath, redirectRoute(toPath, status));
     }
 
     /**
-     * Redirect from path to a post-path
+     * Redirect from a verb-path to another path
      *
+     * @param method   the http verb to redirect from
      * @param fromPath the path to redirect from
      * @param toPath   the path to redirect to
-     * @param status   the redirect status
+     * @param status   the redirect status (3XX)
      */
-    public static void redirectPost(String fromPath, String toPath, RedirectStatus status) {
-        post(fromPath, redirectRoute(toPath, status));
+    public static void redirect(HttpMethod method, String fromPath, String toPath, RedirectStatus status) {
+        switch (method) {
+            case get:
+                get(fromPath, redirectRoute(toPath, status));
+                break;
+            case post:
+                post(fromPath, redirectRoute(toPath, status));
+                break;
+            case put:
+                put(fromPath, redirectRoute(toPath, status));
+                break;
+            case delete:
+                delete(fromPath, redirectRoute(toPath, status));
+                break;
+            default:
+                break;
+        }
     }
 
     private static Route redirectRoute(String toPath, RedirectStatus status) {
         return (req, res) -> {
-            res.redirect(toPath, status.getIntValue());
+            if (status != null) {
+                res.redirect(toPath, status.getIntValue());
+            } else {
+                res.redirect(toPath);
+            }
             return null;
         };
     }
