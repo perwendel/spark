@@ -48,6 +48,10 @@ public final class Spark {
         return SingletonHolder.INSTANCE;
     }
 
+    /**
+     * Statically import this for redirect utility functionality, see {@link spark.Redirect}
+     */
+    public static final Redirect redirect = getInstance().redirect;
 
     /**
      * Map the route for HTTP GET requests
