@@ -16,9 +16,6 @@
  */
 package spark;
 
-import spark.route.HttpMethod;
-import spark.route.RedirectStatus;
-
 /**
  * The main building block of a Spark application is a set of routes. A route is
  * made up of three simple pieces:
@@ -51,6 +48,10 @@ public final class Spark {
         return SingletonHolder.INSTANCE;
     }
 
+    /**
+     * Statically import this for redirect utility functionality, see {@link spark.Redirect}
+     */
+    public static final Redirect redirect = getInstance().redirect;
 
     /**
      * Map the route for HTTP GET requests
@@ -781,69 +782,6 @@ public final class Spark {
     //////////////////////////////////////////////////
     // END Response Transforming Routes
     //////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////
-    // Redirect
-    //////////////////////////////////////////////////
-
-    /**
-     * Redirect from a get-path to another path
-     *
-     * @param fromPath the path to redirect from
-     * @param toPath   the path to redirect to
-     */
-    public static void redirect(String fromPath, String toPath) {
-        get(fromPath, redirectRoute(toPath, null));
-    }
-
-    /**
-     * Redirect from a get-path to another path
-     *
-     * @param fromPath the path to redirect from
-     * @param toPath   the path to redirect to
-     * @param status   the redirect status (3XX)
-     */
-    public static void redirect(String fromPath, String toPath, RedirectStatus status) {
-        get(fromPath, redirectRoute(toPath, status));
-    }
-
-    /**
-     * Redirect from a verb-path to another path
-     *
-     * @param method   the http verb to redirect from
-     * @param fromPath the path to redirect from
-     * @param toPath   the path to redirect to
-     * @param status   the redirect status (3XX)
-     */
-    public static void redirect(HttpMethod method, String fromPath, String toPath, RedirectStatus status) {
-        switch (method) {
-            case get:
-                get(fromPath, redirectRoute(toPath, status));
-                break;
-            case post:
-                post(fromPath, redirectRoute(toPath, status));
-                break;
-            case put:
-                put(fromPath, redirectRoute(toPath, status));
-                break;
-            case delete:
-                delete(fromPath, redirectRoute(toPath, status));
-                break;
-            default:
-                break;
-        }
-    }
-
-    private static Route redirectRoute(String toPath, RedirectStatus status) {
-        return (req, res) -> {
-            if (status != null) {
-                res.redirect(toPath, status.getIntValue());
-            } else {
-                res.redirect(toPath);
-            }
-            return null;
-        };
-    }
 
     //////////////////////////////////////////////////
     // EXCEPTION mapper

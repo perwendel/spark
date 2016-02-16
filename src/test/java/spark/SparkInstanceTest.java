@@ -1,13 +1,14 @@
 package spark;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.powermock.reflect.Whitebox;
-import spark.ssl.SslStores;
 
-import javax.servlet.http.HttpServletResponse;
+import spark.ssl.SslStores;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,32 +24,32 @@ public class SparkInstanceTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
-    public void test(){
+    public void test() {
         sparkInstance = new SparkInstance();
     }
 
     @Test(expected = HaltException.class)
-    public void testHalt_whenOutParameters_thenThrowHaltException(){
+    public void testHalt_whenOutParameters_thenThrowHaltException() {
         sparkInstance.halt();
     }
 
     @Test(expected = HaltException.class)
-    public void testHalt_whenStatusCode_thenThrowHaltException(){
+    public void testHalt_whenStatusCode_thenThrowHaltException() {
         sparkInstance.halt(NOT_FOUND_STATUS_CODE);
     }
 
     @Test(expected = HaltException.class)
-    public void testHalt_whenBodyContent_thenThrowHaltException(){
+    public void testHalt_whenBodyContent_thenThrowHaltException() {
         sparkInstance.halt("error");
     }
 
     @Test(expected = HaltException.class)
-    public void testHalt_whenStatusCodeAndBodyContent_thenThrowHaltException(){
+    public void testHalt_whenStatusCodeAndBodyContent_thenThrowHaltException() {
         sparkInstance.halt(NOT_FOUND_STATUS_CODE, "error");
     }
 
     @Test
-    public void testIpAddress_whenInitializedFalse(){
+    public void testIpAddress_whenInitializedFalse() {
         sparkInstance.ipAddress(IP_ADDRESS);
 
         String ipAddress = Whitebox.getInternalState(sparkInstance, "ipAddress");
@@ -56,7 +57,7 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testIpAddress_whenInitializedTrue_thenThrowIllegalStateException(){
+    public void testIpAddress_whenInitializedTrue_thenThrowIllegalStateException() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("This must be done before route mapping has begun");
 
@@ -65,24 +66,24 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testSetIpAddress_whenInitializedFalse(){
-        sparkInstance.setIpAddress(IP_ADDRESS);
+    public void testSetIpAddress_whenInitializedFalse() {
+        sparkInstance.ipAddress(IP_ADDRESS);
 
         String ipAddress = Whitebox.getInternalState(sparkInstance, "ipAddress");
         assertEquals("IP address should be set to the IP address that was specified", IP_ADDRESS, ipAddress);
     }
 
     @Test
-    public void testSetIpAddress_whenInitializedTrue_thenThrowIllegalStateException(){
+    public void testSetIpAddress_whenInitializedTrue_thenThrowIllegalStateException() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("This must be done before route mapping has begun");
 
         Whitebox.setInternalState(sparkInstance, "initialized", true);
-        sparkInstance.setIpAddress(IP_ADDRESS);
+        sparkInstance.ipAddress(IP_ADDRESS);
     }
 
     @Test
-    public void testPort_whenInitializedFalse(){
+    public void testPort_whenInitializedFalse() {
         sparkInstance.port(8080);
 
         int port = Whitebox.getInternalState(sparkInstance, "port");
@@ -90,7 +91,7 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testPort_whenInitializedTrue_thenThrowIllegalStateException(){
+    public void testPort_whenInitializedTrue_thenThrowIllegalStateException() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("This must be done before route mapping has begun");
 
@@ -99,24 +100,24 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testSetPort_whenInitializedFalse(){
-        sparkInstance.setPort(8080);
+    public void testSetPort_whenInitializedFalse() {
+        sparkInstance.port(8080);
 
         int port = Whitebox.getInternalState(sparkInstance, "port");
         assertEquals("Port should be set to the Port that was specified", 8080, port);
     }
 
     @Test
-    public void testSetPort_whenInitializedTrue_thenThrowIllegalStateException(){
+    public void testSetPort_whenInitializedTrue_thenThrowIllegalStateException() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("This must be done before route mapping has begun");
 
         Whitebox.setInternalState(sparkInstance, "initialized", true);
-        sparkInstance.setPort(8080);
+        sparkInstance.port(8080);
     }
 
     @Test
-    public void testThreadPool_whenOnlyMaxThreads(){
+    public void testThreadPool_whenOnlyMaxThreads() {
         sparkInstance.threadPool(100);
         int maxThreads = Whitebox.getInternalState(sparkInstance, "maxThreads");
         int minThreads = Whitebox.getInternalState(sparkInstance, "minThreads");
@@ -127,7 +128,7 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testThreadPool_whenMaxMinAndTimeoutParameters(){
+    public void testThreadPool_whenMaxMinAndTimeoutParameters() {
         sparkInstance.threadPool(100, 50, 75);
         int maxThreads = Whitebox.getInternalState(sparkInstance, "maxThreads");
         int minThreads = Whitebox.getInternalState(sparkInstance, "minThreads");
@@ -138,7 +139,7 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testThreadPool_whenMaxMinAndTimeoutParameters_thenThrowIllegalStateException(){
+    public void testThreadPool_whenMaxMinAndTimeoutParameters_thenThrowIllegalStateException() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("This must be done before route mapping has begun");
 
@@ -147,7 +148,7 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testSecure_thenReturnNewSslStores(){
+    public void testSecure_thenReturnNewSslStores() {
         sparkInstance.secure("keyfile", "keypassword", "truststorefile", "truststorepassword");
         SslStores sslStores = Whitebox.getInternalState(sparkInstance, "sslStores");
         assertNotNull("Should return a SslStores because we configured it to have one", sslStores);
@@ -158,7 +159,7 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testSecure_whenInitializedTrue_thenThrowIllegalStateException(){
+    public void testSecure_whenInitializedTrue_thenThrowIllegalStateException() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("This must be done before route mapping has begun");
 
@@ -167,7 +168,7 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testSecure_whenInitializedFalse_thenThrowIllegalArgumentException(){
+    public void testSecure_whenInitializedFalse_thenThrowIllegalArgumentException() {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Must provide a keystore file to run secured");
 
@@ -175,7 +176,7 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testWebSocketIdleTimeoutMillis_whenInitializedTrue_thenThrowIllegalStateException(){
+    public void testWebSocketIdleTimeoutMillis_whenInitializedTrue_thenThrowIllegalStateException() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("This must be done before route mapping has begun");
 
@@ -184,7 +185,7 @@ public class SparkInstanceTest {
     }
 
     @Test
-    public void testWebSocket_whenInitializedTrue_thenThrowIllegalStateException(){
+    public void testWebSocket_whenInitializedTrue_thenThrowIllegalStateException() {
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("This must be done before route mapping has begun");
 
