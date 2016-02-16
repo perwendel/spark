@@ -33,7 +33,7 @@ public class EmbeddedServers {
 
     private static Map<Object, EmbeddedServerFactory> factories = new HashMap<>();
 
-    static {
+    public static void initialize() {
         add(Identifiers.JETTY, new EmbeddedJettyFactory());
     }
 
