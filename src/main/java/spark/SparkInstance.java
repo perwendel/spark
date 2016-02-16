@@ -24,13 +24,13 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.embeddedserver.EmbeddedServer;
+import spark.embeddedserver.EmbeddedServers;
 import spark.globalstate.ServletFlag;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.ssl.SslStores;
 import spark.staticfiles.StaticFiles;
-import spark.embeddedserver.EmbeddedServer;
-import spark.embeddedserver.EmbeddedServers;
 
 import static java.util.Objects.requireNonNull;
 
@@ -68,7 +68,7 @@ final class SparkInstance extends Routable {
 
     private CountDownLatch latch = new CountDownLatch(1);
 
-    private Object embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
+    private Object embeddedServerIdentifier = null;
 
     /**
      * Set the IP address that Spark should listen on. If not called the default
@@ -342,6 +342,11 @@ final class SparkInstance extends Routable {
 
             if (!ServletFlag.isRunningFromServlet()) {
                 new Thread(() -> {
+                    EmbeddedServers.initialize();
+
+                    if (embeddedServerIdentifier == null) {
+                        embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
+                    }
 
                     server = EmbeddedServers.create(embeddedServerIdentifier, hasMultipleHandlers());
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
