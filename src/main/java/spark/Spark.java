@@ -37,6 +37,12 @@ public final class Spark {
     private Spark() {
     }
 
+    
+    /**
+     * 
+     */
+    public static boolean doGzip = true;
+    
     /**
      * Initializes singleton.
      */
