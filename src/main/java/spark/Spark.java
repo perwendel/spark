@@ -29,6 +29,10 @@ package spark;
  * return "Hello World!";
  * });
  *
+ * The public methods and fields in this class should be statically imported for the semantic to make sense.
+ * Ie. one should use:
+ * 'post("/books")' without the prefix 'Spark.'
+ *
  * @author Per Wendel
  */
 public final class Spark {

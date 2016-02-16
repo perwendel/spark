@@ -19,7 +19,7 @@ package spark;
 /**
  * Provides redirect utility methods.
  */
-public class Redirect {
+public final class Redirect {
 
     /**
      * The available redirect status codes.
