@@ -33,10 +33,6 @@ public class EmbeddedServers {
 
     private static Map<Object, EmbeddedServerFactory> factories = new HashMap<>();
 
-    static {
-        add(Identifiers.JETTY, new EmbeddedJettyFactory());
-    }
-
     public static Identifiers defaultIdentifier() {
         return Identifiers.JETTY;
     }
@@ -45,6 +41,10 @@ public class EmbeddedServers {
      * Creates an embedded server of type corresponding to the provided identifier.
      */
     public static EmbeddedServer create(Object identifier, boolean multipleHandlers) {
+        if ( factories.isEmpty() ){
+            addAll();
+        }
+
         EmbeddedServerFactory factory = factories.get(identifier);
 
         if (factory != null) {
@@ -54,11 +54,14 @@ public class EmbeddedServers {
         }
     }
 
+    private static void addAll() {
+        add(Identifiers.JETTY, new EmbeddedJettyFactory());
+    }
+
     /**
      * Adds an Embedded server factory for the provided identifier.
      */
     public static void add(Object identifier, EmbeddedServerFactory factory) {
         factories.put(identifier, factory);
     }
-
 }
