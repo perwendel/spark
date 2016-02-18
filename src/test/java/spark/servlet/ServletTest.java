@@ -35,15 +35,12 @@ public class ServletTest {
 
     @BeforeClass
     public static void setup() throws InterruptedException {
-        testUtil = new SparkTestUtil(0);
-
-        final Server server = new Server();
+        final Server server = new Server(0);
         ServerConnector connector = new ServerConnector(server);
 
         // Set some timeout options to make debugging easier.
         connector.setIdleTimeout(1000 * 60 * 60);
         connector.setSoLingerTime(-1);
-        connector.setPort(testUtil.getPort());
         server.setConnectors(new Connector[] {connector});
 
         WebAppContext bb = new WebAppContext();
@@ -60,6 +57,7 @@ public class ServletTest {
                 try {
                     LOGGER.info(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
                     server.start();
+                    testUtil = new SparkTestUtil(((ServerConnector) server.getConnectors()[0]).getLocalPort());
                     latch.countDown();
                     System.in.read();
                     LOGGER.info(">>> STOPPING EMBEDDED JETTY SERVER");

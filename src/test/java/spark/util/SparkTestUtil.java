@@ -48,7 +48,6 @@ public class SparkTestUtil {
 
     public SparkTestUtil(int port) {
         this.port = choosePort(port);
-        port(getPort());
         Scheme http = new Scheme("http", getPort(), PlainSocketFactory.getSocketFactory());
         Scheme https = new Scheme("https", getPort(), new org.apache.http.conn.ssl.SSLSocketFactory(getSslFactory(), null));
         SchemeRegistry sr = new SchemeRegistry();
@@ -132,6 +131,7 @@ public class SparkTestUtil {
 
     private int choosePort(int port) {
         if (port == 0) {
+            port(4566);
             return 4566;
         } else {
             return port;
