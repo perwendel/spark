@@ -42,6 +42,8 @@ import static spark.Spark.port;
 
 public class SparkTestUtil {
 
+^    public static final int DEFAULT_TESTS_PORT = 4566;
+
     private int port;
 
     private DefaultHttpClient httpClient;
@@ -131,8 +133,8 @@ public class SparkTestUtil {
 
     private int choosePort(int port) {
         if (port == 0) {
-            port(4566);
-            return 4566;
+            port(DEFAULT_TESTS_PORT);
+            return DEFAULT_TESTS_PORT;
         } else {
             return port;
         }

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static spark.Spark.after;
 import static spark.Spark.before;
+import static spark.Spark.port;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,11 +22,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import spark.examples.books.Books;
+import spark.util.SparkTestUtil;
 import spark.utils.IOUtils;
 
 public class BooksIntegrationTest {
 
-    private static int PORT = 4567;
+    private static int PORT = SparkTestUtil.DEFAULT_TESTS_PORT;
 
     private static String AUTHOR = "FOO";
     private static String TITLE = "BAR";
@@ -45,6 +47,8 @@ public class BooksIntegrationTest {
 
     @BeforeClass
     public static void setup() {
+        port(PORT);
+
         before((request, response) -> {
             response.header("FOZ", "BAZ");
         });
