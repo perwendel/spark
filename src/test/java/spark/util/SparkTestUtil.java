@@ -38,6 +38,8 @@ import org.apache.http.impl.conn.BasicClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
+import static spark.Spark.port;
+
 public class SparkTestUtil {
 
     private int port;
@@ -45,9 +47,10 @@ public class SparkTestUtil {
     private DefaultHttpClient httpClient;
 
     public SparkTestUtil(int port) {
-        this.port = port;
-        Scheme http = new Scheme("http", port, PlainSocketFactory.getSocketFactory());
-        Scheme https = new Scheme("https", port, new org.apache.http.conn.ssl.SSLSocketFactory(getSslFactory(), null));
+        this.port = choosePort(port);
+        port(getPort());
+        Scheme http = new Scheme("http", getPort(), PlainSocketFactory.getSocketFactory());
+        Scheme https = new Scheme("https", getPort(), new org.apache.http.conn.ssl.SSLSocketFactory(getSslFactory(), null));
         SchemeRegistry sr = new SchemeRegistry();
         sr.register(http);
         sr.register(https);
@@ -125,6 +128,14 @@ public class SparkTestUtil {
         }
         urlResponse.headers = headers;
         return urlResponse;
+    }
+
+    private int choosePort(int port) {
+        if (port == 0) {
+            return 4566;
+        } else {
+            return port;
+        }
     }
 
     private HttpUriRequest getHttpRequest(String requestMethod, String path, String body, boolean secureConnection,

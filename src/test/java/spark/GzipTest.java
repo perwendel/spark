@@ -27,7 +27,6 @@ import spark.util.SparkTestUtil;
 
 import static org.junit.Assert.assertEquals;
 import static spark.Spark.awaitInitialization;
-import static spark.Spark.staticFileLocation;
 import static spark.Spark.stop;
 
 /**
@@ -35,8 +34,11 @@ import static spark.Spark.stop;
  */
 public class GzipTest {
 
+    private static SparkTestUtil testUtil;
+
     @BeforeClass
     public static void setup() {
+        testUtil = new SparkTestUtil(0);
         GzipExample.addStaticFileLocation();
         GzipExample.addRoutes();
         awaitInitialization();
@@ -49,13 +51,13 @@ public class GzipTest {
 
     @Test
     public void checkGzipCompression() throws Exception {
-        String decompressed = GzipExample.getAndDecompress();
+        String decompressed = GzipExample.getAndDecompress(testUtil.getPort());
         assertEquals(GzipExample.CONTENT, decompressed);
     }
 
     @Test
     public void testStaticFileCssStyleCss() throws Exception {
-        String decompressed = GzipClient.getAndDecompress("http://localhost:4567/css/style.css");
+        String decompressed = GzipClient.getAndDecompress("http://localhost:" + testUtil.getPort() + "/css/style.css");
         Assert.assertEquals("Content of css file", decompressed);
         testGet();
     }
@@ -64,7 +66,6 @@ public class GzipTest {
      * Used to verify that "normal" functionality works after static files mapping
      */
     private static void testGet() throws Exception {
-        SparkTestUtil testUtil = new SparkTestUtil(4567);
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
 
         Assert.assertEquals(200, response.status);

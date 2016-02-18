@@ -30,7 +30,7 @@ public class GenericSecureIntegrationTest {
 
     @BeforeClass
     public static void setup() {
-        testUtil = new SparkTestUtil(4567);
+        testUtil = new SparkTestUtil(0);
 
         // note that the keystore stuff is retrieved from SparkTestUtil which
         // respects JVM params for keystore, password

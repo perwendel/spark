@@ -48,7 +48,7 @@ public class WebSocketServletContextHandlerFactoryTest {
 
         PathMappings.MappedResource mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
         WebSocketCreatorFactory.SparkWebSocketCreator sc = (WebSocketCreatorFactory.SparkWebSocketCreator) mappedResource.getResource();
-        PathSpec pathSpec = (PathSpec) mappedResource.getPathSpec();
+        PathSpec pathSpec = mappedResource.getPathSpec();
 
         assertEquals("Should return the WebSocket path specified when contexst handler was created",
                 webSocketPath, pathSpec.getPathSpec());
@@ -61,7 +61,7 @@ public class WebSocketServletContextHandlerFactoryTest {
     @Test
     public void testCreate_whenTimeoutIsPresent() throws Exception {
 
-        final Integer timeout = Integer.valueOf(1000);
+        final Integer timeout = 1000;
 
         Map<String, Class<?>> webSocketHandlers = new HashMap<>();
 
@@ -80,7 +80,7 @@ public class WebSocketServletContextHandlerFactoryTest {
 
         PathMappings.MappedResource mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
         WebSocketCreatorFactory.SparkWebSocketCreator sc = (WebSocketCreatorFactory.SparkWebSocketCreator) mappedResource.getResource();
-        PathSpec pathSpec = (PathSpec) mappedResource.getPathSpec();
+        PathSpec pathSpec = mappedResource.getPathSpec();
 
         assertEquals("Should return the WebSocket path specified when context handler was created",
                 webSocketPath, pathSpec.getPathSpec());
