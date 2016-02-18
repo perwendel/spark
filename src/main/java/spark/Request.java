@@ -130,8 +130,8 @@ public class Request {
             return params.get(param.toLowerCase()); // NOSONAR
         } 
         else if (param.startsWith("{") && param.endsWith("}")) { //allow /{variable} in url params 
-+            return params.get(":" + param.substring(1, param.length() - 1).toLowerCase());
-+        }
+            return params.get(":" + param.substring(1, param.length() - 1).toLowerCase());
+        }
         else {
             return params.get(":" + param.toLowerCase()); // NOSONAR
         }
