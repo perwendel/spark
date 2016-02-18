@@ -42,7 +42,7 @@ import static spark.Spark.port;
 
 public class SparkTestUtil {
 
-^    public static final int DEFAULT_TESTS_PORT = 4566;
+    public static final int DEFAULT_TESTS_PORT = 4566;
 
     private int port;
 
