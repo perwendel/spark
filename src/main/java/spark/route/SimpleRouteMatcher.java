@@ -210,24 +210,19 @@ public class SimpleRouteMatcher {
         return matchSet;
     }
 
-    // TODO: I believe this feature has impacted performance. Optimization?
+    // TODO: I believe this feature has impacted performance. Optimization? Optimization?
     private RouteEntry findTargetWithGivenAcceptType(List<RouteEntry> routeMatches, String acceptType) {
-        if (acceptType != null && routeMatches.size() > 0) {
+
+        if (routeMatches.isEmpty()) {
+            return null;
+        }
+  
+        if (acceptType != null) {
             Map<String, RouteEntry> acceptedMimeTypes = getAcceptedMimeTypes(routeMatches);
             String bestMatch = MimeParse.bestMatch(acceptedMimeTypes.keySet(), acceptType);
-
-            if (routeWithGivenAcceptType(bestMatch)) {
-                return acceptedMimeTypes.get(bestMatch);
-            } else {
-                return null;
-            }
-        } else {
-            if (routeMatches.size() > 0) {
-                return routeMatches.get(0);
-            }
+            return acceptedMimeTypes.get(bestMatch);
         }
-
-        return null;
+        return routeMatches.get(0);
     }
 
     private boolean removeRoute(HttpMethod httpMethod, String path) {
