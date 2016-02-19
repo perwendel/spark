@@ -29,7 +29,7 @@ import static spark.Spark.get;
 import static spark.Spark.halt;
 
 /**
- * Example showing a very simple (and stupid) autentication filter that is
+ * Example showing a very simple (and stupid) authentication filter that is
  * executed before all other resources.
  * When requesting the resource with e.g.
  * http://localhost:4567/hello?user=some&password=guy the filter will stop the

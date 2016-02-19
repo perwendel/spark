@@ -15,6 +15,8 @@
  */
 package spark.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -352,6 +354,23 @@ public abstract class StringUtils {
      */
     public static String collectionToDelimitedString(Collection<?> coll, String delim) {
         return collectionToDelimitedString(coll, delim, "", "");
+    }
+
+    public static String toString(byte[] bytes, String encoding) {
+        String str;
+
+        if (encoding != null && Charset.isSupported(encoding)) {
+            try {
+                str = new String(bytes, encoding);
+            } catch (UnsupportedEncodingException e) {
+                // Uses same func as Charset.isSupported (cannot happen)
+                str = new String(bytes);
+            }
+        } else {
+            str = new String(bytes);
+        }
+
+        return str;
     }
 
 }
