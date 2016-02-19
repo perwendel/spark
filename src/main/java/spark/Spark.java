@@ -998,14 +998,26 @@ public final class Spark {
     // Websockets //
 
     /**
-     * Maps the given path to the given WebSocket handler.
+     * Maps the given path to the given WebSocket handler class.
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param path         the WebSocket path.
+     * @param handlerClass the handler class that will manage the WebSocket connection to the given path.
+     */
+    public static void webSocket(String path, Class<?> handlerClass) {
+        getInstance().webSocket(path, handlerClass);
+    }
+    
+    /**
+     * Maps the given path to the given WebSocket handler class.
      * <p>
      * This is currently only available in the embedded server mode.
      *
      * @param path    the WebSocket path.
-     * @param handler the handler class that will manage the WebSocket connection to the given path.
+     * @param handler the handler instance that will manage the WebSocket connection to the given path.
      */
-    public static void webSocket(String path, Class<?> handler) {
+    public static void webSocket(String path, Object handler) {
         getInstance().webSocket(path, handler);
     }
 

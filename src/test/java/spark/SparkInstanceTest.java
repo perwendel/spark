@@ -1,6 +1,13 @@
 package spark;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -9,9 +16,6 @@ import org.junit.rules.ExpectedException;
 import org.powermock.reflect.Whitebox;
 
 import spark.ssl.SslStores;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class SparkInstanceTest {
 
@@ -190,6 +194,52 @@ public class SparkInstanceTest {
         thrown.expectMessage("This must be done before route mapping has begun");
 
         Whitebox.setInternalState(sparkInstance, "initialized", true);
-        sparkInstance.webSocket("/", Object.class);
+        sparkInstance.webSocket("/", ListenerHandler.class);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void testWebSocket_shouldThrowOnNullHandlerClass() {
+        sparkInstance.webSocket("/test", (Class<?>) null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testWebSocket_shouldThrowOnNullHandler() {
+        sparkInstance.webSocket("/test", (Object) null);
+    }
+
+    @Test
+    public void testWebSocket_shouldAllowHandlerClassImplementingWebSocketListener() {
+        sparkInstance.webSocket("/test", ListenerHandler.class);
+            assertEquals(1, sparkInstance.webSocketHandlers.size());
+    }
+
+    @Test
+    public void testWebSocket_shouldAllowHandlerClassAnnotatedWithWebSocket() {
+        sparkInstance.webSocket("/test", AnnotatedHandler.class);
+            assertEquals(1, sparkInstance.webSocketHandlers.size());
+    }
+
+    @Test
+    public void testWebSocket_shouldThrowOnIncompatibleHandlerClass() {
+        try {
+            sparkInstance.webSocket("/test", InvalidHandler.class);
+            fail("Handler creation should have thrown an IllegalArgumentException");
+        } catch (IllegalArgumentException ex) {
+            assertEquals(SparkInstance.INVALID_WEBSOCKET_HANDLER_MESSAGE, ex.getMessage());
+        }
+    }
+
+    static class ListenerHandler extends WebSocketAdapter {
+            
+    }
+    
+    @WebSocket
+    static class AnnotatedHandler {
+            
+    }
+    
+    static class InvalidHandler {
+            
     }
 }
+
