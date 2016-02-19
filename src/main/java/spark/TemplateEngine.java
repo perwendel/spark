@@ -40,4 +40,15 @@ public abstract class TemplateEngine {
      */
     public abstract String render(ModelAndView modelAndView);
 
+    /**
+     * Creates and renders a ModelAndView with given arguments
+     *
+     * @param model    object.
+     * @param viewName to be rendered.
+     * @return the rendered model and view
+     */
+    public String render(Object model, String viewName) {
+        return render(modelAndView(model, viewName));
+    }
+
 }
