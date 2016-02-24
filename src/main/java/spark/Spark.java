@@ -994,6 +994,24 @@ public final class Spark {
         getInstance().stop();
     }
 
+    /**
+     * Removes the routes associated to the provided httpMethod and path
+     * @param httpMethod
+     * @param path
+     */
+    public static void removeRoute(String httpMethod, String path) {
+    	getInstance().removeRoute(httpMethod, path);
+    }
+    
+    /**
+     * Removes all the routes associated to the provided path
+     * @param httpMethod
+     * @param path
+     */
+    public static void removeRoute(String path) {
+    	getInstance().removeRoute(path);
+    }
+    
     ////////////////
     // Websockets //
 
