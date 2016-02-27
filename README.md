@@ -5,6 +5,8 @@
 Spark - a Sinatra inspired web framework
 ==============================================
 
+[![Join the chat at https://gitter.im/perwendel/spark](https://badges.gitter.im/perwendel/spark.svg)](https://gitter.im/perwendel/spark?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 For more detailed documentation please go to: http://sparkjava.com/documentation
 
 NEWS: Spark 2.3 is now available on Maven central!
