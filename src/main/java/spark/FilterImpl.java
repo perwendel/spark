@@ -29,6 +29,7 @@ public abstract class FilterImpl implements Filter {
 
     private String path;
     private String acceptType;
+    private Filter filter;
 
     /**
      * Wraps the filter in FilterImpl
@@ -53,7 +54,7 @@ public abstract class FilterImpl implements Filter {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
         }
-        return new FilterImpl(path, acceptType) {
+        return new FilterImpl(path, acceptType, filter) {
             @Override
             public void handle(Request request, Response response) throws Exception {
                 filter.handle(request, response);
@@ -64,6 +65,11 @@ public abstract class FilterImpl implements Filter {
     protected FilterImpl(String path, String acceptType) {
         this.path = path;
         this.acceptType = acceptType;
+    }
+
+    protected FilterImpl(String path, String acceptType, Filter filter) {
+        this(path, acceptType);
+        this.filter = filter;
     }
 
     /**
@@ -83,6 +89,13 @@ public abstract class FilterImpl implements Filter {
      */
     String getPath() {
         return this.path;
+    }
+
+    /**
+     * @return the filter used to create the filter implementation
+     */
+    public Filter getFilter() {
+        return this.filter;
     }
 
 }

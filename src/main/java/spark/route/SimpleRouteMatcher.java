@@ -181,6 +181,7 @@ public class SimpleRouteMatcher {
         LOG.debug("Adds route: " + entry);
         // Adds to end of list
         routes.add(entry);
+        RouteOverview.add(new RouteEntry(entry), target);
     }
 
     //can be cached? I don't think so.

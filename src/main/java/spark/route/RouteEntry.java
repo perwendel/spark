@@ -14,6 +14,16 @@ class RouteEntry {
     String acceptedType;
     Object target;
 
+    RouteEntry() {
+    }
+
+    RouteEntry(RouteEntry entry) {
+        this.httpMethod = entry.httpMethod;
+        this.path = entry.path;
+        this.acceptedType = entry.acceptedType;
+        this.target = entry.target;
+    }
+
     boolean matches(HttpMethod httpMethod, String path) {
         if ((httpMethod == HttpMethod.before || httpMethod == HttpMethod.after)
                 && (this.httpMethod == httpMethod)
