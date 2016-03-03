@@ -1,5 +1,5 @@
 /*
- * Copyright 2011- Per Wendel
+ * Copyright 2016 - Per Wendel
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,27 +18,23 @@ package spark.route;
 
 
 /**
- * RouteMatcherFactory
+ * Holds the servlet routes.
  *
  * @author Per Wendel
  */
-public final class RouteMatcherFactory {
-    /**
-     * The logger.
-     */
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(RouteMatcherFactory.class);
+public final class ServletRoutes {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(ServletRoutes.class);
 
-    private static SimpleRouteMatcher routeMatcher = null;
+    private static Routes routes = null;
 
-    private RouteMatcherFactory() {
+    private ServletRoutes() {
     }
 
-    public static synchronized SimpleRouteMatcher get() {
-        if (routeMatcher == null) {
-            LOG.debug("creates RouteMatcher");
-            routeMatcher = new SimpleRouteMatcher();
+    public static synchronized Routes get() {
+        if (routes == null) {
+            routes = new Routes();
         }
-        return routeMatcher;
+        return routes;
     }
 
 }

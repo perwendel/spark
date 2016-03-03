@@ -19,8 +19,8 @@ package spark.http.matching;
 import javax.servlet.http.HttpServletRequest;
 
 import spark.Response;
-import spark.route.HttpMethod;
-import spark.route.SimpleRouteMatcher;
+import spark.route.*;
+import spark.route.Routes;
 
 /**
  * Holds the parameters needed in the Before filters, Routes and After filters execution.
@@ -34,7 +34,7 @@ final class RouteContext {
         return new RouteContext();
     }
 
-    private SimpleRouteMatcher routeMatcher;
+    private Routes routeMatcher;
     private HttpServletRequest httpRequest;
     private String uri;
     private String acceptType;
@@ -48,11 +48,11 @@ final class RouteContext {
         // hidden
     }
 
-    public SimpleRouteMatcher routeMatcher() {
+    public Routes routeMatcher() {
         return routeMatcher;
     }
 
-    public RouteContext withMatcher(SimpleRouteMatcher routeMatcher) {
+    public RouteContext withMatcher(spark.route.Routes routeMatcher) {
         this.routeMatcher = routeMatcher;
         return this;
     }

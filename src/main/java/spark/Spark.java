@@ -45,10 +45,10 @@ public final class Spark {
      * Initializes singleton.
      */
     private static class SingletonHolder {
-        private static final SparkInstance INSTANCE = new SparkInstance();
+        private static final Service INSTANCE = new Service();
     }
 
-    private static SparkInstance getInstance() {
+    private static Service getInstance() {
         return SingletonHolder.INSTANCE;
     }
 
