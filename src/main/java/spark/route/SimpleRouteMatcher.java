@@ -122,6 +122,7 @@ public class SimpleRouteMatcher {
      */
     public void clearRoutes() {
         routes.clear();
+        RouteOverview.routes.clear();
     }
 
     /**

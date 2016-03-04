@@ -1,3 +1,19 @@
+/*
+ * Copyright 2011- Per Wendel
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package spark.route;
 
 import java.lang.reflect.Field;
@@ -20,16 +36,22 @@ public class RouteOverview {
 
     /**
      * Enables a route overview (showing all the mapped routes)
-     * The overview is made available at "/debug/routeOverview/"
+     * The overview is made available at "/debug/routeoverview/"
+     *
+     * Calling this method before any other route mapping
+     * bas been performed will initialize the Spark server
      */
     public static void enableRouteOverview() {
-        get("/debug/routeOverview/", RouteOverview::createHtmlOverview);
+        enableRouteOverview("/debug/routeoverview/");
     }
 
     /**
      * Enables a route overview (showing all the mapped routes)
      * The overview is made available at the provided path
      * @param path the path to the route overview
+     *
+     * Calling this method before any other route mapping
+     * bas been performed will initialize the Spark server
      */
     public static void enableRouteOverview(String path) {
         get(path, RouteOverview::createHtmlOverview);
@@ -41,29 +63,28 @@ public class RouteOverview {
 
     static void add(RouteEntry entry, Object target) {
         if (target instanceof RouteImpl) {
-            entry.target = ((RouteImpl) target).getRoute();
+            entry.target = ((RouteImpl) target).getTargetRoute();
         }
         if (target instanceof FilterImpl) {
-            entry.target = ((FilterImpl) target).getFilter();
+            entry.target = ((FilterImpl) target).getTargetFilter();
         }
         routes.add(entry);
     }
 
-    private static String createHtmlOverview(Request request, Response response) {
+    static String createHtmlOverview(Request request, Response response) {
         String head = "<meta name='viewport' content='width=device-width, initial-scale=1'>" + "<style>b,thead{font-weight:700}body{font-family:monospace;padding:15px}table{border-collapse:collapse;font-size:14px;border:1px solid #d5d5d5;width:100%;white-space:pre}thead{background:#e9e9e9;border-bottom:1px solid #d5d5d5}tbody tr:hover{background:#f5f5f5}td{padding:6px 15px}b{color:#33D}em{color:#666}</style>";
         String rowTemplate = "<tr><td>%s</td><td>%s</td><td><b>%s</b></td><td>%s</td></tr>";
         List<String> tableContent = new ArrayList<>(singletonList("<thead><tr><td>Method</td><td>Accepts</td><td>Path</td><td>Route</td></tr></thead>"));
-        Map<Object, String> fieldNameMap = new HashMap<>();
         routes.forEach(r -> {
-            addFieldsFromTargetToNameMap(r.target, fieldNameMap);
-            tableContent.add(String.format(rowTemplate, r.httpMethod.name(), r.acceptedType.replace("*/*", "any"), r.path, createHtmlForRouteHandler(r.target, fieldNameMap)));
+            tableContent.add(String.format(rowTemplate, r.httpMethod.name(), r.acceptedType.replace("*/*", "any"), r.path, createHtmlForRouteTarget(r.target)));
         });
         return head + "<body><h1>All mapped routes</h1><table>" + String.join("", tableContent) + "</table><body>";
     }
 
-    private static String createHtmlForRouteHandler(Object routeTarget, Map<Object, String> fieldNameMap) {
+    static String createHtmlForRouteTarget(Object routeTarget) {
         String routeStr = routeTarget.toString();
         if (routeStr.contains("$$Lambda$")) { // This is a Route or Filter lambda
+            Map<Object, String> fieldNameMap = getFieldNameMap(routeTarget);
             String className = routeStr.split("\\$")[0];
             if (fieldNameMap.containsKey(routeTarget)) { // Lambda name has been mapped in fieldNameMap
                 return className + "<b>." + fieldNameMap.get(routeTarget) + "</b> <em>(field)</em>";
@@ -81,14 +102,17 @@ public class RouteOverview {
         return "<b>Mysterious route handler</b>";
     }
 
-    private static void addFieldsFromTargetToNameMap(Object routeTarget, Map<Object, String> fieldNameMap) {
+    private static Map<Object, String> getFieldNameMap(Object routeTarget) {
+        Map<Object, String> fieldNameMap = new HashMap<>();
         try {
             Class clazz = Class.forName(getClassName(routeTarget));
             for (Field field : clazz.getDeclaredFields()) {
+                field.setAccessible(true);
                 fieldNameMap.put(field.get(field), field.getName());
             }
         } catch (Exception ignored) { // Nothing really matters.
         }
+        return fieldNameMap;
     }
 
     private static String getClassName(Object routeTarget) {

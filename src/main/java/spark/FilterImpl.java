@@ -29,7 +29,7 @@ public abstract class FilterImpl implements Filter {
 
     private String path;
     private String acceptType;
-    private Filter filter;
+    private Filter targetFilter;
 
     /**
      * Wraps the filter in FilterImpl
@@ -69,7 +69,7 @@ public abstract class FilterImpl implements Filter {
 
     protected FilterImpl(String path, String acceptType, Filter filter) {
         this(path, acceptType);
-        this.filter = filter;
+        this.targetFilter = filter;
     }
 
     /**
@@ -94,8 +94,8 @@ public abstract class FilterImpl implements Filter {
     /**
      * @return the filter used to create the filter implementation
      */
-    public Filter getFilter() {
-        return this.filter;
+    public Filter getTargetFilter() {
+        return this.targetFilter;
     }
 
 }
