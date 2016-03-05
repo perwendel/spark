@@ -36,6 +36,8 @@ public class HelloWorld {
 
 View at: http://localhost:4567/hello
 
+You can change default Spark port using Java system property `-Dserver.port=54321` or by
+using method `port()`.
 
 Check out and try the examples in the source code.
 You can also check out the javadoc. After getting the source from
