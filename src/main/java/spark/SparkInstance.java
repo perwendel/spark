@@ -41,11 +41,14 @@ final class SparkInstance extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
 
     public static final int SPARK_DEFAULT_PORT = 4567;
+    public static final String SPARK_PORT_SYSTEM_PROPERTY = "server.port";
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     protected boolean initialized = false;
 
-    protected int port = SPARK_DEFAULT_PORT;
+    protected int port = Integer.parseInt(System.getProperty(
+            SPARK_PORT_SYSTEM_PROPERTY, String.valueOf(SPARK_DEFAULT_PORT)
+    ));
     protected String ipAddress = "0.0.0.0";
 
     protected SslStores sslStores;
