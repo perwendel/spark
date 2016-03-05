@@ -9,6 +9,7 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.StringContains.containsString;
@@ -24,9 +25,11 @@ public class RouteOverviewTest {
     private final static int FILTER_FIELD = 0;
     private final static int FILTER_CLASS = 1;
     private final static int FILTER_METHOD_REF = 2;
-    private final static int ROUTE_FIELD = 3;
-    private final static int ROUTE_CLASS = 4;
-    private final static int ROUTE_METHOD_REF = 5;
+    private final static int FILTER_LAMBDA = 3;
+    private final static int ROUTE_FIELD = 4;
+    private final static int ROUTE_CLASS = 5;
+    private final static int ROUTE_METHOD_REF = 6;
+    private final static int ROUTE_LAMBDA = 7;
 
     @BeforeClass
     public static void setup() {
@@ -34,9 +37,11 @@ public class RouteOverviewTest {
         before("/0", RouteOverviewTest.filterField);
         before("/1", new FilterImplementer());
         before("/2", RouteOverviewTest::filterMethodRef);
-        get("/3",    RouteOverviewTest.routeField);
-        get("/4",    new RouteImplementer());
-        get("/5",    RouteOverviewTest::routeMethodRef);
+        before("3",  ((request, response) -> {}));
+        get("/4",    RouteOverviewTest.routeField);
+        get("/5",    new RouteImplementer());
+        get("/6",    RouteOverviewTest::routeMethodRef);
+        get("/7",    ((request, response) -> ""));
     }
 
     @AfterClass
@@ -46,7 +51,13 @@ public class RouteOverviewTest {
 
     @Test
     public void assertThat_allRoutesAreAdded() {
-        assertThat(routes.size(), is(6));
+        assertThat(routes.size(), is(8));
+    }
+
+    @Test
+    public void assertThat_unmappedRoute_doesNotWork() {
+        Route unmappedRoute = (Request request, Response response) -> "";
+        assertThat(createHtmlForRouteTarget(unmappedRoute), not(containsString("unmappedRoute")));
     }
 
     @Test
@@ -65,6 +76,11 @@ public class RouteOverviewTest {
     }
 
     @Test
+    public void assertThat_filter_lambda_works() {
+        assertThat(routeName(FILTER_LAMBDA), containsString("RouteOverviewTest???"));
+    }
+
+    @Test
     public void assertThat_route_field_works() {
         assertThat(routeName(ROUTE_FIELD), containsString("RouteOverviewTest.routeField"));
     }
@@ -77,6 +93,11 @@ public class RouteOverviewTest {
     @Test
     public void assertThat_route_methodRef_works() {
         assertThat(routeName(ROUTE_METHOD_REF), containsString("RouteOverviewTest::routeMethodRef"));
+    }
+
+    @Test
+    public void assertThat_route_lambda_works() {
+        assertThat(routeName(ROUTE_LAMBDA), containsString("RouteOverviewTest???"));
     }
 
     // fields/classes/methods to obtain names from
