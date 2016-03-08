@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
 import spark.globalstate.ServletFlag;
+import spark.route.HttpMethod;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.ssl.SslStores;
@@ -278,14 +279,40 @@ final class SparkInstance extends Routable {
 
     @Override
     public void addRoute(String httpMethod, RouteImpl route) {
-        init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route.getAcceptType(), route);
+        try {
+            addRoute(HttpMethod.valueOf(httpMethod), route);
+        } catch (IllegalArgumentException e) {
+            LOG.error("The @Route value: "
+                    + route
+                    + " has an invalid HTTP method part: "
+                    + httpMethod
+                    + ".");
+        }
     }
 
     @Override
     public void addFilter(String httpMethod, FilterImpl filter) {
+        try {
+            addFilter(HttpMethod.valueOf(httpMethod), filter);
+        } catch (IllegalArgumentException e) {
+            LOG.error("The @Filter value: "
+                    + filter
+                    + " has an invalid HTTP method part: "
+                    + httpMethod
+                    + ".");
+        }
+    }
+
+    @Override
+    public void addRoute(HttpMethod httpMethod, RouteImpl route) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter.getAcceptType(), filter);
+        routeMatcher.addRoute(httpMethod, route.getPath(), route.getAcceptType(), route);
+    }
+
+    @Override
+    public void addFilter(HttpMethod httpMethod, FilterImpl filter) {
+        init();
+        routeMatcher.addRoute(httpMethod, filter.getPath(), filter.getAcceptType(), filter);
     }
 
     public synchronized void init() {

@@ -51,7 +51,9 @@ public class SimpleRouteMatcher {
      * @param route      the route path
      * @param acceptType the accept type
      * @param target     the invocation target
+     * @deprecated Please, use typesafe {@link #addRoute(HttpMethod, String, String, Object)}
      */
+    @Deprecated
     public void parseValidateAddRoute(String route, String acceptType, Object target) {
         try {
             int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
@@ -64,10 +66,10 @@ public class SimpleRouteMatcher {
                 method = HttpMethod.valueOf(httpMethod);
             } catch (IllegalArgumentException e) {
                 LOG.error("The @Route value: "
-                                  + route
-                                  + " has an invalid HTTP method part: "
-                                  + httpMethod
-                                  + ".");
+                        + route
+                        + " has an invalid HTTP method part: "
+                        + httpMethod
+                        + ".");
                 return;
             }
             addRoute(method, url, acceptType, target);
@@ -126,14 +128,14 @@ public class SimpleRouteMatcher {
 
     /**
      * Removes a particular route from the collection of those that have been previously routed.
-     * Search for a previously established routes using the given path and HTTP method, removing
-     * any matches that are found.
+     * Search for a previously established routes using the given path and HTTP method, removing any
+     * matches that are found.
      *
      * @param path       the route path
      * @param httpMethod the http method
      * @return <tt>true</tt> if this a matching route has been previously routed
-     * @throws IllegalArgumentException if <tt>path</tt> is null or blank or if <tt>httpMethod</tt> is null, blank
-     *                                  or an invalid HTTP method
+     * @throws IllegalArgumentException if <tt>path</tt> is null or blank or if <tt>httpMethod</tt>
+     *                                  is null, blank or an invalid HTTP method
      * @since 2.2
      */
     public boolean removeRoute(String path, String httpMethod) {
@@ -153,7 +155,8 @@ public class SimpleRouteMatcher {
 
     /**
      * Removes a particular route from the collection of those that have been previously routed.
-     * Search for a previously established routes using the given path and removes any matches that are found.
+     * Search for a previously established routes using the given path and removes any matches that
+     * are found.
      *
      * @param path the route path
      * @return <tt>true</tt> if this a matching route has been previously routed
@@ -168,11 +171,15 @@ public class SimpleRouteMatcher {
         return removeRoute((HttpMethod) null, path);
     }
 
-    //////////////////////////////////////////////////
-    // PRIVATE METHODS
-    //////////////////////////////////////////////////
-
-    private void addRoute(HttpMethod method, String url, String acceptedType, Object target) {
+    /**
+     *
+     * @param method Http method
+     * @param url path
+     * @param acceptedType the accept type
+     * @param target     the invocation target
+     * @since 2.4
+     */
+    public void addRoute(HttpMethod method, String url, String acceptedType, Object target) {
         RouteEntry entry = new RouteEntry();
         entry.httpMethod = method;
         entry.path = url;
@@ -182,6 +189,10 @@ public class SimpleRouteMatcher {
         // Adds to end of list
         routes.add(entry);
     }
+
+    //////////////////////////////////////////////////
+    // PRIVATE METHODS
+    //////////////////////////////////////////////////
 
     //can be cached? I don't think so.
     private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
