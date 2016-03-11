@@ -90,6 +90,7 @@ public final class Service extends Routable {
     public final StaticFiles staticFiles;
 
     private final StaticFilesConfiguration staticFilesConfiguration;
+    private final ExceptionMapper exceptionMapper = ExceptionMapper.getInstance();
 
     // default exception handler during initialization phase
     private Consumer<Exception> initExceptionHandler = (e) -> {
@@ -422,6 +423,7 @@ public final class Service extends Routable {
             }
             
             routes.clear();
+            exceptionMapper.clear();
             staticFilesConfiguration.clear();
             initialized = false;
         }).start();
@@ -549,7 +551,7 @@ public final class Service extends Routable {
             }
         };
 
-        ExceptionMapper.getInstance().map(exceptionClass, wrapper);
+        exceptionMapper.map(exceptionClass, wrapper);
     }
 
     //////////////////////////////////////////////////
