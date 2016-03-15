@@ -26,6 +26,8 @@ import spark.ExceptionMapper;
  */
 final class GeneralError {
 
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(GeneralError.class);
+
     private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
 
     /**
@@ -47,6 +49,7 @@ final class GeneralError {
                 body.set(bodyAfterFilter);
             }
         } else {
+            LOG.error("", e);
             httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             body.set(INTERNAL_ERROR);
         }
