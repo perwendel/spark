@@ -29,6 +29,10 @@ package spark;
  * return "Hello World!";
  * });
  *
+ * The public methods and fields in this class should be statically imported for the semantic to make sense.
+ * Ie. one should use:
+ * 'post("/books")' without the prefix 'Spark.'
+ *
  * @author Per Wendel
  */
 public final class Spark {
@@ -57,6 +61,10 @@ public final class Spark {
         return SingletonHolder.INSTANCE;
     }
 
+    /**
+     * Statically import this for redirect utility functionality, see {@link spark.Redirect}
+     */
+    public static final Redirect redirect = getInstance().redirect;
 
     /**
      * Map the route for HTTP GET requests
