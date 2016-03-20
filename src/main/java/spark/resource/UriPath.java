@@ -1,18 +1,5 @@
 /*
  * Copyright 2016 - Per thesnowgoose
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
  */
 package spark.resource;
 
@@ -25,7 +12,7 @@ import java.util.stream.Collectors;
 public class UriPath {
 
     /**
-     * Convert a path to a cananonical form.
+     * Convert a path to a canonical form.
      * All instances of "." and ".." are factored out.  Null is returned
      * if the path tries to .. above its root.
      *
