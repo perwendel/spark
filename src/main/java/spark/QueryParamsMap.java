@@ -36,7 +36,7 @@ public class QueryParamsMap {
     /**
      * Holds the nested keys
      */
-    private Map<String, QueryParamsMap> queryMap = new HashMap<String, QueryParamsMap>();
+    private Map<String, QueryParamsMap> queryMap = new HashMap<>();
 
     /**
      * Value(s) for this key
@@ -277,7 +277,7 @@ public class QueryParamsMap {
      * @return Map representation
      */
     public Map<String, String[]> toMap() {
-        Map<String, String[]> map = new HashMap<String, String[]>();
+        Map<String, String[]> map = new HashMap<>();
 
         for (Entry<String, QueryParamsMap> key : this.queryMap.entrySet()) {
             map.put(key.getKey(), key.getValue().values);

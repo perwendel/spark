@@ -44,7 +44,7 @@ import static spark.Spark.halt;
  */
 public class FilterExample {
 
-    private static Map<String, String> usernamePasswords = new HashMap<String, String>();
+    private static Map<String, String> usernamePasswords = new HashMap<>();
 
     public static void main(String[] args) {
 
