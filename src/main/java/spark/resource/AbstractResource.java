@@ -51,9 +51,7 @@ public abstract class AbstractResource implements Resource {
             return getFile().exists();
         } catch (IOException ex) {
             // Fall back to stream existence: can we open the stream?
-            try {
-                InputStream is = getInputStream();
-                is.close();
+            try (InputStream is = getInputStream()) {
                 return true;
             } catch (Throwable isEx) {
                 return false;
@@ -119,9 +117,8 @@ public abstract class AbstractResource implements Resource {
      */
     @Override
     public long contentLength() throws IOException {
-        InputStream is = this.getInputStream();
-        Assert.state(is != null, "resource input stream must not be null");
-        try {
+        try (InputStream is = this.getInputStream()) {
+            Assert.state(is != null, "resource input stream must not be null");
             long size = 0;
             byte[] buf = new byte[255];
             int read;
@@ -129,11 +126,6 @@ public abstract class AbstractResource implements Resource {
                 size += read;
             }
             return size;
-        } finally {
-            try {
-                is.close();
-            } catch (IOException ex) {
-            }
         }
     }
 

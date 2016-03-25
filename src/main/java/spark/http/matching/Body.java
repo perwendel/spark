@@ -66,13 +66,10 @@ final class Body {
             }
 
             // Check if gzip is wanted/accepted and in that case handle that
-            OutputStream responseStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, true);
-
-            // serialize the body to output stream
-            serializerChain.process(responseStream, content);
-
-            responseStream.flush(); // needed for GZIP stream. NOt sure where the HTTP response actually gets cleaned up
-            responseStream.close(); // needed for GZIP
+            try (OutputStream responseStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, true)) {
+                // serialize the body to output stream
+                serializerChain.process(responseStream, content);
+            }
         }
     }
 
