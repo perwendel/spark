@@ -33,6 +33,8 @@ public class QueryParamsMap {
 
     private static final QueryParamsMap NULL = new NullQueryParamsMap();
 
+    private static final Pattern KEY_PATTERN = Pattern.compile("\\A[\\[\\]]*([^\\[\\]]+)\\]*");
+
     /**
      * Holds the nested keys
      */
@@ -42,8 +44,6 @@ public class QueryParamsMap {
      * Value(s) for this key
      */
     private String[] values;
-
-    private Pattern p = Pattern.compile("\\A[\\[\\]]*([^\\[\\]]+)\\]*");
 
     /**
      * Creates a new QueryParamsMap from and HttpServletRequest. <br>
@@ -121,7 +121,7 @@ public class QueryParamsMap {
     }
 
     protected final String[] parseKey(String key) {
-        Matcher m = p.matcher(key);
+        Matcher m = KEY_PATTERN.matcher(key);
 
         if (m.find()) {
             return new String[] {cleanKey(m.group()), key.substring(m.end())};
