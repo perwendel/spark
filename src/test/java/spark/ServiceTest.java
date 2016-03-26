@@ -12,6 +12,7 @@ import spark.ssl.SslStores;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static spark.Service.ignite;
 
 public class ServiceTest {
 
@@ -25,7 +26,7 @@ public class ServiceTest {
 
     @Before
     public void test() {
-        service = new Service();
+        service = ignite();
     }
 
     @Test(expected = HaltException.class)

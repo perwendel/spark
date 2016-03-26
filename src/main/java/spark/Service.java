@@ -36,10 +36,10 @@ import static spark.globalstate.ServletFlag.isRunningFromServlet;
 
 /**
  * Represents a Spark server "session".
- * If a user wants multiple 'Sparks' in his application the method {@link Service#service()} should be statically
+ * If a user wants multiple 'Sparks' in his application the method {@link Service#ignite()} should be statically
  * imported and used to create instances. The instance should typically be named so when prefixing the 'routing' methods
  * the semantic makes sense. For example 'http' is a good variable name since when adding routes it would be:
- * Service http = service();
+ * Service http = ignite();
  * ...
  * http.get("/hello", (q, a) -> "Hello World");
  */
@@ -81,13 +81,14 @@ public final class Service extends Routable {
     private final StaticFiles staticFiles;
 
     /**
-     * @return a new "Service"
+     * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
+     * multiple services in one process.
      */
-    public static Service service() {
+    public static Service ignite() {
         return new Service();
     }
 
-    public Service() {
+    private Service() {
         redirect = Redirect.create(this);
 
         if (isRunningFromServlet()) {

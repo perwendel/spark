@@ -23,7 +23,7 @@ import org.junit.Test;
 
 import spark.util.SparkTestUtil;
 
-import static spark.Service.service;
+import static spark.Service.ignite;
 
 /**
  * Created by Per Wendel on 2016-02-18.
@@ -95,19 +95,18 @@ public class MultipleServicesTest {
     }
 
     private static Service igniteFirstService() {
-        Service http = service(); // I give the variable the name 'http' for the code to make sense when adding routes.
+        Service http = ignite(); // I give the variable the name 'http' for the code to make sense when adding routes.
         http.get("/hello", (q, a) -> "Hello World!");
         return http;
     }
 
     private static Service igniteSecondService() {
-        Service http = service()
+        Service http = ignite()
                 .port(1234)
                 .staticFileLocation("/public")
                 .threadPool(40);
 
         http.get("/hello", (q, a) -> "Hello World!");
-
         http.get("/uniqueforsecond", (q, a) -> "Bompton");
 
         http.redirect.any("/hi", "/hello");

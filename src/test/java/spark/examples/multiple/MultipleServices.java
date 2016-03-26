@@ -18,7 +18,7 @@ package spark.examples.multiple;
 
 import spark.Service;
 
-import static spark.Service.service;
+import static spark.Service.ignite;
 
 /**
  * This example shows how to correctly use the Spark instance API which allows for multiple services.
@@ -32,12 +32,12 @@ public class MultipleServices {
     }
 
     private static void igniteFirstService() {
-        Service http = service(); // I give the variable the name 'http' for the code to make sense when adding routes.
+        Service http = ignite(); // I give the variable the name 'http' for the code to make sense when adding routes.
         http.get("/hello", (q, a) -> "Hello World!");
     }
 
     private static void igniteSecondService() {
-        Service http = service()
+        Service http = ignite()
                 .port(1234)
                 .staticFileLocation("/public")
                 .threadPool(40);

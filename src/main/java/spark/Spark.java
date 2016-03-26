@@ -16,6 +16,8 @@
  */
 package spark;
 
+import static spark.Service.ignite;
+
 /**
  * The main building block of a Spark application is a set of routes. A route is
  * made up of three simple pieces:
@@ -28,7 +30,6 @@ package spark;
  * get("/hello", (request, response) -&#62; {
  * return "Hello World!";
  * });
- *
  * The public methods and fields in this class should be statically imported for the semantic to make sense.
  * Ie. one should use:
  * 'post("/books")' without the prefix 'Spark.'
@@ -45,7 +46,7 @@ public final class Spark {
      * Initializes singleton.
      */
     private static class SingletonHolder {
-        private static final Service INSTANCE = new Service();
+        private static final Service INSTANCE = ignite();
     }
 
     private static Service getInstance() {
