@@ -267,7 +267,7 @@ public class Request {
 
     /**
      * Gets all the values of the query param
-     * Example: query parameter 'id' from the following request URI: /hello?id=foo&id=bar
+     * Example: query parameter 'id' from the following request URI: /hello?id=foo&amp;id=bar
      *
      * @param queryParam the query parameter
      * @return the values of the provided queryParam, null if it doesn't exists
