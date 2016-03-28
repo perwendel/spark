@@ -33,6 +33,9 @@ public class QueryParamsMap {
 
     private static final QueryParamsMap NULL = new NullQueryParamsMap();
 
+    /**
+     * Pattern for parsing the key of querystring
+     */
     private static final Pattern KEY_PATTERN = Pattern.compile("\\A[\\[\\]]*([^\\[\\]]+)\\]*");
 
     /**
