@@ -10,7 +10,6 @@ import spark.embeddedserver.jetty.websocket.WebSocketCreatorFactory.SparkWebSock
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 public class WebSocketCreatorFactoryTest {
 

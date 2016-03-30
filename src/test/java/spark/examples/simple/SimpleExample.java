@@ -17,7 +17,6 @@
 package spark.examples.simple;
 
 import static spark.Spark.*;
-import static spark.Spark.post;
 
 /**
  * A simple example just showing some basic functionality

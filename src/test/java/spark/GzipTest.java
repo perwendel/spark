@@ -27,7 +27,6 @@ import spark.util.SparkTestUtil;
 
 import static org.junit.Assert.assertEquals;
 import static spark.Spark.awaitInitialization;
-import static spark.Spark.staticFileLocation;
 import static spark.Spark.stop;
 
 /**

@@ -17,7 +17,6 @@
 package spark.utils;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Miscellaneous collection utility methods.
