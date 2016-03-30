@@ -31,7 +31,7 @@ final class Routes {
 
         Object content = context.body().get();
 
-        RouteMatch match = context.routeMatcher().findTargetForRequestedRoute(context.httpMethod(), context.uri(), context.acceptType());
+        RouteMatch match = context.routeMatcher().find(context.httpMethod(), context.uri(), context.acceptType());
 
         Object target = null;
         if (match != null) {
@@ -39,7 +39,7 @@ final class Routes {
         } else if (context.httpMethod() == HttpMethod.head && context.body().notSet()) {
             // See if get is mapped to provide default head mapping
             content =
-                    context.routeMatcher().findTargetForRequestedRoute(HttpMethod.get, context.uri(), context.acceptType())
+                    context.routeMatcher().find(HttpMethod.get, context.uri(), context.acceptType())
                             != null ? "" : null;
         }
 

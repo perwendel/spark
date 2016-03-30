@@ -26,18 +26,24 @@ import org.slf4j.LoggerFactory;
 
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
-import spark.globalstate.ServletFlag;
-import spark.route.RouteMatcherFactory;
-import spark.route.SimpleRouteMatcher;
+import spark.route.Routes;
+import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.StaticFiles;
 
 import static java.util.Objects.requireNonNull;
+import static spark.globalstate.ServletFlag.isRunningFromServlet;
 
 /**
- * Holds the implementation of the Spark API. (previously in Spark and SparkBase).
+ * Represents a Spark server "session".
+ * If a user wants multiple 'Sparks' in his application the method {@link Service#ignite()} should be statically
+ * imported and used to create instances. The instance should typically be named so when prefixing the 'routing' methods
+ * the semantic makes sense. For example 'http' is a good variable name since when adding routes it would be:
+ * Service http = ignite();
+ * ...
+ * http.get("/hello", (q, a) -> "Hello World");
  */
-final class SparkInstance extends Routable {
+public final class Service extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
 
     public static final int SPARK_DEFAULT_PORT = 4567;
@@ -61,7 +67,7 @@ final class SparkInstance extends Routable {
     protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
 
     protected EmbeddedServer server;
-    protected SimpleRouteMatcher routeMatcher;
+    protected Routes routes;
 
     private boolean servletStaticLocationSet;
     private boolean servletExternalStaticLocationSet;
@@ -70,10 +76,26 @@ final class SparkInstance extends Routable {
 
     private Object embeddedServerIdentifier = null;
 
-    final Redirect redirect;
+    public final Redirect redirect;
 
-    public SparkInstance() {
+    private final StaticFiles staticFiles;
+
+    /**
+     * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
+     * multiple services in one process.
+     */
+    public static Service ignite() {
+        return new Service();
+    }
+
+    private Service() {
         redirect = Redirect.create(this);
+
+        if (isRunningFromServlet()) {
+            staticFiles = StaticFiles.servletInstance;
+        } else {
+            staticFiles = StaticFiles.create();
+        }
     }
 
     /**
@@ -83,11 +105,13 @@ final class SparkInstance extends Routable {
      *
      * @param ipAddress The ipAddress
      */
-    public synchronized void ipAddress(String ipAddress) {
+    public synchronized Service ipAddress(String ipAddress) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
         this.ipAddress = ipAddress;
+
+        return this;
     }
 
     /**
@@ -97,11 +121,12 @@ final class SparkInstance extends Routable {
      *
      * @param port The port number
      */
-    public synchronized void port(int port) {
+    public synchronized Service port(int port) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
         this.port = port;
+        return this;
     }
 
     /**
@@ -119,10 +144,10 @@ final class SparkInstance extends Routable {
      *                           keystore
      * @param truststorePassword the trust store password
      */
-    public synchronized void secure(String keystoreFile,
-                                    String keystorePassword,
-                                    String truststoreFile,
-                                    String truststorePassword) {
+    public synchronized Service secure(String keystoreFile,
+                                       String keystorePassword,
+                                       String truststoreFile,
+                                       String truststorePassword) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -133,6 +158,7 @@ final class SparkInstance extends Routable {
         }
 
         sslStores = SslStores.create(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
+        return this;
     }
 
     /**
@@ -140,8 +166,8 @@ final class SparkInstance extends Routable {
      *
      * @param maxThreads max nbr of threads.
      */
-    public synchronized void threadPool(int maxThreads) {
-        threadPool(maxThreads, -1, -1);
+    public synchronized Service threadPool(int maxThreads) {
+        return threadPool(maxThreads, -1, -1);
     }
 
     /**
@@ -151,7 +177,7 @@ final class SparkInstance extends Routable {
      * @param minThreads        min nbr of threads.
      * @param idleTimeoutMillis thread idle timeout (ms).
      */
-    public synchronized void threadPool(int maxThreads, int minThreads, int idleTimeoutMillis) {
+    public synchronized Service threadPool(int maxThreads, int minThreads, int idleTimeoutMillis) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -159,6 +185,8 @@ final class SparkInstance extends Routable {
         this.maxThreads = maxThreads;
         this.minThreads = minThreads;
         this.threadIdleTimeoutMillis = idleTimeoutMillis;
+
+        return this;
     }
 
     /**
@@ -167,17 +195,20 @@ final class SparkInstance extends Routable {
      *
      * @param folder the folder in classpath.
      */
-    public synchronized void staticFileLocation(String folder) {
-        if (initialized && !ServletFlag.isRunningFromServlet()) {
+    public synchronized Service staticFileLocation(String folder) {
+        if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
+
         staticFileFolder = folder;
+
         if (!servletStaticLocationSet) {
-            StaticFiles.configureStaticResources(staticFileFolder);
+            staticFiles.configure(staticFileFolder);
             servletStaticLocationSet = true;
         } else {
             LOG.warn("Static file location has already been set");
         }
+        return this;
     }
 
     /**
@@ -186,17 +217,20 @@ final class SparkInstance extends Routable {
      *
      * @param externalFolder the external folder serving static files.
      */
-    public synchronized void externalStaticFileLocation(String externalFolder) {
-        if (initialized && !ServletFlag.isRunningFromServlet()) {
+    public synchronized Service externalStaticFileLocation(String externalFolder) {
+        if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
+
         externalStaticFileFolder = externalFolder;
+
         if (!servletExternalStaticLocationSet) {
-            StaticFiles.configureExternalStaticResources(externalStaticFileFolder);
+            staticFiles.configureExternal(externalStaticFileFolder);
             servletExternalStaticLocationSet = true;
         } else {
             LOG.warn("External static file location has already been set");
         }
+        return this;
     }
 
     /**
@@ -215,7 +249,7 @@ final class SparkInstance extends Routable {
             throwBeforeRouteMappingException();
         }
 
-        if (ServletFlag.isRunningFromServlet()) {
+        if (isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
 
@@ -231,14 +265,15 @@ final class SparkInstance extends Routable {
      *
      * @param timeoutMillis The max idle timeout in milliseconds.
      */
-    public synchronized void webSocketIdleTimeoutMillis(int timeoutMillis) {
+    public synchronized Service webSocketIdleTimeoutMillis(int timeoutMillis) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        if (ServletFlag.isRunningFromServlet()) {
+        if (isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
         webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
+        return this;
     }
 
     /**
@@ -268,31 +303,33 @@ final class SparkInstance extends Routable {
      */
     public synchronized void stop() {
         if (server != null) {
-            routeMatcher.clearRoutes();
+            routes.clear();
             server.extinguish();
             latch = new CountDownLatch(1);
         }
-        StaticFiles.clear();
+
+        staticFiles.clear();
         initialized = false;
     }
 
     @Override
     public void addRoute(String httpMethod, RouteImpl route) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath() + "'", route.getAcceptType(), route);
+        routes.add(httpMethod + " '" + route.getPath() + "'", route.getAcceptType(), route);
     }
 
     @Override
     public void addFilter(String httpMethod, FilterImpl filter) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath() + "'", filter.getAcceptType(), filter);
+        routes.add(httpMethod + " '" + filter.getPath() + "'", filter.getAcceptType(), filter);
     }
 
     public synchronized void init() {
         if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
 
-            if (!ServletFlag.isRunningFromServlet()) {
+            initializeRouteMatcher();
+
+            if (!isRunningFromServlet()) {
                 new Thread(() -> {
                     EmbeddedServers.initialize();
 
@@ -300,7 +337,11 @@ final class SparkInstance extends Routable {
                         embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
                     }
 
-                    server = EmbeddedServers.create(embeddedServerIdentifier, hasMultipleHandlers());
+                    server = EmbeddedServers.create(embeddedServerIdentifier,
+                                                    routes,
+                                                    staticFiles,
+                                                    hasMultipleHandlers());
+
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
                     server.ignite(
@@ -314,6 +355,14 @@ final class SparkInstance extends Routable {
                 }).start();
             }
             initialized = true;
+        }
+    }
+
+    private void initializeRouteMatcher() {
+        if (isRunningFromServlet()) {
+            routes = ServletRoutes.get();
+        } else {
+            routes = Routes.create();
         }
     }
 
