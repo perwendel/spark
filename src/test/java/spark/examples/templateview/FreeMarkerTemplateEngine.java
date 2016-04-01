@@ -34,7 +34,7 @@ public class FreeMarkerTemplateEngine extends TemplateEngine {
     }
 
     private Configuration createFreemarkerConfiguration() {
-        Configuration retVal = new Configuration();
+        Configuration retVal = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
         retVal.setClassForTemplateLoading(FreeMarkerTemplateEngine.class, "freemarker");
         return retVal;
     }
