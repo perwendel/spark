@@ -52,6 +52,7 @@ public final class Service extends Routable {
     protected boolean initialized = false;
 
     protected int port = SPARK_DEFAULT_PORT;
+    protected int sslPort = -1;
     protected String ipAddress = "0.0.0.0";
 
     protected SslStores sslStores;
@@ -126,6 +127,23 @@ public final class Service extends Routable {
             throwBeforeRouteMappingException();
         }
         this.port = port;
+        return this;
+    }
+
+    /**
+     * Set the port and sslPort that Spark should listen on in case if you need to use both.
+     * This has to be called before any route mapping is done.
+     * If provided port = 0 then the an arbitrary available port will be used.
+     *
+     * @param port The port number
+     * @param sslPort The port number for secured connection
+     */
+    public synchronized Service port(int port, int sslPort) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        this.port = port;
+        this.sslPort = sslPort;
         return this;
     }
 
@@ -347,6 +365,7 @@ public final class Service extends Routable {
                     server.ignite(
                             ipAddress,
                             port,
+                            sslPort,
                             sslStores,
                             latch,
                             maxThreads,
