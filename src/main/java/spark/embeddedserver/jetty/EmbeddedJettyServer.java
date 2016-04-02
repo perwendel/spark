@@ -77,7 +77,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                        CountDownLatch latch,
                        int maxThreads,
                        int minThreads,
-                       int threadIdleTimeoutMillis) {
+                       int threadIdleTimeoutMillis,
+                       boolean enableServerJMX) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -88,7 +89,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             }
         }
 
-        server = JettyServer.create(maxThreads, minThreads, threadIdleTimeoutMillis);
+        server = JettyServer.create(maxThreads, minThreads, threadIdleTimeoutMillis, enableServerJMX);
 
         ServerConnector connector;
 
