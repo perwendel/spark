@@ -30,9 +30,10 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import spark.route.RouteMatch;
+import spark.routematch.RouteMatch;
 import spark.utils.IOUtils;
 import spark.utils.SparkUtils;
+import spark.utils.StringUtils;
 
 /**
  * Provides information about the HTTP request
@@ -223,9 +224,11 @@ public class Request {
      * @return the request body sent by the client
      */
     public String body() {
+
         if (body == null) {
-            body = new String(bodyAsBytes());
+            body = StringUtils.toString(bodyAsBytes(), servletRequest.getCharacterEncoding());
         }
+
         return body;
     }
 
@@ -264,7 +267,7 @@ public class Request {
 
     /**
      * Gets all the values of the query param
-     * Example: query parameter 'id' from the following request URI: /hello?id=foo&id=bar
+     * Example: query parameter 'id' from the following request URI: /hello?id=foo&amp;id=bar
      *
      * @param queryParam the query parameter
      * @return the values of the provided queryParam, null if it doesn't exists
@@ -325,6 +328,7 @@ public class Request {
      * Gets the value of the provided attribute
      *
      * @param attribute The attribute value or null if not present
+     * @param <T>       the type parameter.
      * @return the value for the provided attribute
      */
     public <T> T attribute(String attribute) {
@@ -407,7 +411,7 @@ public class Request {
     }
 
     /**
-     * @return request cookies (or empty Map if cookies dosn't present)
+     * @return request cookies (or empty Map if cookies aren't present)
      */
     public Map<String, String> cookies() {
         Map<String, String> result = new HashMap<String, String>();

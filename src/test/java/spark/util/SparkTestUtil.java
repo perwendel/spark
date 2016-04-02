@@ -3,8 +3,10 @@ package spark.util;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.security.KeyStore;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
@@ -15,7 +17,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -23,6 +24,7 @@ import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
@@ -31,14 +33,16 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.conn.BasicClientConnectionManager;
+import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
 public class SparkTestUtil {
 
     private int port;
 
-    private HttpClient httpClient;
+    private DefaultHttpClient httpClient;
 
     public SparkTestUtil(int port) {
         this.port = port;
@@ -48,7 +52,34 @@ public class SparkTestUtil {
         sr.register(http);
         sr.register(https);
         ClientConnectionManager connMrg = new BasicClientConnectionManager(sr);
-        this.httpClient = new DefaultHttpClient(connMrg);
+        httpClient = new DefaultHttpClient(connMrg);
+    }
+
+    public void setFollowRedirectStrategy(int... codes) {
+        HashSet<Integer> redirectCodes = new HashSet<>();
+
+        for (int code : codes) {
+            redirectCodes.add(code);
+        }
+
+        httpClient.setRedirectStrategy(new DefaultRedirectStrategy() {
+            public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
+                boolean isRedirect = false;
+                try {
+                    isRedirect = super.isRedirected(request, response, context);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (!isRedirect) {
+                    int responseCode = response.getStatusLine().getStatusCode();
+
+                    if (redirectCodes.contains(responseCode)) {
+                        return true;
+                    }
+                }
+                return isRedirect;
+            }
+        });
     }
 
     public UrlResponse doMethodSecure(String requestMethod, String path, String body)
@@ -158,6 +189,12 @@ public class SparkTestUtil {
                 return httpOptions;
             }
 
+            if (requestMethod.equals("LOCK")) {
+                HttpLock httpLock = new HttpLock(uri);
+                addHeaders(reqHeaders, httpLock);
+                return httpLock;
+            }
+
             throw new IllegalArgumentException("Unknown method " + requestMethod);
 
         } catch (UnsupportedEncodingException e) {
@@ -189,7 +226,7 @@ public class SparkTestUtil {
      * So these can be used to specify other key/trust stores if required.
      *
      * @return an SSL Socket Factory using either provided keystore OR the
-     *         keystore specified in JVM params
+     * keystore specified in JVM params
      */
     private SSLSocketFactory getSslFactory() {
         KeyStore keyStore = null;
@@ -264,6 +301,20 @@ public class SparkTestUtil {
         try {
             Thread.sleep(time);
         } catch (Exception e) {
+        }
+    }
+
+    static class HttpLock extends HttpRequestBase {
+        public final static String METHOD_NAME = "LOCK";
+
+        public HttpLock(final String uri) {
+            super();
+            setURI(URI.create(uri));
+        }
+
+        @Override
+        public String getMethod() {
+            return METHOD_NAME;
         }
     }
 

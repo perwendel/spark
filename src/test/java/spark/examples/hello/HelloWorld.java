@@ -22,9 +22,7 @@ public class HelloWorld {
 
     public static void main(String[] args) {
 
-        get("/hello", (request, response) -> {
-            return "Hello World!";
-        });
+        get("/hello", (request, response) -> "Hello World!");
 
     }
 

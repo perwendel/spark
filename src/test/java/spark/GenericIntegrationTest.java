@@ -26,19 +26,19 @@ import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
-import spark.websocket.WebSocketTestClient;
-import spark.websocket.WebSocketTestHandler;
+import spark.embeddedserver.jetty.websocket.WebSocketTestClient;
+import spark.embeddedserver.jetty.websocket.WebSocketTestHandler;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.exception;
+import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.post;
-import static spark.SparkBase.externalStaticFileLocation;
-import static spark.SparkBase.staticFileLocation;
-import static spark.SparkBase.webSocket;
+import static spark.Spark.staticFileLocation;
+import static spark.Spark.webSocket;
 
 public class GenericIntegrationTest {
 
@@ -178,10 +178,7 @@ public class GenericIntegrationTest {
             response.body(NOT_FOUND_BRO);
         });
 
-        try {
-            Thread.sleep(500);
-        } catch (Exception e) {
-        }
+        Spark.awaitInitialization();
     }
 
     @Test

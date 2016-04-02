@@ -19,7 +19,6 @@ package spark.resource;
 
 import java.net.MalformedURLException;
 
-import org.eclipse.jetty.util.URIUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +51,7 @@ public class ClassPathResourceHandler extends AbstractResourceHandler {
      */
     public ClassPathResourceHandler(String baseResource, String welcomeFile) {
         Assert.notNull(baseResource);
+
         this.baseResource = baseResource;
         this.welcomeFile = welcomeFile;
     }
@@ -63,7 +63,7 @@ public class ClassPathResourceHandler extends AbstractResourceHandler {
         }
 
         try {
-            path = URIUtil.canonicalPath(path);
+            path = UriPath.canonical(path);
 
             final String addedPath = addPaths(baseResource, path);
 
