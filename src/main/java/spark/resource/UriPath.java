@@ -4,12 +4,14 @@
 package spark.resource;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.regex.Pattern;
 
 /**
  * Used for converting URL paths.
  */
 public class UriPath {
+
+    private static final Pattern __PATH_SPLIT = Pattern.compile("(?<=\\/)");
 
     /**
      * Convert a path to a canonical form.
@@ -19,44 +21,41 @@ public class UriPath {
      * @param path the path to convert
      * @return path or null.
      */
-    public static String canonical(String path) {
-        if (path == null || path.isEmpty()){
+    public static String canonical(String path)
+    {
+        if (path == null || path.isEmpty() || !path.contains("."))
             return path;
-        }
-        if(path.startsWith("/..")) {
+
+        if(path.startsWith("/.."))
             return null;
-        }
 
-        List<String> directories = new ArrayList<>(Arrays.asList(path.split("(?<=\\/)")));
-        directories.removeIf(dir-> dir.isEmpty() || dir.equals("."));
+        List<String> directories = new LinkedList<>();
+        Collections.addAll(directories, __PATH_SPLIT.split(path));
 
-        for(ListIterator<String> iterator = directories.listIterator(); iterator.hasNext();){
-            String currentDir = iterator.next();
-            if (currentDir.equals("./")){
-                if (iterator.nextIndex()>1)
+        for(ListIterator<String> iterator = directories.listIterator(); iterator.hasNext();)
+        {
+            switch (iterator.next()) {
+                case "./":
+                case ".":
+                    if (iterator.hasNext() && directories.get(iterator.nextIndex()).equals("/"))
+                        break;
+
                     iterator.remove();
-                else if (iterator.hasNext()){
-                    if(!iterator.next().equals("/")) {
-                        iterator.previous();
-                        iterator.previous();
-                        iterator.remove();
-                    }
-                } else {
-                    return "";
-                }
-            }
-            else if(currentDir.equals("../") || currentDir.equals("..")) {
-                iterator.remove();
-                if (iterator.hasPrevious()) {
-                    iterator.previous();
-                    iterator.remove();
-                    if (directories.isEmpty() && path.startsWith("/"))
+                    break;
+                case "../":
+                case "..":
+                    if(iterator.previousIndex() == 0)
                         return null;
-                } else {
-                    return null;
-                }
+                    
+                    iterator.remove();
+                    if(iterator.previous().equals("/") && iterator.nextIndex() == 0)
+                        return null;
+
+                    iterator.remove();
+                    break;
             }
         }
-        return directories.stream().collect(Collectors.joining());
+        
+        return String.join("", directories);
     }
 }

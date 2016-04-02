@@ -4,8 +4,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by lcarrasco on 3/16/16.
+/*
+ * Copyright 2016 - Per thesnowgoose
  */
 public class UriPathTest {
 
@@ -58,6 +58,7 @@ public class UriPathTest {
                         {"a/.","a/"},
                         {"a/..",""},
                         {"a/../..",null},
+                        {"/foo/../../bar",null},
                         {"/foo/../bar//","/bar//"},
                 };
 
