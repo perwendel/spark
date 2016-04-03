@@ -59,7 +59,7 @@ public class GenericIntegrationTest {
 
     @BeforeClass
     public static void setup() throws IOException {
-        testUtil = new SparkTestUtil(4567);
+        testUtil = new SparkTestUtil(0);
 
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
 
@@ -405,7 +405,7 @@ public class GenericIntegrationTest {
 
     @Test
     public void testWebSocketConversation() throws Exception {
-        String uri = "ws://localhost:4567/ws";
+        String uri = "ws://localhost:" + testUtil.getPort() + "/ws";
         WebSocketClient client = new WebSocketClient();
         WebSocketTestClient ws = new WebSocketTestClient();
 

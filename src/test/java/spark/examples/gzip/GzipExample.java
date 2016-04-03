@@ -35,7 +35,7 @@ public class GzipExample {
         addRoutes();
         awaitInitialization();
 
-        String response = getAndDecompress();
+        String response = getAndDecompress(4567);
         System.out.println("response = " + response);
         System.exit(0);
     }
@@ -52,7 +52,7 @@ public class GzipExample {
         staticFileLocation("/public");
     }
 
-    public static String getAndDecompress() throws Exception {
-        return GzipClient.getAndDecompress("http://localhost:4567" + PATH);
+    public static String getAndDecompress(int port) throws Exception {
+        return GzipClient.getAndDecompress("http://localhost:" + port + PATH);
     }
 }

@@ -38,7 +38,7 @@ public class BodyAvailabilityTest {
     public static void setup() {
         LOGGER.debug("setup()");
 
-        testUtil = new SparkTestUtil(4567);
+        testUtil = new SparkTestUtil(0);
 
         beforeBody = null;
         routeBody = null;

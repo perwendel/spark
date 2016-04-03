@@ -11,6 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import spark.util.SparkTestUtil;
 
 /**
  * System tests for the Cookies support.
@@ -19,11 +20,14 @@ import org.junit.Test;
  */
 public class CookiesIntegrationTest {
 
-    private static final String DEFAULT_HOST_URL = "http://localhost:4567";
+    private static int PORT = SparkTestUtil.DEFAULT_TESTS_PORT;
+    private static final String DEFAULT_HOST_URL = "http://localhost:" + PORT;
     private HttpClient httpClient = new DefaultHttpClient();
 
     @BeforeClass
     public static void initRoutes() throws InterruptedException {
+        port(PORT);
+
         post("/assertNoCookies", (request, response) -> {
             if (!request.cookies().isEmpty()) {
                 halt(500);

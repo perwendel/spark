@@ -38,7 +38,7 @@ public class RedirectTest {
 
     @BeforeClass
     public static void setup() throws IOException {
-        testUtil = new SparkTestUtil(4567);
+        testUtil = new SparkTestUtil(0);
         testUtil.setFollowRedirectStrategy(301, 302); // don't set the others to be able to verify affect of Redirect.Status
 
         get("/hello", (request, response) -> REDIRECTED);
