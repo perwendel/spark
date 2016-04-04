@@ -40,7 +40,7 @@ public class WebSocketCreatorFactoryTest {
     public void testCreate_whenInstantiationException() throws Exception {
 
         try {
-            WebSocketCreator annotated = WebSocketCreatorFactory.create(FailingHandler.class);
+            WebSocketCreatorFactory.create(FailingHandler.class);
             fail("Handler creation should have thrown a RunTimeException");
         } catch(RuntimeException ex) {
             assertEquals("Could not instantiate websocket handler", ex.getMessage());
