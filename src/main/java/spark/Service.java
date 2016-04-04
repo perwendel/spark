@@ -52,6 +52,7 @@ public final class Service extends Routable {
     protected boolean initialized = false;
 
     protected int port = SPARK_DEFAULT_PORT;
+    protected boolean http2Enabled = false;
     protected String ipAddress = "0.0.0.0";
 
     protected SslStores sslStores;
@@ -119,13 +120,24 @@ public final class Service extends Routable {
      * is 4567. This has to be called before any route mapping is done.
      * If provided port = 0 then the an arbitrary available port will be used.
      *
-     * @param port The port number
+     * @param port    The port number
      */
     public synchronized Service port(int port) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
         this.port = port;
+        return this;
+    }
+
+    /**
+     * Enables HTTP2
+     */
+    public synchronized Service http2() {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        this.http2Enabled = true;
         return this;
     }
 
@@ -351,7 +363,8 @@ public final class Service extends Routable {
                             latch,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis);
+                            threadIdleTimeoutMillis,
+                            http2Enabled);
                 }).start();
             }
             initialized = true;

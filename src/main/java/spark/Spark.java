@@ -919,6 +919,13 @@ public final class Spark {
     }
 
     /**
+     * Enables http2
+     */
+    public static void http2() {
+        getInstance().http2();
+    }
+
+    /**
      * Set the connection to be secure, using the specified keystore and
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore

@@ -16,14 +16,6 @@
  */
 package spark.embeddedserver.jetty;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -32,10 +24,17 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import spark.ssl.SslStores;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
+import spark.ssl.SslStores;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Spark server implementation
@@ -77,7 +76,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                        CountDownLatch latch,
                        int maxThreads,
                        int minThreads,
-                       int threadIdleTimeoutMillis) {
+                       int threadIdleTimeoutMillis,
+                       boolean http2Enabled) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -95,7 +95,11 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         if (sslStores == null) {
             connector = SocketConnectorFactory.createSocketConnector(server, host, port);
         } else {
-            connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
+            if (http2Enabled) {
+                connector = SocketConnectorFactory.createHttp2SocketConnector(server, host, port, sslStores);
+            } else {
+                connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
+            }
         }
 
         server = connector.getServer();
@@ -115,7 +119,6 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             if (webSocketServletContextHandler != null) {
                 handlersInList.add(webSocketServletContextHandler);
             }
-
             HandlerList handlers = new HandlerList();
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
