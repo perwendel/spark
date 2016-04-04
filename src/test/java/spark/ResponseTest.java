@@ -49,6 +49,14 @@ public class ResponseTest {
     }
 
     @Test
+    public void testLength(){
+        final int finalLength = "Hello World".getBytes().length;
+
+        response.length(finalLength);
+        verify(httpServletResponse).setContentLength(finalLength);
+    }
+
+    @Test
     public void testSetBody(){
         final String finalBody = "Hello world!";
 
