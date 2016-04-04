@@ -118,7 +118,7 @@ public class SparkTestUtil {
         } else {
             urlResponse.body = "";
         }
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         Header[] allHeaders = httpResponse.getAllHeaders();
         for (Header header : allHeaders) {
             headers.put(header.getName(), header.getValue());
