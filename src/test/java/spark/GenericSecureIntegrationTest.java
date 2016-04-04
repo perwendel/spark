@@ -1,5 +1,8 @@
 package spark;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -46,6 +49,10 @@ public class GenericSecureIntegrationTest {
             return "Hello World!";
         });
 
+        get("/ip", (request, response) -> {
+            return request.ip();
+        });
+
         get("/:param", (request, response) -> {
             return "echo: " + request.params(":param");
         });
@@ -82,6 +89,19 @@ public class GenericSecureIntegrationTest {
         SparkTestUtil.UrlResponse response = testUtil.doMethodSecure("GET", "/hi", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Hello World!", response.body);
+    }
+
+    @Test
+    public void testGetIp() throws Exception {
+        final String xForwardedFor = "XXX.XXX.XXX.XXX";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-Forwarded-For", xForwardedFor);
+
+        UrlResponse response = testUtil.doMethod("GET", "/ip", null, true, "text/html", headers);
+        Assert.assertEquals(xForwardedFor, response.body);
+
+        response = testUtil.doMethod("GET", "/ip", null, true, "text/html", null);
+        Assert.assertNotEquals(xForwardedFor, response.body);
     }
 
     @Test

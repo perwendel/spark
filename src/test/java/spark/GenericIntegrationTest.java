@@ -159,6 +159,10 @@ public class GenericIntegrationTest {
             return session.attribute(key);
         });
 
+        get("/ip", (request, response) -> {
+            return request.ip();
+        });
+
         after("/hi", (q, a) -> {
 
             if (q.requestMethod().equalsIgnoreCase("get")) {
@@ -268,6 +272,19 @@ public class GenericIntegrationTest {
     public void testGetHiAfterFilter() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/hi", null);
         Assert.assertTrue(response.headers.get("after").contains("foobar"));
+    }
+
+    @Test
+    public void testGetIp() throws Exception {
+        final String xForwardedFor = "XXX.XXX.XXX.XXX";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-Forwarded-For", xForwardedFor);
+
+        UrlResponse response = testUtil.doMethod("GET", "/ip", null, false, "text/html", headers);
+        Assert.assertEquals(xForwardedFor, response.body);
+
+        response = testUtil.doMethod("GET", "/ip", null, false, "text/html", null);
+        Assert.assertNotEquals(xForwardedFor, response.body);
     }
 
     @Test
