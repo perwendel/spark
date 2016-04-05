@@ -385,7 +385,7 @@ public class Request {
      * @return the session associated with this request
      */
     public Session session() {
-        if (session == null) {
+        if (session == null || session.raw() == null) {
             session = new Session(servletRequest.getSession());
         }
         return session;
@@ -401,7 +401,7 @@ public class Request {
      * <code>create</code> is <code>false</code> and the request has no valid session
      */
     public Session session(boolean create) {
-        if (session == null) {
+        if (session == null || session.raw() == null) {
             HttpSession httpSession = servletRequest.getSession(create);
             if (httpSession != null) {
                 session = new Session(httpSession);

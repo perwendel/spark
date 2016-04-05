@@ -113,6 +113,7 @@ public class Session {
      */
     public void invalidate() {
         session.invalidate();
+	session = null;
     }
 
     /**
