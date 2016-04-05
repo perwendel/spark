@@ -88,17 +88,21 @@ public class Response {
         this.body = body;
 
         if (!contentLengthManuallySet) {
-            String charsetValue = response.getCharacterEncoding() == null ?
-                    "ISO-8859-1" // recommended charset according to http://www.ietf.org/rfc/rfc2047.txt
-                    : response.getCharacterEncoding();
+            calculateContentLength();
+        }
+    }
 
-            Charset charset = null; //Charset.forName(charsetValue);
+    protected void calculateContentLength() {
+        String charsetValue = response.getCharacterEncoding() == null ?
+                "ISO-8859-1" // recommended charset according to http://www.ietf.org/rfc/rfc2047.txt
+                : response.getCharacterEncoding();
 
-            if (charset != null) {
-                response.setContentLength(this.body.getBytes(charset).length);
-            } else if (LOG.isDebugEnabled()) {
-                LOG.debug("unable to retrieve charset for name '{}'", charsetValue);
-            }
+        Charset charset = Charset.forName(charsetValue);
+
+        if (charset != null) {
+            response.setContentLength(this.body.getBytes(charset).length);
+        } else if (LOG.isDebugEnabled()) {
+            LOG.debug("unable to retrieve charset for name '{}'", charsetValue);
         }
     }
 
