@@ -16,7 +16,7 @@ public class QueryParamsMapTest {
     
     @Test
     public void constructorWithParametersMap() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<>();
         
         params.put("user[info][name]",new String[] {"fede"});
         
@@ -102,7 +102,7 @@ public class QueryParamsMapTest {
     
     @Test
     public void testToMap() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<>();
         
         params.put("user[info][name]",new String[] {"fede"});
         params.put("user[info][last]",new String[] {"dayan"});

@@ -7,7 +7,7 @@ import static spark.Spark.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import org.junit.Test;
 public class CookiesIntegrationTest {
 
     private static final String DEFAULT_HOST_URL = "http://localhost:4567";
-    private HttpClient httpClient = new DefaultHttpClient();
+    private HttpClient httpClient = HttpClientBuilder.create().build();
 
     @BeforeClass
     public static void initRoutes() throws InterruptedException {

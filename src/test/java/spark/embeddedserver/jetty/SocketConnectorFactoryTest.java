@@ -1,5 +1,6 @@
 package spark.embeddedserver.jetty;
 
+import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
@@ -120,7 +121,7 @@ public class SocketConnectorFactoryTest {
         assertEquals("Server Connector Host should be set to the specified server", host, internalHost);
         assertEquals("Server Connector Port should be set to the specified port", port, internalPort);
 
-        Map factories = Whitebox.getInternalState(serverConnector, "_factories");
+        Map<String, ConnectionFactory> factories = Whitebox.getInternalState(serverConnector, "_factories");
 
         assertTrue("Should return true because factory for SSL should have been set",
                 factories.containsKey("ssl") && factories.get("ssl") != null);

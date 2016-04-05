@@ -31,7 +31,7 @@ public class SessionTest {
 
         try {
 
-            Session session = new Session(null);
+            new Session(null);
             fail("Session instantiation with a null HttpSession should throw an IllegalArgumentException");
 
         } catch(IllegalArgumentException ex) {
