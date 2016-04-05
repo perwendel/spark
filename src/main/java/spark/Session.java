@@ -11,19 +11,25 @@ import javax.servlet.http.HttpSession;
  */
 public class Session {
 
-    private HttpSession session;
+    private final Request request;
+    private final HttpSession session;
 
     /**
      * Creates a session with the <code>HttpSession</code>.
      *
      * @param session
-     * @throws IllegalArgumentException If the session is null.
+     * @param request
+     * @throws IllegalArgumentException If the session or the request is null.
      */
-    Session(HttpSession session) {
+    Session(HttpSession session, Request request) {
         if (session == null) {
             throw new IllegalArgumentException("session cannot be null");
         }
+        if (request == null) {
+            throw new IllegalArgumentException("request cannot be null");
+        }
         this.session = session;
+        this.request = request;
     }
 
     /**
@@ -112,6 +118,7 @@ public class Session {
      * Invalidates this session then unbinds any objects bound to it.
      */
     public void invalidate() {
+        request.validSession(false);
         session.invalidate();
     }
 
