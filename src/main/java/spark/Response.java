@@ -92,6 +92,10 @@ public class Response {
         }
     }
 
+    /**
+     * Measures <code>body</code> content
+     * length.
+     */
     protected void calculateContentLength() {
         String charsetValue = response.getCharacterEncoding() == null ?
                 "ISO-8859-1" // recommended charset according to http://www.ietf.org/rfc/rfc2047.txt
