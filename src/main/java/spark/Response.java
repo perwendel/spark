@@ -77,7 +77,7 @@ public class Response {
         response.setContentType(contentType);
     }
 
-/**
+    /**
      * Returns the content type
      *
      * @return the content type

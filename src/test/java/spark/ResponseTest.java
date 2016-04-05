@@ -60,7 +60,7 @@ public class ResponseTest {
         verify(httpServletResponse).getContentType();
     }
 
-	@Test
+    @Test
     public void testLength(){
         final int finalLength = "Hello World".getBytes().length;
 
