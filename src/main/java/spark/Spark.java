@@ -19,8 +19,8 @@ package spark;
 import static spark.Service.ignite;
 
 /**
- * The main building block of a Spark application is a set of routes. A route is
- * made up of three simple pieces:
+ * The main building block of a Spark application is a set of routes.
+ * A route is made up of three simple pieces:
  * <ul>
  * <li>A verb (get, post, put, delete, head, trace, connect, options)</li>
  * <li>A path (/hello, /users/:name)</li>
@@ -64,7 +64,15 @@ public final class Spark {
      * @param path  the path
      * @param route The route
      */
-    public static void get(final String path, final Route route) {
+    public static void get(String path, Route route) {
+        getInstance().get(path, route);
+    }
+
+    public static void get(String path, RequestRoute route) {
+        getInstance().get(path, route);
+    }
+
+    public static void get(String path, EmptyRoute route) {
         getInstance().get(path, route);
     }
 
@@ -75,6 +83,14 @@ public final class Spark {
      * @param route The route
      */
     public static void post(String path, Route route) {
+        getInstance().post(path, route);
+    }
+
+    public static void post(String path, RequestRoute route) {
+        getInstance().post(path, route);
+    }
+
+    public static void post(String path, EmptyRoute route) {
         getInstance().post(path, route);
     }
 
@@ -158,6 +174,14 @@ public final class Spark {
         getInstance().before(path, filter);
     }
 
+    public static void before(String path, RequestFilter filter) {
+        getInstance().before(path, filter);
+    }
+
+    public static void before(String path, EmptyFilter filter) {
+        getInstance().before(path, filter);
+    }
+
     /**
      * Maps a filter to be executed after any matching routes
      *
@@ -165,6 +189,14 @@ public final class Spark {
      * @param filter The filter
      */
     public static void after(String path, Filter filter) {
+        getInstance().after(path, filter);
+    }
+
+    public static void after(String path, RequestFilter filter) {
+        getInstance().after(path, filter);
+    }
+
+    public static void after(String path, EmptyFilter filter) {
         getInstance().after(path, filter);
     }
 
@@ -281,12 +313,28 @@ public final class Spark {
         getInstance().before(filter);
     }
 
+    public static void before(RequestFilter filter) {
+        getInstance().before(filter);
+    }
+
+    public static void before(EmptyFilter filter) {
+        getInstance().before(filter);
+    }
+
     /**
      * Maps a filter to be executed after any matching routes
      *
      * @param filter The filter
      */
     public static void after(Filter filter) {
+        getInstance().after(filter);
+    }
+
+    public static void after(RequestFilter filter) {
+        getInstance().after(filter);
+    }
+
+    public static void after(EmptyFilter filter) {
         getInstance().after(filter);
     }
 
