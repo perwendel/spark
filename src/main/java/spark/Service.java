@@ -234,6 +234,16 @@ public final class Service extends Routable {
     }
 
     /**
+     * Sets the expire-time for static resources
+     *
+     * @param milliseconds the expire time
+     */
+    public synchronized Service staticFileExpireTime(long milliseconds) {
+        staticFiles.setExpireTimeMs(milliseconds);
+        return this;
+    }
+
+    /**
      * Maps the given path to the given WebSocket handler.
      * <p>
      * This is currently only available in the embedded server mode.

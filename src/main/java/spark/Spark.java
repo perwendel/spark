@@ -981,6 +981,15 @@ public final class Spark {
     }
 
     /**
+     * Sets the expire-time for static resources
+     *
+     * @param milliseconds the expire time
+     */
+    public static void staticFileExpireTime(long milliseconds) {
+        getInstance().staticFileExpireTime(milliseconds);
+    }
+
+    /**
      * Waits for the spark server to be initialized.
      * If it's already initialized will return immediately
      */

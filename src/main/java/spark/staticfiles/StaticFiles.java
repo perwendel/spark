@@ -49,6 +49,8 @@ public class StaticFiles {
     private boolean staticResourcesSet = false;
     private boolean externalStaticResourcesSet = false;
 
+    private long expireTimeMs = 600000L; //ten minutes
+
     public static StaticFiles servletInstance = new StaticFiles();
 
 
@@ -63,6 +65,7 @@ public class StaticFiles {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
                     OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
+                    setCacheHeaders(httpResponse);
                     IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
                     wrappedOutputStream.flush();
                     wrappedOutputStream.close();
@@ -72,6 +75,11 @@ public class StaticFiles {
         }
 
         return false;
+    }
+
+    private void setCacheHeaders(HttpServletResponse httpResponse) {
+        httpResponse.setDateHeader("Expires", System.currentTimeMillis() + expireTimeMs); // uses milliseconds
+        httpResponse.addHeader("Cache-Control", "private, max-age=" + expireTimeMs / 1000); // uses seconds
     }
 
     /**
@@ -146,5 +154,9 @@ public class StaticFiles {
 
     public static StaticFiles create() {
         return new StaticFiles();
+    }
+
+    public void setExpireTimeMs(long expireTimeMs) {
+        this.expireTimeMs = expireTimeMs;
     }
 }
