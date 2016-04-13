@@ -234,12 +234,22 @@ public final class Service extends Routable {
     }
 
     /**
+     * Sets custom headers for static resources
+     *
+     * @param headers the headers to set on static resources
+     */
+    public synchronized Service staticFileHeaders(Map<String, String> headers) {
+        staticFiles.setCustomHeaders(headers);
+        return this;
+    }
+
+    /**
      * Sets the expire-time for static resources
      *
-     * @param milliseconds the expire time
+     * @param seconds the expire time in seconds
      */
-    public synchronized Service staticFileExpireTime(long milliseconds) {
-        staticFiles.setExpireTimeMs(milliseconds);
+    public synchronized Service staticFileExpireTime(long seconds) {
+        staticFiles.setExpireTimeSeconds(seconds);
         return this;
     }
 

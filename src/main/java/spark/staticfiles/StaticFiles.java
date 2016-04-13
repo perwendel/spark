@@ -19,7 +19,10 @@ package spark.staticfiles;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,10 +52,9 @@ public class StaticFiles {
     private boolean staticResourcesSet = false;
     private boolean externalStaticResourcesSet = false;
 
-    private long expireTimeMs = 600000L; //ten minutes
-
     public static StaticFiles servletInstance = new StaticFiles();
 
+    private Map<String, String> customHeaders = new HashMap<>();
 
     /**
      * @return true if consumed, false otherwise.
@@ -65,7 +67,7 @@ public class StaticFiles {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
                 if (resource != null && resource.isReadable()) {
                     OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
-                    setCacheHeaders(httpResponse);
+                    customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
                     IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
                     wrappedOutputStream.flush();
                     wrappedOutputStream.close();
@@ -75,11 +77,6 @@ public class StaticFiles {
         }
 
         return false;
-    }
-
-    private void setCacheHeaders(HttpServletResponse httpResponse) {
-        httpResponse.setDateHeader("Expires", System.currentTimeMillis() + expireTimeMs); // uses milliseconds
-        httpResponse.addHeader("Cache-Control", "private, max-age=" + expireTimeMs / 1000); // uses seconds
     }
 
     /**
@@ -156,7 +153,12 @@ public class StaticFiles {
         return new StaticFiles();
     }
 
-    public void setExpireTimeMs(long expireTimeMs) {
-        this.expireTimeMs = expireTimeMs;
+    public void setExpireTimeSeconds(long expireTimeSeconds) {
+        customHeaders.put("Cache-Control", "private, max-age=" + expireTimeSeconds);
+        customHeaders.put("Expires", new Date(System.currentTimeMillis() + (expireTimeSeconds * 1000)).toString());
+    }
+
+    public void setCustomHeaders(Map<String, String> headers) {
+        customHeaders = headers;
     }
 }

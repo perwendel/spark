@@ -16,6 +16,8 @@
  */
 package spark;
 
+import java.util.Map;
+
 import static spark.Service.ignite;
 
 /**
@@ -981,12 +983,21 @@ public final class Spark {
     }
 
     /**
+     * Sets custom headers for static resources
+     *
+     * @param headers the headers to set on static resources
+     */
+    public static void staticFileHeaders(Map<String, String> headers) {
+        getInstance().staticFileHeaders(headers);
+    }
+
+    /**
      * Sets the expire-time for static resources
      *
-     * @param milliseconds the expire time
+     * @param seconds the expire time in seconds
      */
-    public static void staticFileExpireTime(long milliseconds) {
-        getInstance().staticFileExpireTime(milliseconds);
+    public static void staticFileExpireTime(long seconds) {
+        getInstance().staticFileExpireTime(seconds);
     }
 
     /**
