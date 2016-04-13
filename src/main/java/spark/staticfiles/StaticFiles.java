@@ -159,6 +159,6 @@ public class StaticFiles {
     }
 
     public void setCustomHeaders(Map<String, String> headers) {
-        customHeaders = headers;
+        customHeaders.putAll(headers);
     }
 }
