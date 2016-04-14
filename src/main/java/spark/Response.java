@@ -146,13 +146,28 @@ public class Response {
     }
 
     /**
-     * Adds/Sets a response header
+     * Adds/Sets a response header, overwriting value if it already exists
      *
      * @param header the header
      * @param value  the value
      */
     public void header(String header, String value) {
-        response.addHeader(header, value);
+        header(header, value, true);
+    }
+ 
+    /**
+    * Adds/Sets a response header
+    *
+    * @param header the header
+    * @param value  the value
+    * @param set    if true: overwrites the existing value, otherwise adds the value
+    */
+    public void header(String header, String value, boolean set) {
+        if (set) {
+            response.setHeader(header, value);
+        } else {
+            response.addHeader(header, value);
+        }
     }
 
     /**
