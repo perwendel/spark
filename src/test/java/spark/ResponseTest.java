@@ -20,20 +20,20 @@ public class ResponseTest {
     private ArgumentCaptor<Cookie> cookieArgumentCaptor;
 
     @Before
-    public void setup(){
+    public void setup() {
         httpServletResponse = mock(HttpServletResponse.class);
         response = new Response(httpServletResponse);
         cookieArgumentCaptor = ArgumentCaptor.forClass(Cookie.class);
     }
 
     @Test
-    public void testConstructor_whenHttpServletResponseParameter(){
+    public void testConstructor_whenHttpServletResponseParameter() {
         HttpServletResponse returnResponse = Whitebox.getInternalState(response, "response");
         assertSame("Should be the same the HttpServletResponse object for httpServletResponse and returnResponse", httpServletResponse, returnResponse);
     }
 
     @Test
-    public void testStatus(){
+    public void testSetStatus() {
         final int finalStatusCode = HttpServletResponse.SC_OK;
 
         response.status(finalStatusCode);
@@ -41,7 +41,13 @@ public class ResponseTest {
     }
 
     @Test
-    public void testType(){
+    public void testGetStatus() {
+        response.status();
+        verify(httpServletResponse).getStatus();
+    }
+
+    @Test
+    public void testSetType() {
         final String finalType = "text/html";
 
         response.type(finalType);
@@ -49,7 +55,13 @@ public class ResponseTest {
     }
 
     @Test
-    public void testSetBody(){
+    public void testGetType() {
+        response.type();
+        verify(httpServletResponse).getContentType();
+    }
+
+    @Test
+    public void testSetBody() {
         final String finalBody = "Hello world!";
 
         response.body(finalBody);
@@ -58,7 +70,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void testGetBody(){
+    public void testGetBody() {
         final String finalBody = "Hello world!";
 
         Whitebox.setInternalState(response, "body", finalBody);
@@ -67,21 +79,26 @@ public class ResponseTest {
     }
 
     @Test
-    public void testRaw(){
+    public void testRaw() {
         HttpServletResponse returnResponse = response.raw();
         assertSame("Should be the same the HttpServletResponse object for httpServletResponse and returnResponse", httpServletResponse, returnResponse);
     }
 
     @Test
-    public void testHeader(){
+    public void testHeader() {
         final String finalHeaderKey = "Content-Length";
         final String finalHeaderValue = "32";
 
-        response.header(finalHeaderKey,  finalHeaderValue);
+        response.header(finalHeaderKey, finalHeaderValue);
         verify(httpServletResponse).addHeader(finalHeaderKey, finalHeaderValue);
     }
 
-    private void validateCookieContent(Cookie cookie, String path, String value, int maxAge, boolean secured, boolean httpOnly) {
+    private void validateCookieContent(Cookie cookie,
+                                       String path,
+                                       String value,
+                                       int maxAge,
+                                       boolean secured,
+                                       boolean httpOnly) {
         assertEquals("Should return cookie path specified", path, cookie.getPath());
         assertEquals("Should return cookie value specified", value, cookie.getValue());
         assertEquals("Should return cookie max age specified", maxAge, cookie.getMaxAge());
@@ -90,7 +107,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void testCookie_whenNameAndValueParameters_shouldAddCookieSuccessfully(){
+    public void testCookie_whenNameAndValueParameters_shouldAddCookieSuccessfully() {
 
         final String finalPath = "";
         final String finalName = "cookie_name";
@@ -106,7 +123,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void testCookie_whenNameValueAndMaxAgeParameters_shouldAddCookieSuccessfully(){
+    public void testCookie_whenNameValueAndMaxAgeParameters_shouldAddCookieSuccessfully() {
 
         final String finalPath = "";
         final String finalName = "cookie_name";
@@ -137,7 +154,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void testCookie_whenNameValueMaxAgeSecuredAndHttpOnlyParameters_shouldAddCookieSuccessfully(){
+    public void testCookie_whenNameValueMaxAgeSecuredAndHttpOnlyParameters_shouldAddCookieSuccessfully() {
         final String finalPath = "";
         final String finalName = "cookie_name";
         final String finalValue = "Test Cookie";
@@ -152,7 +169,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void testCookie_whenPathNameValueMaxAgeAndSecuredParameters_shouldAddCookieSuccessfully(){
+    public void testCookie_whenPathNameValueMaxAgeAndSecuredParameters_shouldAddCookieSuccessfully() {
         final String finalPath = "/cookie/SetCookie";
         final String finalName = "cookie_name";
         final String finalValue = "Test Cookie";
@@ -182,7 +199,7 @@ public class ResponseTest {
     }
 
     @Test
-    public void testRemoveCookie_shouldModifyPropertiesFromCookieSuccessfully(){
+    public void testRemoveCookie_shouldModifyPropertiesFromCookieSuccessfully() {
         final String finalPath = "/cookie/SetCookie";
         final String finalName = "cookie_name";
         final String finalValue = "Test Cookie";
@@ -208,7 +225,8 @@ public class ResponseTest {
     }
 
     @Test
-    public void testRedirect_whenLocationAndHttpStatusCodeParameters_shouldModifyStatusCodeSuccessfully() throws Exception { // NOSONAR
+    public void testRedirect_whenLocationAndHttpStatusCodeParameters_shouldModifyStatusCodeSuccessfully() throws
+                                                                                                          Exception { // NOSONAR
         final String finalLocation = "/test";
         int finalStatusCode = HttpServletResponse.SC_BAD_GATEWAY;
 

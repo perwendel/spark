@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -58,12 +58,30 @@ public class Response {
     }
 
     /**
+     * Returns the status code
+     *
+     * @return the status code
+     */
+    public int status() {
+        return response.getStatus();
+    }
+
+    /**
      * Sets the content type for the response
      *
      * @param contentType the content type
      */
     public void type(String contentType) {
         response.setContentType(contentType);
+    }
+
+    /**
+     * Returns the content type
+     *
+     * @return the content type
+     */
+    public String type() {
+        return response.getContentType();
     }
 
     /**
