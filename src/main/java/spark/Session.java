@@ -6,24 +6,28 @@ import java.util.TreeSet;
 
 import javax.servlet.http.HttpSession;
 
+import spark.utils.Assert;
+
 /**
  * Provides session information.
  */
 public class Session {
 
-    private HttpSession session;
+    private final Request request;
+    private final HttpSession session;
 
     /**
      * Creates a session with the <code>HttpSession</code>.
      *
      * @param session
-     * @throws IllegalArgumentException If the session is null.
+     * @param request
+     * @throws IllegalArgumentException If the session or the request is null.
      */
-    Session(HttpSession session) {
-        if (session == null) {
-            throw new IllegalArgumentException("session cannot be null");
-        }
+    Session(HttpSession session, Request request) {
+        Assert.notNull(session, "session cannot be null");
+        Assert.notNull(request, "request cannot be null");
         this.session = session;
+        this.request = request;
     }
 
     /**
@@ -112,6 +116,7 @@ public class Session {
      * Invalidates this session then unbinds any objects bound to it.
      */
     public void invalidate() {
+        request.validSession(false);
         session.invalidate();
     }
 

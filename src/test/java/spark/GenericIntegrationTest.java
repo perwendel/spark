@@ -149,6 +149,16 @@ public class GenericIntegrationTest {
             return "Body was: " + body;
         });
 
+        get("/session_reset", (request, response) -> {
+            String key = "session_reset";
+            Session session = request.session();
+            session.attribute(key, "11111");
+            session.invalidate();
+            session = request.session();
+            session.attribute(key, "22222");
+            return session.attribute(key);
+        });
+
         after("/hi", (request, response) -> {
             response.header("after", "foobar");
         });
@@ -367,6 +377,13 @@ public class GenericIntegrationTest {
         LOGGER.info(response.body);
         Assert.assertEquals(200, response.status);
         Assert.assertTrue(response.body.contains("Fo shizzy"));
+    }
+
+    @Test
+    public void testSessionReset() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/session_reset", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("22222", response.body);
     }
 
     @Test
