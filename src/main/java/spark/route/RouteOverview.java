@@ -88,15 +88,15 @@ public class RouteOverview {
 
         if (routeStr.contains("$$Lambda$")) { // This is a Route or Filter lambda
 
-            Map<Object, String> fieldNameMap = getFieldNameMap(routeTarget);
+            Map<Object, String> fieldNames = fieldNames(routeTarget);
             String className = routeStr.split("\\$")[0];
 
-            if (fieldNameMap.containsKey(routeTarget)) { // Lambda name has been mapped in fieldNameMap
-                return className + "<b>." + fieldNameMap.get(routeTarget) + "</b> <em>(field)</em>";
+            if (fieldNames.containsKey(routeTarget)) { // Lambda name has been mapped in fieldNameMap
+                return className + "<b>." + fieldNames.get(routeTarget) + "</b> <em>(field)</em>";
             }
 
-            if (!getMethodName(routeTarget).contains("lambda$")) { // Method has name (is not anonymous lambda)
-                return getClassName(routeTarget) + "<b>::" + getMethodName(routeTarget)
+            if (!methodName(routeTarget).contains("lambda$")) { // Method has name (is not anonymous lambda)
+                return className(routeTarget) + "<b>::" + methodName(routeTarget)
                         + "</b> <em>(method reference)</em>";
             }
 
@@ -112,32 +112,32 @@ public class RouteOverview {
         return "<b>Mysterious route handler</b>";
     }
 
-    private static Map<Object, String> getFieldNameMap(Object routeTarget) {
-        Map<Object, String> fieldNameMap = new HashMap<>();
+    private static Map<Object, String> fieldNames(Object routeTarget) {
+        Map<Object, String> fieldNames = new HashMap<>();
 
         try {
-            Class clazz = Class.forName(getClassName(routeTarget));
+            Class clazz = Class.forName(className(routeTarget));
 
             for (Field field : clazz.getDeclaredFields()) {
                 field.setAccessible(true);
-                fieldNameMap.put(field.get(field), field.getName());
+                fieldNames.put(field.get(field), field.getName());
             }
 
         } catch (Exception ignored) { // Nothing really matters.
         }
 
-        return fieldNameMap;
+        return fieldNames;
     }
 
-    private static String getClassName(Object routeTarget) {
-        return getMethodRefInfo(routeTarget)[0].replace("/", ".");
+    private static String className(Object routeTarget) {
+        return methodRefInfo(routeTarget)[0].replace("/", ".");
     }
 
-    private static String getMethodName(Object routeTarget) {
-        return getMethodRefInfo(routeTarget)[1];
+    private static String methodName(Object routeTarget) {
+        return methodRefInfo(routeTarget)[1];
     }
 
-    private static String[] getMethodRefInfo(Object routeTarget) {
+    private static String[] methodRefInfo(Object routeTarget) {
         try {
             // This is some robustified shit right here.
             Method getConstantPool = Class.class.getDeclaredMethod("getConstantPool");
