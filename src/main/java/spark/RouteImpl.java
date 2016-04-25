@@ -17,18 +17,20 @@
 package spark;
 
 
+import spark.utils.Wrapper;
+
 /**
  * RouteImpl is created from a path, acceptType and Route. This is encapsulate the information needed in the route
  * matcher in a single container.
  *
  * @author Per Wendel
  */
-public abstract class RouteImpl implements Route {
+public abstract class RouteImpl implements Route, Wrapper {
     static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     private String path;
     private String acceptType;
-    private Route targetRoute;
+    private Route delegate;
 
     /**
      * Wraps the route in RouteImpl
@@ -90,7 +92,7 @@ public abstract class RouteImpl implements Route {
      */
     protected RouteImpl(String path, String acceptType, Route route) {
         this(path, acceptType);
-        this.targetRoute = route;
+        this.delegate = route;
     }
 
     /**
@@ -136,8 +138,9 @@ public abstract class RouteImpl implements Route {
     /**
      * @return the route used to create the route implementation
      */
-    public Route getTargetRoute() {
-        return this.targetRoute;
+    @Override
+    public Object delegate() {
+        return this.delegate;
     }
 
 }
