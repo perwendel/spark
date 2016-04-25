@@ -17,19 +17,21 @@
 
 package spark;
 
+import spark.utils.Wrapper;
+
 /**
  * FilterImpl is created from a path, acceptType and Filter. This is encapsulate the information needed in the route
  * matcher in a single container.
  *
  * @author Per Wendel
  */
-public abstract class FilterImpl implements Filter {
+public abstract class FilterImpl implements Filter, Wrapper {
 
     static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     private String path;
     private String acceptType;
-    private Filter targetFilter;
+    private Filter delegate;
 
     /**
      * Wraps the filter in FilterImpl
@@ -69,7 +71,7 @@ public abstract class FilterImpl implements Filter {
 
     protected FilterImpl(String path, String acceptType, Filter filter) {
         this(path, acceptType);
-        this.targetFilter = filter;
+        this.delegate = filter;
     }
 
     /**
@@ -94,8 +96,9 @@ public abstract class FilterImpl implements Filter {
     /**
      * @return the filter used to create the filter implementation
      */
-    public Filter getTargetFilter() {
-        return this.targetFilter;
+    @Override
+    public Object delegate() {
+        return this.delegate;
     }
 
 }
