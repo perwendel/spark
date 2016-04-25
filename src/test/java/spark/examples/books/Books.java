@@ -35,7 +35,7 @@ public class Books {
     /**
      * Map holding the books
      */
-    public static Map<String, Book> books = new HashMap<String, Book>();
+    public static Map<String, Book> books = new HashMap<>();
 
     public static void main(String[] args) {
 
