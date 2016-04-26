@@ -19,6 +19,7 @@ package spark;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -33,6 +34,8 @@ import spark.util.SparkTestUtil;
 import static spark.Spark.exception;
 import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.get;
+import static spark.Spark.staticFileExpireTime;
+import static spark.Spark.staticFileHeaders;
 import static spark.Spark.staticFileLocation;
 
 /**
@@ -122,6 +125,28 @@ public class StaticFilesTest {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/externalFile.html", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of external file", response.body);
+
+        testGet();
+    }
+
+    @Test
+    public void testStaticFileHeaders() throws Exception {
+        staticFileHeaders(new HashMap<String, String>() {{
+            put("Server", "Microsoft Word");
+            put("Cache-Control", "private, max-age=600");
+        }});
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
+        Assert.assertEquals("Microsoft Word", response.headers.get("Server"));
+        Assert.assertEquals("private, max-age=600", response.headers.get("Cache-Control"));
+
+        testGet();
+    }
+
+    @Test
+    public void testStaticFileExpireTime() throws Exception {
+        staticFileExpireTime(600);
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
+        Assert.assertEquals("private, max-age=600", response.headers.get("Cache-Control"));
 
         testGet();
     }
