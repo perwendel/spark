@@ -987,6 +987,7 @@ public final class Spark {
      *
      * @param headers the headers to set on static resources
      */
+    @Experimental("Functionality will not be removed. The API might change")
     public static void staticFileHeaders(Map<String, String> headers) {
         getInstance().staticFileHeaders(headers);
     }
@@ -996,6 +997,7 @@ public final class Spark {
      *
      * @param seconds the expire time in seconds
      */
+    @Experimental("Functionality will not be removed. The API might change")
     public static void staticFileExpireTime(long seconds) {
         getInstance().staticFileExpireTime(seconds);
     }

@@ -238,6 +238,7 @@ public final class Service extends Routable {
      *
      * @param headers the headers to set on static resources
      */
+    @Experimental("Functionality will not be removed. The API might change")
     public synchronized Service staticFileHeaders(Map<String, String> headers) {
         staticFiles.setCustomHeaders(headers);
         return this;
@@ -248,6 +249,7 @@ public final class Service extends Routable {
      *
      * @param seconds the expire time in seconds
      */
+    @Experimental("Functionality will not be removed. The API might change")
     public synchronized Service staticFileExpireTime(long seconds) {
         staticFiles.setExpireTimeSeconds(seconds);
         return this;
