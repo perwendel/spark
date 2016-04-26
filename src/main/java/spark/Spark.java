@@ -16,6 +16,11 @@
  */
 package spark;
 
+import spark.sugar.EmptyFilter;
+import spark.sugar.EmptyRoute;
+import spark.sugar.RequestFilter;
+import spark.sugar.RequestRoute;
+
 import static spark.Service.ignite;
 
 /**
@@ -68,14 +73,6 @@ public final class Spark {
         getInstance().get(path, route);
     }
 
-    public static void get(String path, RequestRoute route) {
-        getInstance().get(path, route);
-    }
-
-    public static void get(String path, EmptyRoute route) {
-        getInstance().get(path, route);
-    }
-
     /**
      * Map the route for HTTP POST requests
      *
@@ -83,14 +80,6 @@ public final class Spark {
      * @param route The route
      */
     public static void post(String path, Route route) {
-        getInstance().post(path, route);
-    }
-
-    public static void post(String path, RequestRoute route) {
-        getInstance().post(path, route);
-    }
-
-    public static void post(String path, EmptyRoute route) {
         getInstance().post(path, route);
     }
 
@@ -174,14 +163,6 @@ public final class Spark {
         getInstance().before(path, filter);
     }
 
-    public static void before(String path, RequestFilter filter) {
-        getInstance().before(path, filter);
-    }
-
-    public static void before(String path, EmptyFilter filter) {
-        getInstance().before(path, filter);
-    }
-
     /**
      * Maps a filter to be executed after any matching routes
      *
@@ -189,14 +170,6 @@ public final class Spark {
      * @param filter The filter
      */
     public static void after(String path, Filter filter) {
-        getInstance().after(path, filter);
-    }
-
-    public static void after(String path, RequestFilter filter) {
-        getInstance().after(path, filter);
-    }
-
-    public static void after(String path, EmptyFilter filter) {
         getInstance().after(path, filter);
     }
 
@@ -1043,8 +1016,9 @@ public final class Spark {
         getInstance().stop();
     }
 
-    ////////////////
-    // Websockets //
+    //////////////////////////////////////////////////
+    // WebSockets
+    //////////////////////////////////////////////////
 
     /**
      * Maps the given path to the given WebSocket handler.
@@ -1084,5 +1058,43 @@ public final class Spark {
     public static ModelAndView modelAndView(Object model, String viewName) {
         return new ModelAndView(model, viewName);
     }
+
+    //////////////////////////////////////////////////
+    // Sugar methods
+    //////////////////////////////////////////////////
+
+
+    public static void get(String path, RequestRoute route) {
+        getInstance().get(path, route);
+    }
+
+    public static void get(String path, EmptyRoute route) {
+        getInstance().get(path, route);
+    }
+
+    public static void post(String path, RequestRoute route) {
+        getInstance().post(path, route);
+    }
+
+    public static void post(String path, EmptyRoute route) {
+        getInstance().post(path, route);
+    }
+
+    public static void before(String path, RequestFilter filter) {
+        getInstance().before(path, filter);
+    }
+
+    public static void before(String path, EmptyFilter filter) {
+        getInstance().before(path, filter);
+    }
+
+    public static void after(String path, RequestFilter filter) {
+        getInstance().after(path, filter);
+    }
+
+    public static void after(String path, EmptyFilter filter) {
+        getInstance().after(path, filter);
+    }
+
 
 }

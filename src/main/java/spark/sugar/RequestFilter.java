@@ -1,4 +1,8 @@
-package spark;
+package spark.sugar;
+
+import spark.Filter;
+import spark.Request;
+import spark.Response;
 
 /**
  * @author David Åse

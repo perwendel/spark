@@ -1,4 +1,8 @@
-package spark;
+package spark.sugar;
+
+import spark.Request;
+import spark.Response;
+import spark.Route;
 
 /**
  * @author David Åse
