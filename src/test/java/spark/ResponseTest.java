@@ -89,6 +89,7 @@ public class ResponseTest {
         final String finalHeaderKey = "Content-Length";
         final String firstHeaderValue = "32";
         final String secondHeaderValue = "64";
+	final String finalHeaderValue = "128";
 
         response.header(finalHeaderKey, firstHeaderValue);
         verify(httpServletResponse).setHeader(finalHeaderKey, firstHeaderValue);
