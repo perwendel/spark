@@ -158,11 +158,11 @@ public class StaticFilesConfiguration {
         customHeaders.put("Expires", new Date(System.currentTimeMillis() + (expireTimeSeconds * 1000)).toString());
     }
 
-    public void addCustomHeaders(Map<String, String> headers) {
+    public void putCustomHeaders(Map<String, String> headers) {
         customHeaders.putAll(headers);
     }
 
-    public void addCustomHeader(String key, String value) {
+    public void putCustomHeader(String key, String value) {
         customHeaders.put(key, value);
     }
 }

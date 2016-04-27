@@ -463,19 +463,21 @@ public final class Service extends Routable {
         }
 
         /**
-         * Adds custom headers for static resources
+         * Puts custom headers for static resources. If the headers previously contained mapping for
+         * a specific key in the provided headers map, the old value is replaced by the specified value.
          *
          * @param headers the headers to set on static resources
          */
         public void headers(Map<String, String> headers) {
-            staticFilesConfiguration.addCustomHeaders(headers);
+            staticFilesConfiguration.putCustomHeaders(headers);
         }
 
         /**
-         * Adds custom header for static resources
+         * Puts custom header for static resources. If the headers previously contained a mapping for
+         * the key, the old value is replaced by the specified value.
          */
         public void header(String key, String value) {
-            staticFilesConfiguration.addCustomHeader(key, value);
+            staticFilesConfiguration.putCustomHeader(key, value);
         }
 
         /**
