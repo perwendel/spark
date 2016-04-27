@@ -123,7 +123,7 @@ public class MatcherFilter implements Filter {
         try {
 
             BeforeFilters.execute(context);
-            spark.http.matching.Routes.execute(context);
+            Routes.execute(context);
             AfterFilters.execute(context);
 
         } catch (HaltException halt) {
