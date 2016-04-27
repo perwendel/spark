@@ -51,10 +51,6 @@ final class AfterFilters {
 
                 context.responseWrapper().setDelegate(context.response());
 
-                if ( content instanceof String ){
-                    context.responseWrapper().body((String) content);
-                }
-
                 FilterImpl filter = (FilterImpl) filterTarget;
                 filter.handle(context.requestWrapper(), context.responseWrapper());
 
