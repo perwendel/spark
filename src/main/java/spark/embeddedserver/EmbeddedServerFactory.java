@@ -17,7 +17,7 @@
 package spark.embeddedserver;
 
 import spark.route.Routes;
-import spark.staticfiles.StaticFiles;
+import spark.staticfiles.StaticFilesConfiguration;
 
 /**
  * @author Per Wendel
@@ -27,5 +27,5 @@ public interface EmbeddedServerFactory {
     /**
      * Creates an embedded server instance.
      */
-    public EmbeddedServer create(Routes routeMatcher, StaticFiles staticFiles, boolean hasMultipleHandler);
+    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler);
 }

@@ -16,8 +16,6 @@
  */
 package spark;
 
-import java.util.Map;
-
 import static spark.Service.ignite;
 
 /**
@@ -59,6 +57,11 @@ public final class Spark {
      * Statically import this for redirect utility functionality, see {@link spark.Redirect}
      */
     public static final Redirect redirect = getInstance().redirect;
+
+    /**
+     * Statically import this for static files utility functionality, see {@link spark.Service.StaticFiles}
+     */
+    public static final Service.StaticFiles staticFiles = getInstance().staticFiles;
 
     /**
      * Map the route for HTTP GET requests
@@ -965,6 +968,8 @@ public final class Spark {
     /**
      * Sets the folder in classpath serving static files. Observe: this method
      * must be called before all other methods.
+     * -
+     * Note: contemplate changing to new static files paradigm {@link spark.Service.StaticFiles}
      *
      * @param folder the folder in classpath.
      */
@@ -975,31 +980,13 @@ public final class Spark {
     /**
      * Sets the external folder serving static files. <b>Observe: this method
      * must be called before all other methods.</b>
+     * -
+     * Note: contemplate changing to new static files paradigm {@link spark.Service.StaticFiles}
      *
      * @param externalFolder the external folder serving static files.
      */
     public static void externalStaticFileLocation(String externalFolder) {
         getInstance().externalStaticFileLocation(externalFolder);
-    }
-
-    /**
-     * Sets custom headers for static resources
-     *
-     * @param headers the headers to set on static resources
-     */
-    @Experimental("Functionality will not be removed. The API might change")
-    public static void staticFileHeaders(Map<String, String> headers) {
-        getInstance().staticFileHeaders(headers);
-    }
-
-    /**
-     * Sets the expire-time for static resources
-     *
-     * @param seconds the expire time in seconds
-     */
-    @Experimental("Functionality will not be removed. The API might change")
-    public static void staticFileExpireTime(long seconds) {
-        getInstance().staticFileExpireTime(seconds);
     }
 
     /**

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import spark.globalstate.ServletFlag;
 import spark.http.matching.MatcherFilter;
 import spark.route.ServletRoutes;
-import spark.staticfiles.StaticFiles;
+import spark.staticfiles.StaticFilesConfiguration;
 
 /**
  * Filter that can be configured to be used in a web.xml file.
@@ -62,7 +62,7 @@ public class SparkFilter implements Filter {
 
         filterPath = FilterTools.getFilterPath(filterConfig);
 
-        matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFiles.servletInstance, true, false);
+        matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFilesConfiguration.servletInstance, true, false);
     }
 
     /**
@@ -110,7 +110,7 @@ public class SparkFilter implements Filter {
         };
 
         // handle static resources
-        boolean consumed = StaticFiles.servletInstance.consume(httpRequest, httpResponse);
+        boolean consumed = StaticFilesConfiguration.servletInstance.consume(httpRequest, httpResponse);
 
         if (consumed) {
             return;

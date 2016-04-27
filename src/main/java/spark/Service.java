@@ -29,7 +29,7 @@ import spark.embeddedserver.EmbeddedServers;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
-import spark.staticfiles.StaticFiles;
+import spark.staticfiles.StaticFilesConfiguration;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
@@ -77,8 +77,9 @@ public final class Service extends Routable {
     private Object embeddedServerIdentifier = null;
 
     public final Redirect redirect;
+    public final StaticFiles staticFiles;
 
-    private final StaticFiles staticFiles;
+    private final StaticFilesConfiguration staticFilesConfiguration;
 
     /**
      * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
@@ -90,11 +91,12 @@ public final class Service extends Routable {
 
     private Service() {
         redirect = Redirect.create(this);
+        staticFiles = new StaticFiles();
 
         if (isRunningFromServlet()) {
-            staticFiles = StaticFiles.servletInstance;
+            staticFilesConfiguration = StaticFilesConfiguration.servletInstance;
         } else {
-            staticFiles = StaticFiles.create();
+            staticFilesConfiguration = StaticFilesConfiguration.create();
         }
     }
 
@@ -203,7 +205,7 @@ public final class Service extends Routable {
         staticFileFolder = folder;
 
         if (!servletStaticLocationSet) {
-            staticFiles.configure(staticFileFolder);
+            staticFilesConfiguration.configure(staticFileFolder);
             servletStaticLocationSet = true;
         } else {
             LOG.warn("Static file location has already been set");
@@ -225,33 +227,11 @@ public final class Service extends Routable {
         externalStaticFileFolder = externalFolder;
 
         if (!servletExternalStaticLocationSet) {
-            staticFiles.configureExternal(externalStaticFileFolder);
+            staticFilesConfiguration.configureExternal(externalStaticFileFolder);
             servletExternalStaticLocationSet = true;
         } else {
             LOG.warn("External static file location has already been set");
         }
-        return this;
-    }
-
-    /**
-     * Sets custom headers for static resources
-     *
-     * @param headers the headers to set on static resources
-     */
-    @Experimental("Functionality will not be removed. The API might change")
-    public synchronized Service staticFileHeaders(Map<String, String> headers) {
-        staticFiles.setCustomHeaders(headers);
-        return this;
-    }
-
-    /**
-     * Sets the expire-time for static resources
-     *
-     * @param seconds the expire time in seconds
-     */
-    @Experimental("Functionality will not be removed. The API might change")
-    public synchronized Service staticFileExpireTime(long seconds) {
-        staticFiles.setExpireTimeSeconds(seconds);
         return this;
     }
 
@@ -330,7 +310,7 @@ public final class Service extends Routable {
             latch = new CountDownLatch(1);
         }
 
-        staticFiles.clear();
+        staticFilesConfiguration.clear();
         initialized = false;
     }
 
@@ -361,7 +341,7 @@ public final class Service extends Routable {
 
                     server = EmbeddedServers.create(embeddedServerIdentifier,
                                                     routes,
-                                                    staticFiles,
+                                                    staticFilesConfiguration,
                                                     hasMultipleHandlers());
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
@@ -457,4 +437,56 @@ public final class Service extends Routable {
         throw new HaltException(status, body);
     }
 
+    /**
+     * Provides static files utility methods.
+     */
+    public final class StaticFiles {
+
+        /**
+         * Sets the folder in classpath serving static files. Observe: this method
+         * must be called before all other methods.
+         *
+         * @param folder the folder in classpath.
+         */
+        public void location(String folder) {
+            staticFileLocation(folder);
+        }
+
+        /**
+         * Sets the external folder serving static files. <b>Observe: this method
+         * must be called before all other methods.</b>
+         *
+         * @param externalFolder the external folder serving static files.
+         */
+        public void externalLocation(String externalFolder) {
+            externalStaticFileLocation(externalFolder);
+        }
+
+        /**
+         * Adds custom headers for static resources
+         *
+         * @param headers the headers to set on static resources
+         */
+        public void headers(Map<String, String> headers) {
+            staticFilesConfiguration.addCustomHeaders(headers);
+        }
+
+        /**
+         * Adds custom header for static resources
+         */
+        public void header(String key, String value) {
+            staticFilesConfiguration.addCustomHeader(key, value);
+        }
+
+        /**
+         * Sets the expire-time for static resources
+         *
+         * @param seconds the expire time in seconds
+         */
+        @Experimental("Functionality will not be removed. The API might change")
+        public void expireTime(long seconds) {
+            staticFilesConfiguration.setExpireTimeSeconds(seconds);
+        }
+
+    }
 }

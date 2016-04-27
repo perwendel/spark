@@ -44,15 +44,15 @@ import spark.utils.IOUtils;
  * Holds the static file configuration.
  * TODO: Cache-Control and ETAG
  */
-public class StaticFiles {
-    private final Logger LOG = LoggerFactory.getLogger(StaticFiles.class);
+public class StaticFilesConfiguration {
+    private final Logger LOG = LoggerFactory.getLogger(StaticFilesConfiguration.class);
 
     private List<AbstractResourceHandler> staticResourceHandlers = null;
 
     private boolean staticResourcesSet = false;
     private boolean externalStaticResourcesSet = false;
 
-    public static StaticFiles servletInstance = new StaticFiles();
+    public static StaticFilesConfiguration servletInstance = new StaticFilesConfiguration();
 
     private Map<String, String> customHeaders = new HashMap<>();
 
@@ -149,8 +149,8 @@ public class StaticFiles {
 
     }
 
-    public static StaticFiles create() {
-        return new StaticFiles();
+    public static StaticFilesConfiguration create() {
+        return new StaticFilesConfiguration();
     }
 
     public void setExpireTimeSeconds(long expireTimeSeconds) {
@@ -158,7 +158,11 @@ public class StaticFiles {
         customHeaders.put("Expires", new Date(System.currentTimeMillis() + (expireTimeSeconds * 1000)).toString());
     }
 
-    public void setCustomHeaders(Map<String, String> headers) {
+    public void addCustomHeaders(Map<String, String> headers) {
         customHeaders.putAll(headers);
+    }
+
+    public void addCustomHeader(String key, String value) {
+        customHeaders.put(key, value);
     }
 }
