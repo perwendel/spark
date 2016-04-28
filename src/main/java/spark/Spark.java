@@ -19,8 +19,8 @@ package spark;
 import static spark.Service.ignite;
 
 /**
- * The main building block of a Spark application is a set of routes. A route is
- * made up of three simple pieces:
+ * The main building block of a Spark application is a set of routes.
+ * A route is made up of three simple pieces:
  * <ul>
  * <li>A verb (get, post, put, delete, head, trace, connect, options)</li>
  * <li>A path (/hello, /users/:name)</li>
@@ -36,10 +36,10 @@ import static spark.Service.ignite;
  *
  * @author Per Wendel
  */
-public final class Spark {
+public class Spark {
 
-    // Hide constructor
-    private Spark() {
+    // For creating Spark extensions
+    protected Spark() {
     }
 
     /**
@@ -49,7 +49,7 @@ public final class Spark {
         private static final Service INSTANCE = ignite();
     }
 
-    private static Service getInstance() {
+    protected static Service getInstance() {
         return SingletonHolder.INSTANCE;
     }
 
@@ -59,7 +59,7 @@ public final class Spark {
     public static final Redirect redirect = getInstance().redirect;
 
     /**
-     * Statically import this for static files utility functionality, see {@link spark.Service.StaticFiles}
+     * Statically import this for static files utility functionality, see {@link Service.StaticFiles}
      */
     public static final Service.StaticFiles staticFiles = getInstance().staticFiles;
 
@@ -69,7 +69,7 @@ public final class Spark {
      * @param path  the path
      * @param route The route
      */
-    public static void get(final String path, final Route route) {
+    public static void get(String path, Route route) {
         getInstance().get(path, route);
     }
 
@@ -969,7 +969,7 @@ public final class Spark {
      * Sets the folder in classpath serving static files. Observe: this method
      * must be called before all other methods.
      * -
-     * Note: contemplate changing to new static files paradigm {@link spark.Service.StaticFiles}
+     * Note: contemplate changing to new static files paradigm {@link Service.StaticFiles}
      *
      * @param folder the folder in classpath.
      */
@@ -981,7 +981,7 @@ public final class Spark {
      * Sets the external folder serving static files. <b>Observe: this method
      * must be called before all other methods.</b>
      * -
-     * Note: contemplate changing to new static files paradigm {@link spark.Service.StaticFiles}
+     * Note: contemplate changing to new static files paradigm {@link Service.StaticFiles}
      *
      * @param externalFolder the external folder serving static files.
      */
@@ -1004,8 +1004,9 @@ public final class Spark {
         getInstance().stop();
     }
 
-    ////////////////
-    // Websockets //
+    //////////////////////////////////////////////////
+    // WebSockets
+    //////////////////////////////////////////////////
 
     /**
      * Maps the given path to the given WebSocket handler.
