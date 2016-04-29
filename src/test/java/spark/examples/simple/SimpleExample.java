@@ -16,6 +16,8 @@
  */
 package spark.examples.simple;
 
+import spark.Spark;
+
 import static spark.Spark.*;
 
 /**
@@ -56,5 +58,10 @@ public class SimpleExample {
         });
 
         get("/", (request, response) -> "root");
+
+
+
     }
+
+
 }
