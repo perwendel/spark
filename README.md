@@ -7,13 +7,13 @@ Spark - a Sinatra inspired web framework
 
 For more detailed documentation please go to: http://sparkjava.com/documentation
 
-NEWS: Spark 2.3 is now available on Maven central!
+NEWS: Spark 2.4 is now available on Maven central!
 
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.3</version>
+    <version>2.4</version>
 </dependency>
 ```
 
