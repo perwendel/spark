@@ -2,12 +2,12 @@
 ![](https://img.shields.io/github/license/perwendel/spark.svg)
 ![](https://img.shields.io/maven-central/v/com.sparkjava/spark-core.svg)
 
-Spark - a Sinatra inspired web framework
+Spark - a tiny web framework for Java 8
 ==============================================
 
 For more detailed documentation please go to: http://sparkjava.com/documentation
 
-NEWS: Spark 2.4 is now available on Maven central!
+NEWS: Spark 2.4 has issues with some static files corner cases. Wait for update.
 
 ```xml
 <dependency>
