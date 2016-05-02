@@ -47,7 +47,7 @@ public class MatcherFilter implements Filter {
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
     private static final String HTTP_METHOD_OVERRIDE_HEADER = "X-HTTP-Method-Override";
 
-    private final StaticFilesConfiguration staticFilesConfiguration;
+    private final StaticFilesConfiguration staticFiles;
 
     private spark.route.Routes routeMatcher;
     private SerializerChain serializerChain;
@@ -64,12 +64,12 @@ public class MatcherFilter implements Filter {
      * @param hasOtherHandlers  If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
     public MatcherFilter(spark.route.Routes routeMatcher,
-                         StaticFilesConfiguration staticFilesConfiguration,
+                         StaticFilesConfiguration staticFiles,
                          boolean externalContainer,
                          boolean hasOtherHandlers) {
 
         this.routeMatcher = routeMatcher;
-        this.staticFilesConfiguration = staticFilesConfiguration;
+        this.staticFiles = staticFiles;
         this.externalContainer = externalContainer;
         this.hasOtherHandlers = hasOtherHandlers;
         this.serializerChain = new SerializerChain();
@@ -88,7 +88,7 @@ public class MatcherFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
         // handle static resources
-        boolean consumedByStaticFile = staticFilesConfiguration.consume(httpRequest, httpResponse);
+        boolean consumedByStaticFile = staticFiles.consume(httpRequest, httpResponse);
 
         if (consumedByStaticFile) {
             return;
