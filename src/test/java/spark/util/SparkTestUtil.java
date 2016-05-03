@@ -50,7 +50,7 @@ public class SparkTestUtil {
     public SparkTestUtil(int port) {
         this.port = port;
         this.httpClient = httpClientBuilder().build();
-       }
+    }
 
     private HttpClientBuilder httpClientBuilder() {
         SSLConnectionSocketFactory sslConnectionSocketFactory =
@@ -85,6 +85,11 @@ public class SparkTestUtil {
         };
         this.httpClient = httpClientBuilder().setRedirectStrategy(redirectStrategy).build();
     }
+
+    public UrlResponse get(String path) throws Exception {
+        return doMethod("GET", path, null);
+    }
+
 
     public UrlResponse doMethodSecure(String requestMethod, String path, String body)
             throws Exception {
