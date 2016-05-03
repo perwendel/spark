@@ -66,7 +66,11 @@ final class Routes {
                 content = result;
 
                 if (content instanceof String) {
-                    context.responseWrapper().body((String) content);
+                    String contentStr = (String) content;
+
+                    if (!contentStr.equals("")) {
+                        context.responseWrapper().body(contentStr);
+                    }
                 }
             }
         }
