@@ -7,13 +7,13 @@ Spark - a tiny web framework for Java 8
 
 For more detailed documentation please go to: http://sparkjava.com/documentation
 
-NEWS: Spark 2.4 has issues with some static files corner cases. Wait for update.
+NEWS: Spark 2.5 is out!
 
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.4</version>
+    <version>2.5</version>
 </dependency>
 ```
 
