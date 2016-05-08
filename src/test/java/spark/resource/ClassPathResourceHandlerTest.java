@@ -3,6 +3,7 @@ package spark.resource;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +11,8 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import spark.utils.ResourceUtils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -21,7 +24,7 @@ import static org.mockito.Mockito.verify;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ClassPathResourceHandler.class, ClassPathResource.class})
+@PrepareForTest({ClassPathResourceHandler.class, ClassPathResource.class, ResourceUtils.class})
 class ClassPathResourceHandlerTest {
 
     private ClassPathResource resourceMock;
@@ -56,11 +59,15 @@ class ClassPathResourceHandlerTest {
                                                                                                                                               Exception {
         ClassPathResourceHandler classPathResourceHandler = new ClassPathResourceHandler("/public", "index.html");
         ClassPathResource secondResourceMock = PowerMockito.mock(ClassPathResource.class);
-
+        PowerMockito.mockStatic(ResourceUtils.class);
+        URL empty = PowerMockito.mock(URL.class);
+        
         //when
         PowerMockito.whenNew(ClassPathResource.class).withArguments("/public/folder").thenReturn(resourceMock);
         PowerMockito.whenNew(ClassPathResource.class).withArguments("/public/folder/index.html").thenReturn(secondResourceMock);
+        PowerMockito.when(ResourceUtils.isFileURL(empty)).thenReturn(true);
         doReturn(true).when(resourceMock).exists();
+        doReturn(empty).when(resourceMock).getURL();
         doReturn(fileMock).when(resourceMock).getFile();
         doReturn(true).when(fileMock).isDirectory();
         PowerMockito.doReturn("/public/folder").when(resourceMock).getPath();
@@ -86,9 +93,13 @@ class ClassPathResourceHandlerTest {
     public void testGetResource_whenResourcePathExists_andResourcePathIsDirectory_andWelcomeFileIsNull_thenReturnNull() throws
                                                                                                                         Exception {
         ClassPathResourceHandler classPathResourceHandler = new ClassPathResourceHandler("/public", null);
+        PowerMockito.mockStatic(ResourceUtils.class);
+        URL empty = PowerMockito.mock(URL.class);
 
         //when
         PowerMockito.whenNew(ClassPathResource.class).withArguments("/public/folder").thenReturn(resourceMock);
+        PowerMockito.when(ResourceUtils.isFileURL(empty)).thenReturn(true);
+        doReturn(empty).when(resourceMock).getURL();
         doReturn(true).when(resourceMock).exists();
         doReturn(fileMock).when(resourceMock).getFile();
         doReturn(true).when(fileMock).isDirectory();
@@ -120,9 +131,13 @@ class ClassPathResourceHandlerTest {
     public void testGetResource_whenResourcePathExists_andResourcePathIsNotADirectory_thenReturnResourcePathObject() throws
                                                                                                                      Exception {
         ClassPathResourceHandler classPathResourceHandler = new ClassPathResourceHandler("/public", null);
-
+        PowerMockito.mockStatic(ResourceUtils.class);
+        URL empty = PowerMockito.mock(URL.class);
+        
         //when
         PowerMockito.whenNew(ClassPathResource.class).withArguments("/public/index.html").thenReturn(resourceMock);
+        PowerMockito.when(ResourceUtils.isFileURL(empty)).thenReturn(true);
+        doReturn(empty).when(resourceMock).getURL();
         doReturn(true).doReturn(true).when(resourceMock).exists();
         doReturn(fileMock).when(resourceMock).getFile();
         doReturn(false).when(fileMock).isDirectory();
@@ -141,10 +156,14 @@ class ClassPathResourceHandlerTest {
     @Test
     public void testGetResource_whenResourcePathExists_andResourceThrowsException_thenReturnNull() throws Exception {
         ClassPathResourceHandler classPathResourceHandler = new ClassPathResourceHandler("/public", null);
+        PowerMockito.mockStatic(ResourceUtils.class);
+        URL empty = PowerMockito.mock(URL.class);
 
         //when
         PowerMockito.whenNew(ClassPathResource.class).withArguments("/public/index.html").thenReturn(resourceMock);
+        PowerMockito.when(ResourceUtils.isFileURL(empty)).thenReturn(true);
         doReturn(true).when(resourceMock).exists();
+        doReturn(empty).when(resourceMock).getURL();
         doThrow(new IOException()).when(resourceMock).getFile();
 
         //then
