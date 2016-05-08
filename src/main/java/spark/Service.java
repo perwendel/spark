@@ -399,7 +399,7 @@ public final class Service extends Routable {
      * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
      * halt will not work
      */
-    public void halt() {
+    public HaltException halt() {
         throw new HaltException();
     }
 
@@ -410,7 +410,7 @@ public final class Service extends Routable {
      *
      * @param status the status code
      */
-    public void halt(int status) {
+    public HaltException halt(int status) {
         throw new HaltException(status);
     }
 
@@ -421,7 +421,7 @@ public final class Service extends Routable {
      *
      * @param body The body content
      */
-    public void halt(String body) {
+    public HaltException halt(String body) {
         throw new HaltException(body);
     }
 
@@ -433,7 +433,7 @@ public final class Service extends Routable {
      * @param status The status code
      * @param body   The body content
      */
-    public void halt(int status, String body) {
+    public HaltException halt(int status, String body) {
         throw new HaltException(status, body);
     }
 
