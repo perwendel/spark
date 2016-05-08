@@ -134,6 +134,12 @@ public class MatcherFilter implements Filter {
 
             GeneralError.modify(httpResponse, body, requestWrapper, responseWrapper, generalException);
 
+        } finally {
+            try {
+                FinallyAfterFilters.execute(context);
+            } catch (Exception generalException) {
+                GeneralError.modify(httpResponse, body, requestWrapper, responseWrapper, generalException);
+            }
         }
 
         // If redirected and content is null set to empty string to not throw NotConsumedException
