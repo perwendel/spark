@@ -29,7 +29,7 @@ package spark;
 public abstract class ResponseTransformerRouteImpl extends RouteImpl {
 
     public static ResponseTransformerRouteImpl create(String path, Route route, ResponseTransformer transformer) {
-        return create(path, SparkInstance.DEFAULT_ACCEPT_TYPE, route, transformer);
+        return create(path, Service.DEFAULT_ACCEPT_TYPE, route, transformer);
     }
 
     public static ResponseTransformerRouteImpl create(String path,

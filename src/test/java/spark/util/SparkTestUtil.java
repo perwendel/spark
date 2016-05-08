@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.security.KeyStore;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
@@ -17,6 +18,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -27,14 +29,15 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
-import org.apache.http.impl.conn.BasicClientConnectionManager;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 
@@ -42,27 +45,28 @@ public class SparkTestUtil {
 
     private int port;
 
-    private DefaultHttpClient httpClient;
+    private HttpClient httpClient;
 
     public SparkTestUtil(int port) {
         this.port = port;
-        Scheme http = new Scheme("http", port, PlainSocketFactory.getSocketFactory());
-        Scheme https = new Scheme("https", port, new org.apache.http.conn.ssl.SSLSocketFactory(getSslFactory(), null));
-        SchemeRegistry sr = new SchemeRegistry();
-        sr.register(http);
-        sr.register(https);
-        ClientConnectionManager connMrg = new BasicClientConnectionManager(sr);
-        httpClient = new DefaultHttpClient(connMrg);
+        this.httpClient = httpClientBuilder().build();
     }
 
-    public void setFollowRedirectStrategy(int... codes) {
-        HashSet<Integer> redirectCodes = new HashSet<>();
+    private HttpClientBuilder httpClientBuilder() {
+        SSLConnectionSocketFactory sslConnectionSocketFactory =
+                new SSLConnectionSocketFactory(getSslFactory(), (paramString, paramSSLSession) -> true);
+        Registry<ConnectionSocketFactory> socketRegistry = RegistryBuilder
+                .<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", sslConnectionSocketFactory)
+                .build();
+        BasicHttpClientConnectionManager connManager = new BasicHttpClientConnectionManager(socketRegistry);
+        return HttpClientBuilder.create().setConnectionManager(connManager);
+    }
 
-        for (int code : codes) {
-            redirectCodes.add(code);
-        }
-
-        httpClient.setRedirectStrategy(new DefaultRedirectStrategy() {
+    public void setFollowRedirectStrategy(Integer... codes) {
+        final List<Integer> redirectCodes = Arrays.asList(codes);
+        DefaultRedirectStrategy redirectStrategy = new DefaultRedirectStrategy() {
             public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
                 boolean isRedirect = false;
                 try {
@@ -72,15 +76,20 @@ public class SparkTestUtil {
                 }
                 if (!isRedirect) {
                     int responseCode = response.getStatusLine().getStatusCode();
-
                     if (redirectCodes.contains(responseCode)) {
                         return true;
                     }
                 }
                 return isRedirect;
             }
-        });
+        };
+        this.httpClient = httpClientBuilder().setRedirectStrategy(redirectStrategy).build();
     }
+
+    public UrlResponse get(String path) throws Exception {
+        return doMethod("GET", path, null);
+    }
+
 
     public UrlResponse doMethodSecure(String requestMethod, String path, String body)
             throws Exception {
@@ -118,7 +127,7 @@ public class SparkTestUtil {
         } else {
             urlResponse.body = "";
         }
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         Header[] allHeaders = httpResponse.getAllHeaders();
         for (Header header : allHeaders) {
             headers.put(header.getName(), header.getValue());

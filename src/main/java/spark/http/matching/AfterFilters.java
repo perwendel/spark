@@ -33,9 +33,9 @@ final class AfterFilters {
 
         Object content = context.body().get();
 
-        List<RouteMatch> matchSet = context.routeMatcher().findTargetsForRequestedRoute(HttpMethod.after,
-                                                                                        context.uri(),
-                                                                                        context.acceptType());
+        List<RouteMatch> matchSet = context.routeMatcher().findMultiple(HttpMethod.after,
+                                                                        context.uri(),
+                                                                        context.acceptType());
 
         for (RouteMatch filterMatch : matchSet) {
             Object filterTarget = filterMatch.getTarget();

@@ -10,7 +10,6 @@ import spark.embeddedserver.jetty.websocket.WebSocketCreatorFactory.SparkWebSock
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 public class WebSocketCreatorFactoryTest {
 
@@ -41,7 +40,7 @@ public class WebSocketCreatorFactoryTest {
     public void testCreate_whenInstantiationException() throws Exception {
 
         try {
-            WebSocketCreator annotated = WebSocketCreatorFactory.create(FailingHandler.class);
+            WebSocketCreatorFactory.create(FailingHandler.class);
             fail("Handler creation should have thrown a RunTimeException");
         } catch(RuntimeException ex) {
             assertEquals("Could not instantiate websocket handler", ex.getMessage());

@@ -9,7 +9,7 @@ import org.powermock.reflect.Whitebox;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class SimpleRouteMatcherTest {
+public class RoutesTest {
 
     @Test
     public void testParseValidateAddRoute_whenHttpMethodIsValid_thenAddRoute() {
@@ -26,8 +26,8 @@ public class SimpleRouteMatcherTest {
         List<RouteEntry> expectedRoutes = new ArrayList<>();
         expectedRoutes.add(expectedRouteEntry);
 
-        SimpleRouteMatcher simpleRouteMatcher = new SimpleRouteMatcher();
-        simpleRouteMatcher.parseValidateAddRoute(route, acceptType, target);
+        Routes simpleRouteMatcher = Routes.create();
+        simpleRouteMatcher.add(route, acceptType, target);
 
         //then
         List<RouteEntry> routes = Whitebox.getInternalState(simpleRouteMatcher, "routes");
@@ -43,8 +43,8 @@ public class SimpleRouteMatcherTest {
         String acceptType = "*/*";
         Object target = new Object();
 
-        SimpleRouteMatcher simpleRouteMatcher = new SimpleRouteMatcher();
-        simpleRouteMatcher.parseValidateAddRoute(route, acceptType, target);
+        Routes simpleRouteMatcher = Routes.create();
+        simpleRouteMatcher.add(route, acceptType, target);
 
         //then
         List<RouteEntry> routes = Whitebox.getInternalState(simpleRouteMatcher, "routes");

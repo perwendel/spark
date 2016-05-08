@@ -31,7 +31,7 @@ final class Routes {
 
         Object content = context.body().get();
 
-        RouteMatch match = context.routeMatcher().findTargetForRequestedRoute(context.httpMethod(), context.uri(), context.acceptType());
+        RouteMatch match = context.routeMatcher().find(context.httpMethod(), context.uri(), context.acceptType());
 
         Object target = null;
         if (match != null) {
@@ -39,12 +39,13 @@ final class Routes {
         } else if (context.httpMethod() == HttpMethod.head && context.body().notSet()) {
             // See if get is mapped to provide default head mapping
             content =
-                    context.routeMatcher().findTargetForRequestedRoute(HttpMethod.get, context.uri(), context.acceptType())
+                    context.routeMatcher().find(HttpMethod.get, context.uri(), context.acceptType())
                             != null ? "" : null;
         }
 
         if (target != null) {
             Object result = null;
+
             if (target instanceof RouteImpl) {
                 RouteImpl route = ((RouteImpl) target);
 
@@ -58,11 +59,19 @@ final class Routes {
                 context.responseWrapper().setDelegate(context.response());
 
                 Object element = route.handle(context.requestWrapper(), context.responseWrapper());
-
                 result = route.render(element);
             }
+
             if (result != null) {
                 content = result;
+
+                if (content instanceof String) {
+                    String contentStr = (String) content;
+
+                    if (!contentStr.equals("")) {
+                        context.responseWrapper().body(contentStr);
+                    }
+                }
             }
         }
 

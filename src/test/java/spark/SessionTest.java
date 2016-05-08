@@ -16,6 +16,7 @@ import static org.mockito.Mockito.*;
 
 public class SessionTest {
 
+    Request request;
     HttpSession httpSession;
     Session session;
 
@@ -23,7 +24,8 @@ public class SessionTest {
     public void setup() {
 
         httpSession = mock(HttpSession.class);
-        session = new Session(httpSession);
+        request = mock(Request.class);
+        session = new Session(httpSession, request);
     }
 
     @Test
@@ -31,12 +33,26 @@ public class SessionTest {
 
         try {
 
-            Session session = new Session(null);
+            new Session(null, request);
             fail("Session instantiation with a null HttpSession should throw an IllegalArgumentException");
 
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
 
             assertEquals("session cannot be null", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testSession_whenRequestIsNull_thenThrowException() {
+
+        try {
+
+            new Session(httpSession, null);
+            fail("Session instantiation with a null Request should throw an IllegalArgumentException");
+
+        } catch (IllegalArgumentException ex) {
+
+            assertEquals("request cannot be null", ex.getMessage());
         }
     }
 

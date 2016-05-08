@@ -16,6 +16,8 @@
  */
 package spark;
 
+import static spark.Service.ignite;
+
 /**
  * The main building block of a Spark application is a set of routes. A route is
  * made up of three simple pieces:
@@ -28,27 +30,26 @@ package spark;
  * get("/hello", (request, response) -&#62; {
  * return "Hello World!";
  * });
- *
  * The public methods and fields in this class should be statically imported for the semantic to make sense.
  * Ie. one should use:
  * 'post("/books")' without the prefix 'Spark.'
  *
  * @author Per Wendel
  */
-public final class Spark {
+public class Spark {
 
     // Hide constructor
-    private Spark() {
+    protected Spark() {
     }
 
     /**
      * Initializes singleton.
      */
     private static class SingletonHolder {
-        private static final SparkInstance INSTANCE = new SparkInstance();
+        private static final Service INSTANCE = ignite();
     }
 
-    private static SparkInstance getInstance() {
+    private static Service getInstance() {
         return SingletonHolder.INSTANCE;
     }
 
@@ -56,6 +57,11 @@ public final class Spark {
      * Statically import this for redirect utility functionality, see {@link spark.Redirect}
      */
     public static final Redirect redirect = getInstance().redirect;
+
+    /**
+     * Statically import this for static files utility functionality, see {@link spark.Service.StaticFiles}
+     */
+    public static final Service.StaticFiles staticFiles = getInstance().staticFiles;
 
     /**
      * Map the route for HTTP GET requests
@@ -962,6 +968,8 @@ public final class Spark {
     /**
      * Sets the folder in classpath serving static files. Observe: this method
      * must be called before all other methods.
+     * -
+     * Note: contemplate changing tonew static files paradigm {@link spark.Service.StaticFiles}
      *
      * @param folder the folder in classpath.
      */
@@ -972,6 +980,8 @@ public final class Spark {
     /**
      * Sets the external folder serving static files. <b>Observe: this method
      * must be called before all other methods.</b>
+     * -
+     * Note: contemplate use of new static files paradigm {@link spark.Service.StaticFiles}
      *
      * @param externalFolder the external folder serving static files.
      */

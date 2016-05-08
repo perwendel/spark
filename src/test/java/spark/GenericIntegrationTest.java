@@ -21,13 +21,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.embeddedserver.jetty.websocket.WebSocketTestClient;
+import spark.embeddedserver.jetty.websocket.WebSocketTestHandler;
 import spark.examples.exception.BaseException;
 import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
-import spark.embeddedserver.jetty.websocket.WebSocketTestClient;
-import spark.embeddedserver.jetty.websocket.WebSocketTestHandler;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
@@ -72,51 +72,51 @@ public class GenericIntegrationTest {
         externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
         webSocket("/ws", WebSocketTestHandler.class);
 
-        before("/secretcontent/*", (request, response) -> {
+        before("/secretcontent/*", (q, a) -> {
             halt(401, "Go Away!");
         });
 
-        before("/protected/*", "application/xml", (request, response) -> {
+        before("/protected/*", "application/xml", (q, a) -> {
             halt(401, "Go Away!");
         });
 
-        before("/protected/*", "application/json", (request, response) -> {
+        before("/protected/*", "application/json", (q, a) -> {
             halt(401, "{\"message\": \"Go Away!\"}");
         });
 
-        get("/hi", "application/json", (request, response) -> {
+        get("/hi", "application/json", (q, a) -> {
             return "{\"message\": \"Hello World\"}";
         });
 
-        get("/hi", (request, response) -> {
+        get("/hi", (q, a) -> {
             return "Hello World!";
         });
 
-        get("/binaryhi", (request, response) -> {
+        get("/binaryhi", (q, a) -> {
             return "Hello World!".getBytes();
         });
 
-        get("/bytebufferhi", (request, response) -> {
+        get("/bytebufferhi", (q, a) -> {
             return ByteBuffer.wrap("Hello World!".getBytes());
         });
 
-        get("/inputstreamhi", (request, response) -> {
+        get("/inputstreamhi", (q, a) -> {
             return new ByteArrayInputStream("Hello World!".getBytes("utf-8"));
         });
 
-        get("/param/:param", (request, response) -> {
-            return "echo: " + request.params(":param");
+        get("/param/:param", (q, a) -> {
+            return "echo: " + q.params(":param");
         });
 
-        get("/paramandwild/:param/stuff/*", (request, response) -> {
-            return "paramandwild: " + request.params(":param") + request.splat()[0];
+        get("/paramandwild/:param/stuff/*", (q, a) -> {
+            return "paramandwild: " + q.params(":param") + q.splat()[0];
         });
 
-        get("/paramwithmaj/:paramWithMaj", (request, response) -> {
-            return "echo: " + request.params(":paramWithMaj");
+        get("/paramwithmaj/:paramWithMaj", (q, a) -> {
+            return "echo: " + q.params(":paramWithMaj");
         });
 
-        get("/templateView", (request, response) -> {
+        get("/templateView", (q, a) -> {
             return new ModelAndView("Hello", "my view");
         }, new TemplateEngine() {
             public String render(ModelAndView modelAndView) {
@@ -124,58 +124,73 @@ public class GenericIntegrationTest {
             }
         });
 
-        get("/", (request, response) -> {
+        get("/", (q, a) -> {
             return "Hello Root!";
         });
 
-        post("/poster", (request, response) -> {
-            String body = request.body();
-            response.status(201); // created
+        post("/poster", (q, a) -> {
+            String body = q.body();
+            a.status(201); // created
             return "Body was: " + body;
         });
 
-        post("/post_via_get", (request, response) -> {
-            response.status(201); // created
+        post("/post_via_get", (q, a) -> {
+            a.status(201); // created
             return "Method Override Worked";
         });
 
-        get("/post_via_get", (request, response) -> {
+        get("/post_via_get", (q, a) -> {
             return "Method Override Did Not Work";
         });
 
-        patch("/patcher", (request, response) -> {
-            String body = request.body();
-            response.status(200);
+        patch("/patcher", (q, a) -> {
+            String body = q.body();
+            a.status(200);
             return "Body was: " + body;
         });
 
-        after("/hi", (request, response) -> {
-            response.header("after", "foobar");
+        get("/session_reset", (q, a) -> {
+            String key = "session_reset";
+            Session session = q.session();
+            session.attribute(key, "11111");
+            session.invalidate();
+            session = q.session();
+            session.attribute(key, "22222");
+            return session.attribute(key);
         });
 
-        get("/throwexception", (request, response) -> {
+        after("/hi", (q, a) -> {
+
+            if (q.requestMethod().equalsIgnoreCase("get")) {
+                Assert.assertNotNull(a.body());
+            }
+
+            a.header("after", "foobar");
+        });
+
+        get("/throwexception", (q, a) -> {
             throw new UnsupportedOperationException();
         });
 
-        get("/throwsubclassofbaseexception", (request, response) -> {
+        get("/throwsubclassofbaseexception", (q, a) -> {
             throw new SubclassOfBaseException();
         });
 
-        get("/thrownotfound", (request, response) -> {
+        get("/thrownotfound", (q, a) -> {
             throw new NotFoundException();
         });
 
-        exception(UnsupportedOperationException.class, (exception, request, response) -> {
-            response.body("Exception handled");
+        exception(UnsupportedOperationException.class, (exception, q, a) -> {
+            a.body("Exception handled");
         });
 
-        exception(BaseException.class, (exception, request, response) -> {
-            response.body("Exception handled");
+        exception(BaseException.class, (exception, q, a) -> {
+            a.body("Exception handled");
         });
 
-        exception(NotFoundException.class, (exception, request, response) -> {
-            response.status(404);
-            response.body(NOT_FOUND_BRO);
+        exception(NotFoundException.class, (exception, q, a) -> {
+            a.status(404);
+            a.body(NOT_FOUND_BRO);
         });
 
         Spark.awaitInitialization();
@@ -312,8 +327,8 @@ public class GenericIntegrationTest {
     }
 
     private static void registerEchoRoute(final String routePart) {
-        get("/tworoutes/" + routePart + "/:param", (request, response) -> {
-            return routePart + " route: " + request.params(":param");
+        get("/tworoutes/" + routePart + "/:param", (q, a) -> {
+            return routePart + " route: " + q.params(":param");
         });
     }
 
@@ -367,6 +382,13 @@ public class GenericIntegrationTest {
         LOGGER.info(response.body);
         Assert.assertEquals(200, response.status);
         Assert.assertTrue(response.body.contains("Fo shizzy"));
+    }
+
+    @Test
+    public void testSessionReset() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/session_reset", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("22222", response.body);
     }
 
     @Test

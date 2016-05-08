@@ -14,18 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.embeddedserver;
+package spark;
 
-import spark.route.Routes;
-import spark.staticfiles.StaticFilesConfiguration;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Types and methods annotated with this annotation are experimental and may be changed or removed from the API at any
+ * time. (This does not mean it won't be part of the official API at any point either).
+ *
  * @author Per Wendel
  */
-public interface EmbeddedServerFactory {
-
-    /**
-     * Creates an embedded server instance.
-     */
-    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler);
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Experimental {
+    String value() default "";
 }

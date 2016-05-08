@@ -1,7 +1,6 @@
 package spark.utils;
 
 import org.junit.Test;
-import spark.Spark;
 
 import java.util.Arrays;
 import java.util.List;

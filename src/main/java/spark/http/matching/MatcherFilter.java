@@ -32,9 +32,8 @@ import spark.RequestResponseFactory;
 import spark.Response;
 import spark.embeddedserver.jetty.HttpRequestWrapper;
 import spark.route.HttpMethod;
-import spark.route.SimpleRouteMatcher;
 import spark.serialization.SerializerChain;
-import spark.staticfiles.StaticFiles;
+import spark.staticfiles.StaticFilesConfiguration;
 
 /**
  * Matches Spark routes and filters.
@@ -48,7 +47,9 @@ public class MatcherFilter implements Filter {
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
     private static final String HTTP_METHOD_OVERRIDE_HEADER = "X-HTTP-Method-Override";
 
-    private SimpleRouteMatcher routeMatcher;
+    private final StaticFilesConfiguration staticFiles;
+
+    private spark.route.Routes routeMatcher;
     private SerializerChain serializerChain;
 
     private boolean externalContainer;
@@ -62,8 +63,13 @@ public class MatcherFilter implements Filter {
      *                          If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers  If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(SimpleRouteMatcher routeMatcher, boolean externalContainer, boolean hasOtherHandlers) {
+    public MatcherFilter(spark.route.Routes routeMatcher,
+                         StaticFilesConfiguration staticFiles,
+                         boolean externalContainer,
+                         boolean hasOtherHandlers) {
+
         this.routeMatcher = routeMatcher;
+        this.staticFiles = staticFiles;
         this.externalContainer = externalContainer;
         this.hasOtherHandlers = hasOtherHandlers;
         this.serializerChain = new SerializerChain();
@@ -82,7 +88,7 @@ public class MatcherFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
         // handle static resources
-        boolean consumedByStaticFile = StaticFiles.consume(httpRequest, httpResponse);
+        boolean consumedByStaticFile = staticFiles.consume(httpRequest, httpResponse);
 
         if (consumedByStaticFile) {
             return;
