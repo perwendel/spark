@@ -321,8 +321,8 @@ public class Spark {
      *
      * Execute after route even if the route throws exception
      *
-     * @param path
-     * @param filter
+     * @param path   the path
+     * @param filter the filter
      */
     public static void afterFinally(String path, Filter filter) {
         getInstance().afterFinally(path, filter);
@@ -332,8 +332,7 @@ public class Spark {
      *
      * Execute after any matching route even if the route throws exception
      *
-     * @param path
-     * @param filter
+     * @param filter the filter
      */
     public static void afterFinally(Filter filter) {
         getInstance().afterFinally(filter);
