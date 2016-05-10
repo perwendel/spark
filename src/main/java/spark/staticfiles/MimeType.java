@@ -2,6 +2,7 @@ package spark.staticfiles;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import spark.resource.AbstractFileResolvingResource;
 
@@ -66,7 +67,7 @@ public class MimeType {
     }};
 
     public static String getFromResource(AbstractFileResolvingResource resource) {
-        String filename = resource.getFilename();
+        String filename = Optional.ofNullable(resource.getFilename()).orElse("");
         String fileExtension = filename.replaceAll("^.*\\.(.*)$", "$1");
         return map.getOrDefault(fileExtension, "application/octet-stream");
     }
