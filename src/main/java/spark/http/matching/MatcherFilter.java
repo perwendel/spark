@@ -97,7 +97,7 @@ public class MatcherFilter implements Filter {
         String method = getHttpMethodFrom(httpRequest);
 
         String httpMethodStr = method.toLowerCase();
-        String uri = httpRequest.getPathInfo();
+        String uri = httpRequest.getRequestURI();
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
         Body body = Body.create();
