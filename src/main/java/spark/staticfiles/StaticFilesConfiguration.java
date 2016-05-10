@@ -114,7 +114,7 @@ public class StaticFilesConfiguration {
         Assert.notNull(folder, "'folder' must not be null");
 
         if (!staticResourcesSet) {
-        	
+
             if (staticResourceHandlers == null) {
                 staticResourceHandlers = new ArrayList<>();
             }
