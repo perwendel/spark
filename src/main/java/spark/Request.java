@@ -333,6 +333,7 @@ public class Request {
      * @param <T>       the type parameter.
      * @return the value for the provided attribute
      */
+    @SuppressWarnings("unchecked")
     public <T> T attribute(String attribute) {
         return (T) servletRequest.getAttribute(attribute);
     }
