@@ -164,6 +164,18 @@ public class Spark {
     }
 
     /**
+     * Maps an array of filters to be executed before any matching routes
+     * @param path    the path
+     * @param filters the filters
+     */
+
+    public static void before(String path, Filter... filters) {
+        for(Filter filter : filters) {
+            getInstance().before(path, filter);
+        }
+    }
+
+    /**
      * Maps a filter to be executed after any matching routes
      *
      * @param path   the path
@@ -171,6 +183,19 @@ public class Spark {
      */
     public static void after(String path, Filter filter) {
         getInstance().after(path, filter);
+    }
+
+    /**
+     * Maps an array of filters to be executed after any matching routes
+     *
+     * @param path   the path
+     * @param filters The filters
+     */
+
+    public static void after(String path, Filter... filters) {
+        for(Filter filter : filters) {
+            getInstance().after(path, filter);
+        }
     }
 
     //////////////////////////////////////////////////
@@ -287,12 +312,34 @@ public class Spark {
     }
 
     /**
+     * Maps an array of filters to be executed before any matching routes
+     *
+     * @param filters The filters
+     */
+    public static void before(Filter... filters) {
+        for(Filter filter : filters) {
+            getInstance().before(filter);
+        }
+    }
+
+    /**
      * Maps a filter to be executed after any matching routes
      *
      * @param filter The filter
      */
     public static void after(Filter filter) {
         getInstance().after(filter);
+    }
+
+    /**
+     * Maps an array of filters to be executed after any matching routes
+     *
+     * @param filters The filters
+     */
+    public static void after(Filter... filters) {
+        for(Filter filter : filters) {
+            getInstance().after(filter);
+        }
     }
 
     /**
@@ -307,6 +354,19 @@ public class Spark {
     }
 
     /**
+     * Maps an array of filters to be executed before any matching routes
+     *
+     * @param path       the path
+     * @param acceptType the accept type
+     * @param filters    The filters
+     */
+    public static void before(String path, String acceptType, Filter... filters) {
+        for(Filter filter : filters) {
+            getInstance().before(path, acceptType, filter);
+        }
+    }
+
+    /**
      * Maps a filter to be executed after any matching routes
      *
      * @param path       the path
@@ -315,6 +375,19 @@ public class Spark {
      */
     public static void after(String path, String acceptType, Filter filter) {
         getInstance().after(path, acceptType, filter);
+    }
+
+    /**
+     * Maps an array of filters to be executed after any matching routes
+     *
+     * @param path       the path
+     * @param acceptType the accept type
+     * @param filters    The filters
+     */
+    public static void after(String path, String acceptType, Filter... filters) {
+        for(Filter filter : filters) {
+            getInstance().after(path, acceptType, filter);
+        }
     }
 
     //////////////////////////////////////////////////
