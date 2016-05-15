@@ -398,7 +398,7 @@ public class FreeMarkerExample {
 
             // The hello.ftl file is located in directory:
             // src/test/resources/spark/examples/templateview/freemarker
-            return new ModelAndView(attributes, "hello.ftl");
+            return modelAndView(attributes, "hello.ftl");
         }, new FreeMarkerTemplateEngine());
     }
 }
