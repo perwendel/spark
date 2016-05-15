@@ -18,11 +18,9 @@ package spark.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.InputStream;
+import java.net.*;
+import java.util.Scanner;
 
 /**
  * Utility methods for resolving resource locations to files in the
@@ -348,6 +346,22 @@ public abstract class ResourceUtils {
      */
     public static void useCachesIfNecessary(URLConnection con) {
         con.setUseCaches(con.getClass().getSimpleName().startsWith("JNLP"));
+    }
+
+    /**
+     * Reads the contents of a file in the resources directory.
+     * @param resourceInputStream A {@code java.io.InputStream} to the file you want to read.
+     * @return A {@code java.util.String} of the contents of the file
+     */
+    public static String readResourceContents(InputStream resourceInputStream) {
+        if(resourceInputStream != null) {
+            String contents = "";
+            Scanner scanner = new Scanner(resourceInputStream);
+            while (scanner.hasNext()) contents += scanner.nextLine();
+            scanner.close();
+            return contents;
+        } else return  null;
+
     }
 
 }

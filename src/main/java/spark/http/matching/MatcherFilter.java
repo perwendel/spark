@@ -16,17 +16,6 @@
  */
 package spark.http.matching;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import spark.HaltException;
 import spark.RequestResponseFactory;
 import spark.Response;
@@ -34,6 +23,13 @@ import spark.embeddedserver.jetty.HttpRequestWrapper;
 import spark.route.HttpMethod;
 import spark.serialization.SerializerChain;
 import spark.staticfiles.StaticFilesConfiguration;
+import spark.utils.ResourceUtils;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Matches Spark routes and filters.
@@ -54,6 +50,7 @@ public class MatcherFilter implements Filter {
 
     private boolean externalContainer;
     private boolean hasOtherHandlers;
+    private Body body;
 
     /**
      * Constructor
@@ -100,7 +97,7 @@ public class MatcherFilter implements Filter {
         String uri = httpRequest.getPathInfo();
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
-        Body body = Body.create();
+        body = Body.create();
 
         RequestWrapper requestWrapper = RequestWrapper.create();
         ResponseWrapper responseWrapper = ResponseWrapper.create();
@@ -151,7 +148,10 @@ public class MatcherFilter implements Filter {
         if (body.notSet() && !externalContainer) {
             LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            body.set(String.format(NOT_FOUND));
+            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("404.html");
+            String contents = ResourceUtils.readResourceContents(inputStream);
+            if(contents != null) body.set(contents);
+            else body.set(NOT_FOUND);
         }
 
         if (body.isSet()) {

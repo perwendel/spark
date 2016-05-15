@@ -16,10 +16,12 @@
  */
 package spark.http.matching;
 
-import javax.servlet.http.HttpServletResponse;
-
 import spark.ExceptionHandlerImpl;
 import spark.ExceptionMapper;
+import spark.utils.ResourceUtils;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 
 /**
  * Modifies the HTTP response and body based on the provided exception and request/response wrappers.
@@ -48,7 +50,11 @@ final class GeneralError {
             }
         } else {
             httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            body.set(INTERNAL_ERROR);
+            e.printStackTrace();
+            InputStream inputStream = GeneralError.class.getClassLoader().getResourceAsStream("500.html");
+            String contents = ResourceUtils.readResourceContents(inputStream);
+            if(contents != null) body.set(contents);
+            else body.set(INTERNAL_ERROR);
         }
     }
 
