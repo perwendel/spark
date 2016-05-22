@@ -77,7 +77,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                        CountDownLatch latch,
                        int maxThreads,
                        int minThreads,
-                       int threadIdleTimeoutMillis) {
+                       int threadIdleTimeoutMillis) throws Exception {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -121,17 +121,12 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             server.setHandler(handlers);
         }
 
-        try {
-            logger.info("== {} has ignited ...", NAME);
-            logger.info(">> Listening on {}:{}", host, port);
+        logger.info("== {} has ignited ...", NAME);
+        logger.info(">> Listening on {}:{}", host, port);
 
-            server.start();
-            latch.countDown();
-            server.join();
-        } catch (Exception e) {
-            logger.error("ignite failed", e);
-            System.exit(100); // NOSONAR
-        }
+        server.start();
+        latch.countDown();
+        server.join();
     }
 
     /**

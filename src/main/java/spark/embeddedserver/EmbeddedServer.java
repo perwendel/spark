@@ -45,7 +45,7 @@ public interface EmbeddedServer {
                 CountDownLatch latch,
                 int maxThreads,
                 int minThreads,
-                int threadIdleTimeoutMillis);
+                int threadIdleTimeoutMillis) throws Exception;
 
     /**
      * Configures the web sockets for the embedded server.

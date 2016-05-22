@@ -16,6 +16,8 @@
  */
 package spark;
 
+import java.util.function.Consumer;
+
 import static spark.Service.ignite;
 
 /**
@@ -978,6 +980,17 @@ public class Spark {
                               String truststoreFile,
                               String truststorePassword) {
         getInstance().secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
+    }
+
+    /**
+     * Overrides default exception handler during initialization phase
+     * 
+     * @param initExceptionHandler
+     *          The custom init exception handler
+     */
+    public static void setInitExceptionHandler(
+        Consumer<Exception> igniteExceptionHandler) {
+      getInstance().setInitExceptionHandler(igniteExceptionHandler);
     }
 
     /**

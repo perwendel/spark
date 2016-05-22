@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +81,12 @@ public final class Service extends Routable {
     public final StaticFiles staticFiles;
 
     private final StaticFilesConfiguration staticFilesConfiguration;
+
+    // default exception handler during initialization phase
+    private Consumer<Exception> initExceptionHandler = (e) -> {
+      LOG.error("ignite failed", e);
+      System.exit(100);
+    };
 
     /**
      * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
@@ -333,6 +340,7 @@ public final class Service extends Routable {
 
             if (!isRunningFromServlet()) {
                 new Thread(() -> {
+                  try {
                     EmbeddedServers.initialize();
 
                     if (embeddedServerIdentifier == null) {
@@ -354,6 +362,9 @@ public final class Service extends Routable {
                             maxThreads,
                             minThreads,
                             threadIdleTimeoutMillis);
+                  } catch (Exception e) {
+                    initExceptionHandler.accept(e);
+                  }
                 }).start();
             }
             initialized = true;
@@ -435,6 +446,17 @@ public final class Service extends Routable {
      */
     public HaltException halt(int status, String body) {
         throw new HaltException(status, body);
+    }
+
+    /**
+     * Overrides default exception handler during initialization phase
+     *
+     * @param initExceptionHandler
+     *          The custom init exception handler
+     */
+    public void setInitExceptionHandler(
+        Consumer<Exception> igniteExceptionHandler) {
+      initExceptionHandler = igniteExceptionHandler;
     }
 
     /**
