@@ -31,9 +31,6 @@ public class FilterConfigWrapper implements FilterConfig {
         if (name.equals(SparkFilter.APPLICATION_CLASS_PARAM)) {
             return "spark.servlet.MyApp";
         }
-        if (name.equals(SparkFilter.EXCEPTIONMAPPER_CLASS_PARAM)) {
-        	return "spark.ExceptionMapper";
-        }
         return delegate.getInitParameter(name);
     }
 
