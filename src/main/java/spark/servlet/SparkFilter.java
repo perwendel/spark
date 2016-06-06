@@ -64,13 +64,7 @@ public class SparkFilter implements Filter {
 
         filterPath = FilterTools.getFilterPath(filterConfig);
         
-        ExceptionMapper exceptionMapper = getExceptionMapper(filterConfig);
-        
-        if (exceptionMapper != null) {
-        	matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFilesConfiguration.servletInstance, true, false, getExceptionMapper(filterConfig));	
-		}
-
-        matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFilesConfiguration.servletInstance, true, false, ExceptionMapper.defaultInstance);
+        matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFilesConfiguration.servletInstance, true, false, getExceptionMapper(filterConfig));	
     }
     
     private ExceptionMapper getExceptionMapper(FilterConfig filterConfig) throws ServletException{
