@@ -48,6 +48,7 @@ public class SparkFilter implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
 
     public static final String APPLICATION_CLASS_PARAM = "applicationClass";
+    public static final String EXCEPTIONMAPPER_CLASS_PARAM = "exceptionMapperClass";
 
     private String filterPath;
 
@@ -62,8 +63,24 @@ public class SparkFilter implements Filter {
         application.init();
 
         filterPath = FilterTools.getFilterPath(filterConfig);
+        
+        ExceptionMapper exceptionMapper = getExceptionMapper(filterConfig);
+        
+        if (exceptionMapper != null) {
+        	matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFilesConfiguration.servletInstance, true, false, getExceptionMapper(filterConfig));	
+		}
 
-        matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFilesConfiguration.servletInstance, true, false, new ExceptionMapper());
+        matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFilesConfiguration.servletInstance, true, false, ExceptionMapper.defaultInstance);
+    }
+    
+    private ExceptionMapper getExceptionMapper(FilterConfig filterConfig) throws ServletException{
+        try {
+            String exceptionMapperClassName = filterConfig.getInitParameter(EXCEPTIONMAPPER_CLASS_PARAM);
+            Class<?> exceptionMapperClass = Class.forName(exceptionMapperClassName);
+            return (ExceptionMapper) exceptionMapperClass.newInstance();
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
     }
 
     /**

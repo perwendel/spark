@@ -94,12 +94,13 @@ public final class Service extends Routable {
     private Service() {
         redirect = Redirect.create(this);
         staticFiles = new StaticFiles();
-        exceptionMapper = new ExceptionMapper();
 
         if (isRunningFromServlet()) {
             staticFilesConfiguration = StaticFilesConfiguration.servletInstance;
+            exceptionMapper = ExceptionMapper.defaultInstance;
         } else {
             staticFilesConfiguration = StaticFilesConfiguration.create();
+            exceptionMapper = ExceptionMapper.create();
         }
     }
 

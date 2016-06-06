@@ -20,6 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExceptionMapper {
+    
+	public static ExceptionMapper defaultInstance = new ExceptionMapper();
+
+	public static ExceptionMapper create() {
+		return new ExceptionMapper();
+	}
+
     /**
      * Holds a map of Exception classes and associated handlers
      */
