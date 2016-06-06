@@ -21,23 +21,6 @@ import java.util.Map;
 
 public class ExceptionMapper {
     /**
-     * Holds a default instance for the exception mapper
-     */
-    private static ExceptionMapper defaultInstance;
-
-    /**
-     * Returns the default instance for the exception mapper
-     *
-     * @return Default instance
-     */
-    public synchronized static ExceptionMapper getInstance() {
-        if (defaultInstance == null) {
-            defaultInstance = new ExceptionMapper();
-        }
-        return defaultInstance;
-    }
-
-    /**
      * Holds a map of Exception classes and associated handlers
      */
     private Map<Class<? extends Exception>, ExceptionHandlerImpl> exceptionMap;

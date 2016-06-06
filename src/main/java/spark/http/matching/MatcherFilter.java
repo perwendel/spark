@@ -27,6 +27,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import spark.ExceptionMapper;
 import spark.HaltException;
 import spark.RequestResponseFactory;
 import spark.Response;
@@ -51,6 +52,7 @@ public class MatcherFilter implements Filter {
 
     private spark.route.Routes routeMatcher;
     private SerializerChain serializerChain;
+    private ExceptionMapper exceptionMapper;
 
     private boolean externalContainer;
     private boolean hasOtherHandlers;
@@ -66,13 +68,15 @@ public class MatcherFilter implements Filter {
     public MatcherFilter(spark.route.Routes routeMatcher,
                          StaticFilesConfiguration staticFiles,
                          boolean externalContainer,
-                         boolean hasOtherHandlers) {
+                         boolean hasOtherHandlers,
+                         ExceptionMapper exceptionMapper) {
 
         this.routeMatcher = routeMatcher;
         this.staticFiles = staticFiles;
         this.externalContainer = externalContainer;
         this.hasOtherHandlers = hasOtherHandlers;
         this.serializerChain = new SerializerChain();
+        this.exceptionMapper = exceptionMapper;
     }
 
     public void init(FilterConfig config) {
@@ -132,7 +136,7 @@ public class MatcherFilter implements Filter {
 
         } catch (Exception generalException) {
 
-            GeneralError.modify(httpResponse, body, requestWrapper, responseWrapper, generalException);
+            GeneralError.modify(httpResponse, body, requestWrapper, responseWrapper, generalException, exceptionMapper);
 
         }
 

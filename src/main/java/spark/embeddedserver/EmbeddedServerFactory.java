@@ -16,6 +16,7 @@
  */
 package spark.embeddedserver;
 
+import spark.ExceptionMapper;
 import spark.route.Routes;
 import spark.staticfiles.StaticFilesConfiguration;
 
@@ -27,5 +28,5 @@ public interface EmbeddedServerFactory {
     /**
      * Creates an embedded server instance.
      */
-    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler);
+    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler, ExceptionMapper exceptionMapper);
 }

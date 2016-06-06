@@ -16,6 +16,9 @@
  */
 package spark;
 
+import static java.util.Objects.requireNonNull;
+import static spark.globalstate.ServletFlag.isRunningFromServlet;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -30,9 +33,6 @@ import spark.route.Routes;
 import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.StaticFilesConfiguration;
-
-import static java.util.Objects.requireNonNull;
-import static spark.globalstate.ServletFlag.isRunningFromServlet;
 
 /**
  * Represents a Spark server "session".
@@ -80,6 +80,8 @@ public final class Service extends Routable {
     public final StaticFiles staticFiles;
 
     private final StaticFilesConfiguration staticFilesConfiguration;
+    
+    private final ExceptionMapper exceptionMapper;
 
     /**
      * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
@@ -92,6 +94,7 @@ public final class Service extends Routable {
     private Service() {
         redirect = Redirect.create(this);
         staticFiles = new StaticFiles();
+        exceptionMapper = new ExceptionMapper();
 
         if (isRunningFromServlet()) {
             staticFilesConfiguration = StaticFilesConfiguration.servletInstance;
@@ -342,7 +345,8 @@ public final class Service extends Routable {
                     server = EmbeddedServers.create(embeddedServerIdentifier,
                                                     routes,
                                                     staticFilesConfiguration,
-                                                    hasMultipleHandlers());
+                                                    hasMultipleHandlers(),
+                                                    exceptionMapper);
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
@@ -387,7 +391,7 @@ public final class Service extends Routable {
             }
         };
 
-        ExceptionMapper.getInstance().map(exceptionClass, wrapper);
+        exceptionMapper.map(exceptionClass, wrapper);
     }
 
     //////////////////////////////////////////////////
