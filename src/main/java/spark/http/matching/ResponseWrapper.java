@@ -48,6 +48,11 @@ class ResponseWrapper extends Response {
     }
 
     @Override
+    public int status() {
+        return delegate.status();
+    }
+
+    @Override
     public void body(String body) {
         delegate.body(body);
     }
@@ -104,6 +109,11 @@ class ResponseWrapper extends Response {
     @Override
     public void type(String contentType) {
         delegate.type(contentType);
+    }
+
+    @Override
+    public String type() {
+        return delegate.type();
     }
 
     @Override
