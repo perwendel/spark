@@ -71,7 +71,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
      * {@inheritDoc}
      */
     @Override
-    public void ignite(String host,
+    public int ignite(String host,
                        int port,
                        SslStores sslStores,
                        CountDownLatch latch,
@@ -132,6 +132,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             logger.error("ignite failed", e);
             System.exit(100); // NOSONAR
         }
+
+        return port;
     }
 
     /**

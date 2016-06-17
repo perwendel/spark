@@ -132,6 +132,21 @@ public final class Service extends Routable {
     }
 
     /**
+     * Retrieves the port that Spark is listening on.
+     *
+     * @throws IllegalStateException when the server is not started
+     *
+     * @return The port Spark server is listening on.
+     */
+    public synchronized int getPort() {
+        if (initialized) {
+            return port;
+        } else {
+            throw new IllegalStateException("This must be done after route mapping has begun");
+        }
+    }
+
+    /**
      * Set the connection to be secure, using the specified keystore and
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore
@@ -346,7 +361,7 @@ public final class Service extends Routable {
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
-                    server.ignite(
+                    port = server.ignite(
                             ipAddress,
                             port,
                             sslStores,
