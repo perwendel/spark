@@ -104,10 +104,8 @@ public class StaticFilesTest {
 
     @Test
     public void testCustomMimeType() throws Exception {
-        staticFiles.registerMimeType("png", "custom-png-value");
-        Assert.assertEquals("custom-png-value", doGet("/img/sparkLogo.png").headers.get("Content-Type"));
-        staticFiles.registerMimeType("png", "image/png");
-        Assert.assertEquals("image/png", doGet("/img/sparkLogo.png").headers.get("Content-Type"));
+        staticFiles.registerMimeType("cxt", "custom-extension-type");
+        Assert.assertEquals("custom-extension-type", doGet("/img/file.cxt").headers.get("Content-Type"));
     }
 
     @Test
