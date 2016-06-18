@@ -106,6 +106,8 @@ public class StaticFilesTest {
     public void testCustomMimeType() throws Exception {
         staticFiles.registerMimeType("png", "custom-png-value");
         Assert.assertEquals("custom-png-value", doGet("/img/sparkLogo.png").headers.get("Content-Type"));
+        staticFiles.registerMimeType("png", "image/png");
+        Assert.assertEquals("image/png", doGet("/img/sparkLogo.png").headers.get("Content-Type"));
     }
 
     @Test
@@ -165,6 +167,5 @@ public class StaticFilesTest {
     private SparkTestUtil.UrlResponse doGet(String fileName) throws Exception {
         return testUtil.doMethod("GET", fileName, null);
     }
-
 
 }
