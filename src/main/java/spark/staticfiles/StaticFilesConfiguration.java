@@ -86,8 +86,9 @@ public class StaticFilesConfiguration {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
 
                 if (resource != null && resource.isReadable()) {
-                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
+                    httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.getFromResource(resource));
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
+                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
                     IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
                     wrappedOutputStream.flush();
                     wrappedOutputStream.close();
