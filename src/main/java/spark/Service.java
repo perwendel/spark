@@ -29,6 +29,7 @@ import spark.embeddedserver.EmbeddedServers;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
+import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
 
 import static java.util.Objects.requireNonNull;
@@ -488,6 +489,16 @@ public final class Service extends Routable {
         @Experimental("Functionality will not be removed. The API might change")
         public void expireTime(long seconds) {
             staticFilesConfiguration.setExpireTimeSeconds(seconds);
+        }
+
+        /**
+         * Maps an extension to a mime-type. This will overwrite any previous mappings.
+         *
+         * @param extension the extension to be mapped
+         * @param mimeType  the mime-type for the extension
+         */
+        public void registerMimeType(String extension, String mimeType) {
+            MimeType.register(extension, mimeType);
         }
 
     }
