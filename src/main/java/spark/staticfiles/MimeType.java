@@ -80,6 +80,7 @@ public class MimeType {
         put("txt", "text/plain");
         put("wav", "audio/wav,audio/x-wav");
         put("woff", "application/font-woff");
+        put("woff2", "application/font-woff2");
         put("xlam", "application/vnd.ms-excel.addin.macroEnabled.12");
         put("xls", "application/vnd.ms-excel");
         put("xlsb", "application/vnd.ms-excel.sheet.binary.macroEnabled.12");
