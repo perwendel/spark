@@ -85,6 +85,8 @@ public final class Service extends Routable {
     /**
      * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
      * multiple services in one process.
+     *
+     * @return the newly created object
      */
     public static Service ignite() {
         return new Service();
@@ -107,6 +109,7 @@ public final class Service extends Routable {
      * done.
      *
      * @param ipAddress The ipAddress
+     * @return the object with IP address set
      */
     public synchronized Service ipAddress(String ipAddress) {
         if (initialized) {
@@ -123,6 +126,7 @@ public final class Service extends Routable {
      * If provided port = 0 then the an arbitrary available port will be used.
      *
      * @param port The port number
+     * @return the object with port set
      */
     public synchronized Service port(int port) {
         if (initialized) {
@@ -146,6 +150,7 @@ public final class Service extends Routable {
      * @param truststoreFile     the truststore file location as string, leave null to reuse
      *                           keystore
      * @param truststorePassword the trust store password
+     * @return the object with connection set to be secure
      */
     public synchronized Service secure(String keystoreFile,
                                        String keystorePassword,
@@ -168,6 +173,7 @@ public final class Service extends Routable {
      * Configures the embedded web server's thread pool.
      *
      * @param maxThreads max nbr of threads.
+     * @return the object with the embedded web server's thread pool configured
      */
     public synchronized Service threadPool(int maxThreads) {
         return threadPool(maxThreads, -1, -1);
@@ -179,6 +185,7 @@ public final class Service extends Routable {
      * @param maxThreads        max nbr of threads.
      * @param minThreads        min nbr of threads.
      * @param idleTimeoutMillis thread idle timeout (ms).
+     * @return the object with the embedded web server's thread pool configured
      */
     public synchronized Service threadPool(int maxThreads, int minThreads, int idleTimeoutMillis) {
         if (initialized) {
@@ -197,6 +204,7 @@ public final class Service extends Routable {
      * must be called before all other methods.
      *
      * @param folder the folder in classpath.
+     * @return the object with folder set
      */
     public synchronized Service staticFileLocation(String folder) {
         if (initialized && !isRunningFromServlet()) {
@@ -219,6 +227,7 @@ public final class Service extends Routable {
      * must be called before all other methods.</b>
      *
      * @param externalFolder the external folder serving static files.
+     * @return the object with external folder set
      */
     public synchronized Service externalStaticFileLocation(String externalFolder) {
         if (initialized && !isRunningFromServlet()) {
@@ -267,6 +276,7 @@ public final class Service extends Routable {
      * Sets the max idle timeout in milliseconds for WebSocket connections.
      *
      * @param timeoutMillis The max idle timeout in milliseconds.
+     * @return the object with max idle timeout set for WebSocket connections
      */
     public synchronized Service webSocketIdleTimeoutMillis(int timeoutMillis) {
         if (initialized) {
@@ -399,6 +409,8 @@ public final class Service extends Routable {
      * Immediately stops a request within a filter or route
      * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
      * halt will not work
+     *
+     * @return HaltException object
      */
     public HaltException halt() {
         throw new HaltException();
@@ -410,6 +422,7 @@ public final class Service extends Routable {
      * halt will not work
      *
      * @param status the status code
+     * @return HaltException object with status code set
      */
     public HaltException halt(int status) {
         throw new HaltException(status);
@@ -421,6 +434,7 @@ public final class Service extends Routable {
      * halt will not work
      *
      * @param body The body content
+     * @return HaltException object with body set
      */
     public HaltException halt(String body) {
         throw new HaltException(body);
@@ -433,6 +447,7 @@ public final class Service extends Routable {
      *
      * @param status The status code
      * @param body   The body content
+     * @return HaltException object with status and body set
      */
     public HaltException halt(int status, String body) {
         throw new HaltException(status, body);
@@ -476,6 +491,9 @@ public final class Service extends Routable {
         /**
          * Puts custom header for static resources. If the headers previously contained a mapping for
          * the key, the old value is replaced by the specified value.
+         *
+         * @param key the key
+         * @param value the value
          */
         public void header(String key, String value) {
             staticFilesConfiguration.putCustomHeader(key, value);
