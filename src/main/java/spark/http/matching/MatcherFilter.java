@@ -128,6 +128,7 @@ public class MatcherFilter implements Filter {
 
         } catch (HaltException halt) {
 
+            responseWrapper.state = ResponseWrapper.State.HALT;
             Halt.modify(httpResponse, body, halt);
 
         } catch (Exception generalException) {
@@ -136,22 +137,17 @@ public class MatcherFilter implements Filter {
 
         }
 
-        // If redirected and content is null set to empty string to not throw NotConsumedException
-        if (body.notSet() && responseWrapper.isRedirected()) {
-            body.set("");
-        }
-
-        if (body.notSet() && hasOtherHandlers) {
+        if (responseWrapper.state.notConsumed() && hasOtherHandlers) {
             if (servletRequest instanceof HttpRequestWrapper) {
                 ((HttpRequestWrapper) servletRequest).notConsumed(true);
                 return;
             }
         }
 
-        if (body.notSet() && !externalContainer) {
+        if (responseWrapper.state.notConsumed() && !externalContainer) {
             LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            body.set(String.format(NOT_FOUND));
+            body.set(NOT_FOUND);
         }
 
         if (body.isSet()) {

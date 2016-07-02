@@ -22,24 +22,23 @@ import spark.Response;
 
 class ResponseWrapper extends Response {
 
-    static ResponseWrapper create() {
-        return new ResponseWrapper();
-    }
-
     private Response delegate;
-
-    private boolean redirected = false;
+    public State state = State.NOT_PROCESSED;
 
     private ResponseWrapper() {
         // hidden
     }
 
-    public void setDelegate(Response delegate) {
-        this.delegate = delegate;
+    static ResponseWrapper create() {
+        return new ResponseWrapper();
     }
 
     Response getDelegate() {
         return delegate;
+    }
+
+    public void setDelegate(Response delegate) {
+        this.delegate = delegate;
     }
 
     @Override
@@ -74,13 +73,12 @@ class ResponseWrapper extends Response {
 
     @Override
     public void redirect(String location) {
-        redirected = true;
+        state = State.REDIRECTED;
         delegate.redirect(location);
     }
 
     @Override
     public void redirect(String location, int httpStatusCode) {
-        redirected = true;
         delegate.redirect(location, httpStatusCode);
     }
 
@@ -88,7 +86,7 @@ class ResponseWrapper extends Response {
      * @return true if redirected has been done
      */
     boolean isRedirected() {
-        return redirected;
+        return state == State.REDIRECTED;
     }
 
     @Override
@@ -134,5 +132,20 @@ class ResponseWrapper extends Response {
     @Override
     public void removeCookie(String name) {
         delegate.removeCookie(name);
+    }
+
+    public enum State {
+        NOT_PROCESSED, PROCESSED, EXCEPTION_HANDLED, HALT, REDIRECTED;
+
+        public boolean consumed() {
+            return this == PROCESSED
+                    || this == EXCEPTION_HANDLED
+                    || this == HALT
+                    || this == REDIRECTED;
+        }
+
+        public boolean notConsumed() {
+            return !consumed();
+        }
     }
 }

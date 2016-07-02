@@ -41,6 +41,7 @@ final class GeneralError {
 
         if (handler != null) {
             handler.handle(e, requestWrapper, responseWrapper);
+            responseWrapper.state = ResponseWrapper.State.EXCEPTION_HANDLED;
             String bodyAfterFilter = responseWrapper.getDelegate().body();
 
             if (bodyAfterFilter != null) {

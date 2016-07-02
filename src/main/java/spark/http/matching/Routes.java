@@ -37,13 +37,14 @@ final class Routes {
         if (match != null) {
             target = match.getTarget();
         } else if (context.httpMethod() == HttpMethod.head && context.body().notSet()) {
-            // See if get is mapped to provide default head mapping
+            context.responseWrapper().state = ResponseWrapper.State.PROCESSED;
             content =
                     context.routeMatcher().find(HttpMethod.get, context.uri(), context.acceptType())
                             != null ? "" : null;
         }
 
         if (target != null) {
+            context.responseWrapper().state = ResponseWrapper.State.PROCESSED;
             Object result = null;
 
             if (target instanceof RouteImpl) {
