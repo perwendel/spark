@@ -936,6 +936,15 @@ public class Spark {
     }
 
     /**
+     * Sets the max idle timeout in seconds for Servlet connections.
+     *
+     * @param timeoutSeconds The max idle timeout in seconds.
+     */
+    public static void sessionInactivityTimeout(int timeoutSeconds) {
+        getInstance().sessionInactivityTimeout(timeoutSeconds);
+    }
+
+    /**
      * Set the connection to be secure, using the specified keystore and
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore

@@ -65,6 +65,7 @@ public final class Service extends Routable {
     protected int maxThreads = -1;
     protected int minThreads = -1;
     protected int threadIdleTimeoutMillis = -1;
+    protected int sessionInactivityTimeout = -1;
     protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
 
     protected EmbeddedServer server;
@@ -280,6 +281,19 @@ public final class Service extends Routable {
     }
 
     /**
+     * Sets the max idle timeout in seconds for Servlet connections.
+     *
+     * @param timeoutSeconds The max idle timeout in seconds.
+     */
+    public synchronized Service sessionInactivityTimeout(int timeoutSeconds) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        sessionInactivityTimeout = timeoutSeconds;
+        return this;
+    }
+
+    /**
      * Waits for the spark server to be initialized.
      * If it's already initialized will return immediately
      */
@@ -343,7 +357,8 @@ public final class Service extends Routable {
                     server = EmbeddedServers.create(embeddedServerIdentifier,
                                                     routes,
                                                     staticFilesConfiguration,
-                                                    hasMultipleHandlers());
+                                                    hasMultipleHandlers(),
+                                                    sessionInactivityTimeout);
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
