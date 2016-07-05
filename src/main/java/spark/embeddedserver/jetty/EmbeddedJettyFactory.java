@@ -27,11 +27,14 @@ import spark.staticfiles.StaticFilesConfiguration;
  */
 public class EmbeddedJettyFactory implements EmbeddedServerFactory {
 
-    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler) {
+    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler, int sessionInactivityTimeout) {
         MatcherFilter matcherFilter = new MatcherFilter(routeMatcher, staticFilesConfiguration, false, hasMultipleHandler);
         matcherFilter.init(null);
 
         JettyHandler handler = new JettyHandler(matcherFilter);
+
+        // This is to Garbage Collect the stale sessions that have timed out.
+        handler.getSessionManager().setMaxInactiveInterval(sessionInactivityTimeout);
         return new EmbeddedJettyServer(handler);
     }
 

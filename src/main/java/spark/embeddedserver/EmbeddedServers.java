@@ -49,12 +49,13 @@ public class EmbeddedServers {
     public static EmbeddedServer create(Object identifier,
                                         Routes routeMatcher,
                                         StaticFilesConfiguration staticFilesConfiguration,
-                                        boolean multipleHandlers) {
+                                        boolean multipleHandlers,
+                                        int sessionInactivityTimeout) {
 
         EmbeddedServerFactory factory = factories.get(identifier);
 
         if (factory != null) {
-            return factory.create(routeMatcher, staticFilesConfiguration, multipleHandlers);
+            return factory.create(routeMatcher, staticFilesConfiguration, multipleHandlers, sessionInactivityTimeout);
         } else {
             throw new RuntimeException("No embedded server matching the identifier");
         }
