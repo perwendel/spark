@@ -42,7 +42,7 @@ import static spark.globalstate.ServletFlag.isRunningFromServlet;
  * the semantic makes sense. For example 'http' is a good variable name since when adding routes it would be:
  * Service http = ignite();
  * ...
- * http.get("/hello", (q, a) -> "Hello World");
+ * http.get("/hello", (q, a) {@literal ->} "Hello World");
  */
 public final class Service extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");

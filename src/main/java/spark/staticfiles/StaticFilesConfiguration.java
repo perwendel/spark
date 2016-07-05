@@ -60,7 +60,12 @@ public class StaticFilesConfiguration {
     private Map<String, String> customHeaders = new HashMap<>();
 
     /**
+     * Attempt consuming using either static resource handlers or jar resource handlers
+     *
+     * @param httpRequest  The HTTP servlet request.
+     * @param httpResponse The HTTP servlet response.
      * @return true if consumed, false otherwise.
+     * @throws IOException in case of IO error.
      */
     public boolean consume(HttpServletRequest httpRequest,
                            HttpServletResponse httpResponse) throws IOException {

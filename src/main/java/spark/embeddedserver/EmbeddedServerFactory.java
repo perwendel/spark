@@ -26,6 +26,11 @@ public interface EmbeddedServerFactory {
 
     /**
      * Creates an embedded server instance.
+     *
+     * @param routeMatcher The route matcher
+     * @param staticFilesConfiguration The static files configuration object
+     * @param hasMultipleHandler true if other handlers exist
+     * @return the created instance
      */
     public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler);
 }
