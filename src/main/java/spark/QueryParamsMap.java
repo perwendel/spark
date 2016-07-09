@@ -89,6 +89,14 @@ public class QueryParamsMap {
         loadQueryString(params);
     }
 
+    protected static final String cleanKey(String group) {
+        if (group.startsWith("[")) {
+            return group.substring(1, group.length() - 1);
+        } else {
+            return group;
+        }
+    }
+
     /**
      * loads query string
      *
@@ -130,14 +138,6 @@ public class QueryParamsMap {
             return new String[] {cleanKey(m.group()), key.substring(m.end())};
         } else {
             return null; // NOSONAR
-        }
-    }
-
-    protected static final String cleanKey(String group) {
-        if (group.startsWith("[")) {
-            return group.substring(1, group.length() - 1);
-        } else {
-            return group;
         }
     }
 
@@ -269,13 +269,6 @@ public class QueryParamsMap {
         return values;
     }
 
-
-    private static class NullQueryParamsMap extends QueryParamsMap {
-        public NullQueryParamsMap() {
-            super();
-        }
-    }
-
     /**
      * @return Map representation
      */
@@ -287,5 +280,11 @@ public class QueryParamsMap {
         }
 
         return map;
+    }
+
+    private static class NullQueryParamsMap extends QueryParamsMap {
+        public NullQueryParamsMap() {
+            super();
+        }
     }
 }

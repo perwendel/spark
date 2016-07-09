@@ -22,8 +22,8 @@ import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spark.utils.GzipUtils;
 import spark.serialization.SerializerChain;
+import spark.utils.GzipUtils;
 
 /**
  * Represents the 'body'
@@ -32,12 +32,12 @@ final class Body {
 
     private Object content;
 
-    public static Body create() {
-        return new Body();
-    }
-
     private Body() {
 
+    }
+
+    public static Body create() {
+        return new Body();
     }
 
     public boolean notSet() {

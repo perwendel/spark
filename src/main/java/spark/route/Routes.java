@@ -17,10 +17,11 @@
 package spark.route;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import spark.routematch.RouteMatch;
 import spark.utils.MimeParse;
@@ -39,15 +40,15 @@ public class Routes {
 
     private List<RouteEntry> routes;
 
-    public static Routes create() {
-        return new Routes();
-    }
-
     /**
      * Constructor
      */
     protected Routes() {
         routes = new ArrayList<>();
+    }
+
+    public static Routes create() {
+        return new Routes();
     }
 
     /**
@@ -56,11 +57,13 @@ public class Routes {
      * @param route      the route path
      * @param acceptType the accept type
      * @param target     the invocation target
+     * @deprecated
      */
+    @Deprecated
     public void add(String route, String acceptType, Object target) {
         try {
             int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
-            String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase(); // NOSONAR
+            String httpMethod = route.substring(0, singleQuoteIndex).trim().toUpperCase(); // NOSONAR
             String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim(); // NOSONAR
 
             // Use special enum stuff to get from value
@@ -79,6 +82,25 @@ public class Routes {
         } catch (Exception e) {
             LOG.error("The @Route value: " + route + " is not in the correct format", e);
         }
+    }
+
+    /**
+     * Parse and validates a route and adds it
+     *
+     * @param httpMethod the HTTP method
+     * @param path       the path
+     * @param acceptType the accept type
+     * @param target     the invocation target
+     */
+    public void add(HttpMethod httpMethod, String path, String acceptType, Object target) {
+        if (StringUtils.isEmpty(path)) {
+            throw new IllegalArgumentException("path cannot be null or blank");
+        }
+
+        if (StringUtils.isEmpty(httpMethod)) {
+            throw new IllegalArgumentException("httpMethod cannot be null or blank");
+        }
+        addRoute(httpMethod, path, acceptType, target);
     }
 
     /**
@@ -109,13 +131,13 @@ public class Routes {
 
         for (RouteEntry routeEntry : routeEntries) {
             if (acceptType != null) {
-                String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
+                String bestMatch = MimeParse.bestMatch(Collections.singletonList(routeEntry.acceptedType), acceptType);
 
                 if (routeWithGivenAcceptType(bestMatch)) {
                     matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType));
                 }
             } else {
-                matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType));
+                matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, null));
             }
         }
 
@@ -141,8 +163,25 @@ public class Routes {
      * @throws IllegalArgumentException if <tt>path</tt> is null or blank or if <tt>httpMethod</tt> is null, blank
      *                                  or an invalid HTTP method
      * @since 2.2
+     * @deprecated
      */
+    @Deprecated
     public boolean remove(String path, String httpMethod) {
+        return remove(HttpMethod.valueOf(httpMethod), path);
+    }
+
+    /**
+     * Removes a particular route from the collection of those that have been previously routed.
+     * Search for a previously established routes using the given path and HTTP method, removing
+     * any matches that are found.
+     *
+     * @param path       the route path
+     * @param httpMethod the http method
+     * @return <tt>true</tt> if this a matching route has been previously routed
+     *
+     * @since 2.2
+     */
+    public boolean remove(HttpMethod httpMethod, String path) {
         if (StringUtils.isEmpty(path)) {
             throw new IllegalArgumentException("path cannot be null or blank");
         }
@@ -151,27 +190,7 @@ public class Routes {
             throw new IllegalArgumentException("httpMethod cannot be null or blank");
         }
 
-        // Catches invalid input and throws IllegalArgumentException
-        HttpMethod method = HttpMethod.valueOf(httpMethod);
-
-        return removeRoute(method, path);
-    }
-
-    /**
-     * Removes a particular route from the collection of those that have been previously routed.
-     * Search for a previously established routes using the given path and removes any matches that are found.
-     *
-     * @param path the route path
-     * @return <tt>true</tt> if this a matching route has been previously routed
-     * @throws java.lang.IllegalArgumentException if <tt>path</tt> is null or blank
-     * @since 2.2
-     */
-    public boolean remove(String path) {
-        if (StringUtils.isEmpty(path)) {
-            throw new IllegalArgumentException("path cannot be null or blank");
-        }
-
-        return removeRoute((HttpMethod) null, path);
+        return removeRoute(httpMethod, path);
     }
 
     //////////////////////////////////////////////////
@@ -194,11 +213,7 @@ public class Routes {
     private Map<String, RouteEntry> getAcceptedMimeTypes(List<RouteEntry> routes) {
         Map<String, RouteEntry> acceptedTypes = new HashMap<>();
 
-        for (RouteEntry routeEntry : routes) {
-            if (!acceptedTypes.containsKey(routeEntry.acceptedType)) {
-                acceptedTypes.put(routeEntry.acceptedType, routeEntry);
-            }
-        }
+        routes.stream().filter(routeEntry -> !acceptedTypes.containsKey(routeEntry.acceptedType)).forEach(routeEntry -> acceptedTypes.put(routeEntry.acceptedType, routeEntry));
 
         return acceptedTypes;
     }
@@ -208,13 +223,7 @@ public class Routes {
     }
 
     private List<RouteEntry> findTargetsForRequestedRoute(HttpMethod httpMethod, String path) {
-        List<RouteEntry> matchSet = new ArrayList<RouteEntry>();
-        for (RouteEntry entry : routes) {
-            if (entry.matches(httpMethod, path)) {
-                matchSet.add(entry);
-            }
-        }
-        return matchSet;
+        return routes.stream().filter(entry -> entry.matches(httpMethod, path)).collect(Collectors.toList());
     }
 
     // TODO: I believe this feature has impacted performance. Optimization?
@@ -243,7 +252,7 @@ public class Routes {
         for (RouteEntry routeEntry : routes) {
             HttpMethod httpMethodToMatch = httpMethod;
 
-            if (httpMethod == null) {
+            if (httpMethod == HttpMethod.UNSUPPORTED) {
                 // Use the routeEntry's HTTP method if none was given, so that only path is used to match.
                 httpMethodToMatch = routeEntry.httpMethod;
             }

@@ -24,6 +24,17 @@ public class ExceptionMapper {
      * Holds a default instance for the exception mapper
      */
     private static ExceptionMapper defaultInstance;
+    /**
+     * Holds a map of Exception classes and associated handlers
+     */
+    private Map<Class<? extends Exception>, ExceptionHandlerImpl> exceptionMap;
+
+    /**
+     * Class constructor
+     */
+    public ExceptionMapper() {
+        this.exceptionMap = new HashMap<>();
+    }
 
     /**
      * Returns the default instance for the exception mapper
@@ -35,18 +46,6 @@ public class ExceptionMapper {
             defaultInstance = new ExceptionMapper();
         }
         return defaultInstance;
-    }
-
-    /**
-     * Holds a map of Exception classes and associated handlers
-     */
-    private Map<Class<? extends Exception>, ExceptionHandlerImpl> exceptionMap;
-
-    /**
-     * Class constructor
-     */
-    public ExceptionMapper() {
-        this.exceptionMap = new HashMap<>();
     }
 
     /**

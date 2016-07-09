@@ -90,6 +90,16 @@ public class StaticFilesMemberTest {
         Spark.awaitInitialization();
     }
 
+    /**
+     * Used to verify that "normal" functionality works after static files mapping
+     */
+    private static void testGet() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
+
+        Assert.assertEquals(200, response.status);
+        Assert.assertTrue(response.body.contains(FO_SHIZZY));
+    }
+
     @Test
     public void testStaticFileCssStyleCss() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/css/style.css", null);
@@ -146,16 +156,6 @@ public class StaticFilesMemberTest {
         Assert.assertEquals("private, max-age=600", response.headers.get("Cache-Control"));
 
         testGet();
-    }
-
-    /**
-     * Used to verify that "normal" functionality works after static files mapping
-     */
-    private static void testGet() throws Exception {
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
-
-        Assert.assertEquals(200, response.status);
-        Assert.assertTrue(response.body.contains(FO_SHIZZY));
     }
 
     @Test

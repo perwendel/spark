@@ -66,7 +66,7 @@ public class SimpleRouteMatcher extends Routes {
      * @deprecated
      */
     public boolean removeRoute(String path) {
-        return remove(path);
+        return remove(HttpMethod.get(null), path);
     }
 
 }

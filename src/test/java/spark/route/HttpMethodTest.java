@@ -26,7 +26,7 @@ public class HttpMethodTest {
 
     @Test
     public void testSupportedHttpMethod() {
-        HttpMethod get = HttpMethod.get;
+        HttpMethod get = HttpMethod.GET;
         HttpMethod method = HttpMethod.get(get.name());
 
         Assert.assertEquals(get, method);
@@ -36,7 +36,7 @@ public class HttpMethodTest {
     public void testNotSupportedHttpMethod() {
         HttpMethod method = HttpMethod.get("lock");
 
-        Assert.assertEquals(HttpMethod.unsupported, method);
+        Assert.assertEquals(HttpMethod.UNSUPPORTED, method);
     }
 
 }

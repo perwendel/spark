@@ -52,6 +52,55 @@ public class SparkTestUtil {
         this.httpClient = httpClientBuilder().build();
     }
 
+    /**
+     * Return JVM param set keystore or default if not set.
+     *
+     * @return Keystore location as string
+     */
+    public static String getKeyStoreLocation() {
+        String keyStoreLoc = System.getProperty("javax.net.ssl.keyStore");
+        return keyStoreLoc == null ? "./src/test/resources/keystore.jks" : keyStoreLoc;
+    }
+
+    /**
+     * Return JVM param set keystore password or default if not set.
+     *
+     * @return Keystore password as string
+     */
+    public static String getKeystorePassword() {
+        String password = System.getProperty("javax.net.ssl.keyStorePassword");
+        return password == null ? "password" : password;
+    }
+
+    /**
+     * Return JVM param set truststore location, or keystore location if not
+     * set. if keystore not set either, returns default
+     *
+     * @return truststore location as string
+     */
+    public static String getTrustStoreLocation() {
+        String trustStoreLoc = System.getProperty("javax.net.ssl.trustStore");
+        return trustStoreLoc == null ? getKeyStoreLocation() : trustStoreLoc;
+    }
+
+    /**
+     * Return JVM param set truststore password or keystore password if not set.
+     * If still not set, will return default password
+     *
+     * @return truststore password as string
+     */
+    public static String getTrustStorePassword() {
+        String password = System.getProperty("javax.net.ssl.trustStorePassword");
+        return password == null ? getKeystorePassword() : password;
+    }
+
+    public static void sleep(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (Exception ignored) {
+        }
+    }
+
     private HttpClientBuilder httpClientBuilder() {
         SSLConnectionSocketFactory sslConnectionSocketFactory =
                 new SSLConnectionSocketFactory(getSslFactory(), (paramString, paramSSLSession) -> true);
@@ -89,7 +138,6 @@ public class SparkTestUtil {
     public UrlResponse get(String path) throws Exception {
         return doMethod("GET", path, null);
     }
-
 
     public UrlResponse doMethodSecure(String requestMethod, String path, String body)
             throws Exception {
@@ -238,7 +286,7 @@ public class SparkTestUtil {
      * keystore specified in JVM params
      */
     private SSLSocketFactory getSslFactory() {
-        KeyStore keyStore = null;
+        KeyStore keyStore;
         try {
             keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             FileInputStream fis = new FileInputStream(getTrustStoreLocation());
@@ -257,48 +305,6 @@ public class SparkTestUtil {
         return null;
     }
 
-    /**
-     * Return JVM param set keystore or default if not set.
-     *
-     * @return Keystore location as string
-     */
-    public static String getKeyStoreLocation() {
-        String keyStoreLoc = System.getProperty("javax.net.ssl.keyStore");
-        return keyStoreLoc == null ? "./src/test/resources/keystore.jks" : keyStoreLoc;
-    }
-
-    /**
-     * Return JVM param set keystore password or default if not set.
-     *
-     * @return Keystore password as string
-     */
-    public static String getKeystorePassword() {
-        String password = System.getProperty("javax.net.ssl.keyStorePassword");
-        return password == null ? "password" : password;
-    }
-
-    /**
-     * Return JVM param set truststore location, or keystore location if not
-     * set. if keystore not set either, returns default
-     *
-     * @return truststore location as string
-     */
-    public static String getTrustStoreLocation() {
-        String trustStoreLoc = System.getProperty("javax.net.ssl.trustStore");
-        return trustStoreLoc == null ? getKeyStoreLocation() : trustStoreLoc;
-    }
-
-    /**
-     * Return JVM param set truststore password or keystore password if not set.
-     * If still not set, will return default password
-     *
-     * @return truststore password as string
-     */
-    public static String getTrustStorePassword() {
-        String password = System.getProperty("javax.net.ssl.trustStorePassword");
-        return password == null ? getKeystorePassword() : password;
-    }
-
     public static class UrlResponse {
 
         public Map<String, String> headers;
@@ -306,17 +312,10 @@ public class SparkTestUtil {
         public int status;
     }
 
-    public static void sleep(long time) {
-        try {
-            Thread.sleep(time);
-        } catch (Exception e) {
-        }
-    }
+    private static class HttpLock extends HttpRequestBase {
+        final static String METHOD_NAME = "LOCK";
 
-    static class HttpLock extends HttpRequestBase {
-        public final static String METHOD_NAME = "LOCK";
-
-        public HttpLock(final String uri) {
+        HttpLock(final String uri) {
             super();
             setURI(URI.create(uri));
         }

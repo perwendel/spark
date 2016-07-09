@@ -33,37 +33,6 @@ public abstract class RouteImpl implements Route, Wrapper {
     private Route delegate;
 
     /**
-     * Wraps the route in RouteImpl
-     *
-     * @param path  the path
-     * @param route the route
-     * @return the wrapped route
-     */
-    static RouteImpl create(final String path, final Route route) {
-        return create(path, DEFAULT_ACCEPT_TYPE, route);
-    }
-
-    /**
-     * Wraps the route in RouteImpl
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param route      the route
-     * @return the wrapped route
-     */
-    static RouteImpl create(final String path, String acceptType, final Route route) {
-        if (acceptType == null) {
-            acceptType = DEFAULT_ACCEPT_TYPE;
-        }
-        return new RouteImpl(path, acceptType, route) {
-            @Override
-            public Object handle(Request request, Response response) throws Exception {
-                return route.handle(request, response);
-            }
-        };
-    }
-
-    /**
      * Constructor
      *
      * @param path The route path which is used for matching. (e.g. /hello, users/:name)
@@ -93,6 +62,37 @@ public abstract class RouteImpl implements Route, Wrapper {
     protected RouteImpl(String path, String acceptType, Route route) {
         this(path, acceptType);
         this.delegate = route;
+    }
+
+    /**
+     * Wraps the route in RouteImpl
+     *
+     * @param path  the path
+     * @param route the route
+     * @return the wrapped route
+     */
+    static RouteImpl create(final String path, final Route route) {
+        return create(path, DEFAULT_ACCEPT_TYPE, route);
+    }
+
+    /**
+     * Wraps the route in RouteImpl
+     *
+     * @param path       the path
+     * @param acceptType the accept type
+     * @param route      the route
+     * @return the wrapped route
+     */
+    static RouteImpl create(final String path, String acceptType, final Route route) {
+        if (acceptType == null) {
+            acceptType = DEFAULT_ACCEPT_TYPE;
+        }
+        return new RouteImpl(path, acceptType, route) {
+            @Override
+            public Object handle(Request request, Response response) throws Exception {
+                return route.handle(request, response);
+            }
+        };
     }
 
     /**

@@ -16,9 +16,9 @@
  */
 package spark.examples.simple;
 
-import spark.Spark;
-
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.post;
 
 /**
  * A simple example just showing some basic functionality
@@ -58,7 +58,6 @@ public class SimpleExample {
         });
 
         get("/", (request, response) -> "root");
-
 
 
     }

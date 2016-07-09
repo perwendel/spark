@@ -26,6 +26,7 @@ import spark.embeddedserver.jetty.websocket.WebSocketTestHandler;
 import spark.examples.exception.BaseException;
 import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
+import spark.route.HttpMethod;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -37,6 +38,7 @@ import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.post;
+import static spark.Spark.remove;
 import static spark.Spark.staticFileLocation;
 import static spark.Spark.webSocket;
 
@@ -46,8 +48,8 @@ public class GenericIntegrationTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericIntegrationTest.class);
 
-    static SparkTestUtil testUtil;
-    static File tmpExternalFile;
+    private static SparkTestUtil testUtil;
+    private static File tmpExternalFile;
 
     @AfterClass
     public static void tearDown() {
@@ -76,45 +78,25 @@ public class GenericIntegrationTest {
             halt(401, "Go Away!");
         });
 
-        before("/protected/*", "application/xml", (q, a) -> {
-            halt(401, "Go Away!");
-        });
+        before("/protected/*", "application/xml", (q, a) -> halt(401, "Go Away!"));
 
-        before("/protected/*", "application/json", (q, a) -> {
-            halt(401, "{\"message\": \"Go Away!\"}");
-        });
+        before("/protected/*", "application/json", (q, a) -> halt(401, "{\"message\": \"Go Away!\"}"));
 
-        get("/hi", "application/json", (q, a) -> {
-            return "{\"message\": \"Hello World\"}";
-        });
+        get("/hi", "application/json", (q, a) -> "{\"message\": \"Hello World\"}");
 
-        get("/hi", (q, a) -> {
-            return "Hello World!";
-        });
+        get("/hi", (q, a) -> "Hello World!");
 
-        get("/binaryhi", (q, a) -> {
-            return "Hello World!".getBytes();
-        });
+        get("/binaryhi", (q, a) -> "Hello World!".getBytes());
 
-        get("/bytebufferhi", (q, a) -> {
-            return ByteBuffer.wrap("Hello World!".getBytes());
-        });
+        get("/bytebufferhi", (q, a) -> ByteBuffer.wrap("Hello World!".getBytes()));
 
-        get("/inputstreamhi", (q, a) -> {
-            return new ByteArrayInputStream("Hello World!".getBytes("utf-8"));
-        });
+        get("/inputstreamhi", (q, a) -> new ByteArrayInputStream("Hello World!".getBytes("utf-8")));
 
-        get("/param/:param", (q, a) -> {
-            return "echo: " + q.params(":param");
-        });
+        get("/param/:param", (q, a) -> "echo: " + q.params(":param"));
 
-        get("/paramandwild/:param/stuff/*", (q, a) -> {
-            return "paramandwild: " + q.params(":param") + q.splat()[0];
-        });
+        get("/paramandwild/:param/stuff/*", (q, a) -> "paramandwild: " + q.params(":param") + q.splat()[0]);
 
-        get("/paramwithmaj/:paramWithMaj", (q, a) -> {
-            return "echo: " + q.params(":paramWithMaj");
-        });
+        get("/paramwithmaj/:paramWithMaj", (q, a) -> "echo: " + q.params(":paramWithMaj"));
 
         get("/templateView", (q, a) -> {
             return new ModelAndView("Hello", "my view");
@@ -124,9 +106,7 @@ public class GenericIntegrationTest {
             }
         });
 
-        get("/", (q, a) -> {
-            return "Hello Root!";
-        });
+        get("/", (q, a) -> "Hello Root!");
 
         post("/poster", (q, a) -> {
             String body = q.body();
@@ -139,9 +119,7 @@ public class GenericIntegrationTest {
             return "Method Override Worked";
         });
 
-        get("/post_via_get", (q, a) -> {
-            return "Method Override Did Not Work";
-        });
+        get("/post_via_get", (q, a) -> "Method Override Did Not Work");
 
         patch("/patcher", (q, a) -> {
             String body = q.body();
@@ -180,13 +158,9 @@ public class GenericIntegrationTest {
             throw new NotFoundException();
         });
 
-        exception(UnsupportedOperationException.class, (exception, q, a) -> {
-            a.body("Exception handled");
-        });
+        exception(UnsupportedOperationException.class, (exception, q, a) -> a.body("Exception handled"));
 
-        exception(BaseException.class, (exception, q, a) -> {
-            a.body("Exception handled");
-        });
+        exception(BaseException.class, (exception, q, a) -> a.body("Exception handled"));
 
         exception(NotFoundException.class, (exception, q, a) -> {
             a.status(404);
@@ -194,6 +168,17 @@ public class GenericIntegrationTest {
         });
 
         Spark.awaitInitialization();
+    }
+
+    private static void registerEchoRoute(final String routePart) {
+        get("/tworoutes/" + routePart + "/:param", (q, a) -> routePart + " route: " + q.params(":param"));
+    }
+
+    private static void assertEchoRoute(String routePart) throws Exception {
+        final String expected = "expected";
+        UrlResponse response = testUtil.doMethod("GET", "/tworoutes/" + routePart + "/" + expected, null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals(routePart + " route: " + expected, response.body);
     }
 
     @Test
@@ -326,19 +311,6 @@ public class GenericIntegrationTest {
         assertEchoRoute(upperCasedRoutePart);
     }
 
-    private static void registerEchoRoute(final String routePart) {
-        get("/tworoutes/" + routePart + "/:param", (q, a) -> {
-            return routePart + " route: " + q.params(":param");
-        });
-    }
-
-    private static void assertEchoRoute(String routePart) throws Exception {
-        final String expected = "expected";
-        UrlResponse response = testUtil.doMethod("GET", "/tworoutes/" + routePart + "/" + expected, null);
-        Assert.assertEquals(200, response.status);
-        Assert.assertEquals(routePart + " route: " + expected, response.body);
-    }
-
     @Test
     public void testEchoParamWithMaj() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/paramwithmaj/plop", null);
@@ -444,5 +416,33 @@ public class GenericIntegrationTest {
         Assert.assertEquals("onConnect", events.get(0));
         Assert.assertEquals("onMessage: Hi Spark!", events.get(1));
         Assert.assertEquals("onClose: 1000 Bye!", events.get(2));
+    }
+
+    @Test
+    public void testRemoveAllRoutes() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+        Assert.assertEquals("Hello World!", response.body);
+        Assert.assertEquals(200, response.status);
+
+        remove("/hi", HttpMethod.UNSUPPORTED);
+
+        response = testUtil.doMethod("GET", "/hi", null);
+        Assert.assertEquals(404, response.status);
+
+        // Re add the routes after the test as others my fail.
+        {
+            get("/hi", "application/json", (q, a) -> "{\"message\": \"Hello World\"}");
+
+            get("/hi", (q, a) -> "Hello World!");
+
+            after("/hi", (q, a) -> {
+
+                if (q.requestMethod().equalsIgnoreCase("get")) {
+                    Assert.assertNotNull(a.body());
+                }
+
+                a.header("after", "foobar");
+            });
+        }
     }
 }

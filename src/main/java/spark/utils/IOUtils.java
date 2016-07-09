@@ -66,8 +66,7 @@ import java.io.Writer;
  * @author Niall Pemberton
  * @author Sandy McArthur
  * @version $Id: IOUtils.java 481854 2006-12-03 18:30:07Z scolebourne $
- *
- * Code copied from apache commons io source. Changes made (mostly removal of methods) by Per Wendel.
+ *          Code copied from apache commons io source. Changes made (mostly removal of methods) by Per Wendel.
  */
 public final class IOUtils {
 
@@ -75,6 +74,10 @@ public final class IOUtils {
      * The system line separator string.
      */
     public static final String LINE_SEPARATOR;
+    /**
+     * The default buffer size to use.
+     */
+    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
     static {
         // avoid security issues
@@ -83,11 +86,6 @@ public final class IOUtils {
         out.println();
         LINE_SEPARATOR = buf.toString();
     }
-
-    /**
-     * The default buffer size to use.
-     */
-    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
     private IOUtils() {
     }
@@ -119,13 +117,10 @@ public final class IOUtils {
      * This method buffers the input internally, so there is no need to use a
      * <code>BufferedInputStream</code>.
      *
-     * @param input
-     *            the <code>InputStream</code> to read from
+     * @param input the <code>InputStream</code> to read from
      * @return the byte array
-     * @throws NullPointerException
-     *             if the input is null
-     * @throws IOException
-     *             if an I/O error occurs
+     * @throws NullPointerException if the input is null
+     * @throws IOException          if an I/O error occurs
      */
     public static byte[] toByteArray(InputStream input) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -137,24 +132,24 @@ public final class IOUtils {
     }
 
     /**
-    * Copies bytes from an <code>InputStream</code> to an
-    * <code>OutputStream</code>.
-    * <p>
-    * This method buffers the input internally, so there is no need to use a
-    * <code>BufferedInputStream</code>.
-    * <p>
-    * Large streams (over 2GB) will return a bytes copied value of
-    * <code>-1</code> after the copy has completed since the correct
-    * number of bytes cannot be returned as an int. For large streams
-    * use the <code>copyLarge(InputStream, OutputStream)</code> method.
-    *
-    * @param input the <code>InputStream</code> to read from
-    * @param output the <code>OutputStream</code> to write to
-    * @return the number of bytes copied, or -1 if &gt; Integer.MAX_VALUE
-    * @throws NullPointerException if the input or output is null
-    * @throws IOException if an I/O error occurs
-    * @since Commons IO 1.1
-    */
+     * Copies bytes from an <code>InputStream</code> to an
+     * <code>OutputStream</code>.
+     * <p>
+     * This method buffers the input internally, so there is no need to use a
+     * <code>BufferedInputStream</code>.
+     * <p>
+     * Large streams (over 2GB) will return a bytes copied value of
+     * <code>-1</code> after the copy has completed since the correct
+     * number of bytes cannot be returned as an int. For large streams
+     * use the <code>copyLarge(InputStream, OutputStream)</code> method.
+     *
+     * @param input  the <code>InputStream</code> to read from
+     * @param output the <code>OutputStream</code> to write to
+     * @return the number of bytes copied, or -1 if &gt; Integer.MAX_VALUE
+     * @throws NullPointerException if the input or output is null
+     * @throws IOException          if an I/O error occurs
+     * @since Commons IO 1.1
+     */
     public static int copy(final InputStream input, final OutputStream output) throws IOException {
         final long count = copyLarge(input, output);
         if (count > Integer.MAX_VALUE) {
@@ -164,22 +159,22 @@ public final class IOUtils {
     }
 
     /**
-    * Copies bytes from a large (over 2GB) <code>InputStream</code> to an
-    * <code>OutputStream</code>.
-    * <p>
-    * This method uses the provided buffer, so there is no need to use a
-    * <code>BufferedInputStream</code>.
-    * <p>
-    *
-    * @param input the <code>InputStream</code> to read from
-    * @param output the <code>OutputStream</code> to write to
-    * @return the number of bytes copied
-    * @throws NullPointerException if the input or output is null
-    * @throws IOException if an I/O error occurs
-    * @since Commons IO 2.2
-    */
+     * Copies bytes from a large (over 2GB) <code>InputStream</code> to an
+     * <code>OutputStream</code>.
+     * <p>
+     * This method uses the provided buffer, so there is no need to use a
+     * <code>BufferedInputStream</code>.
+     * <p>
+     *
+     * @param input  the <code>InputStream</code> to read from
+     * @param output the <code>OutputStream</code> to write to
+     * @return the number of bytes copied
+     * @throws NullPointerException if the input or output is null
+     * @throws IOException          if an I/O error occurs
+     * @since Commons IO 2.2
+     */
     public static long copyLarge(final InputStream input, final OutputStream output)
-        throws IOException {
+            throws IOException {
         byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         long count = 0;
         int n = 0;
@@ -206,7 +201,7 @@ public final class IOUtils {
      * @since Commons IO 1.1
      */
     public static void copy(InputStream input, Writer output)
-        throws IOException {
+            throws IOException {
         InputStreamReader in = new InputStreamReader(input); // NOSONAR
         copy(in, output);
     }

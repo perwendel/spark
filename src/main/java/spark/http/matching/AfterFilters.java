@@ -33,7 +33,7 @@ final class AfterFilters {
 
         Object content = context.body().get();
 
-        List<RouteMatch> matchSet = context.routeMatcher().findMultiple(HttpMethod.after,
+        List<RouteMatch> matchSet = context.routeMatcher().findMultiple(HttpMethod.AFTER,
                                                                         context.uri(),
                                                                         context.acceptType());
 

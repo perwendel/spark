@@ -91,13 +91,23 @@ public class StaticFilesTest {
         Spark.awaitInitialization();
     }
 
+    /**
+     * Used to verify that "normal" functionality works after static files mapping
+     */
+    private static void testGet() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
+
+        Assert.assertEquals(200, response.status);
+        Assert.assertTrue(response.body.contains(FO_SHIZZY));
+    }
+
     @Test
     public void testMimeTypes() throws Exception {
-        Assert.assertEquals("text/html",                doGet("/pages/index.html").headers.get("Content-Type"));
-        Assert.assertEquals("application/javascript",   doGet("/js/scripts.js").headers.get("Content-Type"));
-        Assert.assertEquals("text/css",                 doGet("/css/style.css").headers.get("Content-Type"));
-        Assert.assertEquals("image/png",                doGet("/img/sparklogo.png").headers.get("Content-Type"));
-        Assert.assertEquals("image/svg+xml",            doGet("/img/sparklogo.svg").headers.get("Content-Type"));
+        Assert.assertEquals("text/html", doGet("/pages/index.html").headers.get("Content-Type"));
+        Assert.assertEquals("application/javascript", doGet("/js/scripts.js").headers.get("Content-Type"));
+        Assert.assertEquals("text/css", doGet("/css/style.css").headers.get("Content-Type"));
+        Assert.assertEquals("image/png", doGet("/img/sparklogo.png").headers.get("Content-Type"));
+        Assert.assertEquals("image/svg+xml", doGet("/img/sparklogo.svg").headers.get("Content-Type"));
         Assert.assertEquals("application/octet-stream", doGet("/img/sparklogoPng").headers.get("Content-Type"));
         Assert.assertEquals("application/octet-stream", doGet("/img/sparklogoSvg").headers.get("Content-Type"));
     }
@@ -142,16 +152,6 @@ public class StaticFilesTest {
         Assert.assertEquals("Content of external file", response.body);
 
         testGet();
-    }
-
-    /**
-     * Used to verify that "normal" functionality works after static files mapping
-     */
-    private static void testGet() throws Exception {
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
-
-        Assert.assertEquals(200, response.status);
-        Assert.assertTrue(response.body.contains(FO_SHIZZY));
     }
 
     @Test

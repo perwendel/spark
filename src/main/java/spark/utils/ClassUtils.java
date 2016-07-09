@@ -31,9 +31,7 @@ import java.util.Set;
  * @author Rob Harrop
  * @author Sam Brannen
  * @since 1.1
- *
  * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
- *
  */
 public abstract class ClassUtils {
 
@@ -94,9 +92,8 @@ public abstract class ClassUtils {
 
         Set<Class<?>> primitiveTypes = new HashSet<>(32);
         primitiveTypes.addAll(primitiveWrapperTypeMap.values());
-        primitiveTypes.addAll(Arrays.asList(new Class<?>[] {
-                boolean[].class, byte[].class, char[].class, double[].class,
-                float[].class, int[].class, long[].class, short[].class}));
+        primitiveTypes.addAll(Arrays.asList(boolean[].class, byte[].class, char[].class, double[].class,
+                                            float[].class, int[].class, long[].class, short[].class));
         primitiveTypes.add(void.class);
         for (Class<?> primitiveType : primitiveTypes) {
             primitiveTypeNameMap.put(primitiveType.getName(), primitiveType);

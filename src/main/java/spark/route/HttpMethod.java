@@ -22,7 +22,7 @@ import java.util.HashMap;
  * @author Per Wendel
  */
 public enum HttpMethod {
-    get, post, put, patch, delete, head, trace, connect, options, before, after, unsupported;
+    GET, POST, PUT, PATCH, DELETE, HEAD, TRACE, CONNECT, OPTIONS, BEFORE, AFTER, UNSUPPORTED;
 
     private static HashMap<String, HttpMethod> methods = new HashMap<>();
 
@@ -34,10 +34,10 @@ public enum HttpMethod {
 
     /**
      * Gets the HttpMethod corresponding to the provided string. If no corresponding method can be found
-     * {@link spark.route.HttpMethod#unsupported} will be returned.
+     * {@link spark.route.HttpMethod#UNSUPPORTED} will be returned.
      */
     public static HttpMethod get(String methodStr) {
         HttpMethod method = methods.get(methodStr);
-        return method != null ? method : unsupported;
+        return method != null ? method : UNSUPPORTED;
     }
 }

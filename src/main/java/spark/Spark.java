@@ -16,6 +16,8 @@
  */
 package spark;
 
+import spark.route.HttpMethod;
+
 import static spark.Service.ignite;
 
 /**
@@ -38,21 +40,6 @@ import static spark.Service.ignite;
  */
 public class Spark {
 
-    // Hide constructor
-    protected Spark() {
-    }
-
-    /**
-     * Initializes singleton.
-     */
-    private static class SingletonHolder {
-        private static final Service INSTANCE = ignite();
-    }
-
-    private static Service getInstance() {
-        return SingletonHolder.INSTANCE;
-    }
-
     /**
      * Statically import this for redirect utility functionality, see {@link spark.Redirect}
      */
@@ -62,6 +49,14 @@ public class Spark {
      * Statically import this for static files utility functionality, see {@link spark.Service.StaticFiles}
      */
     public static final Service.StaticFiles staticFiles = getInstance().staticFiles;
+
+    // Hide constructor
+    protected Spark() {
+    }
+
+    private static Service getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
 
     /**
      * Map the route for HTTP GET requests
@@ -192,7 +187,6 @@ public class Spark {
      * @param path    the path
      * @param filters The filters
      */
-
     public static void after(String path, Filter... filters) {
         for (Filter filter : filters) {
             getInstance().after(path, filter);
@@ -302,7 +296,6 @@ public class Spark {
         getInstance().options(path, acceptType, route);
     }
 
-
     /**
      * Maps one or many filters to be executed before any matching routes
      *
@@ -338,7 +331,6 @@ public class Spark {
         }
     }
 
-
     /**
      * Maps one or many filters to be executed after any matching routes
      *
@@ -350,6 +342,17 @@ public class Spark {
         for (Filter filter : filters) {
             getInstance().after(path, acceptType, filter);
         }
+    }
+
+    /**
+     * Un maps a route or filter specific to the HTTP method.
+     * If the HTTP method is set to {@link spark.route.HttpMethod#UNSUPPORTED} then it will remove all routes and filters for the path
+     *
+     * @param path       the path
+     * @param httpMethod the HTTP method
+     */
+    public static boolean remove(String path, HttpMethod httpMethod) {
+        return getInstance().removeRoute(httpMethod, path);
     }
 
     //////////////////////////////////////////////////
@@ -1041,6 +1044,7 @@ public class Spark {
 
     ////////////////
     // Websockets //
+    ////////////////
 
     /**
      * Maps the given path to the given WebSocket handler.
@@ -1079,6 +1083,13 @@ public class Spark {
      */
     public static ModelAndView modelAndView(Object model, String viewName) {
         return new ModelAndView(model, viewName);
+    }
+
+    /**
+     * Initializes singleton.
+     */
+    private static class SingletonHolder {
+        private static final Service INSTANCE = ignite();
     }
 
 }

@@ -33,6 +33,16 @@ public abstract class FilterImpl implements Filter, Wrapper {
     private String acceptType;
     private Filter delegate;
 
+    protected FilterImpl(String path, String acceptType) {
+        this.path = path;
+        this.acceptType = acceptType;
+    }
+
+    protected FilterImpl(String path, String acceptType, Filter filter) {
+        this(path, acceptType);
+        this.delegate = filter;
+    }
+
     /**
      * Wraps the filter in FilterImpl
      *
@@ -62,16 +72,6 @@ public abstract class FilterImpl implements Filter, Wrapper {
                 filter.handle(request, response);
             }
         };
-    }
-
-    protected FilterImpl(String path, String acceptType) {
-        this.path = path;
-        this.acceptType = acceptType;
-    }
-
-    protected FilterImpl(String path, String acceptType, Filter filter) {
-        this(path, acceptType);
-        this.delegate = filter;
     }
 
     /**

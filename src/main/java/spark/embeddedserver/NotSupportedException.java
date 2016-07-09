@@ -23,16 +23,16 @@ public class NotSupportedException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
+    private NotSupportedException(String clazz, String feature) {
+        super("'" + clazz + "' doesn't support '" + feature + "'");
+
+    }
+
     /**
      * Raises a NotSupportedException for the provided class name and feature name.
      */
     public static void raise(String clazz, String feature) {
         throw new NotSupportedException(clazz, feature);
-    }
-
-    private NotSupportedException(String clazz, String feature) {
-        super("'" + clazz + "' doesn't support '" + feature + "'");
-
     }
 
 }

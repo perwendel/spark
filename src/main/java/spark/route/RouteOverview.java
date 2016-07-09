@@ -33,6 +33,8 @@ import static spark.Spark.get;
 
 public class RouteOverview {
 
+    static List<RouteEntry> routes = new ArrayList<>();
+
     /**
      * Enables a route overview (showing all the mapped routes)
      * The overview is made available at "/debug/routeoverview/"
@@ -42,6 +44,8 @@ public class RouteOverview {
     public static void enableRouteOverview() {
         enableRouteOverview("/debug/routeoverview/");
     }
+
+    // Everything below this point is either package private or private
 
     /**
      * Enables a route overview (showing all the mapped routes)
@@ -54,10 +58,6 @@ public class RouteOverview {
     public static void enableRouteOverview(String path) {
         get(path, RouteOverview::createHtmlOverview);
     }
-
-    // Everything below this point is either package private or private
-
-    static List<RouteEntry> routes = new ArrayList<>();
 
     static void add(RouteEntry entry, Object wrapped) {
 
@@ -76,9 +76,7 @@ public class RouteOverview {
 
         List<String> tableContent = new ArrayList<>(singletonList("<thead><tr><td>Method</td><td>Accepts</td><td>Path</td><td>Route</td></tr></thead>"));
 
-        routes.forEach(r -> {
-            tableContent.add(String.format(rowTemplate, r.httpMethod.name(), r.acceptedType.replace("*/*", "any"), r.path, createHtmlForRouteTarget(r.target)));
-        });
+        routes.forEach(r -> tableContent.add(String.format(rowTemplate, r.httpMethod.name(), r.acceptedType.replace("*/*", "any"), r.path, createHtmlForRouteTarget(r.target))));
 
         return head + "<body><h1>All mapped routes</h1><table>" + String.join("", tableContent) + "</table><body>";
     }

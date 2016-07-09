@@ -33,9 +33,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.ssl.SslStores;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
+import spark.ssl.SslStores;
 
 /**
  * Spark server implementation
@@ -46,12 +46,9 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
     private static final int SPARK_DEFAULT_PORT = 4567;
     private static final String NAME = "Spark";
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private Handler handler;
     private Server server;
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private Map<String, Class<?>> webSocketHandlers;
     private Optional<Integer> webSocketIdleTimeoutMillis;
 

@@ -1,5 +1,7 @@
 package spark.embeddedserver.jetty;
 
+import java.util.Map;
+
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -8,11 +10,12 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
+
 import spark.ssl.SslStores;
 
-import java.util.Map;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class SocketConnectorFactoryTest {
 
@@ -22,7 +25,7 @@ public class SocketConnectorFactoryTest {
         try {
             SocketConnectorFactory.createSocketConnector(null, "host", 80);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             assertEquals("'server' must not be null", ex.getMessage());
         }
     }
@@ -36,7 +39,7 @@ public class SocketConnectorFactoryTest {
         try {
             SocketConnectorFactory.createSocketConnector(server, null, 80);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             assertEquals("'host' must not be null", ex.getMessage());
         }
     }
@@ -65,7 +68,7 @@ public class SocketConnectorFactoryTest {
         try {
             SocketConnectorFactory.createSecureSocketConnector(null, "localhost", 80, null);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             assertEquals("'server' must not be null", ex.getMessage());
         }
     }
@@ -78,7 +81,7 @@ public class SocketConnectorFactoryTest {
         try {
             SocketConnectorFactory.createSecureSocketConnector(server, null, 80, null);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             assertEquals("'host' must not be null", ex.getMessage());
         }
     }
@@ -91,7 +94,7 @@ public class SocketConnectorFactoryTest {
         try {
             SocketConnectorFactory.createSecureSocketConnector(server, "localhost", 80, null);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             assertEquals("'sslStores' must not be null", ex.getMessage());
         }
     }
@@ -99,7 +102,7 @@ public class SocketConnectorFactoryTest {
 
     @Test
     @PrepareForTest({ServerConnector.class})
-    public void testCreateSecureSocketConnector() throws  Exception {
+    public void testCreateSecureSocketConnector() throws Exception {
 
         final String host = "localhost";
         final int port = 8888;
@@ -124,16 +127,16 @@ public class SocketConnectorFactoryTest {
         Map<String, ConnectionFactory> factories = Whitebox.getInternalState(serverConnector, "_factories");
 
         assertTrue("Should return true because factory for SSL should have been set",
-                factories.containsKey("ssl") && factories.get("ssl") != null);
+                   factories.containsKey("ssl") && factories.get("ssl") != null);
 
         SslConnectionFactory sslConnectionFactory = (SslConnectionFactory) factories.get("ssl");
         SslContextFactory sslContextFactory = sslConnectionFactory.getSslContextFactory();
 
         assertEquals("Should return the Keystore file specified", keystoreFile,
-                sslContextFactory.getKeyStoreResource().getFile().getName());
+                     sslContextFactory.getKeyStoreResource().getFile().getName());
 
         assertEquals("Should return the Truststore file specified", truststoreFile,
-                sslContextFactory.getTrustStoreResource().getFile().getName());
+                     sslContextFactory.getTrustStoreResource().getFile().getName());
 
     }
 
