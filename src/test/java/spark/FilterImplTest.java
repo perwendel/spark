@@ -13,13 +13,13 @@ public class FilterImplTest {
     public FilterImpl filter;
 
     @Before
-    public void setup(){
+    public void setup() {
         PATH_TEST = "/etc/test";
-        ACCEPT_TYPE_TEST  = "test/*";
+        ACCEPT_TYPE_TEST = "test/*";
     }
 
     @Test
-    public void testConstructor(){
+    public void testConstructor() {
         FilterImpl filter = new FilterImpl(PATH_TEST, ACCEPT_TYPE_TEST) {
             @Override
             public void handle(Request request, Response response) throws Exception {
@@ -37,14 +37,14 @@ public class FilterImplTest {
     }
 
     @Test
-    public void testCreate_whenOutAssignAcceptTypeInTheParameters_thenReturnPathAndAcceptTypeSuccessfully(){
+    public void testCreate_whenOutAssignAcceptTypeInTheParameters_thenReturnPathAndAcceptTypeSuccessfully() {
         filter = FilterImpl.create(PATH_TEST, null);
         assertEquals("Should return path specified", PATH_TEST, filter.getPath());
         assertEquals("Should return accept type specified", RouteImpl.DEFAULT_ACCEPT_TYPE, filter.getAcceptType());
     }
 
     @Test
-    public void testCreate_whenAcceptTypeNullValueInTheParameters_thenReturnPathAndAcceptTypeSuccessfully(){
+    public void testCreate_whenAcceptTypeNullValueInTheParameters_thenReturnPathAndAcceptTypeSuccessfully() {
         filter = FilterImpl.create(PATH_TEST, null, null);
         assertEquals("Should return path specified", PATH_TEST, filter.getPath());
         assertEquals("Should return accept type specified", RouteImpl.DEFAULT_ACCEPT_TYPE, filter.getAcceptType());

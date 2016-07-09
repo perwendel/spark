@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
+import spark.route.HttpMethod;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
@@ -45,36 +46,25 @@ import static spark.globalstate.ServletFlag.isRunningFromServlet;
  * http.get("/hello", (q, a) -> "Hello World");
  */
 public final class Service extends Routable {
-    private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
-
     public static final int SPARK_DEFAULT_PORT = 4567;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
-
+    private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
     protected boolean initialized = false;
-
     protected int port = SPARK_DEFAULT_PORT;
     protected String ipAddress = "0.0.0.0";
-
     protected SslStores sslStores;
-
     protected String staticFileFolder = null;
     protected String externalStaticFileFolder = null;
-
     protected Map<String, Class<?>> webSocketHandlers = null;
-
     protected int maxThreads = -1;
     protected int minThreads = -1;
     protected int threadIdleTimeoutMillis = -1;
     protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
-
     protected EmbeddedServer server;
     protected Routes routes;
-
     private boolean servletStaticLocationSet;
     private boolean servletExternalStaticLocationSet;
-
     private CountDownLatch latch = new CountDownLatch(1);
-
     private Object embeddedServerIdentifier = null;
 
     public final Redirect redirect;
@@ -325,16 +315,40 @@ public final class Service extends Routable {
         initialized = false;
     }
 
+    @Deprecated
     @Override
     public void addRoute(String httpMethod, RouteImpl route) {
-        init();
-        routes.add(httpMethod + " '" + route.getPath() + "'", route.getAcceptType(), route);
+        addRoute(HttpMethod.get(httpMethod), route);
     }
 
     @Override
-    public void addFilter(String httpMethod, FilterImpl filter) {
+    protected void addRoute(HttpMethod httpMethod, RouteImpl route) {
         init();
-        routes.add(httpMethod + " '" + filter.getPath() + "'", filter.getAcceptType(), filter);
+        routes.add(httpMethod, route.getPath(), route.getAcceptType(), route);
+    }
+
+    @Deprecated
+    @Override
+    public void addFilter(String httpMethod, FilterImpl filter) {
+        addFilter(HttpMethod.get(httpMethod), filter);
+    }
+
+    @Override
+    protected void addFilter(HttpMethod httpMethod, FilterImpl filter) {
+        init();
+        routes.add(httpMethod, filter.getPath(), filter.getAcceptType(), filter);
+    }
+
+    @Deprecated
+    @Override
+    public boolean removeRoute(String httpMethod, String path) {
+        return removeRoute(HttpMethod.get(httpMethod), path);
+    }
+
+    @Override
+    protected boolean removeRoute(HttpMethod httpMethod, String path) {
+        init();
+        return routes.remove(httpMethod, path);
     }
 
     public synchronized void init() {

@@ -28,11 +28,6 @@ import spark.staticfiles.StaticFilesConfiguration;
  */
 public class EmbeddedServers {
 
-    // Default alternatives.
-    public enum Identifiers {
-        JETTY
-    }
-
     private static Map<Object, EmbeddedServerFactory> factories = new HashMap<>();
 
     public static void initialize() {
@@ -65,6 +60,11 @@ public class EmbeddedServers {
      */
     public static void add(Object identifier, EmbeddedServerFactory factory) {
         factories.put(identifier, factory);
+    }
+
+    // Default alternatives.
+    public enum Identifiers {
+        JETTY
     }
 
 }

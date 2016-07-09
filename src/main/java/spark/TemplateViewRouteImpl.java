@@ -27,6 +27,16 @@ package spark;
 public abstract class TemplateViewRouteImpl extends RouteImpl {
 
     /**
+     * Constructor
+     *
+     * @param path       the path
+     * @param acceptType the accept type
+     */
+    protected TemplateViewRouteImpl(String path, String acceptType) {
+        super(path, acceptType);
+    }
+
+    /**
      * factory method
      *
      * @param path   the path
@@ -67,17 +77,6 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
             }
         };
     }
-
-    /**
-     * Constructor
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     */
-    protected TemplateViewRouteImpl(String path, String acceptType) {
-        super(path, acceptType);
-    }
-
 
     @Override
     public Object render(Object object) {

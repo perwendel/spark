@@ -25,9 +25,7 @@ import java.util.Collection;
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Arjen Poutsma
- *
- * Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
- *
+ *         Code copied from Spring source. Modifications made (mostly removal of methods) by Per Wendel.
  */
 public abstract class CollectionUtils {
 

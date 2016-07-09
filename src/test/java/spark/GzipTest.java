@@ -46,6 +46,17 @@ public class GzipTest {
         stop();
     }
 
+    /**
+     * Used to verify that "normal" functionality works after static files mapping
+     */
+    private static void testGet() throws Exception {
+        SparkTestUtil testUtil = new SparkTestUtil(4567);
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
+
+        Assert.assertEquals(200, response.status);
+        Assert.assertTrue(response.body.contains(GzipExample.FO_SHIZZY));
+    }
+
     @Test
     public void checkGzipCompression() throws Exception {
         String decompressed = GzipExample.getAndDecompress();
@@ -57,17 +68,6 @@ public class GzipTest {
         String decompressed = GzipClient.getAndDecompress("http://localhost:4567/css/style.css");
         Assert.assertEquals("Content of css file", decompressed);
         testGet();
-    }
-
-    /**
-     * Used to verify that "normal" functionality works after static files mapping
-     */
-    private static void testGet() throws Exception {
-        SparkTestUtil testUtil = new SparkTestUtil(4567);
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
-
-        Assert.assertEquals(200, response.status);
-        Assert.assertTrue(response.body.contains(GzipExample.FO_SHIZZY));
     }
 
 }

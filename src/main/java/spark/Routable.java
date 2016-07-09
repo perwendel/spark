@@ -30,7 +30,26 @@ abstract class Routable {
      * @param httpMethod the HTTP method
      * @param route      the route implementation
      */
+    @Deprecated
     protected abstract void addRoute(String httpMethod, RouteImpl route);
+
+    /**
+     * Adds a route
+     *
+     * @param httpMethod the HTTP method
+     * @param route      the route implementation
+     */
+    protected abstract void addRoute(HttpMethod httpMethod, RouteImpl route);
+
+    /**
+     * Adds a filter
+     *
+     * @param httpMethod the HTTP method
+     * @param filter     the route implementation
+     * @deprecated
+     */
+    @Deprecated
+    protected abstract void addFilter(String httpMethod, FilterImpl filter);
 
     /**
      * Adds a filter
@@ -38,7 +57,25 @@ abstract class Routable {
      * @param httpMethod the HTTP method
      * @param filter     the route implementation
      */
-    protected abstract void addFilter(String httpMethod, FilterImpl filter);
+    protected abstract void addFilter(HttpMethod httpMethod, FilterImpl filter);
+
+    /**
+     * Remove a route
+     *
+     * @param httpMethod the HTTP method
+     * @param path       the path of the route
+     * @deprecated
+     */
+    @Deprecated
+    protected abstract boolean removeRoute(String httpMethod, String path);
+
+    /**
+     * Remove a route
+     *
+     * @param httpMethod the HTTP method
+     * @param path       the path of the route
+     */
+    protected abstract boolean removeRoute(HttpMethod httpMethod, String path);
 
     /////////////////////////////
     // Default implementations //
@@ -50,7 +87,7 @@ abstract class Routable {
      * @param route The route
      */
     public void get(final String path, final Route route) {
-        addRoute(HttpMethod.get.name(), RouteImpl.create(path, route));
+        addRoute(HttpMethod.GET, RouteImpl.create(path, route));
     }
 
     /**
@@ -60,7 +97,7 @@ abstract class Routable {
      * @param route The route
      */
     public void post(String path, Route route) {
-        addRoute(HttpMethod.post.name(), RouteImpl.create(path, route));
+        addRoute(HttpMethod.POST, RouteImpl.create(path, route));
     }
 
     /**
@@ -70,7 +107,7 @@ abstract class Routable {
      * @param route The route
      */
     public void put(String path, Route route) {
-        addRoute(HttpMethod.put.name(), RouteImpl.create(path, route));
+        addRoute(HttpMethod.PUT, RouteImpl.create(path, route));
     }
 
     /**
@@ -80,7 +117,7 @@ abstract class Routable {
      * @param route The route
      */
     public void patch(String path, Route route) {
-        addRoute(HttpMethod.patch.name(), RouteImpl.create(path, route));
+        addRoute(HttpMethod.PATCH, RouteImpl.create(path, route));
     }
 
     /**
@@ -90,7 +127,7 @@ abstract class Routable {
      * @param route The route
      */
     public void delete(String path, Route route) {
-        addRoute(HttpMethod.delete.name(), RouteImpl.create(path, route));
+        addRoute(HttpMethod.DELETE, RouteImpl.create(path, route));
     }
 
     /**
@@ -100,7 +137,7 @@ abstract class Routable {
      * @param route The route
      */
     public void head(String path, Route route) {
-        addRoute(HttpMethod.head.name(), RouteImpl.create(path, route));
+        addRoute(HttpMethod.HEAD, RouteImpl.create(path, route));
     }
 
     /**
@@ -110,7 +147,7 @@ abstract class Routable {
      * @param route The route
      */
     public void trace(String path, Route route) {
-        addRoute(HttpMethod.trace.name(), RouteImpl.create(path, route));
+        addRoute(HttpMethod.TRACE, RouteImpl.create(path, route));
     }
 
     /**
@@ -120,7 +157,7 @@ abstract class Routable {
      * @param route The route
      */
     public void connect(String path, Route route) {
-        addRoute(HttpMethod.connect.name(), RouteImpl.create(path, route));
+        addRoute(HttpMethod.CONNECT, RouteImpl.create(path, route));
     }
 
     /**
@@ -130,7 +167,7 @@ abstract class Routable {
      * @param route The route
      */
     public void options(String path, Route route) {
-        addRoute(HttpMethod.options.name(), RouteImpl.create(path, route));
+        addRoute(HttpMethod.OPTIONS, RouteImpl.create(path, route));
     }
 
     /**
@@ -140,7 +177,7 @@ abstract class Routable {
      * @param filter The filter
      */
     public void before(String path, Filter filter) {
-        addFilter(HttpMethod.before.name(), FilterImpl.create(path, filter));
+        addFilter(HttpMethod.BEFORE, FilterImpl.create(path, filter));
     }
 
     /**
@@ -150,7 +187,18 @@ abstract class Routable {
      * @param filter The filter
      */
     public void after(String path, Filter filter) {
-        addFilter(HttpMethod.after.name(), FilterImpl.create(path, filter));
+        addFilter(HttpMethod.AFTER, FilterImpl.create(path, filter));
+    }
+
+    /**
+     * Un maps a route or filter specific to the HTTP method.
+     * If the HTTP method is set to {@link spark.route.HttpMethod#UNSUPPORTED} then it will remove all routes and filters for the path
+     *
+     * @param path       the path
+     * @param httpMethod the HTTP method
+     */
+    public void remove(String path, HttpMethod httpMethod) {
+        removeRoute(httpMethod, path);
     }
 
     //////////////////////////////////////////////////
@@ -165,7 +213,7 @@ abstract class Routable {
      * @param route      The route
      */
     public void get(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.get.name(), RouteImpl.create(path, acceptType, route));
+        addRoute(HttpMethod.GET, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -176,7 +224,7 @@ abstract class Routable {
      * @param route      The route
      */
     public void post(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.post.name(), RouteImpl.create(path, acceptType, route));
+        addRoute(HttpMethod.POST, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -187,7 +235,7 @@ abstract class Routable {
      * @param route      The route
      */
     public void put(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.put.name(), RouteImpl.create(path, acceptType, route));
+        addRoute(HttpMethod.PUT, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -198,7 +246,7 @@ abstract class Routable {
      * @param route      The route
      */
     public void patch(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.patch.name(), RouteImpl.create(path, acceptType, route));
+        addRoute(HttpMethod.PATCH, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -209,7 +257,7 @@ abstract class Routable {
      * @param route      The route
      */
     public void delete(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.delete.name(), RouteImpl.create(path, acceptType, route));
+        addRoute(HttpMethod.DELETE, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -220,7 +268,7 @@ abstract class Routable {
      * @param route      The route
      */
     public void head(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.head.name(), RouteImpl.create(path, acceptType, route));
+        addRoute(HttpMethod.HEAD, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -231,7 +279,7 @@ abstract class Routable {
      * @param route      The route
      */
     public void trace(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.trace.name(), RouteImpl.create(path, acceptType, route));
+        addRoute(HttpMethod.TRACE, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -242,7 +290,7 @@ abstract class Routable {
      * @param route      The route
      */
     public void connect(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.connect.name(), RouteImpl.create(path, acceptType, route));
+        addRoute(HttpMethod.CONNECT, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -253,7 +301,7 @@ abstract class Routable {
      * @param route      The route
      */
     public void options(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.options.name(), RouteImpl.create(path, acceptType, route));
+        addRoute(HttpMethod.OPTIONS, RouteImpl.create(path, acceptType, route));
     }
 
 
@@ -263,7 +311,7 @@ abstract class Routable {
      * @param filter The filter
      */
     public void before(Filter filter) {
-        addFilter(HttpMethod.before.name(), FilterImpl.create(SparkUtils.ALL_PATHS, filter));
+        addFilter(HttpMethod.BEFORE, FilterImpl.create(SparkUtils.ALL_PATHS, filter));
     }
 
     /**
@@ -272,7 +320,7 @@ abstract class Routable {
      * @param filter The filter
      */
     public void after(Filter filter) {
-        addFilter(HttpMethod.after.name(), FilterImpl.create(SparkUtils.ALL_PATHS, filter));
+        addFilter(HttpMethod.AFTER, FilterImpl.create(SparkUtils.ALL_PATHS, filter));
     }
 
     /**
@@ -283,7 +331,7 @@ abstract class Routable {
      * @param filter     The filter
      */
     public void before(String path, String acceptType, Filter filter) {
-        addFilter(HttpMethod.before.name(), FilterImpl.create(path, acceptType, filter));
+        addFilter(HttpMethod.BEFORE, FilterImpl.create(path, acceptType, filter));
     }
 
     /**
@@ -294,7 +342,7 @@ abstract class Routable {
      * @param filter     The filter
      */
     public void after(String path, String acceptType, Filter filter) {
-        addFilter(HttpMethod.after.name(), FilterImpl.create(path, acceptType, filter));
+        addFilter(HttpMethod.AFTER, FilterImpl.create(path, acceptType, filter));
     }
 
     //////////////////////////////////////////////////
@@ -313,7 +361,7 @@ abstract class Routable {
      * @param engine the template engine
      */
     public void get(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.get.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.GET, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -328,7 +376,7 @@ abstract class Routable {
                     String acceptType,
                     TemplateViewRoute route,
                     TemplateEngine engine) {
-        addRoute(HttpMethod.get.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.GET, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -339,7 +387,7 @@ abstract class Routable {
      * @param engine the template engine
      */
     public void post(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.post.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.POST, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -354,7 +402,7 @@ abstract class Routable {
                      String acceptType,
                      TemplateViewRoute route,
                      TemplateEngine engine) {
-        addRoute(HttpMethod.post.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.POST, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -365,7 +413,7 @@ abstract class Routable {
      * @param engine the template engine
      */
     public void put(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.put.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.PUT, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -380,7 +428,7 @@ abstract class Routable {
                     String acceptType,
                     TemplateViewRoute route,
                     TemplateEngine engine) {
-        addRoute(HttpMethod.put.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.PUT, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -391,7 +439,7 @@ abstract class Routable {
      * @param engine the template engine
      */
     public void delete(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.delete.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.DELETE, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -406,7 +454,7 @@ abstract class Routable {
                        String acceptType,
                        TemplateViewRoute route,
                        TemplateEngine engine) {
-        addRoute(HttpMethod.delete.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.DELETE, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -417,7 +465,7 @@ abstract class Routable {
      * @param engine the template engine
      */
     public void patch(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.patch.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.PATCH, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -432,7 +480,7 @@ abstract class Routable {
                       String acceptType,
                       TemplateViewRoute route,
                       TemplateEngine engine) {
-        addRoute(HttpMethod.patch.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.PATCH, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -443,7 +491,7 @@ abstract class Routable {
      * @param engine the template engine
      */
     public void head(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.head.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.HEAD, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -458,7 +506,7 @@ abstract class Routable {
                      String acceptType,
                      TemplateViewRoute route,
                      TemplateEngine engine) {
-        addRoute(HttpMethod.head.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.HEAD, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -469,7 +517,7 @@ abstract class Routable {
      * @param engine the template engine
      */
     public void trace(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.trace.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.TRACE, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -484,7 +532,7 @@ abstract class Routable {
                       String acceptType,
                       TemplateViewRoute route,
                       TemplateEngine engine) {
-        addRoute(HttpMethod.trace.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.TRACE, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -495,7 +543,7 @@ abstract class Routable {
      * @param engine the template engine
      */
     public void connect(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.connect.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.CONNECT, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -510,7 +558,7 @@ abstract class Routable {
                         String acceptType,
                         TemplateViewRoute route,
                         TemplateEngine engine) {
-        addRoute(HttpMethod.connect.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.CONNECT, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -521,7 +569,7 @@ abstract class Routable {
      * @param engine the template engine
      */
     public void options(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.options.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.OPTIONS, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -536,7 +584,7 @@ abstract class Routable {
                         String acceptType,
                         TemplateViewRoute route,
                         TemplateEngine engine) {
-        addRoute(HttpMethod.options.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.OPTIONS, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     //////////////////////////////////////////////////
@@ -555,7 +603,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void get(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.get.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.GET, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -567,7 +615,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void get(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.get.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.GET, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -578,7 +626,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void post(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.post.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.POST, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -590,7 +638,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void post(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.post.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.POST, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -601,7 +649,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void put(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.put.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.PUT, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -613,7 +661,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void put(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.put.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.PUT, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -624,7 +672,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void delete(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.delete.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.DELETE, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -639,7 +687,7 @@ abstract class Routable {
                        String acceptType,
                        Route route,
                        ResponseTransformer transformer) {
-        addRoute(HttpMethod.delete.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.DELETE, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -650,7 +698,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void head(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.head.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.HEAD, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -662,7 +710,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void head(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.head.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.HEAD, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -673,7 +721,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void connect(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.connect.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.CONNECT, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -688,7 +736,7 @@ abstract class Routable {
                         String acceptType,
                         Route route,
                         ResponseTransformer transformer) {
-        addRoute(HttpMethod.connect.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.CONNECT, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -699,7 +747,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void trace(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.trace.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.TRACE, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -714,7 +762,7 @@ abstract class Routable {
                       String acceptType,
                       Route route,
                       ResponseTransformer transformer) {
-        addRoute(HttpMethod.trace.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.TRACE, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -725,7 +773,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void options(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.options.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.OPTIONS, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -740,7 +788,7 @@ abstract class Routable {
                         String acceptType,
                         Route route,
                         ResponseTransformer transformer) {
-        addRoute(HttpMethod.options.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.OPTIONS, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -751,7 +799,7 @@ abstract class Routable {
      * @param transformer the response transformer
      */
     public void patch(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.patch.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.PATCH, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -766,7 +814,7 @@ abstract class Routable {
                       String acceptType,
                       Route route,
                       ResponseTransformer transformer) {
-        addRoute(HttpMethod.patch.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.PATCH, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
 }

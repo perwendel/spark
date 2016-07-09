@@ -9,12 +9,12 @@ import static org.junit.Assert.assertNotNull;
 public class RouteImplTest {
 
     private final static String PATH_TEST = "/opt/test";
-    private final static String ACCEPT_TYPE_TEST  = "*/test";
+    private final static String ACCEPT_TYPE_TEST = "*/test";
 
     private RouteImpl route;
 
     @Test
-    public void testConstructor(){
+    public void testConstructor() {
         route = new RouteImpl(PATH_TEST) {
             @Override
             public Object handle(Request request, Response response) throws Exception {
@@ -32,14 +32,14 @@ public class RouteImplTest {
     }
 
     @Test
-    public void testCreate_whenOutAssignAcceptTypeInTheParameters_thenReturnPathAndAcceptTypeSuccessfully(){
+    public void testCreate_whenOutAssignAcceptTypeInTheParameters_thenReturnPathAndAcceptTypeSuccessfully() {
         route = RouteImpl.create(PATH_TEST, null);
         assertEquals("Should return path specified", PATH_TEST, route.getPath());
         assertEquals("Should return the default accept type", RouteImpl.DEFAULT_ACCEPT_TYPE, route.getAcceptType());
     }
 
     @Test
-    public void testCreate_whenAcceptTypeNullValueInTheParameters_thenReturnPathAndAcceptTypeSuccessfully(){
+    public void testCreate_whenAcceptTypeNullValueInTheParameters_thenReturnPathAndAcceptTypeSuccessfully() {
         route = RouteImpl.create(PATH_TEST, null, null);
         assertEquals("Should return path specified", PATH_TEST, route.getPath());
         assertEquals("Should return the default accept type", RouteImpl.DEFAULT_ACCEPT_TYPE, route.getAcceptType());

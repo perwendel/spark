@@ -32,7 +32,7 @@ final class BeforeFilters {
     static void execute(RouteContext context) throws Exception {
         Object content = context.body().get();
 
-        List<RouteMatch> matchSet = context.routeMatcher().findMultiple(HttpMethod.before, context.uri(), context.acceptType());
+        List<RouteMatch> matchSet = context.routeMatcher().findMultiple(HttpMethod.BEFORE, context.uri(), context.acceptType());
 
         for (RouteMatch filterMatch : matchSet) {
             Object filterTarget = filterMatch.getTarget();

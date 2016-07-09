@@ -17,25 +17,7 @@ public class MimeParse {
      */
     public static final String NO_MIME_TYPE = "";
 
-    /**
-     * Parse results container
-     */
-    private static class ParseResults {
-        String type;
-
-        String subType;
-
-        // !a dictionary of all the parameters for the media range
-        Map<String, String> params;
-
-        @Override
-        public String toString() {
-            StringBuffer s = new StringBuffer("('" + type + "', '" + subType + "', {");
-            for (String k : params.keySet()) {
-                s.append("'" + k + "':'" + params.get(k) + "',");
-            }
-            return s.append("})").toString();
-        }
+    private MimeParse() {
     }
 
     /**
@@ -85,7 +67,7 @@ public class MimeParse {
      * in the params dictionary, filling it in with a proper default if
      * necessary.
      *
-     * @param range
+     * @param range the media range
      */
     private static ParseResults parseMediaRange(String range) {
         ParseResults results = parseMimeType(range);
@@ -98,42 +80,14 @@ public class MimeParse {
     }
 
     /**
-     * Structure for holding a fitness/quality combo
-     */
-    private static class FitnessAndQuality implements Comparable<FitnessAndQuality> {
-        int fitness;
-
-        float quality;
-
-        String mimeType; // optionally used
-
-        private FitnessAndQuality(int fitness, float quality) {
-            this.fitness = fitness;
-            this.quality = quality;
-        }
-
-        public int compareTo(FitnessAndQuality o) {
-            if (fitness == o.fitness) {
-                if (quality == o.quality) {
-                    return 0;
-                } else {
-                    return quality < o.quality ? -1 : 1;
-                }
-            } else {
-                return fitness < o.fitness ? -1 : 1;
-            }
-        }
-    }
-
-    /**
      * Find the best match for a given mimeType against a list of media_ranges
      * that have already been parsed by MimeParse.parseMediaRange(). Returns a
      * tuple of the fitness value and the value of the 'q' quality parameter of
      * the best match, or (-1, 0) if no match was found. Just as for
      * quality_parsed(), 'parsed_ranges' must be a list of parsed media ranges.
      *
-     * @param mimeType
-     * @param parsedRanges
+     * @param mimeType     the Mime type
+     * @param parsedRanges the parsed ranges
      */
     private static FitnessAndQuality fitnessAndQualityParsed(String mimeType, Collection<ParseResults> parsedRanges) {
         int bestFitness = -1;
@@ -203,7 +157,53 @@ public class MimeParse {
         }
     }
 
-    private MimeParse() {
+    /**
+     * Parse results container
+     */
+    private static class ParseResults {
+        String type;
+
+        String subType;
+
+        // !a dictionary of all the parameters for the media range
+        Map<String, String> params;
+
+        @Override
+        public String toString() {
+            StringBuilder s = new StringBuilder("('" + type + "', '" + subType + "', {");
+            for (String k : params.keySet()) {
+                s.append("'").append(k).append("':'").append(params.get(k)).append("',");
+            }
+            return s.append("})").toString();
+        }
+    }
+
+    /**
+     * Structure for holding a fitness/quality combo
+     */
+    private static class FitnessAndQuality implements Comparable<FitnessAndQuality> {
+        int fitness;
+
+        float quality;
+
+        String mimeType; // optionally used
+
+        private FitnessAndQuality(int fitness, float quality) {
+            this.fitness = fitness;
+            this.quality = quality;
+        }
+
+        public int compareTo(FitnessAndQuality o) {
+            if (fitness == o.fitness) {
+                if (quality == o.quality) {
+                    return 0;
+                } else {
+                    return quality < o.quality ? -1 : 1;
+                }
+            } else {
+                return fitness < o.fitness ? -1 : 1;
+            }
+        }
     }
 
 }

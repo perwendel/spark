@@ -18,11 +18,9 @@ public class ServiceTest {
 
     private static final String IP_ADDRESS = "127.0.0.1";
     private static final int NOT_FOUND_STATUS_CODE = HttpServletResponse.SC_NOT_FOUND;
-
-    private Service service;
-
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+    private Service service;
 
     @Before
     public void test() {

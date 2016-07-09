@@ -44,10 +44,8 @@ import spark.staticfiles.StaticFilesConfiguration;
  * @author Per Wendel
  */
 public class SparkFilter implements Filter {
-    private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
-
     public static final String APPLICATION_CLASS_PARAM = "applicationClass";
-
+    private static final Logger LOG = LoggerFactory.getLogger(SparkFilter.class);
     private String filterPath;
 
     private MatcherFilter matcherFilter;

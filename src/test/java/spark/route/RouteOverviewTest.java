@@ -30,6 +30,10 @@ public class RouteOverviewTest {
     private final static int ROUTE_CLASS = 5;
     private final static int ROUTE_METHOD_REF = 6;
     private final static int ROUTE_LAMBDA = 7;
+    // fields/classes/methods to obtain names from
+    private static Route routeField = (Request request, Response response) -> "";
+    private static Filter filterField = (Request request, Response response) -> {
+    };
 
     @BeforeClass
     public static void setup() {
@@ -37,16 +41,29 @@ public class RouteOverviewTest {
         before("/0", RouteOverviewTest.filterField);
         before("/1", new FilterImplementer());
         before("/2", RouteOverviewTest::filterMethodRef);
-        before("3",  ((request, response) -> {}));
-        get("/4",    RouteOverviewTest.routeField);
-        get("/5",    new RouteImplementer());
-        get("/6",    RouteOverviewTest::routeMethodRef);
-        get("/7",    ((request, response) -> ""));
+        before("3", ((request, response) -> {
+        }));
+        get("/4", RouteOverviewTest.routeField);
+        get("/5", new RouteImplementer());
+        get("/6", RouteOverviewTest::routeMethodRef);
+        get("/7", ((request, response) -> ""));
     }
 
     @AfterClass
     public static void shutdown() throws Exception {
         stop();
+    }
+
+    private static String routeMethodRef(Request request, Response response) {
+        return "";
+    }
+
+    private static void filterMethodRef(Request request, Response response) {
+    }
+
+    // Helper to improve test readability
+    private static String routeName(int index) {
+        return createHtmlForRouteTarget(routes.get(index).target).replace("<b>", ""); // Remove HTML for the test
     }
 
     @Test
@@ -100,30 +117,17 @@ public class RouteOverviewTest {
         assertThat(routeName(ROUTE_LAMBDA), containsString("RouteOverviewTest???"));
     }
 
-    // fields/classes/methods to obtain names from
-    private static Route routeField = (Request request, Response response) -> "";
     private static class RouteImplementer implements Route {
         @Override
         public Object handle(Request request, Response response) throws Exception {
             return "";
         }
     }
-    private static String routeMethodRef(Request request, Response response) {
-        return "";
-    }
-    private static Filter filterField = (Request request, Response response) -> {
-    };
+
     private static class FilterImplementer implements Filter {
         @Override
         public void handle(Request request, Response response) throws Exception {
         }
-    }
-    private static void filterMethodRef(Request request, Response response) {
-    }
-
-    // Helper to improve test readability
-    private static String routeName(int index) {
-        return createHtmlForRouteTarget(routes.get(index).target).replace("<b>", ""); // Remove HTML for the test
     }
 
 }

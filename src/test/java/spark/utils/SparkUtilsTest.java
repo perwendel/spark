@@ -1,12 +1,14 @@
 package spark.utils;
 
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class SparkUtilsTest {
 
@@ -18,8 +20,8 @@ public class SparkUtilsTest {
         List<String> actual = SparkUtils.convertRouteToList("/api/person/:id");
 
         assertThat("Should return route as a list of individual elements that path is made of",
-                actual,
-                is(expected));
+                   actual,
+                   is(expected));
 
     }
 
@@ -27,7 +29,7 @@ public class SparkUtilsTest {
     public void testIsParam_whenParameterFormattedAsParm() throws Exception {
 
         assertTrue("Should return true because parameter follows convention of a parameter (:paramname)",
-                SparkUtils.isParam(":param"));
+                   SparkUtils.isParam(":param"));
 
     }
 
@@ -35,7 +37,7 @@ public class SparkUtilsTest {
     public void testIsParam_whenParameterNotFormattedAsParm() throws Exception {
 
         assertFalse("Should return false because parameter does not follows convention of a parameter (:paramname)",
-                SparkUtils.isParam(".param"));
+                    SparkUtils.isParam(".param"));
 
     }
 

@@ -26,23 +26,6 @@ public class SslStores {
     protected String truststoreFile;
     protected String truststorePassword;
 
-    /**
-     * Creates a Stores instance.
-     *
-     * @param keystoreFile the keystoreFile
-     * @param keystorePassword the keystorePassword
-     * @param truststoreFile the truststoreFile
-     * @param truststorePassword the truststorePassword
-     * @return the SslStores instance.
-     */
-    public static SslStores create(String keystoreFile,
-                                String keystorePassword,
-                                String truststoreFile,
-                                String truststorePassword) {
-
-        return new SslStores(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
-    }
-
     private SslStores(String keystoreFile,
                       String keystorePassword,
                       String truststoreFile,
@@ -51,6 +34,23 @@ public class SslStores {
         this.keystorePassword = keystorePassword;
         this.truststoreFile = truststoreFile;
         this.truststorePassword = truststorePassword;
+    }
+
+    /**
+     * Creates a Stores instance.
+     *
+     * @param keystoreFile       the keystoreFile
+     * @param keystorePassword   the keystorePassword
+     * @param truststoreFile     the truststoreFile
+     * @param truststorePassword the truststorePassword
+     * @return the SslStores instance.
+     */
+    public static SslStores create(String keystoreFile,
+                                   String keystorePassword,
+                                   String truststoreFile,
+                                   String truststorePassword) {
+
+        return new SslStores(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
 
     /**

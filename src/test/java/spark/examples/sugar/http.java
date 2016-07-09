@@ -23,12 +23,12 @@ import spark.Spark;
  */
 public class http extends Spark {
 
-    public interface SimpleRoute {
-        Object handle();
-    }
-
     public static void get(String path, SimpleRoute route) {
         get(path, (q, a) -> route.handle());
+    }
+
+    public interface SimpleRoute {
+        Object handle();
     }
 
 }

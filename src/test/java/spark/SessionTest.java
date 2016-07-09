@@ -1,18 +1,21 @@
 package spark;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.powermock.reflect.Whitebox;
-
-import javax.servlet.http.HttpSession;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.powermock.reflect.Whitebox;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SessionTest {
 
@@ -61,14 +64,14 @@ public class SessionTest {
 
         HttpSession internalSession = Whitebox.getInternalState(session, "session");
         assertEquals("Internal session should be set to the http session provided during instantiation",
-                httpSession, internalSession);
+                     httpSession, internalSession);
     }
 
     @Test
     public void testRaw() {
 
         assertEquals("Should return the HttpSession provided during instantiation",
-                httpSession, session.raw());
+                     httpSession, session.raw());
     }
 
     @Test
@@ -101,9 +104,9 @@ public class SessionTest {
     @Test
     public void testCreationTime() {
 
-        when(httpSession.getCreationTime()).thenReturn(10000000l);
+        when(httpSession.getCreationTime()).thenReturn(10000000L);
 
-        assertEquals("Should return creationTime from HttpSession", 10000000l, session.creationTime());
+        assertEquals("Should return creationTime from HttpSession", 10000000L, session.creationTime());
     }
 
     @Test
@@ -117,9 +120,9 @@ public class SessionTest {
     @Test
     public void testLastAccessedTime() {
 
-        when(httpSession.getLastAccessedTime()).thenReturn(20000000l);
+        when(httpSession.getLastAccessedTime()).thenReturn(20000000L);
 
-        assertEquals("Should return lastAccessedTime from HttpSession", 20000000l, session.lastAccessedTime());
+        assertEquals("Should return lastAccessedTime from HttpSession", 20000000L, session.lastAccessedTime());
     }
 
     @Test

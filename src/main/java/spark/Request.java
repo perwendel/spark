@@ -100,6 +100,52 @@ public class Request {
         changeMatch(match);
     }
 
+    private static Map<String, String> getParams(List<String> request, List<String> matched) {
+        LOG.debug("get params");
+
+        Map<String, String> params = new HashMap<>();
+
+        for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
+            String matchedPart = matched.get(i);
+            if (SparkUtils.isParam(matchedPart)) {
+                LOG.debug("matchedPart: "
+                                  + matchedPart
+                                  + " = "
+                                  + request.get(i));
+                params.put(matchedPart.toLowerCase(), request.get(i));
+            }
+        }
+        return Collections.unmodifiableMap(params);
+    }
+
+    private static List<String> getSplat(List<String> request, List<String> matched) {
+        LOG.debug("get splat");
+
+        int nbrOfRequestParts = request.size();
+        int nbrOfMatchedParts = matched.size();
+
+        boolean sameLength = (nbrOfRequestParts == nbrOfMatchedParts);
+
+        List<String> splat = new ArrayList<>();
+
+        for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
+            String matchedPart = matched.get(i);
+
+            if (SparkUtils.isSplat(matchedPart)) {
+
+                StringBuilder splatParam = new StringBuilder(request.get(i));
+                if (!sameLength && (i == (nbrOfMatchedParts - 1))) {
+                    for (int j = i + 1; j < nbrOfRequestParts; j++) {
+                        splatParam.append("/");
+                        splatParam.append(request.get(j));
+                    }
+                }
+                splat.add(splatParam.toString());
+            }
+        }
+        return Collections.unmodifiableList(splat);
+    }
+
     protected void changeMatch(RouteMatch match) {
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
@@ -177,7 +223,6 @@ public class Request {
     public int port() {
         return servletRequest.getServerPort();
     }
-
 
     /**
      * @return the path info
@@ -338,13 +383,12 @@ public class Request {
         return (T) servletRequest.getAttribute(attribute);
     }
 
-
     /**
      * @return all attributes
      */
     public Set<String> attributes() {
         Set<String> attrList = new HashSet<>();
-        Enumeration<String> attributes = (Enumeration<String>) servletRequest.getAttributeNames();
+        Enumeration<String> attributes = servletRequest.getAttributeNames();
         while (attributes.hasMoreElements()) {
             attrList.add(attributes.nextElement());
         }
@@ -461,52 +505,6 @@ public class Request {
      */
     public String protocol() {
         return servletRequest.getProtocol();
-    }
-
-    private static Map<String, String> getParams(List<String> request, List<String> matched) {
-        LOG.debug("get params");
-
-        Map<String, String> params = new HashMap<>();
-
-        for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
-            String matchedPart = matched.get(i);
-            if (SparkUtils.isParam(matchedPart)) {
-                LOG.debug("matchedPart: "
-                                  + matchedPart
-                                  + " = "
-                                  + request.get(i));
-                params.put(matchedPart.toLowerCase(), request.get(i));
-            }
-        }
-        return Collections.unmodifiableMap(params);
-    }
-
-    private static List<String> getSplat(List<String> request, List<String> matched) {
-        LOG.debug("get splat");
-
-        int nbrOfRequestParts = request.size();
-        int nbrOfMatchedParts = matched.size();
-
-        boolean sameLength = (nbrOfRequestParts == nbrOfMatchedParts);
-
-        List<String> splat = new ArrayList<>();
-
-        for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
-            String matchedPart = matched.get(i);
-
-            if (SparkUtils.isSplat(matchedPart)) {
-
-                StringBuilder splatParam = new StringBuilder(request.get(i));
-                if (!sameLength && (i == (nbrOfMatchedParts - 1))) {
-                    for (int j = i + 1; j < nbrOfRequestParts; j++) {
-                        splatParam.append("/");
-                        splatParam.append(request.get(j));
-                    }
-                }
-                splat.add(splatParam.toString());
-            }
-        }
-        return Collections.unmodifiableList(splat);
     }
 
     /**

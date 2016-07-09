@@ -47,17 +47,17 @@ import spark.utils.IOUtils;
  * TODO: ETAG ?
  */
 public class StaticFilesConfiguration {
+    public static StaticFilesConfiguration servletInstance = new StaticFilesConfiguration();
     private final Logger LOG = LoggerFactory.getLogger(StaticFilesConfiguration.class);
-
     private List<AbstractResourceHandler> staticResourceHandlers = null;
     private List<JarResourceHandler> jarResourceHandlers = null;
-
     private boolean staticResourcesSet = false;
     private boolean externalStaticResourcesSet = false;
-
-    public static StaticFilesConfiguration servletInstance = new StaticFilesConfiguration();
-
     private Map<String, String> customHeaders = new HashMap<>();
+
+    public static StaticFilesConfiguration create() {
+        return new StaticFilesConfiguration();
+    }
 
     /**
      * @return true if consumed, false otherwise.
@@ -65,17 +65,10 @@ public class StaticFilesConfiguration {
     public boolean consume(HttpServletRequest httpRequest,
                            HttpServletResponse httpResponse) throws IOException {
 
-        if (consumeWithFileResourceHandlers(httpRequest, httpResponse)) {
-            return true;
-        }
+        return consumeWithFileResourceHandlers(httpRequest, httpResponse)
+                || consumeWithJarResourceHandler(httpRequest, httpResponse);
 
-        if (consumeWithJarResourceHandler(httpRequest, httpResponse)) {
-            return true;
-        }
-
-        return false;
     }
-
 
     private boolean consumeWithFileResourceHandlers(HttpServletRequest httpRequest,
                                                     HttpServletResponse httpResponse) throws IOException {
@@ -226,10 +219,6 @@ public class StaticFilesConfiguration {
             externalStaticResourcesSet = true;
         }
 
-    }
-
-    public static StaticFilesConfiguration create() {
-        return new StaticFilesConfiguration();
     }
 
     public void setExpireTimeSeconds(long expireTimeSeconds) {

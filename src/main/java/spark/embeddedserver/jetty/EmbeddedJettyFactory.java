@@ -27,7 +27,9 @@ import spark.staticfiles.StaticFilesConfiguration;
  */
 public class EmbeddedJettyFactory implements EmbeddedServerFactory {
 
-    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler) {
+    public EmbeddedServer create(Routes routeMatcher,
+                                 StaticFilesConfiguration staticFilesConfiguration,
+                                 boolean hasMultipleHandler) {
         MatcherFilter matcherFilter = new MatcherFilter(routeMatcher, staticFilesConfiguration, false, hasMultipleHandler);
         matcherFilter.init(null);
 

@@ -42,14 +42,9 @@ public class WebSocketCreatorFactoryTest {
         try {
             WebSocketCreatorFactory.create(FailingHandler.class);
             fail("Handler creation should have thrown a RunTimeException");
-        } catch(RuntimeException ex) {
+        } catch (RuntimeException ex) {
             assertEquals("Could not instantiate websocket handler", ex.getMessage());
         }
-
-    }
-
-    @WebSocket
-    class FailingHandler {
 
     }
 
@@ -63,6 +58,11 @@ public class WebSocketCreatorFactoryTest {
     }
 
     static class InvalidHandler {
+
+    }
+
+    @WebSocket
+    class FailingHandler {
 
     }
 }

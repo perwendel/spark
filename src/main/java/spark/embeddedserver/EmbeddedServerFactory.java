@@ -27,5 +27,7 @@ public interface EmbeddedServerFactory {
     /**
      * Creates an embedded server instance.
      */
-    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler);
+    EmbeddedServer create(Routes routeMatcher,
+                          StaticFilesConfiguration staticFilesConfiguration,
+                          boolean hasMultipleHandler);
 }

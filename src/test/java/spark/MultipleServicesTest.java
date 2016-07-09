@@ -54,6 +54,30 @@ public class MultipleServicesTest {
         second.stop();
     }
 
+    private static Service igniteFirstService() {
+
+        Service http = ignite(); // I give the variable the name 'http' for the code to make sense when adding routes.
+
+        http.get("/hello", (q, a) -> "Hello World!");
+
+        return http;
+    }
+
+    private static Service igniteSecondService() {
+
+        Service http = ignite()
+                .port(1234)
+                .staticFileLocation("/public")
+                .threadPool(40);
+
+        http.get("/hello", (q, a) -> "Hello World!");
+        http.get("/uniqueforsecond", (q, a) -> "Bompton");
+
+        http.redirect.any("/hi", "/hello");
+
+        return http;
+    }
+
     @Test
     public void testGetHello() throws Exception {
         SparkTestUtil.UrlResponse response = firstClient.doMethod("GET", "/hello", null);
@@ -92,30 +116,6 @@ public class MultipleServicesTest {
         SparkTestUtil.UrlResponse response = secondClient.doMethod("GET", "/css/style.css", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of css file", response.body);
-    }
-
-    private static Service igniteFirstService() {
-
-        Service http = ignite(); // I give the variable the name 'http' for the code to make sense when adding routes.
-
-        http.get("/hello", (q, a) -> "Hello World!");
-
-        return http;
-    }
-
-    private static Service igniteSecondService() {
-
-        Service http = ignite()
-                .port(1234)
-                .staticFileLocation("/public")
-                .threadPool(40);
-
-        http.get("/hello", (q, a) -> "Hello World!");
-        http.get("/uniqueforsecond", (q, a) -> "Bompton");
-
-        http.redirect.any("/hi", "/hello");
-
-        return http;
     }
 
 
