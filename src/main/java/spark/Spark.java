@@ -1001,6 +1001,15 @@ public class Spark {
     }
 
     /**
+     * Configures the embedded web server's context path.
+     *
+     * @param contextPath        context path.
+     */
+    public static void contextPath(String contextPath) {
+        getInstance().contextPath(contextPath);
+    }
+
+    /**
      * Sets the folder in classpath serving static files. Observe: this method
      * must be called before all other methods.
      * -
