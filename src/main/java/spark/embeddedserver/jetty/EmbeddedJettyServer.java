@@ -28,6 +28,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
@@ -77,7 +78,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                        CountDownLatch latch,
                        int maxThreads,
                        int minThreads,
-                       int threadIdleTimeoutMillis) {
+                       int threadIdleTimeoutMillis,
+                       String contextPath) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -100,6 +102,13 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
         server = connector.getServer();
         server.setConnectors(new Connector[] {connector});
+
+        if (contextPath != null) {
+            ContextHandler contextHandler = new ContextHandler();
+            contextHandler.setContextPath(contextPath);
+            contextHandler.setHandler(handler);
+            handler = contextHandler;
+        }
 
         ServletContextHandler webSocketServletContextHandler =
                 WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);

@@ -66,6 +66,7 @@ public final class Service extends Routable {
     protected int minThreads = -1;
     protected int threadIdleTimeoutMillis = -1;
     protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
+    protected String contextPath = null;
 
     protected EmbeddedServer server;
     protected Routes routes;
@@ -290,6 +291,23 @@ public final class Service extends Routable {
     }
 
     /**
+     * Configures the embedded web server's context path.
+     *
+     * @param contextPath the context path.
+     * @return the object with the embedded web server's context path configured.
+     */
+    public synchronized Service contextPath(String contextPath) {
+        requireNonNull(contextPath, "Context path cannot be null");
+
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+
+        this.contextPath = contextPath;
+        return this;
+    }
+
+    /**
      * Waits for the spark server to be initialized.
      * If it's already initialized will return immediately
      */
@@ -364,7 +382,8 @@ public final class Service extends Routable {
                             latch,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis);
+                            threadIdleTimeoutMillis,
+                            contextPath);
                 }).start();
             }
             initialized = true;
