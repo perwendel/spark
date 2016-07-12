@@ -86,4 +86,14 @@ public class ExternalResource extends AbstractFileResolvingResource {
     public String getPath() {
         return file.getPath();
     }
+    
+    @Override
+    public String getFilename() {
+    	
+    	if(file != null){
+    		return file.getName();
+    	}
+    	
+    	return super.getFilename();
+    }
 }
