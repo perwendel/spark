@@ -1,14 +1,13 @@
 package spark;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.powermock.reflect.Whitebox;
-
 import spark.ssl.SslStores;
+
+import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -25,7 +24,7 @@ public class ServiceTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
-    public void test() {
+    public void before_each_test() {
         service = ignite();
     }
 
@@ -192,5 +191,22 @@ public class ServiceTest {
 
         Whitebox.setInternalState(service, "initialized", true);
         service.webSocket("/", Object.class);
+    }
+
+    @Test
+    public void should_set_maxHeadersSize_when_service_is_not_initialized() throws Exception {
+        service.maxHeadersSize(1234);
+
+        final int maxHeadersSize = Whitebox.getInternalState(service, "maxHeadersSize");
+        assertEquals("MaxHeadersSize should be set to the value provided.", 1234, maxHeadersSize);
+    }
+
+    @Test
+    public void should_throw_exception_if_setting_maxHeadersSize_when_service_is_initialized() throws Exception {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("This must be done before route mapping has begun");
+
+        Whitebox.setInternalState(service, "initialized", true);
+        service.maxHeadersSize(1234);
     }
 }

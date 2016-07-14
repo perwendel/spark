@@ -936,6 +936,18 @@ public class Spark {
     }
 
     /**
+     * Sets the maximum size of both accepted request headers and response headers.
+     * This has to be called before any route mapping is done.
+     * If not called, maximum size of headers is set to 8192 bytes, as defined in
+     * {@see Service.SPARK_DEFAULT_MAX_HEADERS_SIZE}.
+     *
+     * @param maxHeaderSize Maximum headers size in bytes
+     */
+    public static void maxHeadersSize(final int maxHeaderSize) {
+        getInstance().maxHeadersSize(maxHeaderSize);
+    }
+
+    /**
      * Set the connection to be secure, using the specified keystore and
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore

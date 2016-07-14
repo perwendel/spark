@@ -16,14 +16,8 @@
  */
 package spark;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
 import spark.route.Routes;
@@ -31,6 +25,11 @@ import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
@@ -49,11 +48,13 @@ public final class Service extends Routable {
 
     public static final int SPARK_DEFAULT_PORT = 4567;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    public static final int SPARK_DEFAULT_MAX_HEADERS_SIZE = 8192;
 
     protected boolean initialized = false;
 
     protected int port = SPARK_DEFAULT_PORT;
     protected String ipAddress = "0.0.0.0";
+    protected int maxHeadersSize = SPARK_DEFAULT_MAX_HEADERS_SIZE;
 
     protected SslStores sslStores;
 
@@ -133,6 +134,22 @@ public final class Service extends Routable {
             throwBeforeRouteMappingException();
         }
         this.port = port;
+        return this;
+    }
+
+    /**
+     * Sets the maximum size of both accepted request headers and response headers.
+     * This has to be called before any route mapping is done.
+     * If not called, maximum size of headers is set to 8192 bytes, as defined in
+     * {@see SPARK_DEFAULT_MAX_HEADERS_SIZE}.
+     *
+     * @param maxHeaderSize Maximum headers size in bytes
+     */
+    public synchronized Service maxHeadersSize(final int maxHeadersSize) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        this.maxHeadersSize = maxHeadersSize;
         return this;
     }
 
@@ -364,7 +381,8 @@ public final class Service extends Routable {
                             latch,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis);
+                            threadIdleTimeoutMillis,
+                            maxHeadersSize);
                 }).start();
             }
             initialized = true;

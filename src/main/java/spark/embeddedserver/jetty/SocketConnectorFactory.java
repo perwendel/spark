@@ -16,14 +16,15 @@
  */
 package spark.embeddedserver.jetty;
 
-import java.util.concurrent.TimeUnit;
-
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-
 import spark.ssl.SslStores;
 import spark.utils.Assert;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Creates socket connectors.
@@ -38,11 +39,15 @@ public class SocketConnectorFactory {
      * @param port   port
      * @return - a server jetty
      */
-    public static ServerConnector createSocketConnector(Server server, String host, int port) {
+    public static ServerConnector createSocketConnector(final Server server,
+                                                        final String host,
+                                                        final int port,
+                                                        final int maxHeadersSize) {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
 
-        ServerConnector connector = new ServerConnector(server);
+        final HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory(maxHeadersSize);
+        ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
         initializeConnector(connector, host, port);
         return connector;
     }
@@ -57,10 +62,11 @@ public class SocketConnectorFactory {
      * @param port      port
      * @return a ssl socket jetty
      */
-    public static ServerConnector createSecureSocketConnector(Server server,
-                                                              String host,
-                                                              int port,
-                                                              SslStores sslStores) {
+    public static ServerConnector createSecureSocketConnector(final Server server,
+                                                              final String host,
+                                                              final int port,
+                                                              final SslStores sslStores,
+                                                              final int maxHeadersSize) {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
         Assert.notNull(sslStores, "'sslStores' must not be null");
@@ -79,12 +85,15 @@ public class SocketConnectorFactory {
             sslContextFactory.setTrustStorePassword(sslStores.trustStorePassword());
         }
 
-        ServerConnector connector = new ServerConnector(server, sslContextFactory);
+        final HttpConnectionFactory httpsConnectionFactory = createHttpConnectionFactory(maxHeadersSize);
+        ServerConnector connector = new ServerConnector(server, sslContextFactory, httpsConnectionFactory);
         initializeConnector(connector, host, port);
         return connector;
     }
 
-    private static void initializeConnector(ServerConnector connector, String host, int port) {
+    private static void initializeConnector(final ServerConnector connector,
+                                            final String host,
+                                            final int port) {
         // Set some timeout options to make debugging easier.
         connector.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
         connector.setSoLingerTime(-1);
@@ -92,6 +101,12 @@ public class SocketConnectorFactory {
         connector.setPort(port);
     }
 
+    private static HttpConnectionFactory createHttpConnectionFactory(final int maxHeadersSize) {
+        final HttpConfiguration httpConfig = new HttpConfiguration();
+        httpConfig.setRequestHeaderSize(maxHeadersSize);
+        httpConfig.setResponseHeaderSize(maxHeadersSize);
+        return new HttpConnectionFactory(httpConfig);
+    }
 }
 
 

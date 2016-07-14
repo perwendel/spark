@@ -16,11 +16,11 @@
  */
 package spark.embeddedserver;
 
+import spark.ssl.SslStores;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
-
-import spark.ssl.SslStores;
 
 /**
  * Represents an embedded server that can be used in Spark. (this is currently Jetty by default).
@@ -38,6 +38,7 @@ public interface EmbeddedServer {
      * @param maxThreads              - max nbr of threads.
      * @param minThreads              - min nbr of threads.
      * @param threadIdleTimeoutMillis - idle timeout (ms).
+     * @param maxHeadersSize          - maximum size of http request/response headers
      */
     void ignite(String host,
                 int port,
@@ -45,7 +46,8 @@ public interface EmbeddedServer {
                 CountDownLatch latch,
                 int maxThreads,
                 int minThreads,
-                int threadIdleTimeoutMillis);
+                int threadIdleTimeoutMillis,
+                int maxHeadersSize);
 
     /**
      * Configures the web sockets for the embedded server.
