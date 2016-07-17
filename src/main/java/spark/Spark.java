@@ -16,6 +16,9 @@
  */
 package spark;
 
+import spark.callback.Callbacks;
+import spark.callback.Event;
+
 import static spark.Service.ignite;
 
 /**
@@ -38,30 +41,30 @@ import static spark.Service.ignite;
  */
 public class Spark {
 
+    /**
+     * Statically import this for redirect utility functionality, see {@link spark.Redirect}
+     */
+    public static final Redirect redirect = getInstance().redirect;
+    /**
+     * Statically import this for static files utility functionality, see {@link spark.Service.StaticFiles}
+     */
+    public static final Service.StaticFiles staticFiles = getInstance().staticFiles;
+
     // Hide constructor
     protected Spark() {
-    }
-
-    /**
-     * Initializes singleton.
-     */
-    private static class SingletonHolder {
-        private static final Service INSTANCE = ignite();
     }
 
     private static Service getInstance() {
         return SingletonHolder.INSTANCE;
     }
 
-    /**
-     * Statically import this for redirect utility functionality, see {@link spark.Redirect}
-     */
-    public static final Redirect redirect = getInstance().redirect;
+    public static void event(final Event.Type type, final Callbacks.ICallback callback) {
+        event(Event.Priority.NORMAL, type, callback);
+    }
 
-    /**
-     * Statically import this for static files utility functionality, see {@link spark.Service.StaticFiles}
-     */
-    public static final Service.StaticFiles staticFiles = getInstance().staticFiles;
+    public static void event(final Event.Priority priority, final Event.Type type, final Callbacks.ICallback callback) {
+        getInstance().addEvent(priority, type, callback);
+    }
 
     /**
      * Map the route for HTTP GET requests
@@ -199,10 +202,6 @@ public class Spark {
         }
     }
 
-    //////////////////////////////////////////////////
-    // BEGIN route/filter mapping with accept type
-    //////////////////////////////////////////////////
-
     /**
      * Map the route for HTTP GET requests
      *
@@ -213,6 +212,10 @@ public class Spark {
     public static void get(String path, String acceptType, Route route) {
         getInstance().get(path, acceptType, route);
     }
+
+    //////////////////////////////////////////////////
+    // BEGIN route/filter mapping with accept type
+    //////////////////////////////////////////////////
 
     /**
      * Map the route for HTTP POST requests
@@ -302,7 +305,6 @@ public class Spark {
         getInstance().options(path, acceptType, route);
     }
 
-
     /**
      * Maps one or many filters to be executed before any matching routes
      *
@@ -338,7 +340,6 @@ public class Spark {
         }
     }
 
-
     /**
      * Maps one or many filters to be executed after any matching routes
      *
@@ -352,14 +353,6 @@ public class Spark {
         }
     }
 
-    //////////////////////////////////////////////////
-    // END route/filter mapping with accept type
-    //////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////
-    // BEGIN Template View Routes
-    //////////////////////////////////////////////////
-
     /**
      * Map the route for HTTP GET requests
      *
@@ -370,6 +363,14 @@ public class Spark {
     public static void get(String path, TemplateViewRoute route, TemplateEngine engine) {
         getInstance().get(path, route, engine);
     }
+
+    //////////////////////////////////////////////////
+    // END route/filter mapping with accept type
+    //////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////
+    // BEGIN Template View Routes
+    //////////////////////////////////////////////////
 
     /**
      * Map the route for HTTP GET requests
@@ -594,14 +595,6 @@ public class Spark {
         getInstance().options(path, acceptType, route, engine);
     }
 
-    //////////////////////////////////////////////////
-    // END Template View Routes
-    //////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////
-    // BEGIN Response Transforming Routes
-    //////////////////////////////////////////////////
-
     /**
      * Map the route for HTTP GET requests
      *
@@ -612,6 +605,14 @@ public class Spark {
     public static void get(String path, Route route, ResponseTransformer transformer) {
         getInstance().get(path, route, transformer);
     }
+
+    //////////////////////////////////////////////////
+    // END Template View Routes
+    //////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////
+    // BEGIN Response Transforming Routes
+    //////////////////////////////////////////////////
 
     /**
      * Map the route for HTTP GET requests
@@ -824,14 +825,6 @@ public class Spark {
         getInstance().patch(path, acceptType, route, transformer);
     }
 
-    //////////////////////////////////////////////////
-    // END Response Transforming Routes
-    //////////////////////////////////////////////////
-
-    //////////////////////////////////////////////////
-    // EXCEPTION mapper
-    //////////////////////////////////////////////////
-
     /**
      * Maps an exception handler to be executed when an exception occurs during routing
      *
@@ -843,7 +836,11 @@ public class Spark {
     }
 
     //////////////////////////////////////////////////
-    // HALT methods
+    // END Response Transforming Routes
+    //////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////
+    // EXCEPTION mapper
     //////////////////////////////////////////////////
 
     /**
@@ -854,6 +851,10 @@ public class Spark {
     public static void halt() {
         getInstance().halt();
     }
+
+    //////////////////////////////////////////////////
+    // HALT methods
+    //////////////////////////////////////////////////
 
     /**
      * Immediately stops a request within a filter or route with specified status code
@@ -1039,9 +1040,6 @@ public class Spark {
         getInstance().stop();
     }
 
-    ////////////////
-    // Websockets //
-
     /**
      * Maps the given path to the given WebSocket handler.
      * <p>
@@ -1053,6 +1051,9 @@ public class Spark {
     public static void webSocket(String path, Class<?> handler) {
         getInstance().webSocket(path, handler);
     }
+
+    ////////////////
+    // Websockets //
 
     /**
      * Sets the max idle timeout in milliseconds for WebSocket connections.
@@ -1079,6 +1080,13 @@ public class Spark {
      */
     public static ModelAndView modelAndView(Object model, String viewName) {
         return new ModelAndView(model, viewName);
+    }
+
+    /**
+     * Initializes singleton.
+     */
+    private static class SingletonHolder {
+        private static final Service INSTANCE = ignite();
     }
 
 }

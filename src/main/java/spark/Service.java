@@ -24,6 +24,9 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.callback.Callbacks;
+import spark.callback.Event;
+import spark.callback.EventManager;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
 import spark.route.Routes;
@@ -45,42 +48,41 @@ import static spark.globalstate.ServletFlag.isRunningFromServlet;
  * http.get("/hello", (q, a) -> "Hello World");
  */
 public final class Service extends Routable {
-    private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
-
     public static final int SPARK_DEFAULT_PORT = 4567;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
-
+    private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
+    public final Redirect redirect;
+    public final StaticFiles staticFiles;
+    private final StaticFilesConfiguration staticFilesConfiguration;
     protected boolean initialized = false;
-
     protected int port = SPARK_DEFAULT_PORT;
     protected String ipAddress = "0.0.0.0";
-
     protected SslStores sslStores;
-
     protected String staticFileFolder = null;
     protected String externalStaticFileFolder = null;
-
     protected Map<String, Class<?>> webSocketHandlers = null;
-
     protected int maxThreads = -1;
     protected int minThreads = -1;
     protected int threadIdleTimeoutMillis = -1;
     protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
-
     protected EmbeddedServer server;
     protected Routes routes;
-
     private boolean servletStaticLocationSet;
     private boolean servletExternalStaticLocationSet;
-
     private CountDownLatch latch = new CountDownLatch(1);
-
     private Object embeddedServerIdentifier = null;
+    private EventManager eventManager = new EventManager();
 
-    public final Redirect redirect;
-    public final StaticFiles staticFiles;
+    private Service() {
+        redirect = Redirect.create(this);
+        staticFiles = new StaticFiles();
 
-    private final StaticFilesConfiguration staticFilesConfiguration;
+        if (isRunningFromServlet()) {
+            staticFilesConfiguration = StaticFilesConfiguration.servletInstance;
+        } else {
+            staticFilesConfiguration = StaticFilesConfiguration.create();
+        }
+    }
 
     /**
      * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
@@ -92,15 +94,12 @@ public final class Service extends Routable {
         return new Service();
     }
 
-    private Service() {
-        redirect = Redirect.create(this);
-        staticFiles = new StaticFiles();
+    public void addEvent(Event.Type type, Callbacks.ICallback callback) {
+        addEvent(Event.Priority.NORMAL, type, callback);
+    }
 
-        if (isRunningFromServlet()) {
-            staticFilesConfiguration = StaticFilesConfiguration.servletInstance;
-        } else {
-            staticFilesConfiguration = StaticFilesConfiguration.create();
-        }
+    public void addEvent(Event.Priority priority, Event.Type type, Callbacks.ICallback callback) {
+        eventManager.addEventHandler(priority, type, callback);
     }
 
     /**
@@ -315,6 +314,9 @@ public final class Service extends Routable {
      * Stops the Spark server and clears all routes
      */
     public synchronized void stop() {
+        if (eventManager.handle(Event.Type.SERVER_STOPPING, server).isCancelled()) {
+            return;
+        }
         if (server != null) {
             routes.clear();
             server.extinguish();
@@ -323,22 +325,34 @@ public final class Service extends Routable {
 
         staticFilesConfiguration.clear();
         initialized = false;
+        eventManager.handle(Event.Type.SERVER_STOPPED, server);
     }
 
     @Override
     public void addRoute(String httpMethod, RouteImpl route) {
+        if (eventManager.handle(Event.Type.ROUTE_ADD, route).isCancelled()) {
+            return;
+        }
         init();
         routes.add(httpMethod + " '" + route.getPath() + "'", route.getAcceptType(), route);
+        eventManager.handle(Event.Type.ROUTE_ADDED, route);
     }
 
     @Override
     public void addFilter(String httpMethod, FilterImpl filter) {
+        if (eventManager.handle(Event.Type.FILTER_ADD, filter).isCancelled()) {
+            return;
+        }
         init();
         routes.add(httpMethod + " '" + filter.getPath() + "'", filter.getAcceptType(), filter);
+        eventManager.handle(Event.Type.FILTER_ADDED, filter);
     }
 
     public synchronized void init() {
         if (!initialized) {
+            if (eventManager.handle(Event.Type.SERVER_STARTING, server).isCancelled()) {
+                return;
+            }
 
             initializeRouteMatcher();
 
@@ -368,6 +382,7 @@ public final class Service extends Routable {
                 }).start();
             }
             initialized = true;
+            eventManager.handle(Event.Type.SERVER_STARTED, server);
         }
     }
 
@@ -492,7 +507,7 @@ public final class Service extends Routable {
          * Puts custom header for static resources. If the headers previously contained a mapping for
          * the key, the old value is replaced by the specified value.
          *
-         * @param key the key
+         * @param key   the key
          * @param value the value
          */
         public void header(String key, String value) {
