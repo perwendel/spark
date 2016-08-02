@@ -57,6 +57,8 @@ public class StaticFilesConfiguration {
 
     public static StaticFilesConfiguration servletInstance = new StaticFilesConfiguration();
 
+    public static ResourceResolver.Factory resolverFactory = new ResourceResolver.Factory.Default();
+
     private Map<String, String> customHeaders = new HashMap<>();
 
     /**
@@ -76,7 +78,6 @@ public class StaticFilesConfiguration {
         return false;
     }
 
-
     private boolean consumeWithFileResourceHandlers(HttpServletRequest httpRequest,
                                                     HttpServletResponse httpResponse) throws IOException {
         if (staticResourceHandlers != null) {
@@ -86,13 +87,7 @@ public class StaticFilesConfiguration {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
 
                 if (resource != null && resource.isReadable()) {
-                    httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromResource(resource));
-                    customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
-                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
-                    IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
-                    wrappedOutputStream.flush();
-                    wrappedOutputStream.close();
-                    return true;
+                    return resolverFactory.create(httpRequest, httpResponse, resource, customHeaders).invoke();
                 }
             }
 
@@ -244,4 +239,5 @@ public class StaticFilesConfiguration {
     public void putCustomHeader(String key, String value) {
         customHeaders.put(key, value);
     }
+
 }
