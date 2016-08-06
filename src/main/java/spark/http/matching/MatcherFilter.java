@@ -148,10 +148,15 @@ public class MatcherFilter implements Filter {
             }
         }
 
-        if (body.notSet() && !externalContainer) {
+        boolean isConsumed = ((HttpRequestWrapper) servletRequest).notConsumed();
+        if (body.notSet() && isConsumed && !externalContainer) {
             LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
             body.set(String.format(NOT_FOUND));
+        }
+
+        if (body.notSet() && !isConsumed && httpResponse.getStatus() != HttpServletResponse.SC_NO_CONTENT) {
+            LOG.warn("Route [" + uri + "] responded with no body and status different of 204");
         }
 
         if (body.isSet()) {
