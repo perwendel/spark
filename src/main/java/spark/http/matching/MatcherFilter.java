@@ -157,7 +157,7 @@ public class MatcherFilter implements Filter {
         }
 
         if (body.notSet() && executed && httpResponse.getStatus() != HttpServletResponse.SC_NO_CONTENT) {
-            LOG.warn("Route [" + uri + "] responded with no body and status different of 204");
+            LOG.warn("Route [" + uri + "] responded with null body and status different of 204");
         }
 
         if (body.isSet()) {
