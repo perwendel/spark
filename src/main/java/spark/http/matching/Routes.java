@@ -27,14 +27,15 @@ import spark.routematch.RouteMatch;
  */
 final class Routes {
 
-    static void execute(RouteContext context) throws Exception {
+    static boolean execute(RouteContext context) throws Exception {
 
         Object content = context.body().get();
 
         RouteMatch match = context.routeMatcher().find(context.httpMethod(), context.uri(), context.acceptType());
-
+        boolean hasMatch = match != null;
         Object target = null;
-        if (match != null) {
+
+        if (hasMatch) {
             target = match.getTarget();
         } else if (context.httpMethod() == HttpMethod.head && context.body().notSet()) {
             // See if get is mapped to provide default head mapping
@@ -76,6 +77,7 @@ final class Routes {
         }
 
         context.body().set(content);
+        return hasMatch;
     }
 
 }
