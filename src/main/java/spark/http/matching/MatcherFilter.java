@@ -149,7 +149,8 @@ public class MatcherFilter implements Filter {
         }
 
         if (body.notSet() && !externalContainer) {
-            LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
+            LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
+                uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
             body.set(String.format(NOT_FOUND));
         }
