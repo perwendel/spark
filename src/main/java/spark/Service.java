@@ -26,6 +26,9 @@ import org.slf4j.LoggerFactory;
 
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
@@ -60,7 +63,7 @@ public final class Service extends Routable {
     protected String staticFileFolder = null;
     protected String externalStaticFileFolder = null;
 
-    protected Map<String, Class<?>> webSocketHandlers = null;
+    protected Map<String, WebSocketHandlerWrapper> webSocketHandlers = null;
 
     protected int maxThreads = -1;
     protected int minThreads = -1;
@@ -246,30 +249,42 @@ public final class Service extends Routable {
     }
 
     /**
-     * Maps the given path to the given WebSocket handler.
+     * Maps the given path to the given WebSocket handler class.
      * <p>
      * This is currently only available in the embedded server mode.
      *
      * @param path    the WebSocket path.
      * @param handler the handler class that will manage the WebSocket connection to the given path.
      */
-    public synchronized void webSocket(String path, Class<?> handler) {
-        requireNonNull(path, "WebSocket path cannot be null");
-        requireNonNull(handler, "WebSocket handler class cannot be null");
-
+    public void webSocket(String path, Class<?> handlerClass) {
+        addWebSocketHandler(path, new WebSocketHandlerClassWrapper(handlerClass));
+    }
+    
+    /**
+     * Maps the given path to the given WebSocket handler instance.
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param path    the WebSocket path.
+     * @param handler the handler instance that will manage the WebSocket connection to the given path.
+     */
+    public void webSocket(String path, Object handler) {
+        addWebSocketHandler(path, new WebSocketHandlerInstanceWrapper(handler));
+    }
+    
+    private synchronized void addWebSocketHandler(String path, WebSocketHandlerWrapper handlerWrapper) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-
         if (isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
-        }
-
+        }       
+        requireNonNull(path, "WebSocket path cannot be null");
         if (webSocketHandlers == null) {
             webSocketHandlers = new HashMap<>();
         }
 
-        webSocketHandlers.put(path, handler);
+        webSocketHandlers.put(path, handlerWrapper);
     }
 
     /**
