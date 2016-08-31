@@ -123,7 +123,7 @@ public class ServiceTest {
         thrown.expectMessage("This must be done after route mapping has begun");
 
         Whitebox.setInternalState(service, "initialized", false);
-        service.getPort();
+        service.port();
     }
 
     @Test
@@ -132,7 +132,7 @@ public class ServiceTest {
         Whitebox.setInternalState(service, "initialized", true);
         Whitebox.setInternalState(service, "port", expectedPort);
 
-        int actualPort = service.getPort();
+        int actualPort = service.port();
 
         assertEquals("Port retrieved should be the port setted", expectedPort, actualPort);
     }
@@ -142,7 +142,7 @@ public class ServiceTest {
         int expectedPort = Service.SPARK_DEFAULT_PORT;
         Whitebox.setInternalState(service, "initialized", true);
 
-        int actualPort = service.getPort();
+        int actualPort = service.port();
 
         assertEquals("Port retrieved should be the port setted", expectedPort, actualPort);
     }

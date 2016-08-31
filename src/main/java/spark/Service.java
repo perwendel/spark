@@ -139,11 +139,10 @@ public final class Service extends Routable {
     /**
      * Retrieves the port that Spark is listening on.
      *
-     * @throws IllegalStateException when the server is not started
-     *
      * @return The port Spark server is listening on.
+     * @throws IllegalStateException when the server is not started
      */
-    public synchronized int getPort() {
+    public synchronized int port() {
         if (initialized) {
             return port;
         } else {
@@ -507,7 +506,7 @@ public final class Service extends Routable {
          * Puts custom header for static resources. If the headers previously contained a mapping for
          * the key, the old value is replaced by the specified value.
          *
-         * @param key the key
+         * @param key   the key
          * @param value the value
          */
         public void header(String key, String value) {

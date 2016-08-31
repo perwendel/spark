@@ -938,12 +938,11 @@ public class Spark {
     /**
      * Retrieves the port that Spark is listening on.
      *
-     * @throws IllegalStateException when the server is not started
-     *
      * @return The port Spark server is listening on.
+     * @throws IllegalStateException when the server is not started
      */
-    public static int getPort() {
-        return getInstance().getPort();
+    public static int port() {
+        return getInstance().port();
     }
 
     /**
