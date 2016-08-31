@@ -100,6 +100,7 @@ public class StaticFilesTest {
         Assert.assertEquals("image/svg+xml",            doGet("/img/sparklogo.svg").headers.get("Content-Type"));
         Assert.assertEquals("application/octet-stream", doGet("/img/sparklogoPng").headers.get("Content-Type"));
         Assert.assertEquals("application/octet-stream", doGet("/img/sparklogoSvg").headers.get("Content-Type"));
+        Assert.assertEquals("text/html",                doGet("/externalFile.html").headers.get("Content-Type"));
     }
 
     @Test
