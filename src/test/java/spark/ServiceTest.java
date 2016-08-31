@@ -118,6 +118,36 @@ public class ServiceTest {
     }
 
     @Test
+    public void testGetPort_whenInitializedFalse_thenThrowIllegalStateException() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("This must be done after route mapping has begun");
+
+        Whitebox.setInternalState(service, "initialized", false);
+        service.getPort();
+    }
+
+    @Test
+    public void testGetPort_whenInitializedTrue() {
+        int expectedPort = 8080;
+        Whitebox.setInternalState(service, "initialized", true);
+        Whitebox.setInternalState(service, "port", expectedPort);
+
+        int actualPort = service.getPort();
+
+        assertEquals("Port retrieved should be the port setted", expectedPort, actualPort);
+    }
+
+    @Test
+    public void testGetPort_whenInitializedTrue_Default() {
+        int expectedPort = Service.SPARK_DEFAULT_PORT;
+        Whitebox.setInternalState(service, "initialized", true);
+
+        int actualPort = service.getPort();
+
+        assertEquals("Port retrieved should be the port setted", expectedPort, actualPort);
+    }
+
+    @Test
     public void testThreadPool_whenOnlyMaxThreads() {
         service.threadPool(100);
         int maxThreads = Whitebox.getInternalState(service, "maxThreads");
