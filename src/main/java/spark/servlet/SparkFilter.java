@@ -64,6 +64,7 @@ public class SparkFilter implements Filter {
         ServletFlag.runFromServlet();
 
         applications = getApplications(filterConfig);
+
         for (SparkApplication application : applications) {
             application.init();
         }
@@ -116,8 +117,10 @@ public class SparkFilter implements Filter {
      * @throws ServletException if anything went wrong.
      */
     protected SparkApplication[] getApplications(final FilterConfig filterConfig) throws ServletException {
+
         String applications = filterConfig.getInitParameter(APPLICATION_CLASS_PARAM);
         SparkApplication[] solvedApplications = null;
+
         if (StringUtils.isNotBlank(applications)) {
             final String[] sparkApplications = applications.split(",");
 
@@ -131,6 +134,7 @@ public class SparkFilter implements Filter {
                 throw new ServletException("There are no Spark applications configured in the filter.");
             }
         }
+
         return solvedApplications;
     }
 
@@ -172,7 +176,7 @@ public class SparkFilter implements Filter {
     @Override
     public void destroy() {
         if (applications != null) {
-            for (SparkApplication sparkApplication : applications) {                
+            for (SparkApplication sparkApplication : applications) {
                 sparkApplication.destroy();
             }
         }
