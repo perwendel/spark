@@ -38,14 +38,15 @@ public interface EmbeddedServer {
      * @param maxThreads              - max nbr of threads.
      * @param minThreads              - min nbr of threads.
      * @param threadIdleTimeoutMillis - idle timeout (ms).
+     * @return The port number the server was launched on.
      */
-    void ignite(String host,
-                int port,
-                SslStores sslStores,
-                CountDownLatch latch,
-                int maxThreads,
-                int minThreads,
-                int threadIdleTimeoutMillis);
+    int ignite(String host,
+               int port,
+               SslStores sslStores,
+               CountDownLatch latch,
+               int maxThreads,
+               int minThreads,
+               int threadIdleTimeoutMillis);
 
     /**
      * Configures the web sockets for the embedded server.

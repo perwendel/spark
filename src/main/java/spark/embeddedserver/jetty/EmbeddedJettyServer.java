@@ -33,9 +33,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.ssl.SslStores;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
+import spark.ssl.SslStores;
 
 /**
  * Spark server implementation
@@ -71,13 +71,13 @@ public class EmbeddedJettyServer implements EmbeddedServer {
      * {@inheritDoc}
      */
     @Override
-    public void ignite(String host,
-                       int port,
-                       SslStores sslStores,
-                       CountDownLatch latch,
-                       int maxThreads,
-                       int minThreads,
-                       int threadIdleTimeoutMillis) {
+    public int ignite(String host,
+                      int port,
+                      SslStores sslStores,
+                      CountDownLatch latch,
+                      int maxThreads,
+                      int minThreads,
+                      int threadIdleTimeoutMillis) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -130,8 +130,10 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             server.join();
         } catch (Exception e) {
             logger.error("ignite failed", e);
-            System.exit(100); // NOSONAR
+            System.exit(100);
         }
+
+        return port;
     }
 
     /**
