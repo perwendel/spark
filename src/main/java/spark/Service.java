@@ -329,19 +329,16 @@ public final class Service extends Routable {
      * Stops the Spark server and clears all routes
      */
     public synchronized void stop() {
-        new Thread() {
-            @Override
-            public void run() {
-                if (server != null) {
-                    routes.clear();
-                    server.extinguish();
-                    latch = new CountDownLatch(1);
-                }
-
-                staticFilesConfiguration.clear();
-                initialized = false;
+        new Thread(() -> {
+            if (server != null) {
+                routes.clear();
+                server.extinguish();
+                latch = new CountDownLatch(1);
             }
-        }.start();
+
+            staticFilesConfiguration.clear();
+            initialized = false;
+        }).start();
     }
 
     @Override
