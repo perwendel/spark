@@ -120,11 +120,13 @@ public class MatcherFilter implements Filter {
                 .withResponse(response)
                 .withHttpMethod(httpMethod);
 
+        boolean executed = false;
+
         try {
 
-            BeforeFilters.execute(context);
-            Routes.execute(context);
-            AfterFilters.execute(context);
+            executed = BeforeFilters.execute(context) |
+                       Routes.execute(context) |
+                       AfterFilters.execute(context);
 
         } catch (HaltException halt) {
 
@@ -148,10 +150,14 @@ public class MatcherFilter implements Filter {
             }
         }
 
-        if (body.notSet() && !externalContainer) {
+        if (body.notSet() && !executed && !externalContainer) {
             LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
             body.set(String.format(NOT_FOUND));
+        }
+
+        if (body.notSet() && executed && httpResponse.getStatus() != HttpServletResponse.SC_NO_CONTENT) {
+            LOG.warn("Route [" + uri + "] responded with null body and status different of 204");
         }
 
         if (body.isSet()) {

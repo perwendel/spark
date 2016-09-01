@@ -29,13 +29,14 @@ import spark.routematch.RouteMatch;
  */
 final class AfterFilters {
 
-    static void execute(RouteContext context) throws Exception {
+    static boolean execute(RouteContext context) throws Exception {
 
         Object content = context.body().get();
 
         List<RouteMatch> matchSet = context.routeMatcher().findMultiple(HttpMethod.after,
                                                                         context.uri(),
                                                                         context.acceptType());
+        boolean hasMatches = matchSet.size() > 0;
 
         for (RouteMatch filterMatch : matchSet) {
             Object filterTarget = filterMatch.getTarget();
@@ -63,6 +64,7 @@ final class AfterFilters {
         }
 
         context.body().set(content);
+        return hasMatches;
     }
 
 }
