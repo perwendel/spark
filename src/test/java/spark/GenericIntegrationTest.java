@@ -323,7 +323,8 @@ public class GenericIntegrationTest {
         String encodedParam = URLEncoder.encode(param, "UTF-8");
         String splat = "mah/FRIEND";
         String encodedSplat = URLEncoder.encode(splat, "UTF-8");
-        UrlResponse response = testUtil.doMethod("GET", "/paramandwild/" + encodedParam + "/stuff/" + encodedSplat, null);
+        UrlResponse response = testUtil.doMethod("GET",
+                                                 "/paramandwild/" + encodedParam + "/stuff/" + encodedSplat, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("paramandwild: " + param + splat, response.body);
     }
