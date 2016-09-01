@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.ssl.SslStores;
 
 /**
@@ -54,7 +55,7 @@ public interface EmbeddedServer {
      * @param webSocketHandlers          - web socket handlers.
      * @param webSocketIdleTimeoutMillis - Optional WebSocket idle timeout (ms).
      */
-    default void configureWebSockets(Map<String, Class<?>> webSocketHandlers,
+    default void configureWebSockets(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
                                      Optional<Integer> webSocketIdleTimeoutMillis) {
 
         NotSupportedException.raise(getClass().getSimpleName(), "Web Sockets");

@@ -2,6 +2,7 @@ package spark;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -221,6 +222,24 @@ public class ServiceTest {
         thrown.expectMessage("This must be done before route mapping has begun");
 
         Whitebox.setInternalState(service, "initialized", true);
-        service.webSocket("/", Object.class);
+        service.webSocket("/", DummyWebSocketListener.class);
+    }
+    
+    @Test
+    public void testWebSocket_whenPathNull_thenThrowNullPointerException() {
+        thrown.expect(NullPointerException.class);
+        thrown.expectMessage("WebSocket path cannot be null");
+        service.webSocket(null, new DummyWebSocketListener());
+    }
+    
+    @Test
+    public void testWebSocket_whenHandlerNull_thenThrowNullPointerException() {
+        thrown.expect(NullPointerException.class);
+        thrown.expectMessage("WebSocket handler class cannot be null");
+        service.webSocket("/", null);
+    }
+    
+    @WebSocket
+    protected static class DummyWebSocketListener {
     }
 }
