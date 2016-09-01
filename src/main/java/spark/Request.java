@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -475,10 +477,21 @@ public class Request {
                                   + matchedPart
                                   + " = "
                                   + request.get(i));
-                params.put(matchedPart.toLowerCase(), request.get(i));
+                String param = sanitizerString(matchedPart);
+                String value = sanitizerString(request.get(i));
+                params.put(param, value);
             }
         }
         return Collections.unmodifiableMap(params);
+    }
+    
+    private static String sanitizerString(String str) {
+        Pattern paramPattern = Pattern.compile(":\\w+");
+        Matcher matcher = paramPattern.matcher(str);
+        if (matcher.find())
+            return matcher.group().toLowerCase();
+        else
+            return str.replaceAll("((\\.(?i)(json|xml)))", "");
     }
 
     private static List<String> getSplat(List<String> request, List<String> matched) {
