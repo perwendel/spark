@@ -81,8 +81,6 @@ public class GenericIntegrationTest {
             halt(401, "Go Away!");
         });
 
-        before("/justfilter", (q, a) -> System.out.println("Hello"));
-
         before("/protected/*", "application/json", (q, a) -> {
             halt(401, "{\"message\": \"Go Away!\"}");
         });
@@ -413,12 +411,6 @@ public class GenericIntegrationTest {
         UrlResponse response = testUtil.doMethod("GET", "/session_reset", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("22222", response.body);
-    }
-
-    @Test
-    public void testJustFilter() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/justfilter", null);
-        Assert.assertEquals(404, response.status);
     }
 
     @Test
