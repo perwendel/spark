@@ -268,9 +268,9 @@ public class FilterExample {
 
         after("/hello", (request, response) -> response.header("spark", "added by after-filter"));
 
-        afterFinally("/hello", (request, response) -> response.header("finally", "executed even if exception is throw"));
+        done("/hello", (request, response) -> response.header("finally", "executed even if exception is throw"));
 
-        afterFinally((request, response) -> response.header("finally", "executed after any route even if exception is throw"));
+        done((request, response) -> response.header("finally", "executed after any route even if exception is throw"));
     }
 }
 ```

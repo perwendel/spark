@@ -302,8 +302,8 @@ abstract class Routable {
      *
      * @param filter The filter
      */
-    public void afterFinally(Filter filter) {
-        addFilter(HttpMethod.afterfinally.name(), FilterImpl.create(SparkUtils.ALL_PATHS, filter));
+    public void done(Filter filter) {
+        addFilter(HttpMethod.done.name(), FilterImpl.create(SparkUtils.ALL_PATHS, filter));
     }
 
     /**
@@ -311,8 +311,8 @@ abstract class Routable {
      *
      * @param filter The filter
      */
-    public void afterFinally(String path, Filter filter) {
-        addFilter(HttpMethod.afterfinally.name(), FilterImpl.create(path, filter));
+    public void done(String path, Filter filter) {
+        addFilter(HttpMethod.done.name(), FilterImpl.create(path, filter));
     }
 
     //////////////////////////////////////////////////
