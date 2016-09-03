@@ -76,7 +76,7 @@ public class QueryParamsMap {
      *               user[info][name]).
      * @param values the values
      */
-    protected QueryParamsMap(String key, String... values) {
+    public QueryParamsMap(String key, String... values) {
         loadKeys(key, values);
     }
 
@@ -85,7 +85,7 @@ public class QueryParamsMap {
      *
      * @param params the parameters
      */
-    protected QueryParamsMap(Map<String, String[]> params) {
+    public QueryParamsMap(Map<String, String[]> params) {
         loadQueryString(params);
     }
 

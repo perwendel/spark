@@ -48,9 +48,9 @@ public class Request {
 
     private static final String USER_AGENT = "user-agent";
 
-    private Map<String, String> params;
-    private List<String> splat;
-    private QueryParamsMap queryMap;
+    protected Map<String, String> params;
+    protected List<String> splat;
+    protected QueryParamsMap queryMap;
 
     private HttpServletRequest servletRequest;
 
@@ -465,7 +465,7 @@ public class Request {
         return servletRequest.getProtocol();
     }
 
-    private static Map<String, String> getParams(List<String> request, List<String> matched) {
+    protected static Map<String, String> getParams(List<String> request, List<String> matched) {
         LOG.debug("get params");
 
         Map<String, String> params = new HashMap<>();
@@ -489,7 +489,7 @@ public class Request {
         return Collections.unmodifiableMap(params);
     }
 
-    private static List<String> getSplat(List<String> request, List<String> matched) {
+    protected static List<String> getSplat(List<String> request, List<String> matched) {
         LOG.debug("get splat");
 
         int nbrOfRequestParts = request.size();

@@ -29,8 +29,11 @@ import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
+import spark.http.matching.RedispatchRequestWrapper;
+import spark.route.HttpMethod;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
+import spark.routematch.RouteMatch;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
@@ -268,7 +271,7 @@ public final class Service extends Routable {
      * This is currently only available in the embedded server mode.
      *
      * @param path    the WebSocket path.
-     * @param handler the handler class that will manage the WebSocket connection to the given path.
+     * @param handlerClass the handler class that will manage the WebSocket connection to the given path.
      */
     public void webSocket(String path, Class<?> handlerClass) {
         addWebSocketHandler(path, new WebSocketHandlerClassWrapper(handlerClass));
@@ -482,6 +485,29 @@ public final class Service extends Routable {
      */
     public HaltException halt(int status, String body) {
         throw new HaltException(status, body);
+    }
+
+    /**
+     * Works similar to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     *
+     * @return Object - to be set on response
+     */
+    @Experimental("This API might change")
+    public Object redispatch(String address, Request req, Response res) throws Exception {
+        HttpMethod reqMethod = HttpMethod.valueOf(req.requestMethod().toLowerCase());
+        return redispatch(address, reqMethod, req, res);
+    }
+
+    /**
+     * Works similar to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     *
+     * @return Object - to be set on response
+     */
+    @Experimental("This API might change")
+    public Object redispatch(String address, HttpMethod method, Request req, Response res) throws Exception {
+        RouteMatch routeMatch = routes.find(method, address.replaceAll("\\?.*", ""), req.contentType());
+        RouteImpl route = (RouteImpl) routeMatch.getTarget();
+        return route.handle(new RedispatchRequestWrapper(address, routeMatch, req), res);
     }
 
     /**

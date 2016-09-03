@@ -16,6 +16,8 @@
  */
 package spark;
 
+import spark.route.HttpMethod;
+
 import static spark.Service.ignite;
 
 /**
@@ -1095,4 +1097,21 @@ public class Spark {
         return new ModelAndView(model, viewName);
     }
 
+    /**
+     * Works similar to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     *
+     * @return Object - to be set on response
+     */
+    public static Object redispatch(String address, Request req, Response res) throws Exception {
+        return getInstance().redispatch(address, req, res);
+    }
+
+    /**
+     * Works similar to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     *
+     * @return Object - to be set on response
+     */
+    public static Object redispatch(String address, HttpMethod method, Request req, Response res) throws Exception {
+        return getInstance().redispatch(address, method, req, res);
+    }
 }

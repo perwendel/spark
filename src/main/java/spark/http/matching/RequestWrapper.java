@@ -27,17 +27,13 @@ import spark.Request;
 import spark.Session;
 import spark.routematch.RouteMatch;
 
-final class RequestWrapper extends Request {
+class RequestWrapper extends Request {
 
     static RequestWrapper create() {
         return new RequestWrapper();
     }
 
     private Request delegate;
-
-    private RequestWrapper() {
-        // hidden
-    }
 
     public void setDelegate(Request delegate) {
         this.delegate = delegate;
