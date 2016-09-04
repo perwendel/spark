@@ -19,7 +19,6 @@ package spark.embeddedserver;
 import java.util.HashMap;
 import java.util.Map;
 
-import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 import spark.route.Routes;
 import spark.staticfiles.StaticFilesConfiguration;
 
@@ -32,11 +31,43 @@ public class EmbeddedServers {
     public enum Identifiers {
         JETTY
     }
+    
+    private enum Factories {
+    	JETTY_FACTORY("spark.embeddedserver.jetty.EmbeddedJettyFactory");
+    	
+    	private final Class<EmbeddedServerFactory> factoryClass;
+    	
+    	@SuppressWarnings("unchecked")
+    	private Factories(String factoryClassName) {
+    		try {
+				this.factoryClass = (Class<EmbeddedServerFactory>) Class.forName(factoryClassName);
+			} catch (ClassNotFoundException e) {
+				throw new IllegalArgumentException("Factory class not found: " + factoryClassName);
+			}
+    	}
+    	
+    	private static Factories valueOf(Identifiers identifier) {
+    		switch (identifier) {
+    		case JETTY: return JETTY_FACTORY;
+    		default:	throw new IllegalArgumentException("No factory defined for: " + identifier);
+    		}
+    	}
+    	
+    	private EmbeddedServerFactory instantiateFactory() {
+    		try {
+				return factoryClass.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new IllegalStateException("Unable to instantiate factory: " + factoryClass.getName(), e);
+			}
+    	}
+    }
 
     private static Map<Object, EmbeddedServerFactory> factories = new HashMap<>();
 
     public static void initialize() {
-        add(Identifiers.JETTY, new EmbeddedJettyFactory());
+        for (Identifiers identifier : Identifiers.values()) {
+        	add(identifier, Factories.valueOf(identifier).instantiateFactory());
+        }
     }
 
     public static Identifiers defaultIdentifier() {

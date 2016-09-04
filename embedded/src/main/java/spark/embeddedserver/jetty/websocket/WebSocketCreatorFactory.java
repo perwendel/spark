@@ -15,9 +15,13 @@
  */
 package spark.embeddedserver.jetty.websocket;
 
+import org.eclipse.jetty.websocket.api.WebSocketListener;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+
+import spark.websocket.WebSocketHandlerWrapper;
 
 import static java.util.Objects.requireNonNull;
 
@@ -37,6 +41,7 @@ public class WebSocketCreatorFactory {
      * @return The WebSocketCreator.
      */
     public static WebSocketCreator create(WebSocketHandlerWrapper handlerWrapper) {
+    	validateHandlerClass(handlerWrapper.getHandlerClass());
         return new SparkWebSocketCreator(handlerWrapper.getHandler());
     }
 
@@ -56,6 +61,15 @@ public class WebSocketCreatorFactory {
 
         Object getHandler() {
             return handler;
+        }
+    }
+    
+    private static void validateHandlerClass(Class<?> handlerClass) {
+        boolean valid = WebSocketListener.class.isAssignableFrom(handlerClass)
+                || handlerClass.isAnnotationPresent(WebSocket.class);
+        if (!valid) {
+            throw new IllegalArgumentException(
+                    "WebSocket handler must implement 'WebSocketListener' or be annotated as '@WebSocket'");
         }
     }
 }

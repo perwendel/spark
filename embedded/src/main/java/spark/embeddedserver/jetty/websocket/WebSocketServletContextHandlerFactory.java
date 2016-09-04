@@ -26,6 +26,8 @@ import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.websocket.WebSocketHandlerWrapper;
+
 /**
  * Creates websocket servlet context handlers.
  */

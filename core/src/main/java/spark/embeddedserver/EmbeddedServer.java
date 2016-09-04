@@ -20,8 +20,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
-import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
+import spark.embeddedserver.NotSupportedException;
 import spark.ssl.SslStores;
+import spark.websocket.WebSocketHandlerWrapper;
 
 /**
  * Represents an embedded server that can be used in Spark. (this is currently Jetty by default).
@@ -48,7 +49,7 @@ public interface EmbeddedServer {
                int maxThreads,
                int minThreads,
                int threadIdleTimeoutMillis);
-
+    
     /**
      * Configures the web sockets for the embedded server.
      *

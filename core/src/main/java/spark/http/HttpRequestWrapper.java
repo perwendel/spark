@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.embeddedserver.jetty;
+package spark.http;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

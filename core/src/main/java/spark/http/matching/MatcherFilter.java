@@ -31,7 +31,7 @@ import spark.CustomErrorPages;
 import spark.HaltException;
 import spark.RequestResponseFactory;
 import spark.Response;
-import spark.embeddedserver.jetty.HttpRequestWrapper;
+import spark.http.HttpRequestWrapper;
 import spark.route.HttpMethod;
 import spark.serialization.SerializerChain;
 import spark.staticfiles.StaticFilesConfiguration;

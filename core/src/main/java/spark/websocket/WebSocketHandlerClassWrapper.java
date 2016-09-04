@@ -1,4 +1,4 @@
-package spark.embeddedserver.jetty.websocket;
+package spark.websocket;
 
 import static java.util.Objects.requireNonNull;
 
@@ -8,9 +8,14 @@ public class WebSocketHandlerClassWrapper implements WebSocketHandlerWrapper {
 
     public WebSocketHandlerClassWrapper(Class<?> handlerClass) {
         requireNonNull(handlerClass, "WebSocket handler class cannot be null");
-        WebSocketHandlerWrapper.validateHandlerClass(handlerClass);
         this.handlerClass = handlerClass;
     }
+    
+    @Override
+	public Class<?> getHandlerClass() {
+		return handlerClass;
+	}
+    
     @Override
     public Object getHandler() {
         try {

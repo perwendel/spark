@@ -6,6 +6,7 @@ import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.junit.Test;
 
 import spark.embeddedserver.jetty.websocket.WebSocketCreatorFactory.SparkWebSocketCreator;
+import spark.websocket.WebSocketHandlerClassWrapper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -55,15 +56,15 @@ public class WebSocketCreatorFactoryTest {
     }
 
     @WebSocket
-    static class AnnotatedHandler {
+    public static class AnnotatedHandler {
 
     }
 
-    static class ListenerHandler extends WebSocketAdapter {
+    public static class ListenerHandler extends WebSocketAdapter {
 
     }
 
-    static class InvalidHandler {
+    public static class InvalidHandler {
 
     }
 }

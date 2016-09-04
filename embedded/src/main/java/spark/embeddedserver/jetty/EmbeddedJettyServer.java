@@ -34,9 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.embeddedserver.EmbeddedServer;
-import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
 import spark.ssl.SslStores;
+import spark.websocket.WebSocketHandlerWrapper;
 
 /**
  * Spark server implementation
