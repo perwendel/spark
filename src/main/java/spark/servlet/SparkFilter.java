@@ -61,7 +61,8 @@ public class SparkFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        ServletFlag.runFromServlet();
+        String contextPath = filterConfig.getServletContext().getContextPath();
+        ServletFlag.runFromServlet(contextPath);
 
         applications = getApplications(filterConfig);
 

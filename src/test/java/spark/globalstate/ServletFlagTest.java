@@ -30,7 +30,7 @@ public class ServletFlagTest {
     @Test
     public void testRunFromServlet_whenExecuted() throws Exception {
 
-        ServletFlag.runFromServlet();
+        ServletFlag.runFromServlet("/test");
         AtomicBoolean isRunningFromServlet = Whitebox.getInternalState(ServletFlag.class, "isRunningFromServlet");
 
         assertTrue("Should be true because it flag has been set after runFromServlet", isRunningFromServlet.get());
@@ -46,7 +46,7 @@ public class ServletFlagTest {
     @Test
     public void testIsRunningFromServlet_whenRunningFromServlet() throws Exception {
 
-        ServletFlag.runFromServlet();
+        ServletFlag.runFromServlet("/test");
         assertTrue("Should be true because call to runFromServlet has been made", ServletFlag.isRunningFromServlet());
     }
 }

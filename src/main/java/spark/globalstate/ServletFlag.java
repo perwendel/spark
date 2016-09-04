@@ -24,12 +24,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ServletFlag {
 
     private static AtomicBoolean isRunningFromServlet = new AtomicBoolean(false);
+    private static String contextPath = null;
 
     /**
      * Tells the system that Spark was run from an "external" web application server.
+     * @param contextPath The context path under which the Spark application is deployed.
      */
-    public static void runFromServlet() {
+    public static void runFromServlet(String contextPath) {
         isRunningFromServlet.set(true);
+        ServletFlag.contextPath = contextPath;
     }
 
     /**
@@ -39,4 +42,10 @@ public class ServletFlag {
         return isRunningFromServlet.get();
     }
 
+    /**
+     * @return the context path under which the Spark application is deployed.
+     */
+    public static String getContextPath() {
+        return contextPath;
+    }
 }
