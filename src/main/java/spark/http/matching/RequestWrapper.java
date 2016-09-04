@@ -47,6 +47,10 @@ class RequestWrapper extends Request {
         Access.changeMatch(delegate, match);
     }
 
+    protected void changeWrapperMatch(RouteMatch match) {
+        super.changeMatch(match);
+    }
+
     @Override
     public String requestMethod() {
         return delegate.requestMethod();

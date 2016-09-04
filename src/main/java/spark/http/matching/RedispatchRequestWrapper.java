@@ -3,7 +3,6 @@ package spark.http.matching;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.routematch.RouteMatch;
-import spark.utils.SparkUtils;
 
 import java.util.*;
 
@@ -14,17 +13,7 @@ public class RedispatchRequestWrapper extends RequestWrapper {
     public RedispatchRequestWrapper(String redispatchAddress, RouteMatch match, Request request) {
         setDelegate(request);
         queryString = redispatchAddress.replaceAll("^.*?\\?", "");
-        changeMatch(match);
-    }
-
-    //TODO: Unhacky this copy from spark.Request
-    @Override
-    public void changeMatch(RouteMatch match) {
-        List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
-        List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
-
-        params = getParams(requestList, matchedList);
-        splat = getSplat(requestList, matchedList);
+        changeWrapperMatch(match);
     }
 
     @Override
