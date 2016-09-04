@@ -63,24 +63,26 @@ public class RedispatchRequestWrapper extends RequestWrapper {
         return queryMap().get(key);
     }
 
-    //TODO: Improve
     private void initQueryMap() {
         Map<String, String[]> resultMap = new HashMap<>();
         String query = queryString.replaceFirst("\\?", "");
         String[] querySplit = query.split("&");
-        for (String rawItem : querySplit) {
-            String[] item = rawItem.split("=", 2);
-            String key = item[0];
-            if (!resultMap.containsKey(key)) {
-                resultMap.put(key, item.length > 0 ? new String[]{item[1]} : null);
+
+        for (String rawQueryItem : querySplit) {
+            String[] queryItem = rawQueryItem.split("=", 2);
+            String queryKey = queryItem[0];
+            boolean alreadyHasKey = !resultMap.containsKey(queryKey);
+
+            if (alreadyHasKey) {
+                resultMap.put(queryKey, queryItem.length > 0 ? new String[]{queryItem[1]} : null);
             } else {
-                updateParamValues(resultMap, key, item);
+                updateQueryValue(resultMap, queryKey, queryItem);
             }
         }
         queryMap = new QueryParamsMap(resultMap);
     }
 
-    private void updateParamValues(Map<String, String[]> resultMap, String key, String[] item) {
+    private void updateQueryValue(Map<String, String[]> resultMap, String key, String[] item) {
         String[] values = resultMap.get(key);
         if (item.length > 0) {
             String[] expandedArray = Arrays.copyOf(values, values.length + 1);
