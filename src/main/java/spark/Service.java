@@ -488,24 +488,41 @@ public final class Service extends Routable {
     }
 
     /**
-     * Works similar to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     * Internal redirect, it works similar
+     * to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     * <br>
+     * PS: Only routes with http method equivalent to the request will be matched
      *
+     * @param address The route to dispatch
+     * @param req The request
+     * @param res The response
      * @return Object - to be set on response
+     * @throws RedispatchException when there's no route match
      */
-    @Experimental("This API might change")
     public Object redispatch(String address, Request req, Response res) throws Exception {
         HttpMethod reqMethod = HttpMethod.valueOf(req.requestMethod().toLowerCase());
-        return redispatch(address, reqMethod, req, res);
+        return redispatch(address, req, res, reqMethod);
     }
 
     /**
-     * Works similar to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     * Internal redirect, it works similar
+     * to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
      *
+     * @param address The route to dispatch
+     * @param req The request
+     * @param res The response
+     * @param method The http method to redispatch
      * @return Object - to be set on response
+     * @throws RedispatchException when there's no route match
      */
-    @Experimental("This API might change")
-    public Object redispatch(String address, HttpMethod method, Request req, Response res) throws Exception {
+    public Object redispatch(String address, Request req, Response res, HttpMethod method) throws Exception {
         RouteMatch routeMatch = routes.find(method, address.replaceAll("\\?.*", ""), req.contentType());
+
+        if (routeMatch == null) {
+            throw new RedispatchException("Redispatcher couldn't find route match for " +
+                    "method [" + method.name() + " address [" + address + "]");
+        }
+
         RouteImpl route = (RouteImpl) routeMatch.getTarget();
         return route.handle(new RedispatchRequestWrapper(address, routeMatch, req), res);
     }

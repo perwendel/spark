@@ -1098,20 +1098,33 @@ public class Spark {
     }
 
     /**
-     * Works similar to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     * Internal redirect, it works similar
+     * to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     * <br>
+     * PS: Only routes with http method equivalent to the request will be matched
      *
+     * @param address The route to dispatch
+     * @param req The request
+     * @param res The response
      * @return Object - to be set on response
+     * @throws RedispatchException when there's no route match
      */
     public static Object redispatch(String address, Request req, Response res) throws Exception {
         return getInstance().redispatch(address, req, res);
     }
 
     /**
-     * Works similar to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
+     * Internal redirect, it works similar
+     * to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
      *
+     * @param address The route to dispatch
+     * @param req The request
+     * @param res The response
+     * @param method The http method to redispatch
      * @return Object - to be set on response
+     * @throws RedispatchException when there's no route match
      */
-    public static Object redispatch(String address, HttpMethod method, Request req, Response res) throws Exception {
-        return getInstance().redispatch(address, method, req, res);
+    public static Object redispatch(String address, Request req, Response res, HttpMethod method) throws Exception {
+        return getInstance().redispatch(address, req, res, method);
     }
 }

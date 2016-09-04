@@ -23,11 +23,19 @@ public class RedispatchTest {
         });
 
         Spark.get("/redispatch/post", (req, res) -> {
-            return Spark.redispatch("/redispatched", HttpMethod.post, req, res);
+            return Spark.redispatch("/redispatched", req, res, HttpMethod.post);
         });
 
         Spark.get("/redispatch/get/withParam", (req, res) -> {
             return Spark.redispatch("/redispatched/foo?" + req.queryString(), req, res);
+        });
+
+        Spark.get("/redispatch/nowhere", (req, res) -> {
+            try {
+                return Spark.redispatch("/nowhere", req, res);
+            } catch (RedispatchException e) {
+                return e.getClass().getTypeName();
+            }
         });
 
         //ROUTES
@@ -56,7 +64,7 @@ public class RedispatchTest {
         Spark.stop();
     }
 
-    @After
+    @Before
     public void clearVars() {
         catchedRequest = null;
     }
@@ -83,5 +91,11 @@ public class RedispatchTest {
         assertEquals("qwak!", catchedRequest.queryMap("duck").value());
         assertEquals("foo", catchedRequest.params(":param"));
         assertEquals(1, catchedRequest.params().size());
+    }
+
+    @Test
+    public void redispatchedRequestNoMatchShouldThrowException() throws Exception {
+        UrlResponse response = testUtil.get("/redispatch/nowhere");
+        assertEquals("spark.RedispatchException", response.body);
     }
 }
