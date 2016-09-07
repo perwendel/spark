@@ -8,6 +8,7 @@ import org.powermock.reflect.Whitebox;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -18,6 +19,7 @@ public class ServletFlagTest {
     public void setup() {
 
         Whitebox.setInternalState(ServletFlag.class, "isRunningFromServlet", new AtomicBoolean(false));
+        Whitebox.setInternalState(ServletFlag.class, "contextPath", "/");
     }
 
     @Test
@@ -34,12 +36,14 @@ public class ServletFlagTest {
         AtomicBoolean isRunningFromServlet = Whitebox.getInternalState(ServletFlag.class, "isRunningFromServlet");
 
         assertTrue("Should be true because it flag has been set after runFromServlet", isRunningFromServlet.get());
+        assertEquals("Should expose the context under which the app is deployed", "/test", ServletFlag.getContextPath());
     }
 
     @Test
     public void testIsRunningFromServlet_whenDefault() throws Exception {
 
         assertFalse("Should be false because it is the default value", ServletFlag.isRunningFromServlet());
+        assertEquals("Should expose the context under which the app is deployed", "/", ServletFlag.getContextPath());
 
     }
 
