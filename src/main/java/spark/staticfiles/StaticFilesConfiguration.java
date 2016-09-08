@@ -178,7 +178,8 @@ public class StaticFilesConfiguration {
     }
 
     private boolean configureJarCase(String folder, ClassPathResource resource) throws IOException {
-        if (resource.getURL().getProtocol().equals("jar")) {
+        String protocol = resource.getURL().getProtocol();
+        if ("jar".equals(protocol) || "vfs".equals(protocol)) {
 
             InputStream stream = StaticFilesConfiguration.class.getResourceAsStream(folder);
 
