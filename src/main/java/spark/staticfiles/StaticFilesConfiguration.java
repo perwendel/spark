@@ -38,6 +38,7 @@ import spark.resource.ClassPathResourceHandler;
 import spark.resource.ExternalResource;
 import spark.resource.ExternalResourceHandler;
 import spark.resource.JarResourceHandler;
+import spark.resource.JarResourceHandler2;
 import spark.utils.Assert;
 import spark.utils.GzipUtils;
 import spark.utils.IOUtils;
@@ -50,7 +51,7 @@ public class StaticFilesConfiguration {
     private final Logger LOG = LoggerFactory.getLogger(StaticFilesConfiguration.class);
 
     private List<AbstractResourceHandler> staticResourceHandlers = null;
-    private List<JarResourceHandler> jarResourceHandlers = null;
+//    private List<JarResourceHandler> jarResourceHandlers = null;
 
     private boolean staticResourcesSet = false;
     private boolean externalStaticResourcesSet = false;
@@ -102,25 +103,28 @@ public class StaticFilesConfiguration {
 
     private boolean consumeWithJarResourceHandler(HttpServletRequest httpRequest,
                                                   HttpServletResponse httpResponse) throws IOException {
-        if (jarResourceHandlers != null) {
-
-            for (JarResourceHandler jarResourceHandler : jarResourceHandlers) {
-                InputStream stream = jarResourceHandler.getResource(httpRequest);
-
-                if (stream != null) {
-                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
-                    customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
-
-                    IOUtils.copy(stream, wrappedOutputStream);
-
-                    wrappedOutputStream.flush();
-                    wrappedOutputStream.close();
-
-                    return true;
-                }
-            }
-        }
-        return false;
+        
+        return consumeWithFileResourceHandlers(httpRequest, httpResponse);
+//        if (jarResourceHandlers != null) {
+//
+//            for (JarResourceHandler jarResourceHandler : jarResourceHandlers) {
+//                InputStream stream = jarResourceHandler.getResource(httpRequest);
+//
+//                if (stream != null) {
+//                    httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromResource(jarResourceHandler.getResourceName(httpRequest)));
+//                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
+//                    customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
+//
+//                    IOUtils.copy(stream, wrappedOutputStream);
+//
+//                    wrappedOutputStream.flush();
+//                    wrappedOutputStream.close();
+//
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
     }
 
     /**
@@ -131,11 +135,6 @@ public class StaticFilesConfiguration {
         if (staticResourceHandlers != null) {
             staticResourceHandlers.clear();
             staticResourceHandlers = null;
-        }
-
-        if (jarResourceHandlers != null) {
-            jarResourceHandlers.clear();
-            jarResourceHandlers = null;
         }
 
         staticResourcesSet = false;
@@ -181,14 +180,14 @@ public class StaticFilesConfiguration {
         if (resource.getURL().getProtocol().equals("jar")) {
 
             InputStream stream = StaticFilesConfiguration.class.getResourceAsStream(folder);
-
+            
             if (stream != null) {
-                if (jarResourceHandlers == null) {
-                    jarResourceHandlers = new ArrayList<>();
+                if (staticResourceHandlers == null) {
+                    staticResourceHandlers = new ArrayList<>();
                 }
 
                 // Add jar file resource handler
-                jarResourceHandlers.add(new JarResourceHandler(folder, "index.html"));
+                staticResourceHandlers.add(new JarResourceHandler2(folder, "index.html"));
                 staticResourcesSet = true;
                 return true;
             } else {
