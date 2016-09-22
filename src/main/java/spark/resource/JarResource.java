@@ -26,7 +26,7 @@ public class JarResource extends AbstractFileResolvingResource {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return JarResourceHandler2.class.getResourceAsStream(path);
+        return JarResourceHandler.class.getResourceAsStream(path);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class JarResource extends AbstractFileResolvingResource {
     public boolean isReadable() {
         
         int read = -1;
-        try(InputStream is = JarResourceHandler2.class.getResourceAsStream(path)) {
+        try(InputStream is = JarResourceHandler.class.getResourceAsStream(path)) {
             read = is.read();
         }
         catch (Exception e) {

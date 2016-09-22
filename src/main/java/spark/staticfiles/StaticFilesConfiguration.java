@@ -38,7 +38,6 @@ import spark.resource.ClassPathResourceHandler;
 import spark.resource.ExternalResource;
 import spark.resource.ExternalResourceHandler;
 import spark.resource.JarResourceHandler;
-import spark.resource.JarResourceHandler2;
 import spark.utils.Assert;
 import spark.utils.GzipUtils;
 import spark.utils.IOUtils;
@@ -187,7 +186,7 @@ public class StaticFilesConfiguration {
                 }
 
                 // Add jar file resource handler
-                staticResourceHandlers.add(new JarResourceHandler2(folder, "index.html"));
+                staticResourceHandlers.add(new JarResourceHandler(folder, "index.html"));
                 staticResourcesSet = true;
                 return true;
             } else {
