@@ -15,6 +15,43 @@
 
     <filter-mapping>
         <filter-name>SparkFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/filter/*</url-pattern>
     </filter-mapping>
+
+    <servlet>
+        <servlet-name>SparkServlet</servlet-name>
+        <servlet-class>spark.servlet.SparkServlet</servlet-class>
+        <init-param>
+            <param-name>applicationName</param-name>
+            <param-value>spark.servlet.MyServletServedApp1,spark.servlet.MyServletServedApp2
+            </param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SparkServlet</servlet-name>
+        <url-pattern>/servlet/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>SparkServlet2</servlet-name>
+        <servlet-class>spark.servlet.SparkServlet</servlet-class>
+        <init-param>
+            <param-name>applicationName</param-name>
+            <param-value>spark.servlet.MyServletServedApp3</param-value>
+        </init-param>
+        <init-param>
+            <param-name>wrapperSupplierName</param-name>
+            <param-value>spark.servlet.WrapperSupplier</param-value>
+        </init-param>
+        <init-param>
+            <param-name>filterMappingUrlPattern</param-name>
+            <param-value>/servlet2/*</param-value>
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SparkServlet2</servlet-name>
+        <url-pattern>/servlet2/*</url-pattern>
+    </servlet-mapping>
 </web-app>
