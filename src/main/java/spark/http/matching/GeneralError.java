@@ -20,10 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import spark.ExceptionHandlerImpl;
 import spark.ExceptionMapper;
-import spark.NotFoundHandler;
-import spark.NotFoundMapper;
+import spark.UriNotFoundMapper;
 import spark.Request;
 import spark.RequestResponseFactory;
+import spark.UriNotFoundHandler;
 
 /**
  * Modifies the HTTP response and body based on the provided exception and request/response wrappers.
@@ -65,7 +65,7 @@ final class GeneralError {
 
         Body body = context.body();
         
-        NotFoundHandler handler = NotFoundMapper.getInstance().getNotFoundHandler();
+        UriNotFoundHandler handler = UriNotFoundMapper.getInstance().getNotFoundHandler();
         
         if (handler != null) {
             if (context.requestWrapper().getDelegate() == null) {

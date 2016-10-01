@@ -28,14 +28,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import spark.HaltException;
-import spark.NotFoundHandler;
-import spark.NotFoundMapper;
+import spark.UriNotFoundMapper;
 import spark.RequestResponseFactory;
 import spark.Response;
 import spark.embeddedserver.jetty.HttpRequestWrapper;
 import spark.route.HttpMethod;
 import spark.serialization.SerializerChain;
 import spark.staticfiles.StaticFilesConfiguration;
+import spark.UriNotFoundHandler;
 
 /**
  * Matches Spark routes and filters.

@@ -37,6 +37,12 @@ import spark.staticfiles.StaticFilesConfiguration;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
+import static java.util.Objects.requireNonNull;
+import static spark.globalstate.ServletFlag.isRunningFromServlet;
+import static java.util.Objects.requireNonNull;
+import static spark.globalstate.ServletFlag.isRunningFromServlet;
+import static java.util.Objects.requireNonNull;
+import static spark.globalstate.ServletFlag.isRunningFromServlet;
 
 /**
  * Represents a Spark server "session".
@@ -437,20 +443,20 @@ public final class Service extends Routable {
     //////////////////////////////////////////////////
 
     /**
-     * 
+     * Maps a handler for uris that are not been mapped
      *
      * @param handler        The handler
      */
-    public synchronized void notFound(NotFoundHandler handler) {
+    public synchronized void notFound(UriNotFoundHandler handler) {
         // wrap
-        NotFoundHandler wrapper = new NotFoundHandler() {
+        UriNotFoundHandler wrapper = new UriNotFoundHandler() {
           @Override
           public void handle(Request request, Response response) {
             handler.handle(request, response);
           }
         };
 
-        NotFoundMapper.getInstance().map(wrapper);
+        UriNotFoundMapper.getInstance().map(wrapper);
     }
 
     //////////////////////////////////////////////////

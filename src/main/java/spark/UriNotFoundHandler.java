@@ -19,30 +19,14 @@ package spark;
  *
  * @author fcambarieri
  */
-public class NotFoundMapper {
- 
-  private static NotFoundMapper defaultInstance;
-
-  public static synchronized NotFoundMapper getInstance() {
-    if (defaultInstance == null) {
-      defaultInstance = new NotFoundMapper();
-    }
-    return defaultInstance;
-  }
+@FunctionalInterface
+public interface UriNotFoundHandler {
   
-  private NotFoundHandler notFoundHandler;
-  
-  public void map(NotFoundHandler notFoundHandler) {
-    this.notFoundHandler = notFoundHandler;
-  }
-
-  public NotFoundHandler getNotFoundHandler() {
-    return notFoundHandler;
-  }
-  
-  public boolean hasHandler() {
-    return notFoundHandler != null;
-  }
-  
-  
+    /**
+     *  Invoked when none more handler are defined
+     *
+     * @param request   The request object providing information about the HTTP request
+     * @param response  The response object providing functionality for modifying the response
+     */
+    void handle(Request request, Response response);
 }

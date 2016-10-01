@@ -847,11 +847,11 @@ public class Spark {
     //////////////////////////////////////////////////
 
     /**
-     * Maps an not found handler to be executed when an uri is not mapped occurs during routing
+     * Maps a handler for uris that are not been mapped
      *
      * @param handler        The handler
      */
-    public static void notFound(NotFoundHandler handler) {
+    public static void notFound(UriNotFoundHandler handler) {
         getInstance().notFound(handler);
     }
 
