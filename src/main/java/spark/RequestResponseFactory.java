@@ -29,6 +29,10 @@ public final class RequestResponseFactory {
     public static Request create(RouteMatch match, HttpServletRequest request) {
         return new Request(match, request);
     }
+    
+    public static Request create(HttpServletRequest request) {
+        return new Request(request);
+    }
 
     public static Response create(HttpServletResponse response) {
         return new Response(response);

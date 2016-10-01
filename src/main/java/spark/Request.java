@@ -101,6 +101,15 @@ public class Request {
         this.servletRequest = request;
         changeMatch(match);
     }
+    
+    /**
+     * Constructor
+     *
+     * @param request the servlet request
+     */
+    Request(HttpServletRequest request) {
+        this.servletRequest = request;
+    }
 
     protected void changeMatch(RouteMatch match) {
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());

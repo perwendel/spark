@@ -20,6 +20,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import spark.ExceptionHandlerImpl;
 import spark.ExceptionMapper;
+import spark.NotFoundHandler;
+import spark.NotFoundMapper;
+import spark.Request;
+import spark.RequestResponseFactory;
 
 /**
  * Modifies the HTTP response and body based on the provided exception and request/response wrappers.
@@ -51,5 +55,36 @@ final class GeneralError {
             body.set(INTERNAL_ERROR);
         }
     }
+    
+    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
+    
+     /**
+     * Modifies the HTTP response and body based on the provided not found handler.
+     */
+    static void notFound(HttpServletResponse httpResponse, RouteContext context) {
 
+        Body body = context.body();
+        
+        NotFoundHandler handler = NotFoundMapper.getInstance().getNotFoundHandler();
+        
+        if (handler != null) {
+            if (context.requestWrapper().getDelegate() == null) {
+              Request request = RequestResponseFactory.create(context.httpRequest());
+              context.requestWrapper().setDelegate(request);
+            }
+            context.responseWrapper().setDelegate(context.response());
+            
+            handler.handle(context.requestWrapper(), context.responseWrapper());
+            String bodyAfterFilter = context.responseWrapper().getDelegate().body();
+
+            if (bodyAfterFilter != null) {
+                body.set(bodyAfterFilter);
+            }
+            
+        } else {
+            httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            body.set(NOT_FOUND);
+        }
+    }
+    
 }

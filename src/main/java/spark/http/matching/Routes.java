@@ -45,7 +45,7 @@ final class Routes {
 
         if (target != null) {
             Object result = null;
-
+            
             if (target instanceof RouteImpl) {
                 RouteImpl route = ((RouteImpl) target);
 
