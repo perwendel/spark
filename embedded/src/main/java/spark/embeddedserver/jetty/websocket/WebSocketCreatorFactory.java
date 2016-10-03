@@ -41,7 +41,7 @@ public class WebSocketCreatorFactory {
      * @return The WebSocketCreator.
      */
     public static WebSocketCreator create(WebSocketHandlerWrapper handlerWrapper) {
-    	validateHandlerClass(handlerWrapper.getHandlerClass());
+        validateHandlerClass(handlerWrapper.getHandlerClass());
         return new SparkWebSocketCreator(handlerWrapper.getHandler());
     }
 
@@ -55,7 +55,7 @@ public class WebSocketCreatorFactory {
 
         @Override
         public Object createWebSocket(ServletUpgradeRequest request,
-                                      ServletUpgradeResponse response) {
+                ServletUpgradeResponse response) {
             return handler;
         }
 
@@ -63,7 +63,7 @@ public class WebSocketCreatorFactory {
             return handler;
         }
     }
-    
+
     private static void validateHandlerClass(Class<?> handlerClass) {
         boolean valid = WebSocketListener.class.isAssignableFrom(handlerClass)
                 || handlerClass.isAnnotationPresent(WebSocket.class);

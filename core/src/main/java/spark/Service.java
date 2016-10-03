@@ -174,9 +174,9 @@ public final class Service extends Routable {
      * @return the object with connection set to be secure
      */
     public synchronized Service secure(String keystoreFile,
-                                       String keystorePassword,
-                                       String truststoreFile,
-                                       String truststorePassword) {
+            String keystorePassword,
+            String truststoreFile,
+            String truststorePassword) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -275,7 +275,7 @@ public final class Service extends Routable {
      * @param handlerClass the handler class that will manage the WebSocket connection to the given path.
      */
     public void webSocket(String path, Class<?> handlerClass) {
-    	addWebSocketHandler(path, new WebSocketHandlerClassWrapper(handlerClass));
+        addWebSocketHandler(path, new WebSocketHandlerClassWrapper(handlerClass));
     }
 
     /**
@@ -287,11 +287,11 @@ public final class Service extends Routable {
      * @param handler the handler instance that will manage the WebSocket connection to the given path.
      */
     public void webSocket(String path, Object handler) {
-    	addWebSocketHandler(path, new WebSocketHandlerInstanceWrapper(handler));
+        addWebSocketHandler(path, new WebSocketHandlerInstanceWrapper(handler));
     }
 
     private synchronized void addWebSocketHandler(String path, WebSocketHandlerWrapper handlerWrapper) {
-    	if (initialized) {
+        if (initialized) {
             throwBeforeRouteMappingException();
         }
         if (isRunningFromServlet()) {
@@ -443,9 +443,9 @@ public final class Service extends Routable {
                     }
 
                     server = EmbeddedServers.create(embeddedServerIdentifier,
-                                                    routes,
-                                                    staticFilesConfiguration,
-                                                    hasMultipleHandlers());
+                            routes,
+                            staticFilesConfiguration,
+                            hasMultipleHandlers());
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 

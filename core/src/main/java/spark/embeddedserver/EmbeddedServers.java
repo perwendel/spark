@@ -31,42 +31,42 @@ public class EmbeddedServers {
     public enum Identifiers {
         JETTY
     }
-    
+
     private enum Factories {
-    	JETTY_FACTORY("spark.embeddedserver.jetty.EmbeddedJettyFactory");
-    	
-    	private final Class<EmbeddedServerFactory> factoryClass;
-    	
-    	@SuppressWarnings("unchecked")
-    	private Factories(String factoryClassName) {
-    		try {
-				this.factoryClass = (Class<EmbeddedServerFactory>) Class.forName(factoryClassName);
-			} catch (ClassNotFoundException e) {
-				throw new IllegalArgumentException("Factory class not found: " + factoryClassName);
-			}
-    	}
-    	
-    	private static Factories valueOf(Identifiers identifier) {
-    		switch (identifier) {
-    		case JETTY: return JETTY_FACTORY;
-    		default:	throw new IllegalArgumentException("No factory defined for: " + identifier);
-    		}
-    	}
-    	
-    	private EmbeddedServerFactory instantiateFactory() {
-    		try {
-				return factoryClass.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				throw new IllegalStateException("Unable to instantiate factory: " + factoryClass.getName(), e);
-			}
-    	}
+        JETTY_FACTORY("spark.embeddedserver.jetty.EmbeddedJettyFactory");
+
+        private final Class<EmbeddedServerFactory> factoryClass;
+
+        @SuppressWarnings("unchecked")
+        private Factories(String factoryClassName) {
+            try {
+                this.factoryClass = (Class<EmbeddedServerFactory>) Class.forName(factoryClassName);
+            } catch (ClassNotFoundException e) {
+                throw new IllegalArgumentException("Factory class not found: " + factoryClassName);
+            }
+        }
+
+        private static Factories valueOf(Identifiers identifier) {
+            switch (identifier) {
+            case JETTY: return JETTY_FACTORY;
+            default:	throw new IllegalArgumentException("No factory defined for: " + identifier);
+            }
+        }
+
+        private EmbeddedServerFactory instantiateFactory() {
+            try {
+                return factoryClass.newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new IllegalStateException("Unable to instantiate factory: " + factoryClass.getName(), e);
+            }
+        }
     }
 
     private static Map<Object, EmbeddedServerFactory> factories = new HashMap<>();
 
     public static void initialize() {
         for (Identifiers identifier : Identifiers.values()) {
-        	add(identifier, Factories.valueOf(identifier).instantiateFactory());
+            add(identifier, Factories.valueOf(identifier).instantiateFactory());
         }
     }
 
@@ -84,9 +84,9 @@ public class EmbeddedServers {
      * @return the created EmbeddedServer object
      */
     public static EmbeddedServer create(Object identifier,
-                                        Routes routeMatcher,
-                                        StaticFilesConfiguration staticFilesConfiguration,
-                                        boolean multipleHandlers) {
+            Routes routeMatcher,
+            StaticFilesConfiguration staticFilesConfiguration,
+            boolean multipleHandlers) {
 
         EmbeddedServerFactory factory = factories.get(identifier);
 
