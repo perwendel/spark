@@ -92,9 +92,9 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
                     return false;
                 } else {
                     // Fall back to stream existence: can we open the stream?
-                    InputStream is = getInputStream();
-                    is.close();
-                    return true;
+                    try (InputStream is = getInputStream()) {
+                        return true;
+                    }
                 }
             }
         } catch (IOException ex) {

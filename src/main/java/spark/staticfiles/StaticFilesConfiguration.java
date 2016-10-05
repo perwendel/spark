@@ -88,11 +88,10 @@ public class StaticFilesConfiguration {
                 if (resource != null && resource.isReadable()) {
                     httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromResource(resource));
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
-                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
-                    IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
-                    wrappedOutputStream.flush();
-                    wrappedOutputStream.close();
-                    return true;
+                    try (OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false)) {
+                        IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
+                        return true;
+                    }
                 }
             }
 
@@ -108,15 +107,11 @@ public class StaticFilesConfiguration {
                 InputStream stream = jarResourceHandler.getResource(httpRequest);
 
                 if (stream != null) {
-                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
-
-                    IOUtils.copy(stream, wrappedOutputStream);
-
-                    wrappedOutputStream.flush();
-                    wrappedOutputStream.close();
-
-                    return true;
+                    try (OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false)) {
+                        IOUtils.copy(stream, wrappedOutputStream);
+                        return true;
+                    }
                 }
             }
         }
