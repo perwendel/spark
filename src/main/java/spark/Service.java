@@ -29,6 +29,7 @@ import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
+import spark.http.matching.MatcherFilter;
 import spark.http.matching.RedispatchRequestWrapper;
 import spark.route.HttpMethod;
 import spark.route.Routes;
@@ -516,15 +517,13 @@ public final class Service extends Routable {
      * @throws RedispatchException when there's no route match
      */
     public Object redispatch(String address, Request req, Response res, HttpMethod method) throws Exception {
-        RouteMatch routeMatch = routes.find(method, address.replaceAll("\\?.*", ""), req.contentType());
 
-        if (routeMatch == null) {
-            throw new RedispatchException("Redispatcher couldn't find route match for " +
-                    "method [" + method.name() + " address [" + address + "]");
-        }
+        String uri = address.replaceAll("\\?.*", "");
+        RouteMatch routeMatch = routes.find(method, uri, req.contentType());
+        RedispatchRequestWrapper redispatchReq = new RedispatchRequestWrapper(address, routeMatch, req);
 
-        RouteImpl route = (RouteImpl) routeMatch.getTarget();
-        return route.handle(new RedispatchRequestWrapper(address, routeMatch, req), res);
+        MatcherFilter filter = new MatcherFilter(routes, staticFilesConfiguration, false, false);
+        return filter.doFilter(redispatchReq, res, uri, method);
     }
 
     /**

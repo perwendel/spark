@@ -120,8 +120,35 @@ public class MatcherFilter implements Filter {
                 .withResponse(response)
                 .withHttpMethod(httpMethod);
 
-        try {
+        doFilter(context, chain);
+    }
 
+    public Object doFilter(RedispatchRequestWrapper request, Response response, String uri, HttpMethod method) throws IOException, ServletException {
+        RouteContext context = RouteContext.create()
+                .withMatcher(routeMatcher)
+                .withHttpRequest(request.raw())
+                .withUri(uri)
+                .withAcceptType(request.headers(ACCEPT_TYPE_REQUEST_MIME_HEADER))
+                .withBody(Body.create())
+                .withRequestWrapper(request)
+                .withResponseWrapper(ResponseWrapper.create())
+                .withResponse(response)
+                .withHttpMethod(method);
+
+        doFilter(context, null);
+        return context.body().get();
+    }
+
+    private void doFilter(RouteContext context, FilterChain chain) throws IOException, ServletException {
+        Body body = context.body();
+        HttpServletResponse httpResponse = context.response().raw();
+        RequestWrapper requestWrapper = context.requestWrapper();
+        ResponseWrapper responseWrapper = context.responseWrapper();
+        HttpServletRequest httpRequest = context.httpRequest();
+        ServletRequest servletRequest = context.httpRequest();
+        String uri = context.uri();
+
+        try {
             BeforeFilters.execute(context);
             Routes.execute(context);
             AfterFilters.execute(context);

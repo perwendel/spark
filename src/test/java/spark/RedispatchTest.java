@@ -10,8 +10,8 @@ import static org.junit.Assert.*;
 
 public class RedispatchTest {
 
-    static SparkTestUtil testUtil;
-    static RedispatchRequestWrapper catchedRequest;
+    private static SparkTestUtil testUtil;
+    private static RedispatchRequestWrapper cachedRequest;
 
     @BeforeClass
     public static void setup() {
@@ -38,23 +38,36 @@ public class RedispatchTest {
             }
         });
 
+        Spark.get("/filters/redispatch", (req, res) -> {
+            return Spark.redispatch("/filters/redispatched", req, res);
+        });
+
         //ROUTES
         Spark.post("/redispatched", (req, res) -> {
-            catchedRequest = ((RedispatchRequestWrapper) req);
+            cachedRequest = ((RedispatchRequestWrapper) req);
             res.status(265); //whatever
             return "POST";
         });
 
         Spark.get("/redispatched", (req, res) -> {
-            catchedRequest = ((RedispatchRequestWrapper) req);
+            cachedRequest = ((RedispatchRequestWrapper) req);
             res.status(269); //whatever
             return "GET";
         });
 
         Spark.get("/redispatched/:param", (req, res) -> {
-            catchedRequest = ((RedispatchRequestWrapper) req);
+            cachedRequest = ((RedispatchRequestWrapper) req);
             return "OK";
         });
+
+        Spark.get("/filters/redispatched", (req, res) -> {
+            cachedRequest = ((RedispatchRequestWrapper) req);
+            return "OK";
+        });
+
+        Spark.before("/filters/redispatched", (req, res) -> req.attribute("before1", true));
+        Spark.before("/filters/redispatched", (req, res) -> req.attribute("before2", true));
+        Spark.after("/filters/redispatched", (req, res) -> req.attribute("after1", true));
 
         Spark.awaitInitialization();
     }
@@ -66,7 +79,7 @@ public class RedispatchTest {
 
     @Before
     public void clearVars() {
-        catchedRequest = null;
+        cachedRequest = null;
     }
 
     @Test
@@ -87,15 +100,24 @@ public class RedispatchTest {
     public void redispatchedRequestShouldHaveExpectedParamsAndQueries() throws Exception {
         UrlResponse response = testUtil.get("/redispatch/get/withParam?duck=qwak!");
         assertEquals("OK", response.body);
-        assertEquals("duck=qwak!", catchedRequest.queryString());
-        assertEquals("qwak!", catchedRequest.queryMap("duck").value());
-        assertEquals("foo", catchedRequest.params(":param"));
-        assertEquals(1, catchedRequest.params().size());
+        assertEquals("duck=qwak!", cachedRequest.queryString());
+        assertEquals("qwak!", cachedRequest.queryMap("duck").value());
+        assertEquals("foo", cachedRequest.params(":param"));
+        assertEquals(1, cachedRequest.params().size());
     }
 
     @Test
     public void redispatchedRequestNoMatchShouldThrowException() throws Exception {
         UrlResponse response = testUtil.get("/redispatch/nowhere");
         assertEquals("spark.RedispatchException", response.body);
+    }
+
+    @Test
+    public void redispatchedRequestShouldGoThroughFilters() throws Exception {
+        UrlResponse response = testUtil.get("/filters/redispatch");
+        assertEquals("OK", response.body);
+        assertTrue(cachedRequest.attribute("before1"));
+        assertTrue(cachedRequest.attribute("before2"));
+        assertTrue(cachedRequest.attribute("after1"));
     }
 }
