@@ -498,7 +498,6 @@ public final class Service extends Routable {
      * @param req The request
      * @param res The response
      * @return Object - to be set on response
-     * @throws RedispatchException when there's no route match
      */
     public Object redispatch(String address, Request req, Response res) throws Exception {
         HttpMethod reqMethod = HttpMethod.valueOf(req.requestMethod().toLowerCase());
@@ -514,7 +513,6 @@ public final class Service extends Routable {
      * @param res The response
      * @param method The http method to redispatch
      * @return Object - to be set on response
-     * @throws RedispatchException when there's no route match
      */
     public Object redispatch(String address, Request req, Response res, HttpMethod method) throws Exception {
 

@@ -30,14 +30,6 @@ public class RedispatchTest {
             return Spark.redispatch("/redispatched/foo?" + req.queryString(), req, res);
         });
 
-        Spark.get("/redispatch/nowhere", (req, res) -> {
-            try {
-                return Spark.redispatch("/nowhere", req, res);
-            } catch (RedispatchException e) {
-                return e.getClass().getTypeName();
-            }
-        });
-
         Spark.get("/filters/redispatch", (req, res) -> {
             return Spark.redispatch("/filters/redispatched", req, res);
         });

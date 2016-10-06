@@ -1107,7 +1107,6 @@ public class Spark {
      * @param req The request
      * @param res The response
      * @return Object - to be set on response
-     * @throws RedispatchException when there's no route match
      */
     public static Object redispatch(String address, Request req, Response res) throws Exception {
         return getInstance().redispatch(address, req, res);
@@ -1122,7 +1121,6 @@ public class Spark {
      * @param res The response
      * @param method The http method to redispatch
      * @return Object - to be set on response
-     * @throws RedispatchException when there's no route match
      */
     public static Object redispatch(String address, Request req, Response res, HttpMethod method) throws Exception {
         return getInstance().redispatch(address, req, res, method);
