@@ -62,12 +62,13 @@ public class RedispatchTest {
 
         Spark.get("/filters/redispatched", (req, res) -> {
             cachedRequest = ((RedispatchRequestWrapper) req);
+            res.header("redispatch", "1");
             return "OK";
         });
 
-        Spark.before("/filters/redispatched", (req, res) -> req.attribute("before1", true));
-        Spark.before("/filters/redispatched", (req, res) -> req.attribute("before2", true));
-        Spark.after("/filters/redispatched", (req, res) -> req.attribute("after1", true));
+        Spark.before("/filters/redispatched", (req, res) -> res.header("before1", "b1"));
+        Spark.before("/filters/redispatched", (req, res) -> res.header("before2", "b2"));
+        Spark.after("/filters/redispatched", (req, res) -> res.header("after1", "a1"));
 
         Spark.awaitInitialization();
     }
@@ -107,17 +108,12 @@ public class RedispatchTest {
     }
 
     @Test
-    public void redispatchedRequestNoMatchShouldThrowException() throws Exception {
-        UrlResponse response = testUtil.get("/redispatch/nowhere");
-        assertEquals("spark.RedispatchException", response.body);
-    }
-
-    @Test
     public void redispatchedRequestShouldGoThroughFilters() throws Exception {
         UrlResponse response = testUtil.get("/filters/redispatch");
         assertEquals("OK", response.body);
-        assertTrue(cachedRequest.attribute("before1"));
-        assertTrue(cachedRequest.attribute("before2"));
-        assertTrue(cachedRequest.attribute("after1"));
+        assertEquals("1", response.headers.get("redispatch"));
+        assertEquals("b1", response.headers.get("before1"));
+        assertEquals("b2", response.headers.get("before2"));
+        assertEquals("a1", response.headers.get("after1"));
     }
 }
