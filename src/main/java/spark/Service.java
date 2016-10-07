@@ -491,8 +491,6 @@ public final class Service extends Routable {
     /**
      * Internal redirect, it works similar
      * to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
-     * <br>
-     * PS: Only routes with http method equivalent to the request will be matched
      *
      * @param address The route to dispatch
      * @param req The request
@@ -500,8 +498,7 @@ public final class Service extends Routable {
      * @return Object - to be set on response
      */
     public Object redispatch(String address, Request req, Response res) throws Exception {
-        HttpMethod reqMethod = HttpMethod.valueOf(req.requestMethod().toLowerCase());
-        return redispatch(address, req, res, reqMethod);
+        return redispatch(address, req, res, req.body());
     }
 
     /**
@@ -511,17 +508,17 @@ public final class Service extends Routable {
      * @param address The route to dispatch
      * @param req The request
      * @param res The response
-     * @param method The http method to redispatch
+     * @param overrideBody Overrides redispatch request body
      * @return Object - to be set on response
      */
-    public Object redispatch(String address, Request req, Response res, HttpMethod method) throws Exception {
+    public Object redispatch(String address, Request req, Response res, String overrideBody) throws Exception {
 
         String uri = address.replaceAll("\\?.*", "");
-        RouteMatch routeMatch = routes.find(method, uri, req.contentType());
-        RedispatchRequestWrapper redispatchReq = new RedispatchRequestWrapper(address, routeMatch, req);
+        RouteMatch routeMatch = routes.find(HttpMethod.get(req.requestMethod().toLowerCase()), uri, req.contentType());
+        RedispatchRequestWrapper redispatchReq = new RedispatchRequestWrapper(address, routeMatch, req, overrideBody);
 
         MatcherFilter filter = new MatcherFilter(routes, staticFilesConfiguration, false, false);
-        return filter.doFilter(redispatchReq, res, uri, method);
+        return filter.doFilter(redispatchReq, res, uri);
     }
 
     /**

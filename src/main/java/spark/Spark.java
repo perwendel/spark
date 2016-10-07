@@ -1100,8 +1100,6 @@ public class Spark {
     /**
      * Internal redirect, it works similar
      * to servlet.getRequestDispatcher("xxx.jsp").forward(req, res)
-     * <br>
-     * PS: Only routes with http method equivalent to the request will be matched
      *
      * @param address The route to dispatch
      * @param req The request
@@ -1119,10 +1117,10 @@ public class Spark {
      * @param address The route to dispatch
      * @param req The request
      * @param res The response
-     * @param method The http method to redispatch
+     * @param overrideBody Overrides redispatch request body
      * @return Object - to be set on response
      */
-    public static Object redispatch(String address, Request req, Response res, HttpMethod method) throws Exception {
-        return getInstance().redispatch(address, req, res, method);
+    public static Object redispatch(String address, Request req, Response res, String overrideBody) throws Exception {
+        return getInstance().redispatch(address, req, res, overrideBody);
     }
 }

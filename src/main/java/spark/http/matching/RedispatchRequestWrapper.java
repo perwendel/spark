@@ -9,11 +9,23 @@ import java.util.*;
 public class RedispatchRequestWrapper extends RequestWrapper {
 
     private String queryString;
+    private String body;
+
 
     public RedispatchRequestWrapper(String redispatchAddress, RouteMatch match, Request request) {
+        this(redispatchAddress, match, request, request.body());
+    }
+
+    public RedispatchRequestWrapper(String redispatchAddress, RouteMatch match, Request request, String body) {
         setDelegate(request);
         queryString = redispatchAddress.replaceAll("^.*?\\?", "");
         changeWrapperMatch(match);
+        this.body = body;
+    }
+
+    @Override
+    public String body() {
+        return body;
     }
 
     @Override

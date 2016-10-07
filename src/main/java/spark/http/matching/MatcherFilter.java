@@ -123,7 +123,7 @@ public class MatcherFilter implements Filter {
         doFilter(context, chain);
     }
 
-    public Object doFilter(RedispatchRequestWrapper request, Response response, String uri, HttpMethod method) throws IOException, ServletException {
+    public Object doFilter(RedispatchRequestWrapper request, Response response, String uri) throws IOException, ServletException {
         RouteContext context = RouteContext.create()
                 .withMatcher(routeMatcher)
                 .withHttpRequest(request.raw())
@@ -133,7 +133,7 @@ public class MatcherFilter implements Filter {
                 .withRequestWrapper(request)
                 .withResponseWrapper(ResponseWrapper.create())
                 .withResponse(response)
-                .withHttpMethod(method);
+                .withHttpMethod(HttpMethod.get(request.requestMethod().toLowerCase()));
 
         doFilter(context, null);
         return context.body().get();

@@ -2,7 +2,6 @@ package spark;
 
 import org.junit.*;
 import spark.http.matching.RedispatchRequestWrapper;
-import spark.route.HttpMethod;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -22,12 +21,16 @@ public class RedispatchTest {
             return Spark.redispatch("/redispatched", req, res);
         });
 
-        Spark.get("/redispatch/post", (req, res) -> {
-            return Spark.redispatch("/redispatched", req, res, HttpMethod.post);
+        Spark.post("/redispatch/post", (req, res) -> {
+            return Spark.redispatch("/redispatched", req, res);
         });
 
         Spark.get("/redispatch/get/withParam", (req, res) -> {
-            return Spark.redispatch("/redispatched/foo?" + req.queryString(), req, res);
+            return Spark.redispatch("/redispatched/params/foo?" + req.queryString(), req, res);
+        });
+
+        Spark.post("/redispatch/override", (req, res) -> {
+            return Spark.redispatch("/redispatched/override", req, res, "overrided");
         });
 
         Spark.get("/filters/redispatch", (req, res) -> {
@@ -47,9 +50,13 @@ public class RedispatchTest {
             return "GET";
         });
 
-        Spark.get("/redispatched/:param", (req, res) -> {
+        Spark.get("/redispatched/params/:param", (req, res) -> {
             cachedRequest = ((RedispatchRequestWrapper) req);
             return "OK";
+        });
+
+        Spark.post("/redispatched/override", (req, res) -> {
+            return req.body();
         });
 
         Spark.get("/filters/redispatched", (req, res) -> {
@@ -76,21 +83,21 @@ public class RedispatchTest {
     }
 
     @Test
-    public void redispatchedRequestShouldGoThroughGET() throws Exception {
+    public void redispatched_Request_Should_Go_Through_GET() throws Exception {
         UrlResponse response = testUtil.get("/redispatch/get");
         assertEquals(269, response.status);
         assertEquals("GET", response.body);
     }
 
     @Test
-    public void redispatchedRequestShouldGoThroughPOST() throws Exception {
-        UrlResponse response = testUtil.get("/redispatch/post");
+    public void redispatched_Request_Should_Go_Through_POST() throws Exception {
+        UrlResponse response = testUtil.doMethod("POST", "/redispatch/post", "");
         assertEquals(265, response.status);
         assertEquals("POST", response.body);
     }
 
     @Test
-    public void redispatchedRequestShouldHaveExpectedParamsAndQueries() throws Exception {
+    public void redispatched_Request_Should_Have_Expected_Params_And_Queries() throws Exception {
         UrlResponse response = testUtil.get("/redispatch/get/withParam?duck=qwak!");
         assertEquals("OK", response.body);
         assertEquals("duck=qwak!", cachedRequest.queryString());
@@ -100,7 +107,14 @@ public class RedispatchTest {
     }
 
     @Test
-    public void redispatchedRequestShouldGoThroughFilters() throws Exception {
+    public void redispatched_Request_Should_Have_Overriden_Body() throws Exception {
+        UrlResponse response = testUtil.doMethod("POST", "/redispatch/override", "FOO-BAR");
+        assertNotEquals("FOO-BAR", response.body);
+        assertEquals("overrided", response.body);
+    }
+
+    @Test
+    public void redispatched_Request_Should_Go_Through_Filters() throws Exception {
         UrlResponse response = testUtil.get("/filters/redispatch");
         assertEquals("OK", response.body);
         assertEquals("1", response.headers.get("redispatch"));
