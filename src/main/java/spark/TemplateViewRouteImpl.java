@@ -73,7 +73,7 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
      *
      * @param path       the path
      * @param acceptType the accept type
-     * @param route 
+     * @param route
      */
     protected TemplateViewRouteImpl(String path, String acceptType, TemplateViewRoute route) {
         super(path, acceptType, route);
