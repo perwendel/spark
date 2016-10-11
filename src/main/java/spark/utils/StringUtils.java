@@ -53,6 +53,23 @@ public abstract class StringUtils {
     // General convenience methods for working with Strings
     //---------------------------------------------------------------------
 
+    public static boolean isBlank(final CharSequence cs) {
+        int strLen;
+        if (cs == null || (strLen = cs.length()) == 0) {
+            return true;
+        }
+        for (int i = 0; i < strLen; i++) {
+            if (Character.isWhitespace(cs.charAt(i)) == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isNotBlank(final CharSequence cs) {
+        return !isBlank(cs);
+    }
+
     /**
      * Check whether the given String is empty.
      * <p>This method accepts any Object as an argument, comparing it to

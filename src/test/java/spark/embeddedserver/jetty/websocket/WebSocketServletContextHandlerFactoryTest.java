@@ -36,9 +36,9 @@ public class WebSocketServletContextHandlerFactoryTest {
     @Test
     public void testCreate_whenNoIdleTimeoutIsPresent() throws Exception {
 
-        Map<String, Class<?>> webSocketHandlers = new HashMap<>();
+        Map<String, WebSocketHandlerWrapper> webSocketHandlers = new HashMap<>();
 
-        webSocketHandlers.put(webSocketPath, WebSocketTestHandler.class);
+        webSocketHandlers.put(webSocketPath, new WebSocketHandlerClassWrapper(WebSocketTestHandler.class));
 
         servletContextHandler = WebSocketServletContextHandlerFactory.create(webSocketHandlers, Optional.empty());
 
@@ -64,9 +64,9 @@ public class WebSocketServletContextHandlerFactoryTest {
 
         final Integer timeout = Integer.valueOf(1000);
 
-        Map<String, Class<?>> webSocketHandlers = new HashMap<>();
+        Map<String, WebSocketHandlerWrapper> webSocketHandlers = new HashMap<>();
 
-        webSocketHandlers.put(webSocketPath, WebSocketTestHandler.class);
+        webSocketHandlers.put(webSocketPath, new WebSocketHandlerClassWrapper(WebSocketTestHandler.class));
 
         servletContextHandler = WebSocketServletContextHandlerFactory.create(webSocketHandlers, Optional.of(timeout));
 
@@ -94,11 +94,11 @@ public class WebSocketServletContextHandlerFactoryTest {
     @PrepareForTest(WebSocketServletContextHandlerFactory.class)
     public void testCreate_whenWebSocketContextHandlerCreationFails_thenThrowException() throws Exception {
 
-        Map<String, Class<?>> webSocketHandlers = new HashMap<>();
-
         PowerMockito.whenNew(ServletContextHandler.class).withAnyArguments().thenThrow(new Exception(""));
 
-        webSocketHandlers.put(webSocketPath, WebSocketTestHandler.class);
+        Map<String, WebSocketHandlerWrapper> webSocketHandlers = new HashMap<>();
+
+        webSocketHandlers.put(webSocketPath, new WebSocketHandlerClassWrapper(WebSocketTestHandler.class));
 
         servletContextHandler = WebSocketServletContextHandlerFactory.create(webSocketHandlers, Optional.empty());
 

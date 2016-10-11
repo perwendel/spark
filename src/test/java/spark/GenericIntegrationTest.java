@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
@@ -305,6 +306,27 @@ public class GenericIntegrationTest {
         UrlResponse response = testUtil.doMethod("GET", "/param/" + encoded, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("echo: " + polyglot, response.body);
+    }
+
+    @Test
+    public void testParamWithEncodedSlash() throws Exception {
+        String polyglot = "te/st";
+        String encoded = URLEncoder.encode(polyglot, "UTF-8");
+        UrlResponse response = testUtil.doMethod("GET", "/param/" + encoded, null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: " + polyglot, response.body);
+    }
+
+    @Test
+    public void testSplatWithEncodedSlash() throws Exception {
+        String param = "fo/shizzle";
+        String encodedParam = URLEncoder.encode(param, "UTF-8");
+        String splat = "mah/FRIEND";
+        String encodedSplat = URLEncoder.encode(splat, "UTF-8");
+        UrlResponse response = testUtil.doMethod("GET",
+                                                 "/paramandwild/" + encodedParam + "/stuff/" + encodedSplat, null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("paramandwild: " + param + splat, response.body);
     }
 
     @Test

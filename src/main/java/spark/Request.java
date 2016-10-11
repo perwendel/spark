@@ -16,6 +16,8 @@
  */
 package spark;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -471,11 +473,17 @@ public class Request {
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
             if (SparkUtils.isParam(matchedPart)) {
-                LOG.debug("matchedPart: "
-                                  + matchedPart
-                                  + " = "
-                                  + request.get(i));
-                params.put(matchedPart.toLowerCase(), request.get(i));
+                try {
+                    String decodedReq = URLDecoder.decode(request.get(i), "UTF-8");
+                    LOG.debug("matchedPart: "
+                                      + matchedPart
+                                      + " = "
+                                      + decodedReq);
+                    params.put(matchedPart.toLowerCase(), decodedReq);
+
+                } catch (UnsupportedEncodingException e) {
+
+                }
             }
         }
         return Collections.unmodifiableMap(params);
@@ -492,20 +500,27 @@ public class Request {
         List<String> splat = new ArrayList<>();
 
         for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
+
             String matchedPart = matched.get(i);
 
             if (SparkUtils.isSplat(matchedPart)) {
 
                 StringBuilder splatParam = new StringBuilder(request.get(i));
+
                 if (!sameLength && (i == (nbrOfMatchedParts - 1))) {
                     for (int j = i + 1; j < nbrOfRequestParts; j++) {
                         splatParam.append("/");
                         splatParam.append(request.get(j));
                     }
                 }
-                splat.add(splatParam.toString());
+                try {
+                    String decodedSplat = URLDecoder.decode(splatParam.toString(), "UTF-8");
+                    splat.add(decodedSplat);
+                } catch (UnsupportedEncodingException e) {
+                }
             }
         }
+
         return Collections.unmodifiableList(splat);
     }
 

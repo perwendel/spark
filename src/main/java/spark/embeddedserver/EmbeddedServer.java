@@ -16,11 +16,12 @@
  */
 package spark.embeddedserver;
 
-import spark.ssl.SslStores;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
+import spark.ssl.SslStores;
 
 /**
  * Represents an embedded server that can be used in Spark. (this is currently Jetty by default).
@@ -39,8 +40,9 @@ public interface EmbeddedServer {
      * @param minThreads              - min nbr of threads.
      * @param threadIdleTimeoutMillis - idle timeout (ms).
      * @param maxHeadersSize          - maximum size of http request/response headers
+     * @return The port number the server was launched on.
      */
-    void ignite(String host,
+    int ignite(String host,
                 int port,
                 SslStores sslStores,
                 CountDownLatch latch,
@@ -55,7 +57,7 @@ public interface EmbeddedServer {
      * @param webSocketHandlers          - web socket handlers.
      * @param webSocketIdleTimeoutMillis - Optional WebSocket idle timeout (ms).
      */
-    default void configureWebSockets(Map<String, Class<?>> webSocketHandlers,
+    default void configureWebSockets(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
                                      Optional<Integer> webSocketIdleTimeoutMillis) {
 
         NotSupportedException.raise(getClass().getSimpleName(), "Web Sockets");
