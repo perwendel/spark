@@ -109,6 +109,7 @@ public class StaticFilesConfiguration {
 
                 if (stream != null) {
                     OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
+                    httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromRequest(httpRequest));
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
 
                     IOUtils.copy(stream, wrappedOutputStream);
