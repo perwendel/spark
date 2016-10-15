@@ -89,6 +89,7 @@ public class StaticFilesConfiguration {
                     httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromResource(resource));
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
                     OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
+                    
                     IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
                     wrappedOutputStream.flush();
                     wrappedOutputStream.close();
@@ -108,14 +109,13 @@ public class StaticFilesConfiguration {
                 InputStream stream = jarResourceHandler.getResource(httpRequest);
 
                 if (stream != null) {
-                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
+                    httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromPathInfo(httpRequest.getPathInfo()));
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
+                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
 
                     IOUtils.copy(stream, wrappedOutputStream);
-
                     wrappedOutputStream.flush();
                     wrappedOutputStream.close();
-
                     return true;
                 }
             }
@@ -191,10 +191,9 @@ public class StaticFilesConfiguration {
                 jarResourceHandlers.add(new JarResourceHandler(folder, "index.html"));
                 staticResourcesSet = true;
                 return true;
-            } else {
-                LOG.error("Static file configuration failed.");
             }
-
+            
+            LOG.error("Static file configuration failed.");
         }
         return false;
     }
