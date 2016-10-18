@@ -16,6 +16,7 @@
  */
 package spark;
 
+import static java.lang.ClassLoader.getSystemClassLoader;
 import static java.lang.System.arraycopy;
 import static org.junit.Assert.assertEquals;
 
@@ -41,12 +42,14 @@ import spark.util.SparkTestUtil.UrlResponse;
 public class StaticFilesFromArchiveTest {
 
     private static SparkTestUtil testUtil;
+    private static ClassLoader classLoader;
+    private static ClassLoader initialClassLoader;
 
     @BeforeClass
     public static void setup() throws Exception {
+        setupClassLoader();
         testUtil = new SparkTestUtil(4567);
 
-        ClassLoader classLoader = getClassLoader();
         Class<?> sparkClass = classLoader.loadClass("spark.Spark");
 
         Method staticFileLocationMethod = sparkClass.getMethod("staticFileLocation", String.class);
@@ -59,16 +62,28 @@ public class StaticFilesFromArchiveTest {
         awaitInitializationMethod.invoke(null);
     }
 
-    protected static ClassLoader getClassLoader() throws Exception {
-        URL[] parentURLs = ((URLClassLoader) ClassLoader.getSystemClassLoader()).getURLs();
+    @AfterClass
+    public static void resetClassLoader() {
+        Thread.currentThread().setContextClassLoader(initialClassLoader);
+    }
+
+    private static void setupClassLoader() throws Exception {
+        ClassLoader extendedClassLoader = createExtendedClassLoader();
+        initialClassLoader = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(extendedClassLoader);
+        classLoader = extendedClassLoader;
+    }
+
+    private static URLClassLoader createExtendedClassLoader() {
+        URL[] parentURLs = ((URLClassLoader) getSystemClassLoader()).getURLs();
         URL[] urls = new URL[parentURLs.length + 1];
         arraycopy(parentURLs, 0, urls, 0, parentURLs.length);
-        URL publicJar = StaticFilesFromArchiveTest.class.getResource("/public-jar.zip");
-        urls[parentURLs.length] = publicJar;
 
-        URLClassLoader urlClassLoader = new URLClassLoader(urls, null);
-        Thread.currentThread().setContextClassLoader(urlClassLoader);
-        return urlClassLoader;
+        URL publicJar = StaticFilesFromArchiveTest.class.getResource("/public-jar.zip");
+        urls[urls.length - 1] = publicJar;
+
+        // no parent classLoader because Spark and the static resources need to be loaded from the same classloader
+        return new URLClassLoader(urls, null);
     }
 
     @Test
