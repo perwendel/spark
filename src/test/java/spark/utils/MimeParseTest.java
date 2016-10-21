@@ -23,6 +23,18 @@ public class MimeParseTest {
     }
 
     @Test
+    public void testBestMatchNoQualityOnWildcard() throws Exception {
+
+        final String header = "text/html,application/xhtml+xml,*/*";
+
+        Collection<String> supported = Arrays.asList("*/*", "text/html");
+
+        assertEquals("best match should be the most specific match",
+                "text/html", MimeParse.bestMatch(supported, header));
+
+    }
+
+    @Test
     public void testBestMatch_whenSupportedIsLowQualityFactor() throws Exception {
 
         final String header = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8";
