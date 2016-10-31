@@ -30,7 +30,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <jetty.version>9.3.6.v20151106</jetty.version>
+        <jetty.version>9.3.13.v20161014</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <powermock.version>1.6.4</powermock.version>
         <mockito.version>1.10.19</mockito.version>

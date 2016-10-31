@@ -1,10 +1,10 @@
 package spark.embeddedserver.jetty.websocket;
 
+import org.eclipse.jetty.http.pathmap.MappedResource;
+import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.server.WebSocketServerFactory;
 import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
-import org.eclipse.jetty.websocket.server.pathmap.PathMappings;
-import org.eclipse.jetty.websocket.server.pathmap.PathSpec;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,12 +47,12 @@ public class WebSocketServletContextHandlerFactoryTest {
 
         assertNotNull("Should return a WebSocketUpgradeFilter because we configured it to have one", webSocketUpgradeFilter);
 
-        PathMappings.MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
+        MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
         WebSocketCreatorFactory.SparkWebSocketCreator sc = (WebSocketCreatorFactory.SparkWebSocketCreator) mappedResource.getResource();
         PathSpec pathSpec = (PathSpec) mappedResource.getPathSpec();
 
-        assertEquals("Should return the WebSocket path specified when contexst handler was created",
-                webSocketPath, pathSpec.getPathSpec());
+        assertTrue("Should return the WebSocket path specified when contexst handler was created",
+                pathSpec.matches(webSocketPath));
 
         assertTrue("Should return true because handler should be an instance of the one we passed when it was created",
                 sc.getHandler() instanceof WebSocketTestHandler);
@@ -79,12 +79,12 @@ public class WebSocketServletContextHandlerFactoryTest {
         assertEquals("Timeout value should be the same as the timeout specified when context handler was created",
                 timeout.longValue(), webSocketServerFactory.getPolicy().getIdleTimeout());
 
-        PathMappings.MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
+        MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
         WebSocketCreatorFactory.SparkWebSocketCreator sc = (WebSocketCreatorFactory.SparkWebSocketCreator) mappedResource.getResource();
         PathSpec pathSpec = (PathSpec) mappedResource.getPathSpec();
 
-        assertEquals("Should return the WebSocket path specified when context handler was created",
-                webSocketPath, pathSpec.getPathSpec());
+        assertTrue("Should return the WebSocket path specified when context handler was created",
+                pathSpec.matches(webSocketPath));
 
         assertTrue("Should return true because handler should be an instance of the one we passed when it was created",
                 sc.getHandler() instanceof WebSocketTestHandler);
