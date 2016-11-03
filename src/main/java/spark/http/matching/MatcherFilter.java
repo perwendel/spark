@@ -28,12 +28,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import spark.HaltException;
+import spark.UriNotFoundMapper;
 import spark.RequestResponseFactory;
 import spark.Response;
 import spark.embeddedserver.jetty.HttpRequestWrapper;
 import spark.route.HttpMethod;
 import spark.serialization.SerializerChain;
 import spark.staticfiles.StaticFilesConfiguration;
+import spark.UriNotFoundHandler;
 
 /**
  * Matches Spark routes and filters.
@@ -140,7 +142,7 @@ public class MatcherFilter implements Filter {
         if (body.notSet() && responseWrapper.isRedirected()) {
             body.set("");
         }
-
+        
         if (body.notSet() && hasOtherHandlers) {
             if (servletRequest instanceof HttpRequestWrapper) {
                 ((HttpRequestWrapper) servletRequest).notConsumed(true);
@@ -150,8 +152,10 @@ public class MatcherFilter implements Filter {
 
         if (body.notSet() && !externalContainer) {
             LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
-            httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            body.set(String.format(NOT_FOUND));
+            GeneralError.notFound(httpResponse, context);
+            if (servletRequest instanceof HttpRequestWrapper) {
+                ((HttpRequestWrapper) servletRequest).notConsumed(true);
+            }
         }
 
         if (body.isSet()) {
@@ -173,7 +177,5 @@ public class MatcherFilter implements Filter {
 
     public void destroy() {
     }
-
-    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
 
 }

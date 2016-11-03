@@ -44,7 +44,7 @@ import static spark.Spark.webSocket;
 public class GenericIntegrationTest {
 
     private static final String NOT_FOUND_BRO = "Not found bro";
-
+   
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericIntegrationTest.class);
 
     static SparkTestUtil testUtil;
@@ -193,7 +193,7 @@ public class GenericIntegrationTest {
             a.status(404);
             a.body(NOT_FOUND_BRO);
         });
-
+        
         Spark.awaitInitialization();
     }
 
@@ -446,7 +446,7 @@ public class GenericIntegrationTest {
         Assert.assertEquals(NOT_FOUND_BRO, response.body);
         Assert.assertEquals(404, response.status);
     }
-
+    
     @Test
     public void testWebSocketConversation() throws Exception {
         String uri = "ws://localhost:4567/ws";

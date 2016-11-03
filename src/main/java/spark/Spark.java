@@ -841,6 +841,19 @@ public class Spark {
     public static void exception(Class<? extends Exception> exceptionClass, ExceptionHandler handler) {
         getInstance().exception(exceptionClass, handler);
     }
+    
+     //////////////////////////////////////////////////
+    // NotFound mapper
+    //////////////////////////////////////////////////
+
+    /**
+     * Maps a handler for uris that are not been mapped
+     *
+     * @param handler        The handler
+     */
+    public static void notFound(UriNotFoundHandler handler) {
+        getInstance().notFound(handler);
+    }
 
     //////////////////////////////////////////////////
     // HALT methods

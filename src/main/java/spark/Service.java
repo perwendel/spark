@@ -431,6 +431,27 @@ public final class Service extends Routable {
 
         ExceptionMapper.getInstance().map(exceptionClass, wrapper);
     }
+    
+    //////////////////////////////////////////////////
+    // Not Found mapper
+    //////////////////////////////////////////////////
+
+    /**
+     * Maps a handler for uris that are not been mapped
+     *
+     * @param handler        The handler
+     */
+    public synchronized void notFound(UriNotFoundHandler handler) {
+        // wrap
+        UriNotFoundHandler wrapper = new UriNotFoundHandler() {
+          @Override
+          public void handle(Request request, Response response) {
+            handler.handle(request, response);
+          }
+        };
+
+        UriNotFoundMapper.getInstance().map(wrapper);
+    }
 
     //////////////////////////////////////////////////
     // HALT methods
