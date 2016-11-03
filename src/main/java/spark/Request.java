@@ -466,8 +466,6 @@ public class Request {
     }
 
     private static Map<String, String> getParams(List<String> request, List<String> matched) {
-        LOG.debug("get params");
-
         Map<String, String> params = new HashMap<>();
 
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
@@ -490,8 +488,6 @@ public class Request {
     }
 
     private static List<String> getSplat(List<String> request, List<String> matched) {
-        LOG.debug("get splat");
-
         int nbrOfRequestParts = request.size();
         int nbrOfMatchedParts = matched.size();
 
