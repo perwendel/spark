@@ -30,7 +30,7 @@ public abstract class RouteImpl implements Route, Wrapper {
 
     private String path;
     private String acceptType;
-    private Route delegate;
+    private Object delegate;
 
     /**
      * Wraps the route in RouteImpl
@@ -90,7 +90,7 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param acceptType The accept type which is used for matching.
      * @param route      The route used to create the route implementation
      */
-    protected RouteImpl(String path, String acceptType, Route route) {
+    protected RouteImpl(String path, String acceptType, Object route) {
         this(path, acceptType);
         this.delegate = route;
     }
