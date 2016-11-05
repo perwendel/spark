@@ -78,7 +78,8 @@ public class StaticFilesConfiguration {
                 return true;
             }
         } catch (DirectoryTraversal.DirectoryTraversalDetection directoryTraversalDetection) {
-            LOG.warn("directoryTraversalDetection for path: " + httpRequest.getPathInfo());
+            LOG.warn(directoryTraversalDetection.getMessage() + " directory traversal detection for path: "
+                             + httpRequest.getPathInfo());
         }
         return false;
     }

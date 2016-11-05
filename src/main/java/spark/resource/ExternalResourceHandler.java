@@ -69,8 +69,6 @@ public class ExternalResourceHandler extends AbstractResourceHandler {
 
             ExternalResource resource = new ExternalResource(addedPath);
 
-            DirectoryTraversal.protectAgainstForExternal(resource.getPath());
-
             if (resource.exists() && resource.isDirectory()) {
                 if (welcomeFile != null) {
                     resource = new ExternalResource(addPaths(resource.getPath(), welcomeFile));
@@ -80,7 +78,13 @@ public class ExternalResourceHandler extends AbstractResourceHandler {
                 }
             }
 
-            return (resource != null && resource.exists()) ? resource : null;
+            if (resource != null && resource.exists()) {
+                DirectoryTraversal.protectAgainstForExternal(resource.getPath());
+                return resource;
+            } else {
+                return null;
+            }
+
         } catch (DirectoryTraversal.DirectoryTraversalDetection directoryTraversalDetection) {
             throw directoryTraversalDetection;
         } catch (Exception e) {

@@ -69,7 +69,6 @@ public class StaticFilesTest {
         testUtil = new SparkTestUtil(4567);
 
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), EXTERNAL_FILE_NAME_HTML);
-        System.out.println("externalFileFolder = " + System.getProperty("java.io.tmpdir"));
 
         FileWriter writer = new FileWriter(tmpExternalFile);
         writer.write(CONTENT_OF_EXTERNAL_FILE);

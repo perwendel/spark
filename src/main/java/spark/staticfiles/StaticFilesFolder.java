@@ -1,5 +1,7 @@
 package spark.staticfiles;
 
+import static spark.utils.StringUtils.removeLeadingAndTrailingSlashesFrom;
+
 /**
  * Created by Per Wendel on 2016-11-05.
  */
@@ -9,15 +11,13 @@ public class StaticFilesFolder {
     private static volatile String external;
 
     public static final void localConfiguredTo(String folder) {
-        local = folder;
 
-        if (local.startsWith("/")) {
-            local = local.substring(1);
-        }
+        local = removeLeadingAndTrailingSlashesFrom(folder);
     }
 
     public static final void externalConfiguredTo(String folder) {
-        external = folder;
+
+        external = removeLeadingAndTrailingSlashesFrom(folder);
     }
 
     public static final String local() {

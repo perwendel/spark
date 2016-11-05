@@ -70,8 +70,6 @@ public class ClassPathResourceHandler extends AbstractResourceHandler {
 
             ClassPathResource resource = new ClassPathResource(addedPath);
 
-            DirectoryTraversal.protectAgainstInClassPath(resource.getPath());
-
             if (resource.exists() && resource.getFile().isDirectory()) {
                 if (welcomeFile != null) {
                     resource = new ClassPathResource(addPaths(resource.getPath(), welcomeFile));
@@ -81,7 +79,13 @@ public class ClassPathResourceHandler extends AbstractResourceHandler {
                 }
             }
 
-            return (resource != null && resource.exists()) ? resource : null;
+            if (resource != null && resource.exists()) {
+                DirectoryTraversal.protectAgainstInClassPath(resource.getPath());
+                return resource;
+            } else {
+                return null;
+            }
+
         } catch (DirectoryTraversal.DirectoryTraversalDetection directoryTraversalDetection) {
             throw directoryTraversalDetection;
         } catch (Exception e) {
