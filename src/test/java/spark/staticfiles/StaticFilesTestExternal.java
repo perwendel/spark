@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark;
+package spark.staticfiles;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,12 +28,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.Spark;
 import spark.examples.exception.NotFoundException;
 import spark.util.SparkTestUtil;
 
 import static spark.Spark.exception;
-import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.get;
+import static spark.Spark.staticFiles;
 
 /**
  * Test external static files
@@ -89,7 +90,7 @@ public class StaticFilesTestExternal {
         tmpExternalFile2 = new File(newFilePath);
         tmpExternalFile2.createNewFile();
 
-        externalStaticFileLocation(directoryRoot);
+        staticFiles.externalLocation(directoryRoot);
 
         get("/hello", (q, a) -> FO_SHIZZY);
 
@@ -109,6 +110,7 @@ public class StaticFilesTestExternal {
     public void testExternalStaticFile() throws Exception {
         SparkTestUtil.UrlResponse response = doGet("/externalFile.html");
         Assert.assertEquals(200, response.status);
+        Assert.assertEquals("text/html", response.headers.get("Content-Type"));
         Assert.assertEquals(CONTENT_OF_EXTERNAL_FILE, response.body);
 
         testGet();

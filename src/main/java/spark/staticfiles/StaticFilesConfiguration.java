@@ -94,7 +94,10 @@ public class StaticFilesConfiguration {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
 
                 if (resource != null && resource.isReadable()) {
-                    httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromResource(resource));
+
+                    if (MimeType.shouldGuess()) {
+                        httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromResource(resource));
+                    }
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
                     OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
 
@@ -117,7 +120,9 @@ public class StaticFilesConfiguration {
                 InputStream stream = jarResourceHandler.getResource(httpRequest);
 
                 if (stream != null) {
-                    httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromPathInfo(httpRequest.getPathInfo()));
+                    if (MimeType.shouldGuess()) {
+                        httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromPathInfo(httpRequest.getPathInfo()));
+                    }
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
                     OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
 

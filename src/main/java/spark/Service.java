@@ -273,7 +273,7 @@ public final class Service extends Routable {
     public void webSocket(String path, Class<?> handlerClass) {
         addWebSocketHandler(path, new WebSocketHandlerClassWrapper(handlerClass));
     }
-    
+
     /**
      * Maps the given path to the given WebSocket handler instance.
      * <p>
@@ -285,14 +285,14 @@ public final class Service extends Routable {
     public void webSocket(String path, Object handler) {
         addWebSocketHandler(path, new WebSocketHandlerInstanceWrapper(handler));
     }
-    
+
     private synchronized void addWebSocketHandler(String path, WebSocketHandlerWrapper handlerWrapper) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
         if (isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
-        }       
+        }
         requireNonNull(path, "WebSocket path cannot be null");
         if (webSocketHandlers == null) {
             webSocketHandlers = new HashMap<>();
@@ -548,6 +548,13 @@ public final class Service extends Routable {
          */
         public void registerMimeType(String extension, String mimeType) {
             MimeType.register(extension, mimeType);
+        }
+
+        /**
+         * Disables the automatic setting of Content-Type header made from a guess based on extension.
+         */
+        public void disableMimeTypeGuessing() {
+            MimeType.disableGuessing();
         }
 
     }
