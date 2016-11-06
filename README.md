@@ -4,6 +4,7 @@
 
 Spark - a tiny web framework for Java 8
 ==============================================
+IMPORTANT INFORMATION - There has been found a security vulnerability in older versions of Spark 2.+. Please upgrade to the latest version 2.5.2 that fixes this issue.
 
 For more detailed documentation please go to: http://sparkjava.com/documentation
 
