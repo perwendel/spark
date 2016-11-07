@@ -20,6 +20,13 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+	<distributionManagement>  
+		<snapshotRepository>  
+			<id>snapshots.archiva</id>  
+			<name>Archvia Snapshots Repository</name>  
+			<url>https://www.prabst.de/archiva/repository/snapshots/</url>  
+    	</snapshotRepository>  
+	</distributionManagement>     
     <scm>
         <connection>scm:git:git@github.com:perwendel/spark.git</connection>
         <developerConnection>scm:git:git@github.com:perwendel/spark.git</developerConnection>
