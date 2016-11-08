@@ -1,6 +1,7 @@
 package spark.staticfiles;
 
 import static spark.utils.StringUtils.removeLeadingAndTrailingSlashesFrom;
+import java.nio.file.Paths;
 
 /**
  * Protecting against Directory traversal
@@ -14,7 +15,8 @@ public class DirectoryTraversal {
     }
 
     public static void protectAgainstForExternal(String path) {
-        if (!removeLeadingAndTrailingSlashesFrom(path).startsWith(StaticFilesFolder.external())) {
+        String nixLikePath = Paths.get(path).toAbsolutePath().toString().replace("\\", "/");
+        if (!removeLeadingAndTrailingSlashesFrom(nixLikePath).startsWith(StaticFilesFolder.external())) {
             throw new DirectoryTraversalDetection("external");
         }
     }
