@@ -45,7 +45,7 @@ import static spark.globalstate.ServletFlag.isRunningFromServlet;
  * the semantic makes sense. For example 'http' is a good variable name since when adding routes it would be:
  * Service http = ignite();
  * ...
- * http.get("/hello", (q, a) -> "Hello World");
+ * http.get("/hello", (q, a) {@literal ->} "Hello World");
  */
 public final class Service extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
@@ -292,7 +292,7 @@ public final class Service extends Routable {
         }
         if (isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
-        }       
+        }
         requireNonNull(path, "WebSocket path cannot be null");
         if (webSocketHandlers == null) {
             webSocketHandlers = new HashMap<>();
@@ -548,6 +548,13 @@ public final class Service extends Routable {
          */
         public void registerMimeType(String extension, String mimeType) {
             MimeType.register(extension, mimeType);
+        }
+
+        /**
+         * Disables the automatic setting of Content-Type header made from a guess based on extension.
+         */
+        public void disableMimeTypeGuessing() {
+            MimeType.disableGuessing();
         }
 
     }

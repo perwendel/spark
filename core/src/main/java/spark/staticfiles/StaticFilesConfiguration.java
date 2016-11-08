@@ -60,19 +60,27 @@ public class StaticFilesConfiguration {
     private Map<String, String> customHeaders = new HashMap<>();
 
     /**
+     * Attempt consuming using either static resource handlers or jar resource handlers
+     *
+     * @param httpRequest  The HTTP servlet request.
+     * @param httpResponse The HTTP servlet response.
      * @return true if consumed, false otherwise.
+     * @throws IOException in case of IO error.
      */
     public boolean consume(HttpServletRequest httpRequest,
                            HttpServletResponse httpResponse) throws IOException {
+        try {
+            if (consumeWithFileResourceHandlers(httpRequest, httpResponse)) {
+                return true;
+            }
 
-        if (consumeWithFileResourceHandlers(httpRequest, httpResponse)) {
-            return true;
+            if (consumeWithJarResourceHandler(httpRequest, httpResponse)) {
+                return true;
+            }
+        } catch (DirectoryTraversal.DirectoryTraversalDetection directoryTraversalDetection) {
+            LOG.warn(directoryTraversalDetection.getMessage() + " directory traversal detection for path: "
+                             + httpRequest.getPathInfo());
         }
-
-        if (consumeWithJarResourceHandler(httpRequest, httpResponse)) {
-            return true;
-        }
-
         return false;
     }
 
@@ -86,10 +94,13 @@ public class StaticFilesConfiguration {
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
 
                 if (resource != null && resource.isReadable()) {
-                    httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromResource(resource));
+
+                    if (MimeType.shouldGuess()) {
+                        httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromResource(resource));
+                    }
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
                     OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
-                    
+
                     IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
                     wrappedOutputStream.flush();
                     wrappedOutputStream.close();
@@ -109,7 +120,9 @@ public class StaticFilesConfiguration {
                 InputStream stream = jarResourceHandler.getResource(httpRequest);
 
                 if (stream != null) {
-                    httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromPathInfo(httpRequest.getPathInfo()));
+                    if (MimeType.shouldGuess()) {
+                        httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromPathInfo(httpRequest.getPathInfo()));
+                    }
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
                     OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
 
@@ -172,6 +185,8 @@ public class StaticFilesConfiguration {
             } catch (IOException e) {
                 LOG.error("Error when creating StaticResourceHandler", e);
             }
+
+            StaticFilesFolder.localConfiguredTo(folder);
             staticResourcesSet = true;
         }
 
@@ -192,7 +207,7 @@ public class StaticFilesConfiguration {
                 staticResourcesSet = true;
                 return true;
             }
-            
+
             LOG.error("Static file configuration failed.");
         }
         return false;
@@ -222,6 +237,8 @@ public class StaticFilesConfiguration {
             } catch (IOException e) {
                 LOG.error("Error when creating external StaticResourceHandler", e);
             }
+
+            StaticFilesFolder.externalConfiguredTo(folder);
             externalStaticResourcesSet = true;
         }
 

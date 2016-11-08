@@ -390,4 +390,19 @@ public abstract class StringUtils {
         return str;
     }
 
+    public static String removeLeadingAndTrailingSlashesFrom(String string) {
+        
+        String trimmed = string;
+
+        if (trimmed.endsWith("/") || trimmed.endsWith("\\")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+
+        if (trimmed.startsWith("/")) {
+            trimmed = trimmed.substring(1);
+        }
+
+        return trimmed;
+    }
+
 }
