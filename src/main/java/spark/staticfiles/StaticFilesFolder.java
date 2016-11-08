@@ -1,6 +1,7 @@
 package spark.staticfiles;
 
 import static spark.utils.StringUtils.removeLeadingAndTrailingSlashesFrom;
+import java.nio.file.Paths;
 
 /**
  * Created by Per Wendel on 2016-11-05.
@@ -16,8 +17,10 @@ public class StaticFilesFolder {
     }
 
     public static final void externalConfiguredTo(String folder) {
-
-        external = removeLeadingAndTrailingSlashesFrom(folder);
+        
+        external = removeLeadingAndTrailingSlashesFrom(
+            Paths.get(folder).toAbsolutePath().toString().replace("\\", "/")
+        );
     }
 
     public static final String local() {
