@@ -16,7 +16,7 @@
  */
 package spark;
 
-public abstract class ExceptionHandlerImpl {
+public abstract class ExceptionHandlerImpl implements ExceptionHandler {
     /**
      * Holds the type of exception that this filter will handle
      */

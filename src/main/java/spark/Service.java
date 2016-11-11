@@ -26,9 +26,13 @@ import org.slf4j.LoggerFactory;
 
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
+import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
 
 import static java.util.Objects.requireNonNull;
@@ -41,7 +45,7 @@ import static spark.globalstate.ServletFlag.isRunningFromServlet;
  * the semantic makes sense. For example 'http' is a good variable name since when adding routes it would be:
  * Service http = ignite();
  * ...
- * http.get("/hello", (q, a) -> "Hello World");
+ * http.get("/hello", (q, a) {@literal ->} "Hello World");
  */
 public final class Service extends Routable {
     private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
@@ -59,7 +63,7 @@ public final class Service extends Routable {
     protected String staticFileFolder = null;
     protected String externalStaticFileFolder = null;
 
-    protected Map<String, Class<?>> webSocketHandlers = null;
+    protected Map<String, WebSocketHandlerWrapper> webSocketHandlers = null;
 
     protected int maxThreads = -1;
     protected int minThreads = -1;
@@ -84,6 +88,8 @@ public final class Service extends Routable {
     /**
      * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
      * multiple services in one process.
+     *
+     * @return the newly created object
      */
     public static Service ignite() {
         return new Service();
@@ -106,6 +112,7 @@ public final class Service extends Routable {
      * done.
      *
      * @param ipAddress The ipAddress
+     * @return the object with IP address set
      */
     public synchronized Service ipAddress(String ipAddress) {
         if (initialized) {
@@ -122,6 +129,7 @@ public final class Service extends Routable {
      * If provided port = 0 then the an arbitrary available port will be used.
      *
      * @param port The port number
+     * @return the object with port set
      */
     public synchronized Service port(int port) {
         if (initialized) {
@@ -129,6 +137,20 @@ public final class Service extends Routable {
         }
         this.port = port;
         return this;
+    }
+
+    /**
+     * Retrieves the port that Spark is listening on.
+     *
+     * @return The port Spark server is listening on.
+     * @throws IllegalStateException when the server is not started
+     */
+    public synchronized int port() {
+        if (initialized) {
+            return port;
+        } else {
+            throw new IllegalStateException("This must be done after route mapping has begun");
+        }
     }
 
     /**
@@ -145,6 +167,7 @@ public final class Service extends Routable {
      * @param truststoreFile     the truststore file location as string, leave null to reuse
      *                           keystore
      * @param truststorePassword the trust store password
+     * @return the object with connection set to be secure
      */
     public synchronized Service secure(String keystoreFile,
                                        String keystorePassword,
@@ -167,6 +190,7 @@ public final class Service extends Routable {
      * Configures the embedded web server's thread pool.
      *
      * @param maxThreads max nbr of threads.
+     * @return the object with the embedded web server's thread pool configured
      */
     public synchronized Service threadPool(int maxThreads) {
         return threadPool(maxThreads, -1, -1);
@@ -178,6 +202,7 @@ public final class Service extends Routable {
      * @param maxThreads        max nbr of threads.
      * @param minThreads        min nbr of threads.
      * @param idleTimeoutMillis thread idle timeout (ms).
+     * @return the object with the embedded web server's thread pool configured
      */
     public synchronized Service threadPool(int maxThreads, int minThreads, int idleTimeoutMillis) {
         if (initialized) {
@@ -196,6 +221,7 @@ public final class Service extends Routable {
      * must be called before all other methods.
      *
      * @param folder the folder in classpath.
+     * @return the object with folder set
      */
     public synchronized Service staticFileLocation(String folder) {
         if (initialized && !isRunningFromServlet()) {
@@ -218,6 +244,7 @@ public final class Service extends Routable {
      * must be called before all other methods.</b>
      *
      * @param externalFolder the external folder serving static files.
+     * @return the object with external folder set
      */
     public synchronized Service externalStaticFileLocation(String externalFolder) {
         if (initialized && !isRunningFromServlet()) {
@@ -236,36 +263,49 @@ public final class Service extends Routable {
     }
 
     /**
-     * Maps the given path to the given WebSocket handler.
+     * Maps the given path to the given WebSocket handler class.
      * <p>
      * This is currently only available in the embedded server mode.
      *
      * @param path    the WebSocket path.
      * @param handler the handler class that will manage the WebSocket connection to the given path.
      */
-    public synchronized void webSocket(String path, Class<?> handler) {
-        requireNonNull(path, "WebSocket path cannot be null");
-        requireNonNull(handler, "WebSocket handler class cannot be null");
+    public void webSocket(String path, Class<?> handlerClass) {
+        addWebSocketHandler(path, new WebSocketHandlerClassWrapper(handlerClass));
+    }
 
+    /**
+     * Maps the given path to the given WebSocket handler instance.
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param path    the WebSocket path.
+     * @param handler the handler instance that will manage the WebSocket connection to the given path.
+     */
+    public void webSocket(String path, Object handler) {
+        addWebSocketHandler(path, new WebSocketHandlerInstanceWrapper(handler));
+    }
+
+    private synchronized void addWebSocketHandler(String path, WebSocketHandlerWrapper handlerWrapper) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-
         if (isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
-
+        requireNonNull(path, "WebSocket path cannot be null");
         if (webSocketHandlers == null) {
             webSocketHandlers = new HashMap<>();
         }
 
-        webSocketHandlers.put(path, handler);
+        webSocketHandlers.put(path, handlerWrapper);
     }
 
     /**
      * Sets the max idle timeout in milliseconds for WebSocket connections.
      *
      * @param timeoutMillis The max idle timeout in milliseconds.
+     * @return the object with max idle timeout set for WebSocket connections
      */
     public synchronized Service webSocketIdleTimeoutMillis(int timeoutMillis) {
         if (initialized) {
@@ -304,14 +344,16 @@ public final class Service extends Routable {
      * Stops the Spark server and clears all routes
      */
     public synchronized void stop() {
-        if (server != null) {
-            routes.clear();
-            server.extinguish();
-            latch = new CountDownLatch(1);
-        }
+        new Thread(() -> {
+            if (server != null) {
+                routes.clear();
+                server.extinguish();
+                latch = new CountDownLatch(1);
+            }
 
-        staticFilesConfiguration.clear();
-        initialized = false;
+            staticFilesConfiguration.clear();
+            initialized = false;
+        }).start();
     }
 
     @Override
@@ -346,7 +388,7 @@ public final class Service extends Routable {
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
-                    server.ignite(
+                    port = server.ignite(
                             ipAddress,
                             port,
                             sslStores,
@@ -398,6 +440,8 @@ public final class Service extends Routable {
      * Immediately stops a request within a filter or route
      * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
      * halt will not work
+     *
+     * @return HaltException object
      */
     public HaltException halt() {
         throw new HaltException();
@@ -409,6 +453,7 @@ public final class Service extends Routable {
      * halt will not work
      *
      * @param status the status code
+     * @return HaltException object with status code set
      */
     public HaltException halt(int status) {
         throw new HaltException(status);
@@ -420,6 +465,7 @@ public final class Service extends Routable {
      * halt will not work
      *
      * @param body The body content
+     * @return HaltException object with body set
      */
     public HaltException halt(String body) {
         throw new HaltException(body);
@@ -432,6 +478,7 @@ public final class Service extends Routable {
      *
      * @param status The status code
      * @param body   The body content
+     * @return HaltException object with status and body set
      */
     public HaltException halt(int status, String body) {
         throw new HaltException(status, body);
@@ -475,6 +522,9 @@ public final class Service extends Routable {
         /**
          * Puts custom header for static resources. If the headers previously contained a mapping for
          * the key, the old value is replaced by the specified value.
+         *
+         * @param key   the key
+         * @param value the value
          */
         public void header(String key, String value) {
             staticFilesConfiguration.putCustomHeader(key, value);
@@ -488,6 +538,23 @@ public final class Service extends Routable {
         @Experimental("Functionality will not be removed. The API might change")
         public void expireTime(long seconds) {
             staticFilesConfiguration.setExpireTimeSeconds(seconds);
+        }
+
+        /**
+         * Maps an extension to a mime-type. This will overwrite any previous mappings.
+         *
+         * @param extension the extension to be mapped
+         * @param mimeType  the mime-type for the extension
+         */
+        public void registerMimeType(String extension, String mimeType) {
+            MimeType.register(extension, mimeType);
+        }
+
+        /**
+         * Disables the automatic setting of Content-Type header made from a guess based on extension.
+         */
+        public void disableMimeTypeGuessing() {
+            MimeType.disableGuessing();
         }
 
     }

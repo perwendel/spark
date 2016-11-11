@@ -164,6 +164,19 @@ public class Spark {
     }
 
     /**
+     * Maps an array of filters to be executed before any matching routes
+     *
+     * @param path    the path
+     * @param filters the filters
+     */
+
+    public static void before(String path, Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().before(path, filter);
+        }
+    }
+
+    /**
      * Maps a filter to be executed after any matching routes
      *
      * @param path   the path
@@ -171,6 +184,19 @@ public class Spark {
      */
     public static void after(String path, Filter filter) {
         getInstance().after(path, filter);
+    }
+
+    /**
+     * Maps an array of filters to be executed after any matching routes
+     *
+     * @param path    the path
+     * @param filters The filters
+     */
+
+    public static void after(String path, Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().after(path, filter);
+        }
     }
 
     //////////////////////////////////////////////////
@@ -278,43 +304,52 @@ public class Spark {
 
 
     /**
-     * Maps a filter to be executed before any matching routes
+     * Maps one or many filters to be executed before any matching routes
      *
-     * @param filter The filter
+     * @param filters The filters
      */
-    public static void before(Filter filter) {
-        getInstance().before(filter);
+    public static void before(Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().before(filter);
+        }
     }
 
     /**
-     * Maps a filter to be executed after any matching routes
+     * Maps one or many filters to be executed after any matching routes
      *
-     * @param filter The filter
+     * @param filters The filters
      */
-    public static void after(Filter filter) {
-        getInstance().after(filter);
+    public static void after(Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().after(filter);
+        }
     }
 
     /**
-     * Maps a filter to be executed before any matching routes
+     * Maps one or many filters to be executed before any matching routes
      *
      * @param path       the path
      * @param acceptType the accept type
-     * @param filter     The filter
+     * @param filters    The filters
      */
-    public static void before(String path, String acceptType, Filter filter) {
-        getInstance().before(path, acceptType, filter);
+    public static void before(String path, String acceptType, Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().before(path, acceptType, filter);
+        }
     }
 
+
     /**
-     * Maps a filter to be executed after any matching routes
+     * Maps one or many filters to be executed after any matching routes
      *
      * @param path       the path
      * @param acceptType the accept type
-     * @param filter     The filter
+     * @param filters    The filters
      */
-    public static void after(String path, String acceptType, Filter filter) {
-        getInstance().after(path, acceptType, filter);
+    public static void after(String path, String acceptType, Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().after(path, acceptType, filter);
+        }
     }
 
     //////////////////////////////////////////////////
@@ -901,6 +936,16 @@ public class Spark {
     }
 
     /**
+     * Retrieves the port that Spark is listening on.
+     *
+     * @return The port Spark server is listening on.
+     * @throws IllegalStateException when the server is not started
+     */
+    public static int port() {
+        return getInstance().port();
+    }
+
+    /**
      * Set the connection to be secure, using the specified keystore and
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore
@@ -1016,6 +1061,10 @@ public class Spark {
      * @param handler the handler class that will manage the WebSocket connection to the given path.
      */
     public static void webSocket(String path, Class<?> handler) {
+        getInstance().webSocket(path, handler);
+    }
+    
+    public static void webSocket(String path, Object handler) {
         getInstance().webSocket(path, handler);
     }
 
