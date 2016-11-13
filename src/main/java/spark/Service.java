@@ -339,12 +339,16 @@ public final class Service extends Routable {
         return webSocketHandlers != null;
     }
 
-
     /**
      * Stops the Spark server and clears all routes
      */
-    public synchronized void stop() {
-        new Thread(() -> {
+    public void stop() {
+        // creates a separate thread where doStop() is called asynchronously
+        stopAsync();
+    }
+
+    public void doStop() {
+        try {
             if (server != null) {
                 routes.clear();
                 server.extinguish();
@@ -353,7 +357,14 @@ public final class Service extends Routable {
 
             staticFilesConfiguration.clear();
             initialized = false;
-        }).start();
+            notifyStopped();
+        } catch (Exception e) {
+            notifyFailed(e);
+        }
+    }
+
+    public void awaitStopped() {
+        awaitTerminated();
     }
 
     @Override
@@ -369,36 +380,46 @@ public final class Service extends Routable {
     }
 
     public synchronized void init() {
-        if (!initialized) {
+        startAsync(); // calls doStart() in a separate thread
+        awaitRunning();
+    }
 
-            initializeRouteMatcher();
+    public synchronized void doStart() {
+        try {
+            if (!initialized) {
 
-            if (!isRunningFromServlet()) {
-                new Thread(() -> {
-                    EmbeddedServers.initialize();
+                initializeRouteMatcher();
 
-                    if (embeddedServerIdentifier == null) {
-                        embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
-                    }
+                if (!isRunningFromServlet()) {
+                    new Thread(() -> {
+                        EmbeddedServers.initialize();
 
-                    server = EmbeddedServers.create(embeddedServerIdentifier,
-                                                    routes,
-                                                    staticFilesConfiguration,
-                                                    hasMultipleHandlers());
+                        if (embeddedServerIdentifier == null) {
+                            embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
+                        }
 
-                    server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+                        server = EmbeddedServers.create(embeddedServerIdentifier,
+                                                        routes,
+                                                        staticFilesConfiguration,
+                                                        hasMultipleHandlers());
 
-                    port = server.ignite(
-                            ipAddress,
-                            port,
-                            sslStores,
-                            latch,
-                            maxThreads,
-                            minThreads,
-                            threadIdleTimeoutMillis);
-                }).start();
+                        server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+
+                        port = server.ignite(
+                                ipAddress,
+                                port,
+                                sslStores,
+                                latch,
+                                maxThreads,
+                                minThreads,
+                                threadIdleTimeoutMillis);
+                    }).start();
+                }
+                initialized = true;
+                notifyStarted();
             }
-            initialized = true;
+        } catch (Exception e) {
+            notifyFailed(e);
         }
     }
 
