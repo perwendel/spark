@@ -16,10 +16,13 @@
  */
 package spark;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +74,7 @@ public final class Service extends Routable {
     protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
 
     protected EmbeddedServer server;
+    protected Deque<String> pathDeque = new ArrayDeque<>();
     protected Routes routes;
 
     private boolean servletStaticLocationSet;
@@ -356,16 +360,41 @@ public final class Service extends Routable {
         }).start();
     }
 
+    /**
+     * Add a path-prefix to the routes declared in the routeGroup
+     * The path() method adds a path-fragment to a path-stack, adds
+     * routes from the routeGroup, then pops the path-fragment again.
+     * It's used for separating routes into groups, for example:
+     * path("/api/email", () -> {
+     * ....post("/add",       EmailApi::addEmail);
+     * ....put("/change",     EmailApi::changeEmail);
+     * ....etc
+     * });
+     * Multiple path() calls can be nested.
+     *
+     * @param path       the path to prefix routes with
+     * @param routeGroup group of routes (can also contain path() calls)
+     */
+    public void path(String path, RouteGroup routeGroup) {
+        pathDeque.addLast(path);
+        routeGroup.addRoutes();
+        pathDeque.removeLast();
+    }
+
+    public String getPaths() {
+        return pathDeque.stream().collect(Collectors.joining(""));
+    }
+
     @Override
     public void addRoute(String httpMethod, RouteImpl route) {
         init();
-        routes.add(httpMethod + " '" + route.getPath() + "'", route.getAcceptType(), route);
+        routes.add(httpMethod + " '" + getPaths() + route.getPath() + "'", route.getAcceptType(), route);
     }
 
     @Override
     public void addFilter(String httpMethod, FilterImpl filter) {
         init();
-        routes.add(httpMethod + " '" + filter.getPath() + "'", filter.getAcceptType(), filter);
+        routes.add(httpMethod + " '" + getPaths() + filter.getPath() + "'", filter.getAcceptType(), filter);
     }
 
     public synchronized void init() {

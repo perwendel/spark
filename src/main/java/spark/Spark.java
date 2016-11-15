@@ -64,6 +64,25 @@ public class Spark {
     public static final Service.StaticFiles staticFiles = getInstance().staticFiles;
 
     /**
+     * Add a path-prefix to the routes declared in the routeGroup
+     * The path() method adds a path-fragment to a path-stack, adds
+     * routes from the routeGroup, then pops the path-fragment again.
+     * It's used for separating routes into groups, for example:
+     * path("/api/email", () -> {
+     * ....post("/add",       EmailApi::addEmail);
+     * ....put("/change",     EmailApi::changeEmail);
+     * ....etc
+     * });
+     * Multiple path() calls can be nested.
+     *
+     * @param path       the path to prefix routes with
+     * @param routeGroup group of routes (can also contain path() calls)
+     */
+    public static void path(String path, RouteGroup routeGroup) {
+        getInstance().path(path, routeGroup);
+    }
+
+    /**
      * Map the route for HTTP GET requests
      *
      * @param path  the path
