@@ -33,9 +33,10 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.ssl.SslStores;
 import spark.embeddedserver.EmbeddedServer;
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
+import spark.ssl.SslStores;
 
 /**
  * Spark server implementation
@@ -52,7 +53,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private Map<String, Class<?>> webSocketHandlers;
+    private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
     private Optional<Integer> webSocketIdleTimeoutMillis;
 
     public EmbeddedJettyServer(Handler handler) {
@@ -60,7 +61,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     }
 
     @Override
-    public void configureWebSockets(Map<String, Class<?>> webSocketHandlers,
+    public void configureWebSockets(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
                                     Optional<Integer> webSocketIdleTimeoutMillis) {
 
         this.webSocketHandlers = webSocketHandlers;
@@ -71,13 +72,13 @@ public class EmbeddedJettyServer implements EmbeddedServer {
      * {@inheritDoc}
      */
     @Override
-    public void ignite(String host,
-                       int port,
-                       SslStores sslStores,
-                       CountDownLatch latch,
-                       int maxThreads,
-                       int minThreads,
-                       int threadIdleTimeoutMillis) {
+    public int ignite(String host,
+                      int port,
+                      SslStores sslStores,
+                      CountDownLatch latch,
+                      int maxThreads,
+                      int minThreads,
+                      int threadIdleTimeoutMillis) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -130,8 +131,10 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             server.join();
         } catch (Exception e) {
             logger.error("ignite failed", e);
-            System.exit(100); // NOSONAR
+            System.exit(100);
         }
+
+        return port;
     }
 
     /**

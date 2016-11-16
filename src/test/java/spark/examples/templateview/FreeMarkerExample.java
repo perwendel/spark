@@ -3,9 +3,8 @@ package spark.examples.templateview;
 import java.util.HashMap;
 import java.util.Map;
 
-import spark.ModelAndView;
-
 import static spark.Spark.get;
+import static spark.Spark.modelAndView;
 
 public class FreeMarkerExample {
 
@@ -17,7 +16,7 @@ public class FreeMarkerExample {
 
             // The hello.ftl file is located in directory:
             // src/test/resources/spark/examples/templateview/freemarker
-            return new ModelAndView(attributes, "hello.ftl");
+            return modelAndView(attributes, "hello.ftl");
         }, new FreeMarkerTemplateEngine());
 
     }

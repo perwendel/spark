@@ -21,8 +21,13 @@ package spark.embeddedserver;
  */
 public class NotSupportedException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Raises a NotSupportedException for the provided class name and feature name.
+     *
+     * @param clazz   the class name
+     * @param feature the feature name
      */
     public static void raise(String clazz, String feature) {
         throw new NotSupportedException(clazz, feature);
