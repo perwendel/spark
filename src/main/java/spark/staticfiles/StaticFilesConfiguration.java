@@ -19,11 +19,14 @@ package spark.staticfiles;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -250,7 +253,11 @@ public class StaticFilesConfiguration {
 
     public void setExpireTimeSeconds(long expireTimeSeconds) {
         customHeaders.put("Cache-Control", "private, max-age=" + expireTimeSeconds);
-        customHeaders.put("Expires", new Date(System.currentTimeMillis() + (expireTimeSeconds * 1000)).toString());
+
+        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+        String expires = format.format(new Date(System.currentTimeMillis() + (expireTimeSeconds * 1000)));
+        customHeaders.put("Expires", expires);
     }
 
     public void putCustomHeaders(Map<String, String> headers) {

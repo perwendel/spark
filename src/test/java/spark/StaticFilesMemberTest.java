@@ -19,7 +19,11 @@ package spark;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -142,8 +146,22 @@ public class StaticFilesMemberTest {
     @Test
     public void testStaticFileExpireTime() throws Exception {
         staticFiles.expireTime(600);
+
+        // Cache-Control
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
         Assert.assertEquals("private, max-age=600", response.headers.get("Cache-Control"));
+
+        // Expires
+        String expires = response.headers.get("Expires");
+        String timezone = expires.substring(expires.length() - 3);
+        Assert.assertEquals("GMT", timezone);
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+            format.parse(expires);
+            Assert.assertTrue(true);
+        } catch (ParseException e) {
+            Assert.fail("Expires has invalid format. [Expires] " + expires);
+        }
 
         testGet();
     }
