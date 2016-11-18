@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,7 +53,10 @@ import spark.utils.IOUtils;
  * TODO: ETAG ?
  */
 public class StaticFilesConfiguration {
-    private final Logger LOG = LoggerFactory.getLogger(StaticFilesConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StaticFilesConfiguration.class);
+
+    private static final DateTimeFormatter EXPIRES_HEADER_FORMATTER =
+            DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
 
     private List<AbstractResourceHandler> staticResourceHandlers = null;
     private List<JarResourceHandler> jarResourceHandlers = null;
@@ -254,10 +260,8 @@ public class StaticFilesConfiguration {
     public void setExpireTimeSeconds(long expireTimeSeconds) {
         customHeaders.put("Cache-Control", "private, max-age=" + expireTimeSeconds);
 
-        SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-        format.setTimeZone(TimeZone.getTimeZone("GMT"));
-        String expires = format.format(new Date(System.currentTimeMillis() + (expireTimeSeconds * 1000)));
-        customHeaders.put("Expires", expires);
+        ZonedDateTime expires = ZonedDateTime.now(ZoneId.of("GMT")).plusSeconds(expireTimeSeconds);
+        customHeaders.put("Expires", expires.format(EXPIRES_HEADER_FORMATTER));
     }
 
     public void putCustomHeaders(Map<String, String> headers) {

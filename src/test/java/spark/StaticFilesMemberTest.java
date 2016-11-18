@@ -19,9 +19,8 @@ package spark;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -156,10 +155,10 @@ public class StaticFilesMemberTest {
         String timezone = expires.substring(expires.length() - 3);
         Assert.assertEquals("GMT", timezone);
         try {
-            SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-            format.parse(expires);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+            formatter.parse(expires);
             Assert.assertTrue(true);
-        } catch (ParseException e) {
+        } catch (DateTimeParseException e) {
             Assert.fail("Expires has invalid format. [Expires] " + expires);
         }
 
