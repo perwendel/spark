@@ -19,19 +19,24 @@ package spark;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
-import java.util.Locale;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.examples.exception.NotFoundException;
+import spark.staticfiles.StaticFilesConfiguration;
 import spark.util.SparkTestUtil;
 
 import static spark.Spark.exception;
@@ -41,6 +46,9 @@ import static spark.Spark.staticFiles;
 /**
  * Test static files
  */
+@RunWith(PowerMockRunner.class)
+@PowerMockIgnore("javax.net.ssl.*")
+@PrepareForTest(StaticFilesConfiguration.class)
 public class StaticFilesMemberTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StaticFilesMemberTest.class);
@@ -144,23 +152,16 @@ public class StaticFilesMemberTest {
 
     @Test
     public void testStaticFileExpireTime() throws Exception {
+        ZonedDateTime current = ZonedDateTime.of(2016, 11, 20,
+                                                  3, 4, 5, 6, ZoneId.of("GMT"));
+        PowerMockito.mockStatic(ZonedDateTime.class);
+        PowerMockito.when(ZonedDateTime.now(ZoneId.of("GMT"))).thenReturn(current);
+
         staticFiles.expireTime(600);
 
-        // Cache-Control
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
         Assert.assertEquals("private, max-age=600", response.headers.get("Cache-Control"));
-
-        // Expires
-        String expires = response.headers.get("Expires");
-        String timezone = expires.substring(expires.length() - 3);
-        Assert.assertEquals("GMT", timezone);
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-            formatter.parse(expires);
-            Assert.assertTrue(true);
-        } catch (DateTimeParseException e) {
-            Assert.fail("Expires has invalid format. [Expires] " + expires);
-        }
+        Assert.assertEquals("Sun, 20 Nov 2016 03:14:05 GMT", response.headers.get("Expires"));
 
         testGet();
     }
