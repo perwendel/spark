@@ -14,7 +14,7 @@ NEWS: Spark 2.5.3 is out! (IMPORTANT fix for directory traversal vulnerability w
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.5.2</version>
+    <version>2.5.3</version>
 </dependency>
 ```
 
