@@ -354,7 +354,6 @@ public final class Service extends Routable {
         CustomErrorPages.add(500, route);
     }
 
-
     /**
      * Waits for the spark server to be initialized.
      * If it's already initialized will return immediately

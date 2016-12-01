@@ -103,7 +103,7 @@ public class Request {
     }
 
     /**
-     * Constructor - Used solely in the case of custom error pages.
+     * Constructor - Used to create a request and no RouteMatch is available.
      *
      * @param request the servlet request
      */

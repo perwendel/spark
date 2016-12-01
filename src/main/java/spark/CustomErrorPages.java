@@ -35,13 +35,15 @@ public class CustomErrorPages {
         Object customRenderer = CustomErrorPages.getInstance().customPages.get(status);
         Object customPage;
 
+        customPage = status == 400 ? NOT_FOUND : INTERNAL_ERROR;
+
         if (customRenderer instanceof String) {
             customPage = customRenderer;
-        } else {
+        } else if (customRenderer instanceof Route) {
             try {
                 customPage = ((Route) customRenderer).handle(request, response);
             } catch (Exception e) {
-                customPage = status == 400 ? NOT_FOUND : INTERNAL_ERROR;
+                // customPage is already set to default error so nothing needed here
             }
         }
 

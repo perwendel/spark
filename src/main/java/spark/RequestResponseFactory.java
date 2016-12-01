@@ -27,7 +27,7 @@ public final class RequestResponseFactory {
     }
 
     /**
-     * Solely used for custom error pages.
+     * Used to create a request and no RouteMatch is available.
      */
     public static Request create(HttpServletRequest request) {
         return new Request(request);
