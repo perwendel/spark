@@ -26,6 +26,13 @@ public final class RequestResponseFactory {
     private RequestResponseFactory() {
     }
 
+    /**
+     * Used to create a request and no RouteMatch is available.
+     */
+    public static Request create(HttpServletRequest request) {
+        return new Request(request);
+    }
+
     public static Request create(RouteMatch match, HttpServletRequest request) {
         return new Request(match, request);
     }

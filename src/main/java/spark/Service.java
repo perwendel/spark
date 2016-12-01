@@ -271,8 +271,8 @@ public final class Service extends Routable {
      * <p>
      * This is currently only available in the embedded server mode.
      *
-     * @param path    the WebSocket path.
-     * @param handler the handler class that will manage the WebSocket connection to the given path.
+     * @param path         the WebSocket path.
+     * @param handlerClass the handler class that will manage the WebSocket connection to the given path.
      */
     public void webSocket(String path, Class<?> handlerClass) {
         addWebSocketHandler(path, new WebSocketHandlerClassWrapper(handlerClass));
@@ -320,6 +320,38 @@ public final class Service extends Routable {
         }
         webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
         return this;
+    }
+
+    /**
+     * Maps 404 errors to the provided custom page
+     *
+     * @param page the custom 404 error page.
+     */
+    public synchronized void notFound(String page) {
+        CustomErrorPages.add(404, page);
+    }
+
+    /**
+     * Maps 500 internal server errors to the provided custom page
+     *
+     * @param page the custom 500 internal server error page.
+     */
+    public void internalServerError(String page) {
+        CustomErrorPages.add(500, page);
+    }
+
+    /**
+     * Maps 404 errors to the provided route.
+     */
+    public synchronized void notFound(Route route) {
+        CustomErrorPages.add(404, route);
+    }
+
+    /**
+     * Maps 500 internal server errors to the provided route.
+     */
+    public void internalServerError(Route route) {
+        CustomErrorPages.add(500, route);
     }
 
     /**

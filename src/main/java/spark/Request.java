@@ -102,6 +102,19 @@ public class Request {
         changeMatch(match);
     }
 
+    /**
+     * Constructor - Used to create a request and no RouteMatch is available.
+     *
+     * @param request the servlet request
+     */
+    Request(HttpServletRequest request) {
+        this.servletRequest = request;
+
+        // Empty
+        params = new HashMap<>();
+        splat = new ArrayList<>();
+    }
+
     protected void changeMatch(RouteMatch match) {
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
