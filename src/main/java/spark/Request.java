@@ -102,6 +102,19 @@ public class Request {
         changeMatch(match);
     }
 
+    /**
+     * Constructor - Used solely in the case of custom error pages.
+     *
+     * @param request the servlet request
+     */
+    Request(HttpServletRequest request) {
+        this.servletRequest = request;
+
+        // Empty
+        params = new HashMap<>();
+        splat = new ArrayList<>();
+    }
+
     protected void changeMatch(RouteMatch match) {
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());

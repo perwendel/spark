@@ -26,6 +26,13 @@ public final class RequestResponseFactory {
     private RequestResponseFactory() {
     }
 
+    /**
+     * Solely used for custom error pages.
+     */
+    public static Request create(HttpServletRequest request) {
+        return new Request(request);
+    }
+
     public static Request create(RouteMatch match, HttpServletRequest request) {
         return new Request(match, request);
     }

@@ -27,6 +27,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import spark.CustomErrorPages;
 import spark.HaltException;
 import spark.RequestResponseFactory;
 import spark.Response;
@@ -133,7 +134,13 @@ public class MatcherFilter implements Filter {
 
         } catch (Exception generalException) {
 
-            GeneralError.modify(httpResponse, body, requestWrapper, responseWrapper, generalException);
+            GeneralError.modify(
+                    httpRequest,
+                    httpResponse,
+                    body,
+                    requestWrapper,
+                    responseWrapper,
+                    generalException);
 
         }
 
@@ -151,9 +158,16 @@ public class MatcherFilter implements Filter {
 
         if (body.notSet() && !externalContainer) {
             LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
-                uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
+                     uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            body.set(String.format(NOT_FOUND));
+
+            if (CustomErrorPages.existsFor(404)) {
+                requestWrapper.setDelegate(RequestResponseFactory.create(httpRequest));
+                responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
+                body.set(CustomErrorPages.getFor(404, requestWrapper, responseWrapper));
+            } else {
+                body.set(String.format(CustomErrorPages.NOT_FOUND));
+            }
         }
 
         if (body.isSet()) {
@@ -176,6 +190,5 @@ public class MatcherFilter implements Filter {
     public void destroy() {
     }
 
-    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
 
 }
