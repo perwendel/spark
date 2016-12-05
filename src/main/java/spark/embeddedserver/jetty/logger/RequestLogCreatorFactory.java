@@ -15,18 +15,11 @@
  */
 package spark.embeddedserver.jetty.logger;
 
-import org.eclipse.jetty.server.HandlerContainer;
 import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.handler.RequestLogHandler;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
-import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
-import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
-
-import static java.util.Objects.requireNonNull;
 
 /**
- * Factory class to create {@link WebSocketCreator} implementations that
+ * Factory class to create {@link RequestLogHandler} implementations that
  * delegate to the given handler class.
  *
  * @author Ignasi Barrera

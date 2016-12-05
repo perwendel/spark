@@ -17,10 +17,9 @@
 package spark.examples.logger;
 
 import org.eclipse.jetty.server.NCSARequestLog;
-import spark.examples.websocket.EchoWebSocket;
-import spark.examples.websocket.PingWebSocket;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.requestLog;
 
 public class RequestLogExample {
 

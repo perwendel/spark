@@ -1,7 +1,5 @@
 package spark.embeddedserver.jetty.logger;
 
-import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
-
 import static java.util.Objects.requireNonNull;
 
 public class RequestLogClassWrapper implements RequestLogWrapper {
