@@ -29,6 +29,9 @@ import org.slf4j.LoggerFactory;
 
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
+import spark.embeddedserver.jetty.logger.RequestLogClassWrapper;
+import spark.embeddedserver.jetty.logger.RequestLogInstanceWrapper;
+import spark.embeddedserver.jetty.logger.RequestLogWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
@@ -67,6 +70,7 @@ public final class Service extends Routable {
     protected String externalStaticFileFolder = null;
 
     protected Map<String, WebSocketHandlerWrapper> webSocketHandlers = null;
+    protected RequestLogWrapper requestLogWrapper = null;
 
     protected int maxThreads = -1;
     protected int minThreads = -1;
@@ -306,6 +310,39 @@ public final class Service extends Routable {
     }
 
     /**
+     * Adds a request log to the embedded server given the request log class.
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param requestLog the handler class that will manage the WebSocket connection to the given path.
+     */
+    public void requestLog(Class<?> requestLog) {
+        addRequestLogger(new RequestLogClassWrapper(requestLog));
+    }
+
+    /**
+     * Adds a request log to the embedded server
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param requestLog the requestLog instance.
+     */
+    public void requestLog(Object requestLog) {
+        addRequestLogger(new RequestLogInstanceWrapper(requestLog));
+    }
+
+    private synchronized void addRequestLogger(RequestLogWrapper requestLogWrapper) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        if (isRunningFromServlet()) {
+            throw new IllegalStateException("Request loggers are only supported in the embedded server");
+        }
+
+        this.requestLogWrapper = requestLogWrapper;
+    }
+
+    /**
      * Sets the max idle timeout in milliseconds for WebSocket connections.
      *
      * @param timeoutMillis The max idle timeout in milliseconds.
@@ -372,7 +409,7 @@ public final class Service extends Routable {
     }
 
     private boolean hasMultipleHandlers() {
-        return webSocketHandlers != null;
+        return webSocketHandlers != null || requestLogWrapper != null;
     }
 
 
@@ -448,6 +485,8 @@ public final class Service extends Routable {
                                                     hasMultipleHandlers());
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+
+                    server.configureRequestLog(requestLogWrapper);
 
                     port = server.ignite(
                             ipAddress,

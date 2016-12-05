@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -30,17 +31,7 @@ import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
-import static spark.Spark.after;
-import static spark.Spark.before;
-import static spark.Spark.exception;
-import static spark.Spark.externalStaticFileLocation;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.path;
-import static spark.Spark.post;
-import static spark.Spark.staticFileLocation;
-import static spark.Spark.webSocket;
+import static spark.Spark.*;
 
 public class GenericIntegrationTest {
 
@@ -73,6 +64,7 @@ public class GenericIntegrationTest {
         staticFileLocation("/public");
         externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
         webSocket("/ws", WebSocketTestHandler.class);
+        requestLog(NCSARequestLog.class);
 
         before("/secretcontent/*", (q, a) -> {
             halt(401, "Go Away!");

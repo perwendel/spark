@@ -24,16 +24,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.embeddedserver.EmbeddedServer;
+import spark.embeddedserver.jetty.logger.RequestLogCreatorFactory;
+import spark.embeddedserver.jetty.logger.RequestLogWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
 import spark.ssl.SslStores;
@@ -56,6 +56,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
     private Optional<Integer> webSocketIdleTimeoutMillis;
 
+    private RequestLogWrapper requestLogWrapper;
+
     public EmbeddedJettyServer(Handler handler) {
         this.handler = handler;
     }
@@ -66,6 +68,11 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
         this.webSocketHandlers = webSocketHandlers;
         this.webSocketIdleTimeoutMillis = webSocketIdleTimeoutMillis;
+    }
+
+    @Override
+    public void configureRequestLog(RequestLogWrapper requestLogWrapper) {
+        this.requestLogWrapper = requestLogWrapper;
     }
 
     /**
@@ -105,22 +112,24 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         ServletContextHandler webSocketServletContextHandler =
                 WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
 
-        // Handle web socket routes
-        if (webSocketServletContextHandler == null) {
-            server.setHandler(handler);
-        } else {
-            List<Handler> handlersInList = new ArrayList<>();
-            handlersInList.add(handler);
+        // Handle web socket routes & request log
+        List<Handler> handlersInList = new ArrayList<>();
 
-            // WebSocket handler must be the last one
-            if (webSocketServletContextHandler != null) {
-                handlersInList.add(webSocketServletContextHandler);
-            }
-
-            HandlerList handlers = new HandlerList();
-            handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
-            server.setHandler(handlers);
+        if (requestLogWrapper != null) {
+            RequestLogHandler requestLogHandler = RequestLogCreatorFactory.create(requestLogWrapper);
+            handlersInList.add(requestLogHandler);
         }
+
+        handlersInList.add(handler);
+
+        if (webSocketServletContextHandler != null) {
+            // WebSocket handler must be the last one
+            handlersInList.add(webSocketServletContextHandler);
+        }
+
+        HandlerList handlers = new HandlerList();
+        handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
+        server.setHandler(handlers);
 
         try {
             logger.info("== {} has ignited ...", NAME);
