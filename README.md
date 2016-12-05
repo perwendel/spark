@@ -348,7 +348,7 @@ public class JsonAcceptTypeExample {
 ```
 ---------------------------------
 
-Example showing how to render a view from a template. Note that we are using `ModelAndView` class for setting the object and name/location of template. 
+Example showing how to render a view from a template. Note that we are using `ModelAndView` class for setting the object and name/tempDirectoryPath of template. 
 
 First of all we define a class which handles and renders output depending on template engine used. In this case [FreeMarker](http://freemarker.incubator.apache.org/).
 

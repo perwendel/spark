@@ -41,4 +41,18 @@ public abstract class ObjectUtils {
         return (array == null || array.length == 0);
     }
 
+    /**
+     * A null-safe, quiet way to close an auto-closable resource. This will swallow any exceptions without so
+     * much as a log line so make sure that if you want quiet that you really want quiet.
+     * @param resource The resource to close.
+     */
+    public static void closeQuietly(AutoCloseable resource) {
+        try {
+            if (resource != null)
+                resource.close();
+        }
+        catch (Exception e) {
+            /* Gobble it up since it's supposed to be "quiet" */
+        }
+    }
 }

@@ -2,29 +2,28 @@ package spark;
 
 import org.junit.Before;
 import org.junit.Test;
+import spark.multipart.MultipartPart;
 import spark.routematch.RouteMatch;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class RequestTest {
 
     private static final String THE_SERVLET_PATH = "/the/servlet/path";
     private static final String THE_CONTEXT_PATH = "/the/context/path";
 
-    HttpServletRequest servletRequest;
-    HttpSession httpSession;
-    Request request;
+    private HttpServletRequest servletRequest;
+    private HttpSession httpSession;
+    private Request request;
 
-    RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html");
+    private RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html");
 
     @Before
     public void setup() {
@@ -33,7 +32,6 @@ public class RequestTest {
         httpSession = mock(HttpSession.class);
 
         request = new Request(match, servletRequest);
-
     }
 
     @Test
@@ -433,5 +431,170 @@ public class RequestTest {
         assertEquals("The underlying request protocol should be returned",
                 protocol, request.protocol());
 
+    }
+
+    @Test
+    public void testIsMultipart_formData() {
+        final String type = "multipart/form-data; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+
+        assertTrue(request.isMultipart());
+    }
+
+    @Test
+    public void testIsMultipart_variable() {
+        final String type = "multipart/variable; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+
+        assertTrue(request.isMultipart());
+    }
+
+    @Test
+    public void testIsMultipart_false() {
+        final String type = "image/jpeg";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+
+        assertFalse(request.isMultipart());
+    }
+
+    /**
+     * The standard set of 5 parts we'll use to test requests with multipart data
+     */
+    private Collection<Part> createMockParts() {
+        Part partA = mock(Part.class);
+        when(partA.getName()).thenReturn("a");
+
+        Part partB = mock(Part.class);
+        when(partB.getName()).thenReturn("b");
+
+        Part partC1 = mock(Part.class);
+        when(partC1.getName()).thenReturn("c");
+
+        Part partC2 = mock(Part.class);
+        when(partC2.getName()).thenReturn("c");
+
+        Part partC3 = mock(Part.class);
+        when(partC3.getName()).thenReturn("c");
+
+        return Arrays.asList(partA, partB, partC1, partC2, partC3);
+    }
+
+    @Test
+    public void testParts_none() throws Exception {
+        final String type = "multipart/form-data; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+        when(servletRequest.getParts()).thenReturn(Collections.emptyList());
+
+        Collection<MultipartPart> parts = request.parts();
+        assertNotNull(parts);
+        assertEquals(0, request.parts().size());
+    }
+
+    @Test
+    public void testParts_notMultipart() throws Exception {
+        final String type = "image/jpeg";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+
+        Collection<MultipartPart> parts = request.parts();
+        assertNotNull(parts);
+        assertEquals(0, request.parts().size());
+    }
+
+    @Test
+    public void testParts_multiple() throws Exception {
+        final Collection<Part> servletParts = createMockParts();
+        final String type = "multipart/form-data; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+        when(servletRequest.getParts()).thenReturn(servletParts);
+
+        Collection<MultipartPart> parts = request.parts();
+        assertNotNull(parts);
+        assertEquals(5, parts.size());
+        assertEquals(1, parts.stream().filter(p -> "a".equals(p.name())).count());
+        assertEquals(1, parts.stream().filter(p -> "b".equals(p.name())).count());
+        assertEquals(3, parts.stream().filter(p -> "c".equals(p.name())).count());
+    }
+
+    @Test
+    public void testNamedPart_null() throws Exception {
+        final Collection<Part> servletParts = createMockParts();
+        final String type = "multipart/form-data; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+        when(servletRequest.getParts()).thenReturn(servletParts);
+
+        assertNull(request.part("foobar"));
+    }
+
+    @Test
+    public void testNamedPart_single() throws Exception {
+        final Collection<Part> servletParts = createMockParts();
+        final String type = "multipart/form-data; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+        when(servletRequest.getParts()).thenReturn(servletParts);
+
+        MultipartPart part = request.part("b");
+        assertNotNull(part);
+        assertEquals("b", part.name());
+    }
+
+    @Test
+    public void testNamedPart_multiple() throws Exception {
+        final Collection<Part> servletParts = createMockParts();
+        final String type = "multipart/form-data; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+        when(servletRequest.getParts()).thenReturn(servletParts);
+
+        // The MultipartPartTest class will do a deeper dive into making sure that the part data is correct
+        MultipartPart part = request.part("c");
+        assertNotNull(part);
+        assertEquals("c", part.name());
+    }
+
+    @Test
+    public void testNamedParts_null() throws Exception {
+        final Collection<Part> servletParts = createMockParts();
+        final String type = "multipart/form-data; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+        when(servletRequest.getParts()).thenReturn(servletParts);
+
+        Collection<MultipartPart> parts = request.parts("not-in-here");
+        assertNotNull(parts);
+        assertEquals(0, parts.size());
+    }
+
+    @Test
+    public void testNamedParts_singleton() throws Exception {
+        final Collection<Part> servletParts = createMockParts();
+        final String type = "multipart/form-data; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+        when(servletRequest.getParts()).thenReturn(servletParts);
+
+        Collection<MultipartPart> parts = request.parts("a");
+        assertNotNull(parts);
+        assertEquals(1, parts.size());
+    }
+
+    @Test
+    public void testNamedParts_multiple() throws Exception {
+        final Collection<Part> servletParts = createMockParts();
+        final String type = "multipart/form-data; boundary=aabbcc00";
+
+        when(servletRequest.getContentType()).thenReturn(type);
+        when(servletRequest.getParts()).thenReturn(servletParts);
+
+        Collection<MultipartPart> parts = request.parts("c");
+        assertNotNull(parts);
+        assertEquals(3, parts.size());
     }
 }

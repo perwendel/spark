@@ -16,26 +16,25 @@
  */
 package spark;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
+import spark.multipart.MultipartConfig;
+import spark.multipart.MultipartPart;
+import spark.multipart.ServletMultipartPart;
 import spark.routematch.RouteMatch;
+import spark.utils.CollectionUtils;
 import spark.utils.IOUtils;
 import spark.utils.SparkUtils;
 import spark.utils.StringUtils;
+
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Provides information about the HTTP request
@@ -63,6 +62,7 @@ public class Request {
     private byte[] bodyAsBytes = null;
 
     private Set<String> headers = null;
+    private Map<String, List<MultipartPart>> parts = null;
 
     //    request.body              # request body sent by the client (see below), DONE
     //    request.scheme            # "http"                                DONE
@@ -542,4 +542,113 @@ public class Request {
         this.validSession = validSession;
     }
 
+    /**
+     * Updates the attributes for the request to enable multipart decoding. Applying the "DEFAULT" config only happens
+     * if no existing configuration exists. Should a configuration already exist, this will essentially behave as a noop.
+     *
+     * @return 'this' instance for chaining support
+     */
+    public Request enableMultipart() {
+        if (attribute("org.eclipse.jetty.multipartConfig") == null) {
+            enableMultipart(new MultipartConfig());
+        }
+        return this;
+    }
+
+    /**
+     * Updates the attributes for the request to enable multipart decoding.
+     *
+     * @param config The config options to use for multipart mode on this request
+     * @return 'this' instance for chaining support
+     */
+    public Request enableMultipart(MultipartConfig config) {
+        // The servlet API still has this value as an int rather than a long. Our config utilizes a long to better
+        // future proof things. The problem is that if you supply a sufficiently large value, you'll lose precision.
+        if (config.getFileSizeThreshold() > Integer.MAX_VALUE) {
+            LOG.warn("MultipartConfig.fileSizeThreshold exceeds Integer.MAX_VALUE. Loss of precision and bugs are imminent.");
+        }
+
+        MultipartConfigElement servletMultipartConfig = new MultipartConfigElement(
+            config.getTempDirectoryPath(),
+            config.getMaxPartSize(),
+            config.getMaxRequestSize(),
+            (int)config.getFileSizeThreshold());    // Servlet API has not updated this to be a long yet...
+
+        attribute("org.eclipse.jetty.multipartConfig", servletMultipartConfig);
+        return this;
+    }
+
+    /**
+     * Performs the lazy-initialization of all multipart parts in this request
+     *
+     * @return The non-null parts map
+     */
+    private Map<String, List<MultipartPart>> loadParts() {
+        if (parts == null) {
+            try {
+                // In case the application hasn't supplied a config, just use the default automatically.
+                enableMultipart();
+
+                parts = CollectionUtils.stream(raw().getParts())
+                    .map(ServletMultipartPart::new)
+                    .collect(Collectors.groupingBy(MultipartPart::name));
+            }
+            catch (IOException | ServletException ioe) {
+                parts = new HashMap<>();
+            }
+        }
+        return parts;
+    }
+
+    /**
+     * Determines if this request is actually a multipart encoded request
+     *
+     * @return Is the body multipart encoded?
+     */
+    public boolean isMultipart() {
+        // (1) Don't look for "multipart/form-data" b/c there are other valid encodings such as "multpiart/mixed"
+        // (2) Don't test equality b/c type can include boundary info (e.g. "multipart/form-data; boundary=---gc0p4Jq0M")
+        String type = contentType();
+        return (type != null) && type.toLowerCase().startsWith("multipart/");
+    }
+
+    /**
+     * All of the individual parts/blobs in a multipart request.
+     */
+    public Collection<MultipartPart> parts() {
+        if (isMultipart()) {
+            return loadParts().values().stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * Retrieves the multipart part with the given name. If there are multiple parts sharing the same name (e.g.
+     * "attachments[]") then this will return just the first part we find with the matching name.
+     *
+     * @param name The name of the part to look up.
+     * @return The matching part - or null if none exists
+     */
+    public MultipartPart part(String name) {
+        List<MultipartPart> partsWithName = loadParts().get(name);
+        return CollectionUtils.isEmpty(partsWithName)
+            ? null
+            : partsWithName.get(0);
+    }
+
+    /**
+     * Retrieves all parts that have the given name. This is typically used to pull a list of file uploads from something
+     * like a "multiple" HTML file input, though it supports any parts that share a name.
+     *
+     * @param name The name for the matching parts
+     * @return All parts with that name. Will be a singleton if there's only one. Will be empty list, not null if none match.
+     */
+    public List<MultipartPart> parts(String name) {
+        List<MultipartPart> partsWithName = loadParts().get(name);
+        return CollectionUtils.isEmpty(partsWithName)
+            ? Collections.emptyList()
+            : Collections.unmodifiableList(partsWithName);
+    }
 }
