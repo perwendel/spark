@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.Slf4jRequestLog;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -64,7 +65,7 @@ public class GenericIntegrationTest {
         staticFileLocation("/public");
         externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
         webSocket("/ws", WebSocketTestHandler.class);
-        requestLog(NCSARequestLog.class);
+        requestLog(Slf4jRequestLog.class);
 
         before("/secretcontent/*", (q, a) -> {
             halt(401, "Go Away!");
