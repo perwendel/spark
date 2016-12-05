@@ -16,7 +16,7 @@
  */
 package spark.examples.logger;
 
-import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.Slf4jRequestLog;
 
 import static spark.Spark.get;
 import static spark.Spark.requestLog;
@@ -24,7 +24,7 @@ import static spark.Spark.requestLog;
 public class RequestLogExample {
 
     public static void main(String[] args) {
-        requestLog(NCSARequestLog.class);
+        requestLog(Slf4jRequestLog.class);
         get("/log", (request, response) -> "Logged!");
     }
 }
