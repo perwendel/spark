@@ -460,8 +460,21 @@ public final class Service extends Routable {
     /**
      * Stops the Spark server and clears all routes
      */
-    public synchronized void stop() {
-        new Thread(() -> {
+    public void stop() {
+        initiateStop();
+    }
+    
+    public void stopAndWait() {
+        Thread stopThread = initiateStop();
+        try {
+            stopThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+    
+    synchronized Thread initiateStop() {
+        Thread stopThread = new Thread(() -> {
             if (server != null) {
                 server.extinguish();
                 latch = new CountDownLatch(1);
@@ -471,7 +484,9 @@ public final class Service extends Routable {
             exceptionMapper.clear();
             staticFilesConfiguration.clear();
             initialized = false;
-        }).start();
+        });
+        stopThread.start();
+        return stopThread;
     }
 
     /**

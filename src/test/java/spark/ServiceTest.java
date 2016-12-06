@@ -7,8 +7,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
+import spark.embeddedserver.EmbeddedServer;
+import spark.route.Routes;
 import spark.ssl.SslStores;
 
 import static org.junit.Assert.assertEquals;
@@ -237,6 +240,34 @@ public class ServiceTest {
         thrown.expect(NullPointerException.class);
         thrown.expectMessage("WebSocket handler class cannot be null");
         service.webSocket("/", null);
+    }
+    
+    @Test
+    public void stopExtinguishesServer() {
+        Service service = Service.ignite();
+        Routes routes = Mockito.mock(Routes.class);
+        EmbeddedServer server = Mockito.mock(EmbeddedServer.class);
+        service.routes = routes;
+        service.server = server;
+        
+        Thread stopThread = service.initiateStop();
+        try {
+            stopThread.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        Mockito.verify(server).extinguish();
+    }
+    
+    @Test
+    public void testStopAndWait() {
+        Service service = Service.ignite();
+        Routes routes = Mockito.mock(Routes.class);
+        EmbeddedServer server = Mockito.mock(EmbeddedServer.class);
+        service.routes = routes;
+        service.server = server;
+        service.stopAndWait();
+        Mockito.verify(server).extinguish();
     }
     
     @WebSocket
