@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.sparkjava</groupId>
         <artifactId>spark-parent</artifactId>
-        <version>2.5.2-SNAPSHOT</version>
+        <version>2.5.5-SNAPSHOT</version>
     </parent>
     <artifactId>spark-core</artifactId>
     <packaging>bundle</packaging>
