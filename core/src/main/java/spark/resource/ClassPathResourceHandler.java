@@ -70,11 +70,11 @@ public class ClassPathResourceHandler extends AbstractResourceHandler {
 
             ClassPathResource resource = new ClassPathResource(addedPath);
 
-            if (resource.exists() && resource.getFile().isDirectory()) {
+            if (resource.exists() && path.endsWith("/")) {
                 if (welcomeFile != null) {
                     resource = new ClassPathResource(addPaths(resource.getPath(), welcomeFile));
                 } else {
-                    //  No welcome file configured, serve nothing since it's a directory
+                    // No welcome file configured, serve nothing since it's a directory
                     resource = null;
                 }
             }
