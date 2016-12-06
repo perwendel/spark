@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Slf4jRequestLog;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -32,7 +31,18 @@ import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
-import static spark.Spark.*;
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.exception;
+import static spark.Spark.externalStaticFileLocation;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.patch;
+import static spark.Spark.path;
+import static spark.Spark.post;
+import static spark.Spark.requestLog;
+import static spark.Spark.staticFileLocation;
+import static spark.Spark.webSocket;
 
 public class GenericIntegrationTest {
 

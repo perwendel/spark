@@ -2,8 +2,8 @@ package spark;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.RequestLog;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.junit.Before;
