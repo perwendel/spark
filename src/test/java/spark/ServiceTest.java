@@ -2,6 +2,7 @@ package spark;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -118,6 +119,36 @@ public class ServiceTest {
     }
 
     @Test
+    public void testGetPort_whenInitializedFalse_thenThrowIllegalStateException() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("This must be done after route mapping has begun");
+
+        Whitebox.setInternalState(service, "initialized", false);
+        service.port();
+    }
+
+    @Test
+    public void testGetPort_whenInitializedTrue() {
+        int expectedPort = 8080;
+        Whitebox.setInternalState(service, "initialized", true);
+        Whitebox.setInternalState(service, "port", expectedPort);
+
+        int actualPort = service.port();
+
+        assertEquals("Port retrieved should be the port setted", expectedPort, actualPort);
+    }
+
+    @Test
+    public void testGetPort_whenInitializedTrue_Default() {
+        int expectedPort = Service.SPARK_DEFAULT_PORT;
+        Whitebox.setInternalState(service, "initialized", true);
+
+        int actualPort = service.port();
+
+        assertEquals("Port retrieved should be the port setted", expectedPort, actualPort);
+    }
+
+    @Test
     public void testThreadPool_whenOnlyMaxThreads() {
         service.threadPool(100);
         int maxThreads = Whitebox.getInternalState(service, "maxThreads");
@@ -191,6 +222,24 @@ public class ServiceTest {
         thrown.expectMessage("This must be done before route mapping has begun");
 
         Whitebox.setInternalState(service, "initialized", true);
-        service.webSocket("/", Object.class);
+        service.webSocket("/", DummyWebSocketListener.class);
+    }
+    
+    @Test
+    public void testWebSocket_whenPathNull_thenThrowNullPointerException() {
+        thrown.expect(NullPointerException.class);
+        thrown.expectMessage("WebSocket path cannot be null");
+        service.webSocket(null, new DummyWebSocketListener());
+    }
+    
+    @Test
+    public void testWebSocket_whenHandlerNull_thenThrowNullPointerException() {
+        thrown.expect(NullPointerException.class);
+        thrown.expectMessage("WebSocket handler class cannot be null");
+        service.webSocket("/", null);
+    }
+    
+    @WebSocket
+    protected static class DummyWebSocketListener {
     }
 }

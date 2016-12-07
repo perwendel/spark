@@ -61,6 +61,9 @@ public final class Redirect {
 
     /**
      * Redirects any HTTP request of type GET, POST, PUT, DELETE on 'fromPath' to 'toPath'
+     *
+     * @param fromPath from path
+     * @param toPath   to path
      */
     public void any(String fromPath, String toPath) {
         any(fromPath, toPath, null);
@@ -68,6 +71,9 @@ public final class Redirect {
 
     /**
      * Redirects any HTTP request of type GET on 'fromPath' to 'toPath'
+     *
+     * @param fromPath from path
+     * @param toPath   to path
      */
     public void get(String fromPath, String toPath) {
         get(fromPath, toPath, null);
@@ -75,6 +81,9 @@ public final class Redirect {
 
     /**
      * Redirects any HTTP request of type POST on 'fromPath' to 'toPath'
+     *
+     * @param fromPath from path
+     * @param toPath   to path
      */
     public void post(String fromPath, String toPath) {
         post(fromPath, toPath, null);
@@ -82,6 +91,9 @@ public final class Redirect {
 
     /**
      * Redirects any HTTP request of type PUT on 'fromPath' to 'toPath'
+     *
+     * @param fromPath from path
+     * @param toPath   to path
      */
     public void put(String fromPath, String toPath) {
         put(fromPath, toPath, null);
@@ -89,6 +101,9 @@ public final class Redirect {
 
     /**
      * Redirects any HTTP request of type DELETE on 'fromPath' to 'toPath'
+     *
+     * @param fromPath from path
+     * @param toPath   to path
      */
     public void delete(String fromPath, String toPath) {
         delete(fromPath, toPath, null);
@@ -97,6 +112,10 @@ public final class Redirect {
     /**
      * Redirects any HTTP request of type GET, POST, PUT, DELETE on 'fromPath' to 'toPath' with the provided redirect
      * 'status' code.
+     *
+     * @param fromPath from path
+     * @param toPath   to path
+     * @param status   status code
      */
     public void any(String fromPath, String toPath, Status status) {
         get(fromPath, toPath, status);
@@ -107,6 +126,10 @@ public final class Redirect {
 
     /**
      * Redirects any HTTP request of type GET on 'fromPath' to 'toPath' with the provided redirect 'status' code.
+     *
+     * @param fromPath from path
+     * @param toPath   to path
+     * @param status   status code
      */
     public void get(String fromPath, String toPath, Status status) {
         http.get(fromPath, redirectRoute(toPath, status));
@@ -114,6 +137,10 @@ public final class Redirect {
 
     /**
      * Redirects any HTTP request of type POST on 'fromPath' to 'toPath' with the provided redirect 'status' code.
+     *
+     * @param fromPath from path
+     * @param toPath   to path
+     * @param status   status code
      */
     public void post(String fromPath, String toPath, Status status) {
         http.post(fromPath, redirectRoute(toPath, status));
@@ -121,6 +148,10 @@ public final class Redirect {
 
     /**
      * Redirects any HTTP request of type PUT on 'fromPath' to 'toPath' with the provided redirect 'status' code.
+     *
+     * @param fromPath from path
+     * @param toPath   to path
+     * @param status   status code
      */
     public void put(String fromPath, String toPath, Status status) {
         http.put(fromPath, redirectRoute(toPath, status));
@@ -128,6 +159,10 @@ public final class Redirect {
 
     /**
      * Redirects any HTTP request of type DELETE on 'fromPath' to 'toPath' with the provided redirect 'status' code.
+     *
+     * @param fromPath from path
+     * @param toPath   to path
+     * @param status   status code
      */
     public void delete(String fromPath, String toPath, Status status) {
         http.delete(fromPath, redirectRoute(toPath, status));

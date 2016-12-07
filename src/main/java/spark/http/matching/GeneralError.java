@@ -16,10 +16,13 @@
  */
 package spark.http.matching;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import spark.CustomErrorPages;
 import spark.ExceptionHandlerImpl;
 import spark.ExceptionMapper;
+import spark.RequestResponseFactory;
 
 /**
  * Modifies the HTTP response and body based on the provided exception and request/response wrappers.
@@ -28,12 +31,11 @@ final class GeneralError {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(GeneralError.class);
 
-    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
-
     /**
      * Modifies the HTTP response and body based on the provided exception.
      */
-    static void modify(HttpServletResponse httpResponse,
+    static void modify(HttpServletRequest httpRequest,
+                       HttpServletResponse httpResponse,
                        Body body,
                        RequestWrapper requestWrapper,
                        ResponseWrapper responseWrapper,
@@ -50,8 +52,16 @@ final class GeneralError {
             }
         } else {
             LOG.error("", e);
-            httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            body.set(INTERNAL_ERROR);
+
+            httpResponse.setStatus(500);
+
+            if (CustomErrorPages.existsFor(500)) {
+                requestWrapper.setDelegate(RequestResponseFactory.create(httpRequest));
+                responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
+                body.set(CustomErrorPages.getFor(500, requestWrapper, responseWrapper));
+            } else {
+                body.set(CustomErrorPages.INTERNAL_ERROR);
+            }
         }
     }
 

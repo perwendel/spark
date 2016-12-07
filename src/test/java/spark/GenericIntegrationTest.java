@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.patch;
+import static spark.Spark.path;
 import static spark.Spark.post;
 import static spark.Spark.staticFileLocation;
 import static spark.Spark.webSocket;
@@ -106,6 +108,17 @@ public class GenericIntegrationTest {
 
         get("/param/:param", (q, a) -> {
             return "echo: " + q.params(":param");
+        });
+
+        path("/firstPath", () -> {
+            before("/*", (q, a) -> a.header("before-filter-ran", "true"));
+            get("/test", (q, a) -> "Single path-prefix works");
+            path("/secondPath", () -> {
+                get("/test", (q, a) -> "Nested path-prefix works");
+                path("/thirdPath", () -> {
+                    get("/test", (q, a) -> "Very nested path-prefix works");
+                });
+            });
         });
 
         get("/paramandwild/:param/stuff/*", (q, a) -> {
@@ -308,6 +321,27 @@ public class GenericIntegrationTest {
     }
 
     @Test
+    public void testParamWithEncodedSlash() throws Exception {
+        String polyglot = "te/st";
+        String encoded = URLEncoder.encode(polyglot, "UTF-8");
+        UrlResponse response = testUtil.doMethod("GET", "/param/" + encoded, null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: " + polyglot, response.body);
+    }
+
+    @Test
+    public void testSplatWithEncodedSlash() throws Exception {
+        String param = "fo/shizzle";
+        String encodedParam = URLEncoder.encode(param, "UTF-8");
+        String splat = "mah/FRIEND";
+        String encodedSplat = URLEncoder.encode(splat, "UTF-8");
+        UrlResponse response = testUtil.doMethod("GET",
+                                                 "/paramandwild/" + encodedParam + "/stuff/" + encodedSplat, null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("paramandwild: " + param + splat, response.body);
+    }
+
+    @Test
     public void testEchoParamWithUpperCaseInValue() throws Exception {
         final String camelCased = "ThisIsAValueAndSparkShouldRetainItsUpperCasedCharacters";
         UrlResponse response = testUtil.doMethod("GET", "/param/" + camelCased, null);
@@ -444,5 +478,29 @@ public class GenericIntegrationTest {
         Assert.assertEquals("onConnect", events.get(0));
         Assert.assertEquals("onMessage: Hi Spark!", events.get(1));
         Assert.assertEquals("onClose: 1000 Bye!", events.get(2));
+    }
+
+    @Test
+    public void path_should_prefix_routes() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/firstPath/test", null, "application/json");
+        Assert.assertTrue(response.status == 200);
+        Assert.assertEquals("Single path-prefix works", response.body);
+        Assert.assertEquals("true", response.headers.get("before-filter-ran"));
+    }
+
+    @Test
+    public void paths_should_be_nestable() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/firstPath/secondPath/test", null, "application/json");
+        Assert.assertTrue(response.status == 200);
+        Assert.assertEquals("Nested path-prefix works", response.body);
+        Assert.assertEquals("true", response.headers.get("before-filter-ran"));
+    }
+
+    @Test
+    public void paths_should_be_very_nestable() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/firstPath/secondPath/thirdPath/test", null, "application/json");
+        Assert.assertTrue(response.status == 200);
+        Assert.assertEquals("Very nested path-prefix works", response.body);
+        Assert.assertEquals("true", response.headers.get("before-filter-ran"));
     }
 }

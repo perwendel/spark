@@ -64,6 +64,25 @@ public class Spark {
     public static final Service.StaticFiles staticFiles = getInstance().staticFiles;
 
     /**
+     * Add a path-prefix to the routes declared in the routeGroup
+     * The path() method adds a path-fragment to a path-stack, adds
+     * routes from the routeGroup, then pops the path-fragment again.
+     * It's used for separating routes into groups, for example:
+     * path("/api/email", () -> {
+     * ....post("/add",       EmailApi::addEmail);
+     * ....put("/change",     EmailApi::changeEmail);
+     * ....etc
+     * });
+     * Multiple path() calls can be nested.
+     *
+     * @param path       the path to prefix routes with
+     * @param routeGroup group of routes (can also contain path() calls)
+     */
+    public static void path(String path, RouteGroup routeGroup) {
+        getInstance().path(path, routeGroup);
+    }
+
+    /**
      * Map the route for HTTP GET requests
      *
      * @param path  the path
@@ -164,6 +183,19 @@ public class Spark {
     }
 
     /**
+     * Maps an array of filters to be executed before any matching routes
+     *
+     * @param path    the path
+     * @param filters the filters
+     */
+
+    public static void before(String path, Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().before(path, filter);
+        }
+    }
+
+    /**
      * Maps a filter to be executed after any matching routes
      *
      * @param path   the path
@@ -171,6 +203,19 @@ public class Spark {
      */
     public static void after(String path, Filter filter) {
         getInstance().after(path, filter);
+    }
+
+    /**
+     * Maps an array of filters to be executed after any matching routes
+     *
+     * @param path    the path
+     * @param filters The filters
+     */
+
+    public static void after(String path, Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().after(path, filter);
+        }
     }
 
     //////////////////////////////////////////////////
@@ -278,43 +323,52 @@ public class Spark {
 
 
     /**
-     * Maps a filter to be executed before any matching routes
+     * Maps one or many filters to be executed before any matching routes
      *
-     * @param filter The filter
+     * @param filters The filters
      */
-    public static void before(Filter filter) {
-        getInstance().before(filter);
+    public static void before(Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().before(filter);
+        }
     }
 
     /**
-     * Maps a filter to be executed after any matching routes
+     * Maps one or many filters to be executed after any matching routes
      *
-     * @param filter The filter
+     * @param filters The filters
      */
-    public static void after(Filter filter) {
-        getInstance().after(filter);
+    public static void after(Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().after(filter);
+        }
     }
 
     /**
-     * Maps a filter to be executed before any matching routes
+     * Maps one or many filters to be executed before any matching routes
      *
      * @param path       the path
      * @param acceptType the accept type
-     * @param filter     The filter
+     * @param filters    The filters
      */
-    public static void before(String path, String acceptType, Filter filter) {
-        getInstance().before(path, acceptType, filter);
+    public static void before(String path, String acceptType, Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().before(path, acceptType, filter);
+        }
     }
 
+
     /**
-     * Maps a filter to be executed after any matching routes
+     * Maps one or many filters to be executed after any matching routes
      *
      * @param path       the path
      * @param acceptType the accept type
-     * @param filter     The filter
+     * @param filters    The filters
      */
-    public static void after(String path, String acceptType, Filter filter) {
-        getInstance().after(path, acceptType, filter);
+    public static void after(String path, String acceptType, Filter... filters) {
+        for (Filter filter : filters) {
+            getInstance().after(path, acceptType, filter);
+        }
     }
 
     //////////////////////////////////////////////////
@@ -901,6 +955,16 @@ public class Spark {
     }
 
     /**
+     * Retrieves the port that Spark is listening on.
+     *
+     * @return The port Spark server is listening on.
+     * @throws IllegalStateException when the server is not started
+     */
+    public static int port() {
+        return getInstance().port();
+    }
+
+    /**
      * Set the connection to be secure, using the specified keystore and
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore
@@ -1019,6 +1083,10 @@ public class Spark {
         getInstance().webSocket(path, handler);
     }
 
+    public static void webSocket(String path, Object handler) {
+        getInstance().webSocket(path, handler);
+    }
+
     /**
      * Sets the max idle timeout in milliseconds for WebSocket connections.
      *
@@ -1026,6 +1094,34 @@ public class Spark {
      */
     public static void webSocketIdleTimeoutMillis(int timeoutMillis) {
         getInstance().webSocketIdleTimeoutMillis(timeoutMillis);
+    }
+
+    /**
+     * Maps 404 Not Found errors to the provided custom page
+     */
+    public static void notFound(String page) {
+        getInstance().notFound(page);
+    }
+
+    /**
+     * Maps 500 internal server errors to the provided custom page
+     */
+    public static void internalServerError(String page) {
+        getInstance().internalServerError(page);
+    }
+
+    /**
+     * Maps 404 Not Found errors to the provided route.
+     */
+    public static void notFound(Route route) {
+        getInstance().notFound(route);
+    }
+
+    /**
+     * Maps 500 internal server errors to the provided route.
+     */
+    public static void internalServerError(Route route) {
+        getInstance().internalServerError(route);
     }
 
     /**
