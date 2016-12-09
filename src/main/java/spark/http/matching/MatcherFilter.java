@@ -146,7 +146,13 @@ public class MatcherFilter implements Filter {
             try {
                 DoneFilters.execute(context);
             } catch (Exception generalException) {
-                GeneralError.modify(httpResponse, body, requestWrapper, responseWrapper, generalException);
+                GeneralError.modify(
+                        httpRequest,
+                        httpResponse,
+                        body,
+                        requestWrapper,
+                        responseWrapper,
+                        generalException);
             }
         }
 
