@@ -51,6 +51,7 @@ public class MimeType {
         put("jar", "application/java-archive");
         put("jpg", "image/jpeg");
         put("js", "application/javascript");
+        put("json", "application/json");
         put("midi", "audio/x-midi");
         put("mp3", "audio/mpeg");
         put("mpeg", "video/mpeg");
