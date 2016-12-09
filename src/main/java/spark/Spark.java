@@ -1103,7 +1103,7 @@ public class Spark {
     public static void webSocket(String path, Class<?> handler) {
         getInstance().webSocket(path, handler);
     }
-    
+
     public static void webSocket(String path, Object handler) {
         getInstance().webSocket(path, handler);
     }
@@ -1115,6 +1115,34 @@ public class Spark {
      */
     public static void webSocketIdleTimeoutMillis(int timeoutMillis) {
         getInstance().webSocketIdleTimeoutMillis(timeoutMillis);
+    }
+
+    /**
+     * Maps 404 Not Found errors to the provided custom page
+     */
+    public static void notFound(String page) {
+        getInstance().notFound(page);
+    }
+
+    /**
+     * Maps 500 internal server errors to the provided custom page
+     */
+    public static void internalServerError(String page) {
+        getInstance().internalServerError(page);
+    }
+
+    /**
+     * Maps 404 Not Found errors to the provided route.
+     */
+    public static void notFound(Route route) {
+        getInstance().notFound(route);
+    }
+
+    /**
+     * Maps 500 internal server errors to the provided route.
+     */
+    public static void internalServerError(Route route) {
+        getInstance().internalServerError(route);
     }
 
     /**
