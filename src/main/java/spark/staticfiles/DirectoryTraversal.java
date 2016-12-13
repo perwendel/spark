@@ -8,15 +8,16 @@ import java.nio.file.Paths;
  */
 public class DirectoryTraversal {
 
-    public static void protectAgainstInClassPath(String path) {
-        if (!removeLeadingAndTrailingSlashesFrom(path).startsWith(StaticFilesFolder.local())) {
+    public static void protectAgainstInClassPath(String path, String filesFolder) {
+
+        if (!removeLeadingAndTrailingSlashesFrom(path).startsWith(removeLeadingAndTrailingSlashesFrom(filesFolder))) {
             throw new DirectoryTraversalDetection("classpath");
         }
     }
 
-    public static void protectAgainstForExternal(String path) {
+    public static void protectAgainstForExternal(String path, String filesFolder) {
         String nixLikePath = Paths.get(path).toAbsolutePath().toString().replace("\\", "/");
-        if (!removeLeadingAndTrailingSlashesFrom(nixLikePath).startsWith(StaticFilesFolder.external())) {
+        if (!removeLeadingAndTrailingSlashesFrom(nixLikePath).startsWith(removeLeadingAndTrailingSlashesFrom(filesFolder))) {
             throw new DirectoryTraversalDetection("external");
         }
     }
