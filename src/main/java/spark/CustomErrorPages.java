@@ -35,7 +35,7 @@ public class CustomErrorPages {
         Object customRenderer = CustomErrorPages.getInstance().customPages.get(status);
         Object customPage;
 
-        customPage = status == 400 ? NOT_FOUND : INTERNAL_ERROR;
+        customPage = status == 404 ? NOT_FOUND : INTERNAL_ERROR;
 
         if (customRenderer instanceof String) {
             customPage = customRenderer;
