@@ -363,6 +363,7 @@ public final class Service extends Routable {
             latch.await();
         } catch (InterruptedException e) {
             LOG.info("Interrupted by another thread");
+            Thread.currentThread().interrupt();
         }
     }
 
