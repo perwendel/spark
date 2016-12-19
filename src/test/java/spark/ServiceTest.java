@@ -15,6 +15,7 @@ import spark.route.Routes;
 import spark.ssl.SslStores;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static spark.Service.ignite;
 
@@ -257,10 +258,11 @@ public class ServiceTest {
             Thread.currentThread().interrupt();
         }
         Mockito.verify(server).extinguish();
+        assertFalse(service.initialized);
     }
     
     @Test
-    public void testStopAndWait() {
+    public void stopAndWaitBlocksUntilExtinguished() {
         Service service = Service.ignite();
         Routes routes = Mockito.mock(Routes.class);
         EmbeddedServer server = Mockito.mock(EmbeddedServer.class);
@@ -268,6 +270,7 @@ public class ServiceTest {
         service.server = server;
         service.stopAndWait();
         Mockito.verify(server).extinguish();
+        assertFalse(service.initialized);
     }
     
     @WebSocket

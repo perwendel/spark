@@ -464,11 +464,16 @@ public final class Service extends Routable {
         initiateStop();
     }
     
+    /**
+     * Stops the Spark server and clears all routes; waits for operation to finish. <b>Warning:</b> this
+     * method should not be called from a request handler; use the non-blocking {@link #stop()} instead.
+     */
     public void stopAndWait() {
         Thread stopThread = initiateStop();
         try {
             stopThread.join();
         } catch (InterruptedException e) {
+            LOG.warn("Interrupted by another thread");
             Thread.currentThread().interrupt();
         }
     }
