@@ -29,6 +29,8 @@ public class MimeType {
 
     final static String CONTENT_TYPE = "Content-Type";
 
+    private static volatile boolean guessingOn = true;
+
     private static Map<String, String> mappings = new HashMap<String, String>() {{
         put("au", "audio/basic");
         put("avi", "video/msvideo,video/avi,video/x-msvideo");
@@ -49,6 +51,7 @@ public class MimeType {
         put("jar", "application/java-archive");
         put("jpg", "image/jpeg");
         put("js", "application/javascript");
+        put("json", "application/json");
         put("midi", "audio/x-midi");
         put("mp3", "audio/mpeg");
         put("mpeg", "video/mpeg");
@@ -90,8 +93,13 @@ public class MimeType {
         put("zip", "application/zip,application/x-compressed-zip");
     }};
 
+
     public static void register(String extension, String mimeType) {
         mappings.put(extension, mimeType);
+    }
+
+    public static void disableGuessing() {
+        guessingOn = false;
     }
 
     public static String fromResource(AbstractFileResolvingResource resource) {
@@ -104,7 +112,11 @@ public class MimeType {
         return mappings.getOrDefault(fileExtension, "application/octet-stream");
     }
 
-    public static String fromPathInfo(String pathInfo) {
+    protected static String fromPathInfo(String pathInfo) {
         return getMimeType(pathInfo);
+    }
+
+    protected static boolean shouldGuess() {
+        return guessingOn;
     }
 }

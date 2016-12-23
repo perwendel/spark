@@ -27,6 +27,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import spark.CustomErrorPages;
 import spark.HaltException;
 import spark.RequestResponseFactory;
 import spark.Response;
@@ -59,6 +60,7 @@ public class MatcherFilter implements Filter {
      * Constructor
      *
      * @param routeMatcher      The route matcher
+     * @param staticFiles       The static files configuration object
      * @param externalContainer Tells the filter that Spark is run in an external web container.
      *                          If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers  If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
@@ -132,7 +134,13 @@ public class MatcherFilter implements Filter {
 
         } catch (Exception generalException) {
 
-            GeneralError.modify(httpResponse, body, requestWrapper, responseWrapper, generalException);
+            GeneralError.modify(
+                    httpRequest,
+                    httpResponse,
+                    body,
+                    requestWrapper,
+                    responseWrapper,
+                    generalException);
 
         }
 
@@ -149,9 +157,17 @@ public class MatcherFilter implements Filter {
         }
 
         if (body.notSet() && !externalContainer) {
-            LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
+            LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
+                     uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            body.set(String.format(NOT_FOUND));
+
+            if (CustomErrorPages.existsFor(404)) {
+                requestWrapper.setDelegate(RequestResponseFactory.create(httpRequest));
+                responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
+                body.set(CustomErrorPages.getFor(404, requestWrapper, responseWrapper));
+            } else {
+                body.set(String.format(CustomErrorPages.NOT_FOUND));
+            }
         }
 
         if (body.isSet()) {
@@ -174,6 +190,5 @@ public class MatcherFilter implements Filter {
     public void destroy() {
     }
 
-    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
 
 }

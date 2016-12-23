@@ -102,6 +102,19 @@ public class Request {
         changeMatch(match);
     }
 
+    /**
+     * Constructor - Used to create a request and no RouteMatch is available.
+     *
+     * @param request the servlet request
+     */
+    Request(HttpServletRequest request) {
+        this.servletRequest = request;
+
+        // Empty
+        params = new HashMap<>();
+        splat = new ArrayList<>();
+    }
+
     protected void changeMatch(RouteMatch match) {
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
@@ -466,8 +479,6 @@ public class Request {
     }
 
     private static Map<String, String> getParams(List<String> request, List<String> matched) {
-        LOG.debug("get params");
-
         Map<String, String> params = new HashMap<>();
 
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
@@ -490,8 +501,6 @@ public class Request {
     }
 
     private static List<String> getSplat(List<String> request, List<String> matched) {
-        LOG.debug("get splat");
-
         int nbrOfRequestParts = request.size();
         int nbrOfMatchedParts = matched.size();
 
