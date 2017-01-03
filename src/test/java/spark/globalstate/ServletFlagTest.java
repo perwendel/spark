@@ -7,6 +7,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,7 +20,7 @@ public class ServletFlagTest {
     public void setup() {
 
         Whitebox.setInternalState(ServletFlag.class, "isRunningFromServlet", new AtomicBoolean(false));
-        Whitebox.setInternalState(ServletFlag.class, "contextPath", "/");
+        Whitebox.setInternalState(ServletFlag.class, "contextPath", new AtomicReference<>("/"));
     }
 
     @Test
