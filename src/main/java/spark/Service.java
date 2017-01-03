@@ -373,7 +373,7 @@ public final class Service extends Routable {
      *
      * @param page the custom 500 internal server error page.
      */
-    public void internalServerError(String page) {
+    public synchronized void internalServerError(String page) {
         CustomErrorPages.add(500, page);
     }
 
@@ -387,7 +387,7 @@ public final class Service extends Routable {
     /**
      * Maps 500 internal server errors to the provided route.
      */
-    public void internalServerError(Route route) {
+    public synchronized void internalServerError(Route route) {
         CustomErrorPages.add(500, route);
     }
 
