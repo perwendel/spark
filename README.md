@@ -268,6 +268,10 @@ public class FilterExample {
         get("/hello", (request, response) -> "Hello World!");
 
         after("/hello", (request, response) -> response.header("spark", "added by after-filter"));
+
+        done("/hello", (request, response) -> response.header("finally", "executed even if exception is throw"));
+
+        done((request, response) -> response.header("finally", "executed after any route even if exception is throw"));
     }
 }
 ```

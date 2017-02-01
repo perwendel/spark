@@ -77,6 +77,7 @@ public class MatcherFilter implements Filter {
         this.serializerChain = new SerializerChain();
     }
 
+    @Override
     public void init(FilterConfig config) {
         //
     }
@@ -123,56 +124,69 @@ public class MatcherFilter implements Filter {
                 .withHttpMethod(httpMethod);
 
         try {
+            try {
 
-            BeforeFilters.execute(context);
-            Routes.execute(context);
-            AfterFilters.execute(context);
+                BeforeFilters.execute(context);
+                Routes.execute(context);
+                AfterFilters.execute(context);
 
-        } catch (HaltException halt) {
+            } catch (HaltException halt) {
 
-            Halt.modify(httpResponse, body, halt);
+                Halt.modify(httpResponse, body, halt);
 
-        } catch (Exception generalException) {
+            } catch (Exception generalException) {
 
-            GeneralError.modify(
-                    httpRequest,
-                    httpResponse,
-                    body,
-                    requestWrapper,
-                    responseWrapper,
-                    generalException);
+                GeneralError.modify(
+                        httpRequest,
+                        httpResponse,
+                        body,
+                        requestWrapper,
+                        responseWrapper,
+                        generalException);
 
-        }
-
-        // If redirected and content is null set to empty string to not throw NotConsumedException
-        if (body.notSet() && responseWrapper.isRedirected()) {
-            body.set("");
-        }
-
-        if (body.notSet() && hasOtherHandlers) {
-            if (servletRequest instanceof HttpRequestWrapper) {
-                ((HttpRequestWrapper) servletRequest).notConsumed(true);
-                return;
             }
-        }
 
-        if (body.notSet() && !externalContainer) {
-            LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
-                     uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
-            httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            // If redirected and content is null set to empty string to not throw NotConsumedException
+            if (body.notSet() && responseWrapper.isRedirected()) {
+                body.set("");
+            }
 
-            if (CustomErrorPages.existsFor(404)) {
-                requestWrapper.setDelegate(RequestResponseFactory.create(httpRequest));
-                responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
-                body.set(CustomErrorPages.getFor(404, requestWrapper, responseWrapper));
-            } else {
-                body.set(String.format(CustomErrorPages.NOT_FOUND));
+            if (body.notSet() && hasOtherHandlers) {
+                if (servletRequest instanceof HttpRequestWrapper) {
+                    ((HttpRequestWrapper) servletRequest).notConsumed(true);
+                    return;
+                }
+            }
+
+            if (body.notSet() && !externalContainer) {
+                LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
+                         uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
+                httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+                if (CustomErrorPages.existsFor(404)) {
+                    requestWrapper.setDelegate(RequestResponseFactory.create(httpRequest));
+                    responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
+                    body.set(CustomErrorPages.getFor(404, requestWrapper, responseWrapper));
+                } else {
+                    body.set(String.format(CustomErrorPages.NOT_FOUND));
+                }
+            }
+        } finally {
+            try {
+                DoneFilters.execute(context);
+            } catch (Exception generalException) {
+                GeneralError.modify(
+                        httpRequest,
+                        httpResponse,
+                        body,
+                        requestWrapper,
+                        responseWrapper,
+                        generalException);
             }
         }
 
         if (body.isSet()) {
             body.serializeTo(httpResponse, serializerChain, httpRequest);
-
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
         }
@@ -187,6 +201,7 @@ public class MatcherFilter implements Filter {
         return method;
     }
 
+    @Override
     public void destroy() {
     }
 

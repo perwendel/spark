@@ -371,6 +371,27 @@ public class Spark {
         }
     }
 
+    /**
+     *
+     * Execute after route even if the route throws exception
+     *
+     * @param path   the path
+     * @param filter the filter
+     */
+    public static void done(String path, Filter filter) {
+        getInstance().done(path, filter);
+    }
+
+    /**
+     *
+     * Execute after any matching route even if the route throws exception
+     *
+     * @param filter the filter
+     */
+    public static void done(Filter filter) {
+        getInstance().done(filter);
+    }
+
     //////////////////////////////////////////////////
     // END route/filter mapping with accept type
     //////////////////////////////////////////////////
