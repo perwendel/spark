@@ -55,11 +55,13 @@ public final class Service extends Routable {
 
     public static final int SPARK_DEFAULT_PORT = 4567;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    public static final int SPARK_DEFAULT_MAX_HEADERS_SIZE = 8192;
 
     protected boolean initialized = false;
 
     protected int port = SPARK_DEFAULT_PORT;
     protected String ipAddress = "0.0.0.0";
+    protected int maxHeadersSize = SPARK_DEFAULT_MAX_HEADERS_SIZE;
 
     protected SslStores sslStores;
 
@@ -449,14 +451,15 @@ public final class Service extends Routable {
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
-                    port = server.ignite(
+                    server.ignite(
                             ipAddress,
                             port,
                             sslStores,
                             latch,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis);
+                            threadIdleTimeoutMillis,
+                            maxHeadersSize);
                 }).start();
             }
             initialized = true;
@@ -584,7 +587,7 @@ public final class Service extends Routable {
          * Puts custom header for static resources. If the headers previously contained a mapping for
          * the key, the old value is replaced by the specified value.
          *
-         * @param key   the key
+         * @param key the key
          * @param value the value
          */
         public void header(String key, String value) {

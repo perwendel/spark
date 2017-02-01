@@ -73,12 +73,13 @@ public class EmbeddedJettyServer implements EmbeddedServer {
      */
     @Override
     public int ignite(String host,
-                      int port,
-                      SslStores sslStores,
-                      CountDownLatch latch,
-                      int maxThreads,
-                      int minThreads,
-                      int threadIdleTimeoutMillis) {
+                       int port,
+                       SslStores sslStores,
+                       CountDownLatch latch,
+                       int maxThreads,
+                       int minThreads,
+                       int threadIdleTimeoutMillis,
+                       int maxHeadersSize) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -94,9 +95,9 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         ServerConnector connector;
 
         if (sslStores == null) {
-            connector = SocketConnectorFactory.createSocketConnector(server, host, port);
+            connector = SocketConnectorFactory.createSocketConnector(server, host, port, maxHeadersSize);
         } else {
-            connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
+            connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores, maxHeadersSize);
         }
 
         server = connector.getServer();

@@ -976,6 +976,18 @@ public class Spark {
     }
 
     /**
+     * Sets the maximum size of both accepted request headers and response headers.
+     * This has to be called before any route mapping is done.
+     * If not called, maximum size of headers is set to 8192 bytes, as defined in
+     * {@see Service.SPARK_DEFAULT_MAX_HEADERS_SIZE}.
+     *
+     * @param maxHeaderSize Maximum headers size in bytes
+     */
+    public static void maxHeadersSize(final int maxHeaderSize) {
+        getInstance().maxHeadersSize(maxHeaderSize);
+    }
+
+    /**
      * Retrieves the port that Spark is listening on.
      *
      * @return The port Spark server is listening on.
