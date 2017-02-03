@@ -18,6 +18,9 @@ package spark.embeddedserver.jetty;
 
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.server.ForwardedRequestCustomizer;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -42,7 +45,8 @@ public class SocketConnectorFactory {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
 
-        ServerConnector connector = new ServerConnector(server);
+        HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
+        ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
         initializeConnector(connector, host, port);
         return connector;
     }
@@ -79,7 +83,9 @@ public class SocketConnectorFactory {
             sslContextFactory.setTrustStorePassword(sslStores.trustStorePassword());
         }
 
-        ServerConnector connector = new ServerConnector(server, sslContextFactory);
+        HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
+
+        ServerConnector connector = new ServerConnector(server, sslContextFactory, httpConnectionFactory);
         initializeConnector(connector, host, port);
         return connector;
     }
@@ -92,6 +98,11 @@ public class SocketConnectorFactory {
         connector.setPort(port);
     }
 
+    private static HttpConnectionFactory createHttpConnectionFactory() {
+        HttpConfiguration httpConfig = new HttpConfiguration();
+        httpConfig.setSecureScheme("https");
+        httpConfig.addCustomizer(new ForwardedRequestCustomizer());
+        return new HttpConnectionFactory(httpConfig);
+    }
+
 }
-
-
