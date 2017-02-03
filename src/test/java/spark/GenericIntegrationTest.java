@@ -87,29 +87,12 @@ public class GenericIntegrationTest {
             halt(401, "{\"message\": \"Go Away!\"}");
         });
 
-        get("/hi", "application/json", (q, a) -> {
-            return "{\"message\": \"Hello World\"}";
-        });
-
-        get("/hi", (q, a) -> {
-            return "Hello World!";
-        });
-
-        get("/binaryhi", (q, a) -> {
-            return "Hello World!".getBytes();
-        });
-
-        get("/bytebufferhi", (q, a) -> {
-            return ByteBuffer.wrap("Hello World!".getBytes());
-        });
-
-        get("/inputstreamhi", (q, a) -> {
-            return new ByteArrayInputStream("Hello World!".getBytes("utf-8"));
-        });
-
-        get("/param/:param", (q, a) -> {
-            return "echo: " + q.params(":param");
-        });
+        get("/hi", "application/json", (q, a) -> "{\"message\": \"Hello World\"}");
+        get("/hi", (q, a) -> "Hello World!");
+        get("/binaryhi", (q, a) -> "Hello World!".getBytes());
+        get("/bytebufferhi", (q, a) -> ByteBuffer.wrap("Hello World!".getBytes()));
+        get("/inputstreamhi", (q, a) -> new ByteArrayInputStream("Hello World!".getBytes("utf-8")));
+        get("/param/:param", (q, a) -> "echo: " + q.params(":param"));
 
         path("/firstPath", () -> {
             before("/*", (q, a) -> a.header("before-filter-ran", "true"));
@@ -122,13 +105,8 @@ public class GenericIntegrationTest {
             });
         });
 
-        get("/paramandwild/:param/stuff/*", (q, a) -> {
-            return "paramandwild: " + q.params(":param") + q.splat()[0];
-        });
-
-        get("/paramwithmaj/:paramWithMaj", (q, a) -> {
-            return "echo: " + q.params(":paramWithMaj");
-        });
+        get("/paramandwild/:param/stuff/*", (q, a) -> "paramandwild: " + q.params(":param") + q.splat()[0]);
+        get("/paramwithmaj/:paramWithMaj", (q, a) -> "echo: " + q.params(":paramWithMaj"));
 
         get("/templateView", (q, a) -> {
             return new ModelAndView("Hello", "my view");
@@ -139,9 +117,7 @@ public class GenericIntegrationTest {
             }
         });
 
-        get("/", (q, a) -> {
-            return "Hello Root!";
-        });
+        get("/", (q, a) -> "Hello Root!");
 
         post("/poster", (q, a) -> {
             String body = q.body();
@@ -154,9 +130,7 @@ public class GenericIntegrationTest {
             return "Method Override Worked";
         });
 
-        get("/post_via_get", (q, a) -> {
-            return "Method Override Did Not Work";
-        });
+        get("/post_via_get", (q, a) -> "Method Override Did Not Work");
 
         patch("/patcher", (q, a) -> {
             String body = q.body();
@@ -173,6 +147,8 @@ public class GenericIntegrationTest {
             session.attribute(key, "22222");
             return session.attribute(key);
         });
+
+        get("/ip", (request, response) -> request.ip());
 
         after("/hi", (q, a) -> {
 
@@ -216,9 +192,7 @@ public class GenericIntegrationTest {
             response.body("done executed for exception");
         });
 
-        post("/nice", (request, response) -> {
-            return "nice response";
-        });
+        post("/nice", (request, response) -> "nice response");
 
         done("/nice", (request, response) -> {
             response.header("post-process", "nice done response");
@@ -303,6 +277,19 @@ public class GenericIntegrationTest {
     public void testGetHiAfterFilter() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/hi", null);
         Assert.assertTrue(response.headers.get("after").contains("foobar"));
+    }
+
+    @Test
+    public void testXForwardedFor() throws Exception {
+        final String xForwardedFor = "XXX.XXX.XXX.XXX";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-Forwarded-For", xForwardedFor);
+
+        UrlResponse response = testUtil.doMethod("GET", "/ip", null, false, "text/html", headers);
+        Assert.assertEquals(xForwardedFor, response.body);
+
+        response = testUtil.doMethod("GET", "/ip", null, false, "text/html", null);
+        Assert.assertNotEquals(xForwardedFor, response.body);
     }
 
     @Test
