@@ -31,8 +31,8 @@ import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
 import static spark.Spark.after;
+import static spark.Spark.afterAfter;
 import static spark.Spark.before;
-import static spark.Spark.done;
 import static spark.Spark.exception;
 import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.get;
@@ -188,17 +188,17 @@ public class GenericIntegrationTest {
             throw new RuntimeException();
         });
 
-        done("/exception", (request, response) -> {
+        afterAfter("/exception", (request, response) -> {
             response.body("done executed for exception");
         });
 
         post("/nice", (request, response) -> "nice response");
 
-        done("/nice", (request, response) -> {
+        afterAfter("/nice", (request, response) -> {
             response.header("post-process", "nice done response");
         });
 
-        done((request, response) -> {
+        afterAfter((request, response) -> {
             response.header("post-process-all", "nice done response after all");
         });
 
