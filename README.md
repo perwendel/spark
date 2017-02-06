@@ -8,13 +8,13 @@ IMPORTANT INFORMATION - There has been found a security vulnerability in older v
 
 For more detailed documentation please go to: http://sparkjava.com/documentation
 
-NEWS: Spark 2.5.3 is out! (IMPORTANT fix for directory traversal vulnerability was fixed in 2.5.2!)
+NEWS: Spark 2.5.5 is out! 
 
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.5.3</version>
+    <version>2.5.5</version>
 </dependency>
 ```
 
