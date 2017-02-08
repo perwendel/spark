@@ -128,13 +128,20 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
             server.start();
             latch.countDown();
-            server.join();
         } catch (Exception e) {
             logger.error("ignite failed", e);
             System.exit(100);
         }
 
         return port;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void join() throws InterruptedException {
+        server.join();
     }
 
     /**

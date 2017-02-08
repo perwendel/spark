@@ -62,6 +62,11 @@ public interface EmbeddedServer {
     }
 
     /**
+     * Joins the embedded server thread(s).
+     */
+    void join() throws InterruptedException;
+
+    /**
      * Extinguish the embedded server.
      */
     void extinguish();

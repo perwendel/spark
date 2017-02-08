@@ -457,6 +457,11 @@ public final class Service extends Routable {
                             maxThreads,
                             minThreads,
                             threadIdleTimeoutMillis);
+                    try {
+                        server.join();
+                    } catch (InterruptedException e) {
+                        LOG.error("server interrupted", e);
+                    }
                 }).start();
             }
             initialized = true;
