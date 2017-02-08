@@ -461,6 +461,7 @@ public final class Service extends Routable {
                         server.join();
                     } catch (InterruptedException e) {
                         LOG.error("server interrupted", e);
+                        Thread.currentThread().interrupt();
                     }
                 }).start();
             }
