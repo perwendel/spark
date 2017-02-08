@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -75,7 +74,6 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     public int ignite(String host,
                       int port,
                       SslStores sslStores,
-                      CountDownLatch latch,
                       int maxThreads,
                       int minThreads,
                       int threadIdleTimeoutMillis) {
@@ -127,7 +125,6 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             logger.info(">> Listening on {}:{}", host, port);
 
             server.start();
-            latch.countDown();
         } catch (Exception e) {
             logger.error("ignite failed", e);
             System.exit(100);

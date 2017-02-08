@@ -453,11 +453,11 @@ public final class Service extends Routable {
                             ipAddress,
                             port,
                             sslStores,
-                            latch,
                             maxThreads,
                             minThreads,
                             threadIdleTimeoutMillis);
                     try {
+                        latch.countDown();
                         server.join();
                     } catch (InterruptedException e) {
                         LOG.error("server interrupted", e);
