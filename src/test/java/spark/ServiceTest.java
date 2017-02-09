@@ -2,6 +2,9 @@ package spark;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.RequestLog;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.junit.Before;
 import org.junit.Rule;
@@ -242,4 +245,26 @@ public class ServiceTest {
     @WebSocket
     protected static class DummyWebSocketListener {
     }
+
+    @Test
+    public void testRequestLog_whenInitializedTrue_thenThrowIllegalStateException() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("This must be done before route mapping has begun");
+
+        Whitebox.setInternalState(service, "initialized", true);
+        service.requestLog(DummyRequestLog.class);
+    }
+
+    @Test
+    public void testRequestLog_whenRequestLogNull_thenThrowNullPointerException() {
+        thrown.expect(NullPointerException.class);
+        thrown.expectMessage("Request log class cannot be null");
+        service.requestLog(null);
+    }
+
+    protected static class DummyRequestLog implements RequestLog {
+        @Override
+        public void log(Request request, Response response) {}
+    }
+
 }

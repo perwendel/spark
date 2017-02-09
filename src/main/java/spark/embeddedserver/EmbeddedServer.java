@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 
+import spark.embeddedserver.jetty.logger.RequestLogWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.ssl.SslStores;
 
@@ -59,6 +60,16 @@ public interface EmbeddedServer {
                                      Optional<Integer> webSocketIdleTimeoutMillis) {
 
         NotSupportedException.raise(getClass().getSimpleName(), "Web Sockets");
+    }
+
+    /**
+     * Configures the request log for the embedded server.
+     *
+     * @param requestLogWrapper          - request log wrapper.
+     */
+    default void configureRequestLog(RequestLogWrapper requestLogWrapper) {
+
+        NotSupportedException.raise(getClass().getSimpleName(), "Request Log");
     }
 
     /**

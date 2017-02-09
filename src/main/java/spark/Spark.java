@@ -16,6 +16,9 @@
  */
 package spark;
 
+import spark.embeddedserver.EmbeddedServerFactory;
+import spark.embeddedserver.EmbeddedServers;
+
 import static spark.Service.ignite;
 
 /**
@@ -1104,6 +1107,21 @@ public class Spark {
 
     public static void webSocket(String path, Object handler) {
         getInstance().webSocket(path, handler);
+    }
+
+    /**
+     * Adds a request log to the embedded server given the request log class.
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param requestLog the handler class that will manage the WebSocket connection to the given path.
+     */
+    public static void requestLog(Class<?> requestLog) {
+        getInstance().requestLog(requestLog);
+    }
+
+    public static void requestLog(Object requestLog) {
+        getInstance().requestLog(requestLog);
     }
 
     /**

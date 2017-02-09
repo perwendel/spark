@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jetty.server.Slf4jRequestLog;
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -40,6 +41,7 @@ import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.path;
 import static spark.Spark.post;
+import static spark.Spark.requestLog;
 import static spark.Spark.staticFileLocation;
 import static spark.Spark.webSocket;
 
@@ -74,6 +76,7 @@ public class GenericIntegrationTest {
         staticFileLocation("/public");
         externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
         webSocket("/ws", WebSocketTestHandler.class);
+        requestLog(Slf4jRequestLog.class);
 
         before("/secretcontent/*", (q, a) -> {
             halt(401, "Go Away!");
