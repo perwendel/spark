@@ -65,4 +65,10 @@ public interface EmbeddedServer {
      * Extinguish the embedded server.
      */
     void extinguish();
+
+    /**
+     *
+     * @return The approximate number of currently active threads
+     */
+    int getActiveThreadCount();
 }
