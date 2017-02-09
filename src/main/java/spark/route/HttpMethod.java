@@ -22,7 +22,7 @@ import java.util.HashMap;
  * @author Per Wendel
  */
 public enum HttpMethod {
-    get, post, put, patch, delete, head, trace, connect, options, before, after, done, unsupported;
+    get, post, put, patch, delete, head, trace, connect, options, before, after, afterAfter, unsupported;
 
     private static HashMap<String, HttpMethod> methods = new HashMap<>();
 

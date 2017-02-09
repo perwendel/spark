@@ -303,7 +303,7 @@ abstract class Routable {
      * @param filter The filter
      */
     public void afterAfter(Filter filter) {
-        addFilter(HttpMethod.done.name(), FilterImpl.create(SparkUtils.ALL_PATHS, filter));
+        addFilter(HttpMethod.afterAfter.name(), FilterImpl.create(SparkUtils.ALL_PATHS, filter));
     }
 
     /**
@@ -312,7 +312,7 @@ abstract class Routable {
      * @param filter The filter
      */
     public void afterAfter(String path, Filter filter) {
-        addFilter(HttpMethod.done.name(), FilterImpl.create(path, filter));
+        addFilter(HttpMethod.afterAfter.name(), FilterImpl.create(path, filter));
     }
 
     //////////////////////////////////////////////////
