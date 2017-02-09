@@ -27,13 +27,13 @@ import spark.routematch.RouteMatch;
 /**
  * Executes the done filters matching an HTTP request.
  */
-final class DoneFilters {
+final class AfterAfterFilters {
 
     static void execute(RouteContext context) throws Exception {
 
         Object content = context.body().get();
 
-        List<RouteMatch> matchSet = context.routeMatcher().findMultiple(HttpMethod.done,
+        List<RouteMatch> matchSet = context.routeMatcher().findMultiple(HttpMethod.afterafter,
                                                                                context.uri(),
                                                                                context.acceptType());
 

@@ -173,7 +173,7 @@ public class MatcherFilter implements Filter {
             }
         } finally {
             try {
-                DoneFilters.execute(context);
+                AfterAfterFilters.execute(context);
             } catch (Exception generalException) {
                 GeneralError.modify(
                         httpRequest,

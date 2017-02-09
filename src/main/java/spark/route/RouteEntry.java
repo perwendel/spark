@@ -43,7 +43,7 @@ class RouteEntry {
     }
 
     boolean matches(HttpMethod httpMethod, String path) {
-        if ((httpMethod == HttpMethod.before || httpMethod == HttpMethod.after || httpMethod == HttpMethod.done)
+        if ((httpMethod == HttpMethod.before || httpMethod == HttpMethod.after || httpMethod == HttpMethod.afterafter)
                 && (this.httpMethod == httpMethod)
                 && this.path.equals(SparkUtils.ALL_PATHS)) {
             // Is filter and matches all
@@ -126,6 +126,7 @@ class RouteEntry {
         }
     }
 
+    @Override
     public String toString() {
         return httpMethod.name() + ", " + path + ", " + target;
     }
