@@ -161,7 +161,7 @@ public final class Service extends Routable {
      * Set the connection to be secure, using the specified keystore and
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore
-     * will be reused).
+     * will be reused). By default, client certificates are not checked.
      * This method is only relevant when using embedded Jetty servers. It should
      * not be used if you are using Servlets, where you will need to secure the
      * connection in the servlet container
@@ -177,6 +177,32 @@ public final class Service extends Routable {
                                        String keystorePassword,
                                        String truststoreFile,
                                        String truststorePassword) {
+        return secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword, false);
+    }
+
+    /**
+     * Set the connection to be secure, using the specified keystore and
+     * truststore. This has to be called before any route mapping is done. You
+     * have to supply a keystore file, truststore file is optional (keystore
+     * will be reused).
+     * This method is only relevant when using embedded Jetty servers. It should
+     * not be used if you are using Servlets, where you will need to secure the
+     * connection in the servlet container
+     *
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param truststoreFile     the truststore file location as string, leave null to reuse
+     *                           keystore
+     * @param needsClientCert    Whether to require client certificate to be supplied in
+     *                           request
+     * @param truststorePassword the trust store password
+     * @return the object with connection set to be secure
+     */
+    public synchronized Service secure(String keystoreFile,
+                                       String keystorePassword,
+                                       String truststoreFile,
+                                       String truststorePassword,
+                                       boolean needsClientCert) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -186,7 +212,7 @@ public final class Service extends Routable {
                     "Must provide a keystore file to run secured");
         }
 
-        sslStores = SslStores.create(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
+        sslStores = SslStores.create(keystoreFile, keystorePassword, truststoreFile, truststorePassword, needsClientCert);
         return this;
     }
 
