@@ -74,6 +74,7 @@ public class StaticFilesMemberTest {
         writer.close();
 
         staticFiles.location("/public");
+        staticFiles.location("/secondPublic");
         staticFiles.externalLocation(System.getProperty("java.io.tmpdir"));
 
         get("/hello", (q, a) -> FO_SHIZZY);
@@ -95,6 +96,15 @@ public class StaticFilesMemberTest {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/css/style.css", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of css file", response.body);
+
+        testGet();
+    }
+
+    @Test
+    public void testSecondStaticFile() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/test.css", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Content of the second static source", response.body);
 
         testGet();
     }

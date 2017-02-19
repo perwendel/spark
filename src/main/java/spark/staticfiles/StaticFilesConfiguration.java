@@ -46,10 +46,8 @@ import spark.utils.IOUtils;
 public class StaticFilesConfiguration {
     private final Logger LOG = LoggerFactory.getLogger(StaticFilesConfiguration.class);
 
-    private List<AbstractResourceHandler> staticResourceHandlers = null;
+    private Map<String, AbstractResourceHandler> staticResourceHandlers = new HashMap<>();
 
-    private boolean staticResourcesSet = false;
-    private boolean externalStaticResourcesSet = false;
 
     public static StaticFilesConfiguration servletInstance = new StaticFilesConfiguration();
 
@@ -82,7 +80,7 @@ public class StaticFilesConfiguration {
                                                     HttpServletResponse httpResponse) throws IOException {
         if (staticResourceHandlers != null) {
 
-            for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers) {
+            for (AbstractResourceHandler staticResourceHandler : staticResourceHandlers.values()) {
 
                 AbstractFileResolvingResource resource = staticResourceHandler.getResource(httpRequest);
 
@@ -109,14 +107,7 @@ public class StaticFilesConfiguration {
      * Clears all static file configuration
      */
     public void clear() {
-
-        if (staticResourceHandlers != null) {
-            staticResourceHandlers.clear();
-            staticResourceHandlers = null;
-        }
-
-        staticResourcesSet = false;
-        externalStaticResourcesSet = false;
+        staticResourceHandlers.clear();
     }
 
     /**
@@ -124,20 +115,18 @@ public class StaticFilesConfiguration {
      *
      * @param folder the location
      */
-    public synchronized void configure(String folder) {
+    public synchronized void add(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
-        if (!staticResourcesSet) {
+       if(staticResourceHandlers.containsKey(folder)){
+           LOG.warn("Static resource location ignored(already add)" + folder);
+           return;
+       }
 
-            if (staticResourceHandlers == null) {
-                staticResourceHandlers = new ArrayList<>();
-            }
 
-            staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
-            LOG.info("StaticResourceHandler configured with folder = " + folder);
-            StaticFilesFolder.localConfiguredTo(folder);
-            staticResourcesSet = true;
-        }
+        staticResourceHandlers.put(folder, new ClassPathResourceHandler(folder, "index.html"));
+        LOG.info("StaticResourceHandler configured with folder = " + folder);
+        //StaticFilesFolder.localConfiguredTo(folder);
 
     }
 
@@ -149,27 +138,24 @@ public class StaticFilesConfiguration {
     public synchronized void configureExternal(String folder) {
         Assert.notNull(folder, "'folder' must not be null");
 
-        if (!externalStaticResourcesSet) {
-            try {
-                ExternalResource resource = new ExternalResource(folder);
-                if (!resource.getFile().isDirectory()) {
-                    LOG.error("External Static resource location must be a folder");
-                    return;
-                }
-
-                if (staticResourceHandlers == null) {
-                    staticResourceHandlers = new ArrayList<>();
-                }
-                staticResourceHandlers.add(new ExternalResourceHandler(folder, "index.html"));
-                LOG.info("External StaticResourceHandler configured with folder = " + folder);
-            } catch (IOException e) {
-                LOG.error("Error when creating external StaticResourceHandler", e);
+        try {
+            ExternalResource resource = new ExternalResource(folder);
+            if (!resource.getFile().isDirectory()) {
+                LOG.error("External Static resource location must be a folder");
+                return;
             }
 
-            StaticFilesFolder.externalConfiguredTo(folder);
-            externalStaticResourcesSet = true;
-        }
+            if(staticResourceHandlers.containsKey(folder))
+            {
+                LOG.warn("External Static resource location ignored(already add)" + folder);
+                return;
+            }
 
+            staticResourceHandlers.put(folder, new ExternalResourceHandler(folder, "index.html"));
+            LOG.info("External StaticResourceHandler configured with folder = " + folder);
+        } catch (IOException e) {
+            LOG.error("Error when creating external StaticResourceHandler", e);
+        }
     }
 
     public static StaticFilesConfiguration create() {
