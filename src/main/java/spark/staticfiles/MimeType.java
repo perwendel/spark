@@ -46,6 +46,7 @@ public class MimeType {
         put("exe", "application/octet-stream");
         put("gif", "image/gif");
         put("gz", "application/x-gzip");
+        put("ico", "image/x-icon");
         put("hqx", "application/mac-binhex40");
         put("html", "text/html");
         put("jar", "application/java-archive");
