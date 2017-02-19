@@ -109,7 +109,10 @@ public class GenericIntegrationTest {
         get("/paramwithmaj/:paramWithMaj", (q, a) -> "echo: " + q.params(":paramWithMaj"));
 
         get("/templateView", (q, a) -> {
-            return new ModelAndView("Hello", "my view");
+            return new ModelAndView(new HashMap<String, Object>() {
+                {
+                    put("hello", "Hello");
+                }}, "my view");
         }, new TemplateEngine() {
             @Override
             public String render(ModelAndView modelAndView) {
@@ -223,7 +226,7 @@ public class GenericIntegrationTest {
     public void template_view_should_be_rendered_with_given_model_view_object() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/templateView", null);
         Assert.assertEquals(200, response.status);
-        Assert.assertEquals("Hello from my view", response.body);
+        Assert.assertEquals("{hello=Hello} from my view", response.body);
     }
 
     @Test
