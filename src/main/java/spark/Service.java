@@ -32,6 +32,7 @@ import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
+import spark.route.HttpMethod;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
@@ -418,12 +419,26 @@ public final class Service extends Routable {
     }
 
     @Override
+    public void addRoute(HttpMethod httpMethod, RouteImpl route) {
+        init();
+        routes.add(httpMethod, route.withPrefix(getPaths()));
+    }
+
+    @Override
+    public void addFilter(HttpMethod httpMethod, FilterImpl filter) {
+        init();
+        routes.add(httpMethod, filter.withPrefix(getPaths()));
+    }
+
+    @Override
+    @Deprecated
     public void addRoute(String httpMethod, RouteImpl route) {
         init();
         routes.add(httpMethod + " '" + getPaths() + route.getPath() + "'", route.getAcceptType(), route);
     }
 
     @Override
+    @Deprecated
     public void addFilter(String httpMethod, FilterImpl filter) {
         init();
         routes.add(httpMethod + " '" + getPaths() + filter.getPath() + "'", filter.getAcceptType(), filter);
