@@ -16,13 +16,14 @@
  */
 package spark;
 
+import com.google.common.util.concurrent.AbstractService;
 import spark.route.HttpMethod;
 import spark.utils.SparkUtils;
 
 /**
  * Routable abstract class. Lets extending classes inherit default routable functionality.
  */
-abstract class Routable {
+abstract class Routable extends AbstractService {
 
     /**
      * Adds a route

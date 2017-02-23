@@ -1089,6 +1089,10 @@ public class Spark {
         getInstance().stop();
     }
 
+    public static void awaitStopped() {
+        getInstance().awaitStopped();
+    }
+
     ////////////////
     // Websockets //
 
