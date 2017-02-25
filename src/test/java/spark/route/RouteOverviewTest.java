@@ -62,7 +62,7 @@ public class RouteOverviewTest {
 
     @Test
     public void assertThat_filter_field_works() {
-        assertThat(routeName(FILTER_FIELD), containsString("RouteOverviewTest.filterField"));
+        assertThat(routeName(FILTER_FIELD), containsString("RouteOverviewTest$$Lambda"));
     }
 
     @Test
@@ -72,17 +72,17 @@ public class RouteOverviewTest {
 
     @Test
     public void assertThat_filter_methodRef_works() {
-        assertThat(routeName(FILTER_METHOD_REF), containsString("RouteOverviewTest::filterMethodRef"));
+        assertThat(routeName(FILTER_METHOD_REF), containsString("RouteOverviewTest$$Lambda"));
     }
 
     @Test
     public void assertThat_filter_lambda_works() {
-        assertThat(routeName(FILTER_LAMBDA), containsString("RouteOverviewTest???"));
+        assertThat(routeName(FILTER_LAMBDA), containsString("RouteOverviewTest$$Lambda"));
     }
 
     @Test
     public void assertThat_route_field_works() {
-        assertThat(routeName(ROUTE_FIELD), containsString("RouteOverviewTest.routeField"));
+        assertThat(routeName(ROUTE_FIELD), containsString("RouteOverviewTest$$Lambda"));
     }
 
     @Test
@@ -92,12 +92,12 @@ public class RouteOverviewTest {
 
     @Test
     public void assertThat_route_methodRef_works() {
-        assertThat(routeName(ROUTE_METHOD_REF), containsString("RouteOverviewTest::routeMethodRef"));
+        assertThat(routeName(ROUTE_METHOD_REF), containsString("RouteOverviewTest$$Lambda"));
     }
 
     @Test
     public void assertThat_route_lambda_works() {
-        assertThat(routeName(ROUTE_LAMBDA), containsString("RouteOverviewTest???"));
+        assertThat(routeName(ROUTE_LAMBDA), containsString("RouteOverviewTest$$Lambda"));
     }
 
     // fields/classes/methods to obtain names from
