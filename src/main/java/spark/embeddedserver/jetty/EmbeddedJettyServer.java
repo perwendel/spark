@@ -158,5 +158,12 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         logger.info("done");
     }
 
+    @Override
+    public int getActiveThreadCount() {
+        if (server != null) {
+            return 0;
+        }
 
+        return server.getThreadPool().getThreads() - server.getThreadPool().getIdleThreads();
+    }
 }
