@@ -156,7 +156,8 @@ public final class Service extends Routable {
         this.http2Enabled = true;
         return this;
     }
-  
+    
+    /**
      * Retrieves the port that Spark is listening on.
      *
      * @return The port Spark server is listening on.
