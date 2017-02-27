@@ -101,7 +101,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         server.setConnectors(new Connector[] {connector});
 
         ServletContextHandler webSocketServletContextHandler =
-                WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
+            WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
 
         // Handle web socket routes
         if (webSocketServletContextHandler == null) {
@@ -159,11 +159,10 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     }
 
     @Override
-    public int getActiveThreadCount() {
-        if (server != null) {
+    public int activeThreadCount() {
+        if (server == null) {
             return 0;
         }
-
         return server.getThreadPool().getThreads() - server.getThreadPool().getIdleThreads();
     }
 }

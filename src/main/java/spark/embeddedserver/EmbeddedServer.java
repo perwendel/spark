@@ -72,5 +72,5 @@ public interface EmbeddedServer {
      *
      * @return The approximate number of currently active threads
      */
-    int getActiveThreadCount();
+    int activeThreadCount();
 }
