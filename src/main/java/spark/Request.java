@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,6 +16,8 @@
  */
 package spark;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -53,6 +55,8 @@ public class Request {
     private HttpServletRequest servletRequest;
 
     private Session session = null;
+    private boolean validSession = false;
+
 
     /* Lazy loaded stuff */
     private String body = null;
@@ -96,6 +100,19 @@ public class Request {
     Request(RouteMatch match, HttpServletRequest request) {
         this.servletRequest = request;
         changeMatch(match);
+    }
+
+    /**
+     * Constructor - Used to create a request and no RouteMatch is available.
+     *
+     * @param request the servlet request
+     */
+    Request(HttpServletRequest request) {
+        this.servletRequest = request;
+
+        // Empty
+        params = new HashMap<>();
+        splat = new ArrayList<>();
     }
 
     protected void changeMatch(RouteMatch match) {
@@ -331,6 +348,7 @@ public class Request {
      * @param <T>       the type parameter.
      * @return the value for the provided attribute
      */
+    @SuppressWarnings("unchecked")
     public <T> T attribute(String attribute) {
         return (T) servletRequest.getAttribute(attribute);
     }
@@ -385,8 +403,9 @@ public class Request {
      * @return the session associated with this request
      */
     public Session session() {
-        if (session == null) {
-            session = new Session(servletRequest.getSession());
+        if (session == null || !validSession) {
+            validSession(true);
+            session = new Session(servletRequest.getSession(), this);
         }
         return session;
     }
@@ -401,10 +420,13 @@ public class Request {
      * <code>create</code> is <code>false</code> and the request has no valid session
      */
     public Session session(boolean create) {
-        if (session == null) {
+        if (session == null || !validSession) {
             HttpSession httpSession = servletRequest.getSession(create);
             if (httpSession != null) {
-                session = new Session(httpSession);
+                validSession(true);
+                session = new Session(httpSession, this);
+            } else {
+                session = null;
             }
         }
         return session;
@@ -457,26 +479,28 @@ public class Request {
     }
 
     private static Map<String, String> getParams(List<String> request, List<String> matched) {
-        LOG.debug("get params");
-
         Map<String, String> params = new HashMap<>();
 
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
             if (SparkUtils.isParam(matchedPart)) {
-                LOG.debug("matchedPart: "
-                                  + matchedPart
-                                  + " = "
-                                  + request.get(i));
-                params.put(matchedPart.toLowerCase(), request.get(i));
+                try {
+                    String decodedReq = URLDecoder.decode(request.get(i), "UTF-8");
+                    LOG.debug("matchedPart: "
+                                      + matchedPart
+                                      + " = "
+                                      + decodedReq);
+                    params.put(matchedPart.toLowerCase(), decodedReq);
+
+                } catch (UnsupportedEncodingException e) {
+
+                }
             }
         }
         return Collections.unmodifiableMap(params);
     }
 
     private static List<String> getSplat(List<String> request, List<String> matched) {
-        LOG.debug("get splat");
-
         int nbrOfRequestParts = request.size();
         int nbrOfMatchedParts = matched.size();
 
@@ -485,21 +509,37 @@ public class Request {
         List<String> splat = new ArrayList<>();
 
         for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
+
             String matchedPart = matched.get(i);
 
             if (SparkUtils.isSplat(matchedPart)) {
 
                 StringBuilder splatParam = new StringBuilder(request.get(i));
+
                 if (!sameLength && (i == (nbrOfMatchedParts - 1))) {
                     for (int j = i + 1; j < nbrOfRequestParts; j++) {
                         splatParam.append("/");
                         splatParam.append(request.get(j));
                     }
                 }
-                splat.add(splatParam.toString());
+                try {
+                    String decodedSplat = URLDecoder.decode(splatParam.toString(), "UTF-8");
+                    splat.add(decodedSplat);
+                } catch (UnsupportedEncodingException e) {
+                }
             }
         }
+
         return Collections.unmodifiableList(splat);
+    }
+
+    /**
+     * Set the session validity
+     *
+     * @param validSession the session validity
+     */
+    void validSession(boolean validSession) {
+        this.validSession = validSession;
     }
 
 }

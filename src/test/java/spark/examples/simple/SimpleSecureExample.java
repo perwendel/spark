@@ -16,14 +16,15 @@
  */
 package spark.examples.simple;
 
+import spark.util.SparkTestUtil;
+
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.post;
 import static spark.Spark.secure;
 
 /**
- * A simple example just showing some basic functionality You'll need to provide
- * a JKS keystore as arg 0 and its password as arg 1.
+ * A simple example just showing some basic functionality.
  *
  * @author Peter Nicholls, based on (practically identical to in fact)
  *         {@link spark.examples.simple.SimpleExample} by Per Wendel
@@ -35,7 +36,9 @@ public class SimpleSecureExample {
         // port(5678); <- Uncomment this if you want spark to listen on a
         // port different than 4567.
 
-        secure(args[0], args[1], null, null);
+        secure(
+                SparkTestUtil.getKeyStoreLocation(),
+                SparkTestUtil.getKeystorePassword(), null, null);
 
         get("/hello", (request, response) -> "Hello Secure World!");
 

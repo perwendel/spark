@@ -86,4 +86,18 @@ public class ExternalResource extends AbstractFileResolvingResource {
     public String getPath() {
         return file.getPath();
     }
+
+    /**
+     * This implementation returns the name of the file that this external
+     * resource refers to.
+     *
+     * @see spark.utils.StringUtils#getFilename(String)
+     *
+     * @return the file name.
+     */
+    @Override
+    public String getFilename() {
+        return StringUtils.getFilename(getPath());
+    }
+
 }

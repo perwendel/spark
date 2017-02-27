@@ -16,13 +16,18 @@
  */
 package spark.embeddedserver.jetty;
 
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.NegotiatingServerConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
+import org.eclipse.jetty.server.ForwardedRequestCustomizer;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
@@ -49,7 +54,8 @@ public class SocketConnectorFactory {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
 
-        ServerConnector connector = new ServerConnector(server);
+        HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
+        ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
         initializeConnector(connector, host, port);
         return connector;
     }
@@ -86,7 +92,14 @@ public class SocketConnectorFactory {
             sslContextFactory.setTrustStorePassword(sslStores.trustStorePassword());
         }
 
-        ServerConnector connector = new ServerConnector(server, sslContextFactory);
+        if (sslStores.needsClientCert()) {
+            sslContextFactory.setNeedClientAuth(true);
+            sslContextFactory.setWantClientAuth(true);
+        }
+
+        HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
+
+        ServerConnector connector = new ServerConnector(server, sslContextFactory, httpConnectionFactory);
         initializeConnector(connector, host, port);
         return connector;
     }
@@ -157,6 +170,11 @@ public class SocketConnectorFactory {
         connector.setPort(port);
     }
 
+    private static HttpConnectionFactory createHttpConnectionFactory() {
+        HttpConfiguration httpConfig = new HttpConfiguration();
+        httpConfig.setSecureScheme("https");
+        httpConfig.addCustomizer(new ForwardedRequestCustomizer());
+        return new HttpConnectionFactory(httpConfig);
+    }
+
 }
-
-

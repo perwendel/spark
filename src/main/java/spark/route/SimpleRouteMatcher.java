@@ -28,6 +28,9 @@ import spark.routematch.RouteMatch;
 public class SimpleRouteMatcher extends Routes {
 
     /**
+     * @param route      the route
+     * @param acceptType the accept type
+     * @param target     the target
      * @deprecated
      */
     public void parseValidateAddRoute(String route, String acceptType, Object target) {
@@ -35,6 +38,10 @@ public class SimpleRouteMatcher extends Routes {
     }
 
     /**
+     * @param httpMethod the HttpMethod
+     * @param path       the path
+     * @param acceptType the accept type
+     * @return the RouteMatch object
      * @deprecated
      */
     public RouteMatch findTargetForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
@@ -42,6 +49,10 @@ public class SimpleRouteMatcher extends Routes {
     }
 
     /**
+     * @param httpMethod the HttpMethod
+     * @param path       the path
+     * @param acceptType the accept type
+     * @return list of RouteMatch objects
      * @deprecated
      */
     public List<RouteMatch> findTargetsForRequestedRoute(HttpMethod httpMethod, String path, String acceptType) {
@@ -56,6 +67,9 @@ public class SimpleRouteMatcher extends Routes {
     }
 
     /**
+     * @param path       the path
+     * @param httpMethod the http method name
+     * @return true if route removed, false otherwise
      * @deprecated
      */
     public boolean removeRoute(String path, String httpMethod) {
@@ -63,6 +77,8 @@ public class SimpleRouteMatcher extends Routes {
     }
 
     /**
+     * @param path   the path
+     * @return true if route removed, false otherwise
      * @deprecated
      */
     public boolean removeRoute(String path) {

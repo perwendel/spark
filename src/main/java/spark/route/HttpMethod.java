@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -22,7 +22,7 @@ import java.util.HashMap;
  * @author Per Wendel
  */
 public enum HttpMethod {
-    get, post, put, patch, delete, head, trace, connect, options, before, after, unsupported;
+    get, post, put, patch, delete, head, trace, connect, options, before, after, afterafter, unsupported;
 
     private static HashMap<String, HttpMethod> methods = new HashMap<>();
 
@@ -35,6 +35,9 @@ public enum HttpMethod {
     /**
      * Gets the HttpMethod corresponding to the provided string. If no corresponding method can be found
      * {@link spark.route.HttpMethod#unsupported} will be returned.
+     *
+     * @param methodStr The string containing HTTP method name
+     * @return          The HttpMethod corresponding to the provided string
      */
     public static HttpMethod get(String methodStr) {
         HttpMethod method = methods.get(methodStr);

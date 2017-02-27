@@ -21,7 +21,7 @@ import java.util.Map;
 
 import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 import spark.route.Routes;
-import spark.staticfiles.StaticFiles;
+import spark.staticfiles.StaticFilesConfiguration;
 
 /**
  * Holds and uses the factories for creating different Embedded servers.
@@ -45,16 +45,22 @@ public class EmbeddedServers {
 
     /**
      * Creates an embedded server of type corresponding to the provided identifier.
+     *
+     * @param identifier               the identifier
+     * @param routeMatcher             the route matcher
+     * @param staticFilesConfiguration the static files configuration object
+     * @param multipleHandlers         true if other handlers exist
+     * @return the created EmbeddedServer object
      */
     public static EmbeddedServer create(Object identifier,
                                         Routes routeMatcher,
-                                        StaticFiles staticFiles,
+                                        StaticFilesConfiguration staticFilesConfiguration,
                                         boolean multipleHandlers) {
 
         EmbeddedServerFactory factory = factories.get(identifier);
 
         if (factory != null) {
-            return factory.create(routeMatcher, staticFiles, multipleHandlers);
+            return factory.create(routeMatcher, staticFilesConfiguration, multipleHandlers);
         } else {
             throw new RuntimeException("No embedded server matching the identifier");
         }
@@ -62,6 +68,9 @@ public class EmbeddedServers {
 
     /**
      * Adds an Embedded server factory for the provided identifier.
+     *
+     * @param identifier the identifier
+     * @param factory    the factory
      */
     public static void add(Object identifier, EmbeddedServerFactory factory) {
         factories.put(identifier, factory);

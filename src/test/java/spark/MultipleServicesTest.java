@@ -95,12 +95,16 @@ public class MultipleServicesTest {
     }
 
     private static Service igniteFirstService() {
+
         Service http = ignite(); // I give the variable the name 'http' for the code to make sense when adding routes.
+
         http.get("/hello", (q, a) -> "Hello World!");
+
         return http;
     }
 
     private static Service igniteSecondService() {
+
         Service http = ignite()
                 .port(1234)
                 .staticFileLocation("/public")

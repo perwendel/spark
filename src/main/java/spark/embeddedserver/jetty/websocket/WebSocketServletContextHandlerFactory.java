@@ -40,7 +40,7 @@ public class WebSocketServletContextHandlerFactory {
      * @param webSocketIdleTimeoutMillis webSocketIdleTimeoutMillis
      * @return a new websocket servlet context handler or 'null' if creation failed.
      */
-    public static ServletContextHandler create(Map<String, Class<?>> webSocketHandlers,
+    public static ServletContextHandler create(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
                                                Optional<Integer> webSocketIdleTimeoutMillis) {
         ServletContextHandler webSocketServletContextHandler = null;
         if (webSocketHandlers != null) {

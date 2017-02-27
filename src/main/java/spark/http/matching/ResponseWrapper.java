@@ -48,6 +48,11 @@ class ResponseWrapper extends Response {
     }
 
     @Override
+    public int status() {
+        return delegate.status();
+    }
+
+    @Override
     public void body(String body) {
         delegate.body(body);
     }
@@ -107,6 +112,11 @@ class ResponseWrapper extends Response {
     }
 
     @Override
+    public String type() {
+        return delegate.type();
+    }
+
+    @Override
     public void cookie(String name, String value) {
         delegate.cookie(name, value);
     }
@@ -124,6 +134,11 @@ class ResponseWrapper extends Response {
     @Override
     public void cookie(String path, String name, String value, int maxAge, boolean secured) {
         delegate.cookie(path, name, value, maxAge, secured);
+    }
+
+    @Override
+    public void cookie(String path, String name, String value, int maxAge, boolean secured, boolean httpOnly) {
+        delegate.cookie(path, name, value, maxAge, secured, httpOnly);
     }
 
     @Override

@@ -77,7 +77,7 @@ public abstract class AbstractResourceHandler {
      * @param segment2 URI path segment (should be encoded)
      * @return Legally combined path segments.
      */
-    protected static String addPaths(String segment1, String segment2) {
+    public static String addPaths(String segment1, String segment2) {
         if (segment1 == null || segment1.length() == 0) {
             if (segment1 != null && segment2 == null) {
                 return segment1;
