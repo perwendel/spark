@@ -16,6 +16,7 @@
  */
 package spark.embeddedserver.jetty;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.ForwardedRequestCustomizer;
@@ -81,6 +82,11 @@ public class SocketConnectorFactory {
 
         if (sslStores.trustStorePassword() != null) {
             sslContextFactory.setTrustStorePassword(sslStores.trustStorePassword());
+        }
+
+        if (sslStores.needsClientCert()) {
+            sslContextFactory.setNeedClientAuth(true);
+            sslContextFactory.setWantClientAuth(true);
         }
 
         HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
