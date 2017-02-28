@@ -118,7 +118,7 @@ public class StaticFilesTestExternal {
 
     @Test
     public void testDirectoryTraversalProtectionExternal() throws Exception {
-        String path = "/" + URLEncoder.encode("..\\..\\spark\\") + "Spark.class";
+        String path = "/" + URLEncoder.encode("..\\..\\spark\\", "UTF-8") + "Spark.class";
         SparkTestUtil.UrlResponse response = doGet(path);
 
         Assert.assertEquals(404, response.status);
