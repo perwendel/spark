@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.util.SparkTestUtil;
-import sun.rmi.runtime.Log;
 
 import static spark.Service.ignite;
 
