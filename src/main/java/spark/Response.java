@@ -242,6 +242,7 @@ public class Response {
      */
     public void removeCookie(String name) {
         Cookie cookie = new Cookie(name, "");
+        cookie.setSecure(true);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
