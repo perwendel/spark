@@ -122,7 +122,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
         try {
             logger.info("== {} has ignited ...", NAME);
-            logger.info(">> Listening on {}:{}", host, port);
+            logger.info(">> Listening on http://{}:{}", host, port);
 
             server.start();
         } catch (Exception e) {
