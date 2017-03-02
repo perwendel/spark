@@ -245,4 +245,17 @@ public class Response {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
+
+    /**
+     * CORS support.
+     * 
+     * @param origin origin request header (comma-delimited list or *)
+     * @param methods supported HTTP methods (comma-delimited list or *)
+     * @param headers the headers supported by the server (comma-delimited list or *)
+     */
+    public void allowCORS(String origin, String methods, String headers) {
+        this.header("Access-Control-Allow-Origin", origin);
+        this.header("Access-Control-Request-Method", methods);
+        this.header("Access-Control-Allow-Headers", headers);
+    }    
 }
