@@ -33,10 +33,10 @@ class JettyServer {
      * @param maxThreads          maxThreads
      * @param minThreads          minThreads
      * @param threadTimeoutMillis threadTimeoutMillis
-     * @param enableServerJMX     true if the server should expose JMX counters
+     * @param serverJmxEnabled     true if the server should expose JMX counters
      * @return a new jetty server instance
      */
-    public static Server create(int maxThreads, int minThreads, int threadTimeoutMillis, boolean enableServerJMX) {
+    public static Server create(int maxThreads, int minThreads, int threadTimeoutMillis, boolean serverJmxEnabled) {
         Server server;
 
         if (maxThreads > 0) {
@@ -48,7 +48,7 @@ class JettyServer {
         } else {
             server = new Server();
         }
-        if(enableServerJMX) {
+        if (serverJmxEnabled) {
             MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
             server.addEventListener(mbContainer);
             server.addBean(mbContainer);

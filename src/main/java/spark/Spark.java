@@ -1010,8 +1010,8 @@ public final class Spark {
         getInstance().webSocket(path, handler);
     }
 
-    public static void serverJMXEnable(boolean enabled) {
-        getInstance().enableServerJMX(enabled);
+    public static void enableServerJmx() {
+        getInstance().enableServerJmx();
     }
     /**
      * Sets the max idle timeout in milliseconds for WebSocket connections.

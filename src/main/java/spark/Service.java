@@ -64,7 +64,8 @@ public final class Service extends Routable {
     protected int maxThreads = -1;
     protected int minThreads = -1;
     protected int threadIdleTimeoutMillis = -1;
-    protected boolean enableServerJMX = false;
+    //Set to true if JMX counter publishing should be enabled in the underlying web server
+    protected boolean serverJmxEnabled = false;
     protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
 
     protected EmbeddedServer server;
@@ -131,12 +132,14 @@ public final class Service extends Routable {
     }
 
     /**
-     * Set whether to enable the underlying server's JMX counters
-     * @param enableServerJMX
+     * Enable the underlying server's JMX counters
+     * This must be called before the server has started
      * @return
      */
-    public synchronized Service enableServerJMX(boolean enableServerJMX) {
-        this.enableServerJMX = enableServerJMX;
+    public synchronized Service enableServerJmx() {
+        if(initialized)
+            throwBeforeRouteMappingException();
+        this.serverJmxEnabled = true;
         return this;
     }
 
@@ -363,7 +366,7 @@ public final class Service extends Routable {
                             maxThreads,
                             minThreads,
                             threadIdleTimeoutMillis,
-                            enableServerJMX);
+                            serverJmxEnabled);
                 }).start();
             }
             initialized = true;

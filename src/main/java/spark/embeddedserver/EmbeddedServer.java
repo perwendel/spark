@@ -38,7 +38,7 @@ public interface EmbeddedServer {
      * @param maxThreads              - max nbr of threads.
      * @param minThreads              - min nbr of threads.
      * @param threadIdleTimeoutMillis - idle timeout (ms).
-     * @param enableServerJMX         - true if the server should expose JMX counters
+     * @param serverJmxEnabled         - true if the server should expose JMX counters
      */
     void ignite(String host,
                 int port,
@@ -47,7 +47,7 @@ public interface EmbeddedServer {
                 int maxThreads,
                 int minThreads,
                 int threadIdleTimeoutMillis,
-                boolean enableServerJMX);
+                boolean serverJmxEnabled);
 
     /**
      * Configures the web sockets for the embedded server.
