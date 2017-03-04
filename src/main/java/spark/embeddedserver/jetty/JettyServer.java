@@ -33,7 +33,7 @@ class JettyServer {
      * @param maxThreads          maxThreads
      * @param minThreads          minThreads
      * @param threadTimeoutMillis threadTimeoutMillis
-     * @param serverJmxEnabled     true if the server should expose JMX counters
+     * @param serverJmxEnabled    true if the server should expose JMX counters
      * @return a new jetty server instance
      */
     public static Server create(int maxThreads, int minThreads, int threadTimeoutMillis, boolean serverJmxEnabled) {

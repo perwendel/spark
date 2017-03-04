@@ -45,6 +45,7 @@ final class Routes {
 
         if (target != null) {
             Object result = null;
+
             if (target instanceof RouteImpl) {
                 RouteImpl route = ((RouteImpl) target);
 
@@ -58,11 +59,19 @@ final class Routes {
                 context.responseWrapper().setDelegate(context.response());
 
                 Object element = route.handle(context.requestWrapper(), context.responseWrapper());
-
                 result = route.render(element);
             }
+
             if (result != null) {
                 content = result;
+
+                if (content instanceof String) {
+                    String contentStr = (String) content;
+
+                    if (!contentStr.equals("")) {
+                        context.responseWrapper().body(contentStr);
+                    }
+                }
             }
         }
 

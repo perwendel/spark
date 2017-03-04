@@ -71,13 +71,18 @@ public class HttpRequestWrapper extends HttpServletRequestWrapper {
         }
 
         @Override
+        public int available() {
+            return byteArrayInputStream.available();
+        }
+
+        @Override
         public boolean isFinished() {
-            return byteArrayInputStream.available() <= 0;
+            return available() <= 0;
         }
 
         @Override
         public boolean isReady() {
-            return byteArrayInputStream.available() >= 0;
+            return available() >= 0;
         }
 
         @Override

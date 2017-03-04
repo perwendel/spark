@@ -16,7 +16,7 @@ public class QueryParamsMapTest {
     
     @Test
     public void constructorWithParametersMap() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<>();
         
         params.put("user[info][name]",new String[] {"fede"});
         
@@ -38,7 +38,11 @@ public class QueryParamsMapTest {
         assertFalse(queryMap.getQueryMap().get("user").getQueryMap().get("info").getQueryMap().isEmpty());
         assertEquals("federico",queryMap.getQueryMap().get("user").getQueryMap().get("info").getQueryMap().get("first_name").getValues()[0]);
         assertEquals("dayan",queryMap.getQueryMap().get("user").getQueryMap().get("info").getQueryMap().get("last_name").getValues()[0]);
-        
+
+        assertTrue(queryMap.hasKey("user"));
+        assertFalse(queryMap.hasKey("frame"));
+        assertFalse(queryMap.hasKey(null));
+
         assertTrue(queryMap.hasKeys());
         assertFalse(queryMap.hasValue());
         assertTrue(queryMap.getQueryMap().get("user").getQueryMap().get("info").getQueryMap().get("last_name").hasValue());
@@ -102,7 +106,7 @@ public class QueryParamsMapTest {
     
     @Test
     public void testToMap() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<>();
         
         params.put("user[info][name]",new String[] {"fede"});
         params.put("user[info][last]",new String[] {"dayan"});

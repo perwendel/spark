@@ -1,12 +1,15 @@
 package spark;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
@@ -42,21 +45,15 @@ public class GenericSecureIntegrationTest {
             halt(401, "Go Away!");
         });
 
-        get("/hi", (request, response) -> {
-            return "Hello World!";
-        });
+        get("/hi", (request, response) -> "Hello World!");
 
-        get("/:param", (request, response) -> {
-            return "echo: " + request.params(":param");
-        });
+        get("/ip", (request, response) -> request.ip());
 
-        get("/paramwithmaj/:paramWithMaj", (request, response) -> {
-            return "echo: " + request.params(":paramWithMaj");
-        });
+        get("/:param", (request, response) -> "echo: " + request.params(":param"));
 
-        get("/", (request, response) -> {
-            return "Hello Root!";
-        });
+        get("/paramwithmaj/:paramWithMaj", (request, response) -> "echo: " + request.params(":paramWithMaj"));
+
+        get("/", (request, response) -> "Hello Root!");
 
         post("/poster", (request, response) -> {
             String body = request.body();
@@ -82,6 +79,19 @@ public class GenericSecureIntegrationTest {
         SparkTestUtil.UrlResponse response = testUtil.doMethodSecure("GET", "/hi", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Hello World!", response.body);
+    }
+
+    @Test
+    public void testXForwardedFor() throws Exception {
+        final String xForwardedFor = "XXX.XXX.XXX.XXX";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-Forwarded-For", xForwardedFor);
+
+        UrlResponse response = testUtil.doMethod("GET", "/ip", null, true, "text/html", headers);
+        Assert.assertEquals(xForwardedFor, response.body);
+
+        response = testUtil.doMethod("GET", "/ip", null, true, "text/html", null);
+        Assert.assertNotEquals(xForwardedFor, response.body);
     }
 
     @Test

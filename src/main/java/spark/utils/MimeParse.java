@@ -171,8 +171,8 @@ public class MimeParse {
      * @return the best match
      */
     public static String bestMatch(Collection<String> supported, String header) {
-        List<ParseResults> parseResults = new LinkedList<ParseResults>();
-        List<FitnessAndQuality> weightedMatches = new LinkedList<FitnessAndQuality>();
+        List<ParseResults> parseResults = new LinkedList<>();
+        List<FitnessAndQuality> weightedMatches = new LinkedList<>();
         for (String r : header.split(",")) {
             parseResults.add(parseMediaRange(r));
         }
