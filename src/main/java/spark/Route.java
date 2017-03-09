@@ -1,5 +1,7 @@
 package spark;
 
+import spark.swagger.RouteDocumentation;
+
 /**
  * Created by Per Wendel on 2014-05-10.
  */
@@ -15,5 +17,4 @@ public interface Route {
      * @throws java.lang.Exception implementation can choose to throw exception
      */
     Object handle(Request request, Response response) throws Exception;
-
 }

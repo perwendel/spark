@@ -16,6 +16,9 @@
  */
 package spark;
 
+import spark.swagger.RouteDocumentation;
+import spark.swagger.SwaggerDoc;
+
 import java.util.Map;
 
 import static spark.Service.ignite;
@@ -49,6 +52,10 @@ public class Spark {
      */
     private static class SingletonHolder {
         private static final Service INSTANCE = ignite();
+    }
+
+    public static SwaggerDoc swagger() {
+        return getInstance().documentation(true);
     }
 
     private static Service getInstance() {
@@ -94,6 +101,10 @@ public class Spark {
         getInstance().get(path, route);
     }
 
+    public static void get(final String path, final RouteDocumentation documentation, final Route route) {
+        getInstance().get(path, documentation, route);
+    }
+
     /**
      * Map the route for HTTP POST requests
      *
@@ -103,7 +114,9 @@ public class Spark {
     public static void post(String path, Route route) {
         getInstance().post(path, route);
     }
-
+    public static void post(String path, RouteDocumentation documentation, Route route) {
+        getInstance().post(path, documentation, route);
+    }
     /**
      * Map the route for HTTP PUT requests
      *
@@ -246,6 +259,10 @@ public class Spark {
         getInstance().post(path, acceptType, route);
     }
 
+    public static void post(String path, String acceptType, RouteDocumentation documentation, Route route) {
+        getInstance().post(path, acceptType, documentation, route);
+    }
+
     /**
      * Map the route for HTTP PUT requests
      *
@@ -256,6 +273,10 @@ public class Spark {
     public static void put(String path, String acceptType, Route route) {
         getInstance().put(path, acceptType, route);
     }
+    public static void put(String path, String acceptType, RouteDocumentation documentation, Route route) {
+        getInstance().put(path, acceptType, documentation, route);
+    }
+
 
     /**
      * Map the route for HTTP PATCH requests
@@ -266,6 +287,9 @@ public class Spark {
      */
     public static void patch(String path, String acceptType, Route route) {
         getInstance().patch(path, acceptType, route);
+    }
+    public static void patch(String path, String acceptType, RouteDocumentation documentation, Route route) {
+        getInstance().patch(path, acceptType, documentation, route);
     }
 
     /**
@@ -278,7 +302,9 @@ public class Spark {
     public static void delete(String path, String acceptType, Route route) {
         getInstance().delete(path, acceptType, route);
     }
-
+    public static void delete(String path, String acceptType, RouteDocumentation documentation, Route route) {
+        getInstance().delete(path, acceptType, documentation, route);
+    }
     /**
      * Map the route for HTTP HEAD requests
      *
@@ -288,6 +314,9 @@ public class Spark {
      */
     public static void head(String path, String acceptType, Route route) {
         getInstance().head(path, acceptType, route);
+    }
+    public static void head(String path, String acceptType, RouteDocumentation documentation, Route route) {
+        getInstance().head(path, acceptType, documentation, route);
     }
 
     /**
@@ -300,6 +329,9 @@ public class Spark {
     public static void trace(String path, String acceptType, Route route) {
         getInstance().trace(path, acceptType, route);
     }
+    public static void trace(String path, String acceptType, RouteDocumentation documentation, Route route) {
+        getInstance().trace(path, acceptType, documentation, route);
+    }
 
     /**
      * Map the route for HTTP CONNECT requests
@@ -311,6 +343,9 @@ public class Spark {
     public static void connect(String path, String acceptType, Route route) {
         getInstance().connect(path, acceptType, route);
     }
+    public static void connect(String path, String acceptType, RouteDocumentation documentation, Route route) {
+        getInstance().connect(path, acceptType, documentation, route);
+    }
 
     /**
      * Map the route for HTTP OPTIONS requests
@@ -321,6 +356,9 @@ public class Spark {
      */
     public static void options(String path, String acceptType, Route route) {
         getInstance().options(path, acceptType, route);
+    }
+    public static void options(String path, String acceptType, RouteDocumentation documentation, Route route) {
+        getInstance().options(path, acceptType, documentation, route);
     }
 
 
@@ -1188,4 +1226,12 @@ public class Spark {
         return new ModelAndView(model, viewName);
     }
 
+    /**
+     * Synonym for service
+     *
+     * @return
+     */
+    public static Service getService() {
+        return getInstance();
+    }
 }

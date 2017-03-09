@@ -17,6 +17,7 @@
 package spark;
 
 
+import spark.swagger.RouteDocumentation;
 import spark.utils.Wrapper;
 
 /**
@@ -39,8 +40,16 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param route the route
      * @return the wrapped route
      */
+    static RouteImpl create(final String path, final Route route, final RouteDocumentation documentation) {
+        return create(path, DEFAULT_ACCEPT_TYPE, route, documentation);
+    }
+
     static RouteImpl create(final String path, final Route route) {
-        return create(path, DEFAULT_ACCEPT_TYPE, route);
+        return create(path, DEFAULT_ACCEPT_TYPE, route, null);
+    }
+
+    static RouteImpl create(final String path, String acceptType, final Route route) {
+        return create(path, acceptType, route, null);
     }
 
     /**
@@ -51,11 +60,11 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param route      the route
      * @return the wrapped route
      */
-    static RouteImpl create(final String path, String acceptType, final Route route) {
+    static RouteImpl create(final String path, String acceptType, final Route route, final RouteDocumentation documentation) {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
         }
-        return new RouteImpl(path, acceptType, route) {
+        return new RouteImpl(path, acceptType, route, documentation) {
             @Override
             public Object handle(Request request, Response response) throws Exception {
                 return route.handle(request, response);
@@ -90,7 +99,7 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param acceptType The accept type which is used for matching.
      * @param route      The route used to create the route implementation
      */
-    protected RouteImpl(String path, String acceptType, Object route) {
+    protected RouteImpl(String path, String acceptType, Object route, RouteDocumentation documentation) {
         this(path, acceptType);
         this.delegate = route;
     }
@@ -142,5 +151,4 @@ public abstract class RouteImpl implements Route, Wrapper {
     public Object delegate() {
         return this.delegate;
     }
-
 }

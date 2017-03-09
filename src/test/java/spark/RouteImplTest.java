@@ -40,7 +40,7 @@ public class RouteImplTest {
 
     @Test
     public void testCreate_whenAcceptTypeNullValueInTheParameters_thenReturnPathAndAcceptTypeSuccessfully(){
-        route = RouteImpl.create(PATH_TEST, null, null);
+        route = RouteImpl.create(PATH_TEST, (String)null, null);
         assertEquals("Should return path specified", PATH_TEST, route.getPath());
         assertEquals("Should return the default accept type", RouteImpl.DEFAULT_ACCEPT_TYPE, route.getAcceptType());
     }

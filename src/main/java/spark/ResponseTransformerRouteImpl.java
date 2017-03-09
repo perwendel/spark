@@ -16,6 +16,8 @@
 */
 package spark;
 
+import spark.swagger.RouteDocumentation;
+
 /**
  * A ResponseTransformerRouteImpl is built up by a path (for url-matching) and the
  * implementation of the 'render' method. ResponseTransformerRoute instead of
@@ -49,8 +51,12 @@ public abstract class ResponseTransformerRouteImpl extends RouteImpl {
         };
     }
 
+    protected ResponseTransformerRouteImpl(String path, String acceptType, Route route, RouteDocumentation documentation) {
+        super(path, acceptType, route, documentation);
+    }
+
     protected ResponseTransformerRouteImpl(String path, String acceptType, Route route) {
-        super(path, acceptType, route);
+        super(path, acceptType, route, null);
     }
 
     /**

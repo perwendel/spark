@@ -18,6 +18,7 @@ package spark.route;
 
 import java.util.List;
 
+import spark.swagger.RouteDocumentation;
 import spark.utils.SparkUtils;
 
 /**
@@ -25,12 +26,13 @@ import spark.utils.SparkUtils;
  *
  * @author Per Wendel
  */
-class RouteEntry {
+public class RouteEntry {
 
     HttpMethod httpMethod;
     String path;
     String acceptedType;
     Object target;
+    RouteDocumentation documentation;
 
     RouteEntry() {
     }
@@ -40,6 +42,22 @@ class RouteEntry {
         this.path = entry.path;
         this.acceptedType = entry.acceptedType;
         this.target = entry.target;
+    }
+
+    public HttpMethod getHttpMethod() {
+        return httpMethod;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public String getAcceptedType() {
+        return acceptedType;
+    }
+
+    public Object target() {
+        return target;
     }
 
     boolean matches(HttpMethod httpMethod, String path) {
@@ -129,5 +147,9 @@ class RouteEntry {
     @Override
     public String toString() {
         return httpMethod.name() + ", " + path + ", " + target;
+    }
+
+    public RouteDocumentation getDocumentation() {
+        return documentation;
     }
 }

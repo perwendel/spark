@@ -34,7 +34,7 @@ public class SimpleRouteMatcher extends Routes {
      * @deprecated
      */
     public void parseValidateAddRoute(String route, String acceptType, Object target) {
-        add(route, acceptType, target);
+        add(route, acceptType, null, target);
     }
 
     /**
