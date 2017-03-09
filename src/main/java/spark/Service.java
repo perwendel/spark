@@ -116,6 +116,10 @@ public final class Service extends Routable {
         }
     }
 
+    public SwaggerDoc documentation() {
+        return documentation;
+    }
+
     /**
      * Set the IP address that Spark should listen on. If not called the default
      * address is '0.0.0.0'. This has to be called before any route mapping is
@@ -471,7 +475,7 @@ public final class Service extends Routable {
         routes.add(httpMethod + " '" + getPaths() + filter.getPath() + "'", filter.getAcceptType(), documentation, filter);
     }
 
-    private synchronized void initSwagger() {
+    private void initSwagger() {
         get("/swagger/v2.json", new RouteDocumentation().summary("Swagger JSON v2 Documentation endpoint").produces(new Payload().json()),
             (req, resp) -> {
                 resp.header("Content-Type", "application/json");
@@ -482,7 +486,6 @@ public final class Service extends Routable {
 
     public synchronized void init() {
         if (!initialized) {
-            initSwagger();
             initializeRouteMatcher();
 
             if (!isRunningFromServlet()) {
@@ -517,6 +520,7 @@ public final class Service extends Routable {
                 }).start();
             }
             initialized = true;
+            initSwagger();
         }
     }
 

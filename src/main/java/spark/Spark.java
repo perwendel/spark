@@ -55,7 +55,7 @@ public class Spark {
     }
 
     public static SwaggerDoc swagger() {
-        return getInstance().documentation(true);
+        return getInstance().documentation();
     }
 
     private static Service getInstance() {
