@@ -93,4 +93,8 @@ public class RouteDocumentation {
         this.tags = tags;
         return this;
     }
+
+    public static String swaggerPath(String path) {
+        return path.replaceAll("(:([a-zA-Z0-9]{1,}))", "{$2}");
+    }
 }
