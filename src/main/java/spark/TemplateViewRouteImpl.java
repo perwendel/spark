@@ -80,7 +80,7 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
      * @param route
      */
     protected TemplateViewRouteImpl(String path, String acceptType, TemplateViewRoute route) {
-        super(path, acceptType, route, null);
+        super(path, acceptType, route);
     }
 
     @Override

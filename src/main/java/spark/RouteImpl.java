@@ -40,16 +40,8 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param route the route
      * @return the wrapped route
      */
-    static RouteImpl create(final String path, final Route route, final RouteDocumentation documentation) {
-        return create(path, DEFAULT_ACCEPT_TYPE, route, documentation);
-    }
-
     static RouteImpl create(final String path, final Route route) {
-        return create(path, DEFAULT_ACCEPT_TYPE, route, null);
-    }
-
-    static RouteImpl create(final String path, String acceptType, final Route route) {
-        return create(path, acceptType, route, null);
+        return create(path, DEFAULT_ACCEPT_TYPE, route);
     }
 
     /**
@@ -60,11 +52,11 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param route      the route
      * @return the wrapped route
      */
-    static RouteImpl create(final String path, String acceptType, final Route route, final RouteDocumentation documentation) {
+    static RouteImpl create(final String path, String acceptType, final Route route) {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
         }
-        return new RouteImpl(path, acceptType, route, documentation) {
+        return new RouteImpl(path, acceptType, route) {
             @Override
             public Object handle(Request request, Response response) throws Exception {
                 return route.handle(request, response);
@@ -99,7 +91,7 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param acceptType The accept type which is used for matching.
      * @param route      The route used to create the route implementation
      */
-    protected RouteImpl(String path, String acceptType, Object route, RouteDocumentation documentation) {
+    protected RouteImpl(String path, String acceptType, Object route) {
         this(path, acceptType);
         this.delegate = route;
     }

@@ -77,7 +77,7 @@ abstract class Routable {
      * @param route The route
      */
     public void post(String path, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.post.name(), RouteImpl.create(path, route, documentation));
+        addRoute(HttpMethod.post.name(), documentation, RouteImpl.create(path, route));
     }
 
     /**
@@ -123,7 +123,7 @@ abstract class Routable {
         addRoute(HttpMethod.head.name(), RouteImpl.create(path, accept, route));
     }
     public void head(String path, String accept, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.head.name(), RouteImpl.create(path, accept, route, documentation));
+        addRoute(HttpMethod.head.name(), documentation, RouteImpl.create(path, accept, route));
     }
 
     /**
@@ -192,7 +192,7 @@ abstract class Routable {
     }
 
     public void get(String path, String acceptType, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.get.name(), RouteImpl.create(path, acceptType, route, documentation));
+        addRoute(HttpMethod.get.name(), documentation, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -206,7 +206,7 @@ abstract class Routable {
         addRoute(HttpMethod.post.name(), RouteImpl.create(path, acceptType, route));
     }
     public void post(String path, String acceptType, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.post.name(), RouteImpl.create(path, acceptType, route, documentation));
+        addRoute(HttpMethod.post.name(), documentation, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -220,7 +220,7 @@ abstract class Routable {
         addRoute(HttpMethod.put.name(), RouteImpl.create(path, acceptType, route));
     }
     public void put(String path, String acceptType, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.put.name(), RouteImpl.create(path, acceptType, route, documentation));
+        addRoute(HttpMethod.put.name(), documentation, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -234,7 +234,7 @@ abstract class Routable {
         addRoute(HttpMethod.patch.name(), RouteImpl.create(path, acceptType, route));
     }
     public void patch(String path, String acceptType, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.patch.name(), RouteImpl.create(path, acceptType, route, documentation));
+        addRoute(HttpMethod.patch.name(), documentation, RouteImpl.create(path, acceptType, route));
     }
     /**
      * Map the route for HTTP DELETE requests
@@ -247,7 +247,7 @@ abstract class Routable {
         addRoute(HttpMethod.delete.name(), RouteImpl.create(path, acceptType, route));
     }
     public void delete(String path, String acceptType, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.delete.name(), RouteImpl.create(path, acceptType, route, documentation));
+        addRoute(HttpMethod.delete.name(), documentation, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -261,7 +261,7 @@ abstract class Routable {
         addRoute(HttpMethod.trace.name(), RouteImpl.create(path, acceptType, route));
     }
     public void trace(String path, String acceptType, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.trace.name(), RouteImpl.create(path, acceptType, route, documentation));
+        addRoute(HttpMethod.trace.name(), documentation, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -275,7 +275,7 @@ abstract class Routable {
         addRoute(HttpMethod.connect.name(), RouteImpl.create(path, acceptType, route));
     }
     public void connect(String path, String acceptType, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.connect.name(), RouteImpl.create(path, acceptType, route, documentation));
+        addRoute(HttpMethod.connect.name(), documentation, RouteImpl.create(path, acceptType, route));
     }
 
     /**
@@ -289,7 +289,7 @@ abstract class Routable {
         addRoute(HttpMethod.options.name(), RouteImpl.create(path, acceptType, route));
     }
     public void options(String path, String acceptType, RouteDocumentation documentation, Route route) {
-        addRoute(HttpMethod.options.name(), RouteImpl.create(path, acceptType, route, documentation));
+        addRoute(HttpMethod.options.name(), documentation, RouteImpl.create(path, acceptType, route));
     }
 
 

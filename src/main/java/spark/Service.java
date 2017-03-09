@@ -641,10 +641,11 @@ public final class Service extends Routable {
             if (documentation.getPaths().isEmpty()) {
                 for (RouteEntry route : this.routes.getRoutes()) {
                     String path = RouteDocumentation.swaggerPath(route.getPath());
-                    if (!documentation.getPaths().containsKey(route.getPath())) {
+                    if (!documentation.getPaths().containsKey(path)) {
                         documentation.getPaths().put(path, new RouteMethod());
                     }
-                    documentation.getPaths().get(path).put(route.getHttpMethod().name(), route.getDocumentation());
+                    documentation.getPaths().get(path)
+                        .put(route.getHttpMethod().name(), route.getDocumentation());
                 }
             }
         }

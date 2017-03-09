@@ -51,12 +51,9 @@ public abstract class ResponseTransformerRouteImpl extends RouteImpl {
         };
     }
 
-    protected ResponseTransformerRouteImpl(String path, String acceptType, Route route, RouteDocumentation documentation) {
-        super(path, acceptType, route, documentation);
-    }
 
     protected ResponseTransformerRouteImpl(String path, String acceptType, Route route) {
-        super(path, acceptType, route, null);
+        super(path, acceptType, route);
     }
 
     /**
