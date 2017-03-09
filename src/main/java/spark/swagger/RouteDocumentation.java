@@ -14,10 +14,17 @@ public class RouteDocumentation {
     private Payload produces;
     private Parameters parameters;
     private Responses responses;
+    private Tags tags;
 
     public String getSummary() {
         return summary;
     }
+
+    public RouteDocumentation(String tagName) {
+        tags(new Tags().tag(tagName));
+    }
+
+    public RouteDocumentation() {}
 
     public RouteDocumentation summary(String summary) {
         this.summary = summary;
@@ -75,6 +82,15 @@ public class RouteDocumentation {
 
     public RouteDocumentation responses(Responses responses) {
         this.responses = responses;
+        return this;
+    }
+
+    public Tags getTags() {
+        return tags;
+    }
+
+    public RouteDocumentation tags(Tags tags) {
+        this.tags = tags;
         return this;
     }
 }

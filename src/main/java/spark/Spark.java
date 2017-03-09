@@ -54,8 +54,8 @@ public class Spark {
         private static final Service INSTANCE = ignite();
     }
 
-    public static SwaggerDoc swagger() {
-        return getInstance().documentation();
+    public static SwaggerDoc swagger(String path) {
+        return getInstance().documentation(path);
     }
 
     private static Service getInstance() {

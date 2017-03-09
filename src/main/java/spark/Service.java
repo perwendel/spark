@@ -116,7 +116,12 @@ public final class Service extends Routable {
         }
     }
 
-    public SwaggerDoc documentation() {
+    public SwaggerDoc getDocumentation() {
+        return documentation("/swagger.json");
+    }
+
+    public SwaggerDoc documentation(String path) {
+        documentation.setSwaggerPath(path);
         return documentation;
     }
 
@@ -476,7 +481,7 @@ public final class Service extends Routable {
     }
 
     private void initSwagger() {
-        get("/swagger/v2.json", new RouteDocumentation().summary("Swagger JSON v2 Documentation endpoint").produces(new Payload().json()),
+        get(documentation.swaggerPath(), new RouteDocumentation("swagger").summary("Swagger JSON v2 Documentation endpoint").produces(new Payload().json()),
             (req, resp) -> {
                 resp.header("Content-Type", "application/json");
                 return getSwaggerV2JSON();

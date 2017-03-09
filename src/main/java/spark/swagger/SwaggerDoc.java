@@ -12,6 +12,8 @@ public class SwaggerDoc {
     private String basePath;
     private RoutePaths paths = new RoutePaths();
     private String version = "1.0.0";
+    private String swaggerPath = "/swagger.json";
+    private RootTags tags;
 
     public RoutePaths getPaths() {
         return paths;
@@ -64,6 +66,23 @@ public class SwaggerDoc {
 
     public SwaggerDoc version(String version) {
         this.version = version;
+        return this;
+    }
+
+    public String swaggerPath() {
+        return swaggerPath;
+    }
+
+    public void setSwaggerPath(String swaggerPath) {
+        this.swaggerPath = swaggerPath;
+    }
+
+    public RootTags getTags() {
+        return tags;
+    }
+
+    public SwaggerDoc tags(RootTags tags) {
+        this.tags = tags;
         return this;
     }
 }
