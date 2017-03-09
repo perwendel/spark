@@ -1,15 +1,14 @@
 package spark;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.powermock.reflect.Whitebox;
-
 import spark.ssl.SslStores;
+
+import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -237,6 +236,23 @@ public class ServiceTest {
         thrown.expect(NullPointerException.class);
         thrown.expectMessage("WebSocket handler class cannot be null");
         service.webSocket("/", null);
+    }
+
+    @Test
+    public void testMaxHeadersSize_whenInitializedFalse() throws Exception {
+        service.maxHeadersSize(1234);
+
+        final int maxHeadersSize = Whitebox.getInternalState(service, "maxHeadersSize");
+        assertEquals("MaxHeadersSize should be set to the value provided.", 1234, maxHeadersSize);
+    }
+
+    @Test
+    public void testMaxHeadersSize_whenInitializedTrue() throws Exception {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("This must be done before route mapping has begun");
+
+        Whitebox.setInternalState(service, "initialized", true);
+        service.maxHeadersSize(1234);
     }
     
     @WebSocket
