@@ -17,6 +17,7 @@
 package spark;
 
 import java.util.function.Consumer;
+import java.util.Map;
 
 import static spark.Service.ignite;
 
@@ -64,6 +65,25 @@ public class Spark {
      * Statically import this for static files utility functionality, see {@link spark.Service.StaticFiles}
      */
     public static final Service.StaticFiles staticFiles = getInstance().staticFiles;
+
+    /**
+     * Add a path-prefix to the routes declared in the routeGroup
+     * The path() method adds a path-fragment to a path-stack, adds
+     * routes from the routeGroup, then pops the path-fragment again.
+     * It's used for separating routes into groups, for example:
+     * path("/api/email", () -> {
+     * ....post("/add",       EmailApi::addEmail);
+     * ....put("/change",     EmailApi::changeEmail);
+     * ....etc
+     * });
+     * Multiple path() calls can be nested.
+     *
+     * @param path       the path to prefix routes with
+     * @param routeGroup group of routes (can also contain path() calls)
+     */
+    public static void path(String path, RouteGroup routeGroup) {
+        getInstance().path(path, routeGroup);
+    }
 
     /**
      * Map the route for HTTP GET requests
@@ -352,6 +372,25 @@ public class Spark {
         for (Filter filter : filters) {
             getInstance().after(path, acceptType, filter);
         }
+    }
+
+    /**
+     * Execute after route even if the route throws exception
+     *
+     * @param path   the path
+     * @param filter the filter
+     */
+    public static void afterAfter(String path, Filter filter) {
+        getInstance().afterAfter(path, filter);
+    }
+
+    /**
+     * Execute after any matching route even if the route throws exception
+     *
+     * @param filter the filter
+     */
+    public static void afterAfter(Filter filter) {
+        getInstance().afterAfter(filter);
     }
 
     //////////////////////////////////////////////////
@@ -853,8 +892,8 @@ public class Spark {
      * NOTE: When using this don't catch exceptions of type HaltException, or if catched, re-throw otherwise
      * halt will not work
      */
-    public static void halt() {
-        getInstance().halt();
+    public static HaltException halt() {
+        throw getInstance().halt();
     }
 
     /**
@@ -864,8 +903,8 @@ public class Spark {
      *
      * @param status the status code
      */
-    public static void halt(int status) {
-        getInstance().halt(status);
+    public static HaltException halt(int status) {
+        throw getInstance().halt(status);
     }
 
     /**
@@ -875,8 +914,8 @@ public class Spark {
      *
      * @param body The body content
      */
-    public static void halt(String body) {
-        getInstance().halt(body);
+    public static HaltException halt(String body) {
+        throw getInstance().halt(body);
     }
 
     /**
@@ -887,8 +926,8 @@ public class Spark {
      * @param status The status code
      * @param body   The body content
      */
-    public static void halt(int status, String body) {
-        getInstance().halt(status, body);
+    public static HaltException halt(int status, String body) {
+        throw getInstance().halt(status, body);
     }
 
     /**
@@ -935,6 +974,16 @@ public class Spark {
      */
     public static void port(int port) {
         getInstance().port(port);
+    }
+
+    /**
+     * Retrieves the port that Spark is listening on.
+     *
+     * @return The port Spark server is listening on.
+     * @throws IllegalStateException when the server is not started
+     */
+    public static int port() {
+        return getInstance().port();
     }
 
     /**
@@ -991,6 +1040,31 @@ public class Spark {
     public static void setInitExceptionHandler(
         Consumer<Exception> igniteExceptionHandler) {
       getInstance().setInitExceptionHandler(igniteExceptionHandler);
+    }
+     
+    /** 
+     * Set the connection to be secure, using the specified keystore and
+     * truststore. This has to be called before any route mapping is done. You
+     * have to supply a keystore file, truststore file is optional (keystore
+     * will be reused).
+     * This method is only relevant when using embedded Jetty servers. It should
+     * not be used if you are using Servlets, where you will need to secure the
+     * connection in the servlet container
+     *
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param truststoreFile     the truststore file location as string, leave null to reuse
+     *                           keystore
+     * @param needsClientCert    Whether to require client certificate to be supplied in
+     *                           request
+     * @param truststorePassword the trust store password
+     */
+    public static void secure(String keystoreFile,
+                              String keystorePassword,
+                              String truststoreFile,
+                              String truststorePassword,
+                              boolean needsClientCert) {
+        getInstance().secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword, needsClientCert);
     }
 
     /**
@@ -1067,6 +1141,10 @@ public class Spark {
         getInstance().webSocket(path, handler);
     }
 
+    public static void webSocket(String path, Object handler) {
+        getInstance().webSocket(path, handler);
+    }
+
     /**
      * Sets the max idle timeout in milliseconds for WebSocket connections.
      *
@@ -1074,6 +1152,34 @@ public class Spark {
      */
     public static void webSocketIdleTimeoutMillis(int timeoutMillis) {
         getInstance().webSocketIdleTimeoutMillis(timeoutMillis);
+    }
+
+    /**
+     * Maps 404 Not Found errors to the provided custom page
+     */
+    public static void notFound(String page) {
+        getInstance().notFound(page);
+    }
+
+    /**
+     * Maps 500 internal server errors to the provided custom page
+     */
+    public static void internalServerError(String page) {
+        getInstance().internalServerError(page);
+    }
+
+    /**
+     * Maps 404 Not Found errors to the provided route.
+     */
+    public static void notFound(Route route) {
+        getInstance().notFound(route);
+    }
+
+    /**
+     * Maps 500 internal server errors to the provided route.
+     */
+    public static void internalServerError(Route route) {
+        getInstance().internalServerError(route);
     }
 
     /**
@@ -1090,7 +1196,7 @@ public class Spark {
      * @param viewName the view name
      * @return the model and view
      */
-    public static ModelAndView modelAndView(Object model, String viewName) {
+    public static ModelAndView modelAndView(Map<String, Object> model, String viewName) {
         return new ModelAndView(model, viewName);
     }
 

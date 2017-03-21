@@ -4,16 +4,17 @@
 
 Spark - a tiny web framework for Java 8
 ==============================================
+IMPORTANT INFORMATION - There has been found a security vulnerability in older versions of Spark 2.+. Please upgrade to the latest version 2.5.5 (2.5.2 fixed this issue)
 
 For more detailed documentation please go to: http://sparkjava.com/documentation
 
-NEWS: Spark 2.5 is out!
+NEWS: Spark 2.5.5 is out! (IMPORTANT fix for directory traversal vulnerability was fixed in 2.5.2!)
 
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.5</version>
+    <version>2.5.5</version>
 </dependency>
 ```
 
@@ -60,7 +61,7 @@ public class SimpleExample {
 
     public static void main(String[] args) {
 
-        //  port(5678); <- Uncomment this if you want spark to listen to port 5678 in stead of the default 4567
+        //  port(5678); <- Uncomment this if you want spark to listen to port 5678 instead of the default 4567
 
         get("/hello", (request, response) -> "Hello World!");
 
@@ -267,6 +268,10 @@ public class FilterExample {
         get("/hello", (request, response) -> "Hello World!");
 
         after("/hello", (request, response) -> response.header("spark", "added by after-filter"));
+
+        afterAfter("/hello", (request, response) -> response.header("finally", "executed even if exception is throw"));
+
+        afterAfter((request, response) -> response.header("finally", "executed after any route even if exception is throw"));
     }
 }
 ```

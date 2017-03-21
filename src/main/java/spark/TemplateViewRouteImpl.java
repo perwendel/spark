@@ -17,6 +17,8 @@
 package spark;
 
 
+import java.util.Map;
+
 /**
  * A TemplateViewRoute is built up by a path (for url-matching) and the implementation of the 'render' method.
  * TemplateViewRoute instead of returning the result of calling toString() as body, it returns the result of calling render method.
@@ -55,7 +57,7 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
                                                TemplateViewRoute route,
                                                TemplateEngine engine) {
 
-        return new TemplateViewRouteImpl(path, acceptType) {
+        return new TemplateViewRouteImpl(path, acceptType, route) {
             @Override
             public String render(ModelAndView modelAndView) {
                 return engine.render(modelAndView);
@@ -73,9 +75,10 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
      *
      * @param path       the path
      * @param acceptType the accept type
+     * @param route
      */
-    protected TemplateViewRouteImpl(String path, String acceptType) {
-        super(path, acceptType);
+    protected TemplateViewRouteImpl(String path, String acceptType, TemplateViewRoute route) {
+        super(path, acceptType, route);
     }
 
 
@@ -92,7 +95,7 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
      * @param viewName t be rendered.
      * @return object with model and view set.
      */
-    public ModelAndView modelAndView(Object model, String viewName) {
+    public ModelAndView modelAndView(Map<String, Object> model, String viewName) {
         return new ModelAndView(model, viewName);
     }
 
