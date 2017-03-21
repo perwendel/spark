@@ -1037,9 +1037,9 @@ public class Spark {
      * @param initExceptionHandler
      *          The custom init exception handler
      */
-    public static void setInitExceptionHandler(
+    public static void initExceptionHandler(
         Consumer<Exception> igniteExceptionHandler) {
-      getInstance().setInitExceptionHandler(igniteExceptionHandler);
+      getInstance().initExceptionHandler(igniteExceptionHandler);
     }
      
     /** 

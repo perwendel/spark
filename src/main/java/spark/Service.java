@@ -595,8 +595,11 @@ public final class Service extends Routable {
      * @param initExceptionHandler
      *          The custom init exception handler
      */
-    public void setInitExceptionHandler(
+    public void initExceptionHandler(
         Consumer<Exception> igniteExceptionHandler) {
+      if (initialized) {
+        throwBeforeRouteMappingException();
+      }
       initExceptionHandler = igniteExceptionHandler;
     }
 
