@@ -48,6 +48,7 @@ public class MimeType {
         put("gz", "application/x-gzip");
         put("ico", "image/x-icon");
         put("hqx", "application/mac-binhex40");
+        put("htm", "text/html");
         put("html", "text/html");
         put("jar", "application/java-archive");
         put("jpg", "image/jpeg");
