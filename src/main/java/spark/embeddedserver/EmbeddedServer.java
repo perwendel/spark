@@ -30,13 +30,13 @@ public interface EmbeddedServer {
     /**
      * Ignites the embedded server, listening on the specified port, running SSL secured with the specified keystore
      * and truststore.  If truststore is null, keystore is reused.
-     *
-     * @param host                    The address to listen on
+     *  @param host                    The address to listen on
      * @param port                    - the port
      * @param sslStores               - The SSL sslStores.
      * @param maxThreads              - max nbr of threads.
      * @param minThreads              - min nbr of threads.
      * @param threadIdleTimeoutMillis - idle timeout (ms).
+     * @param http2Enabled            - enable http2
      * @return The port number the server was launched on.
      */
     int ignite(String host,
@@ -44,7 +44,8 @@ public interface EmbeddedServer {
                SslStores sslStores,
                int maxThreads,
                int minThreads,
-               int threadIdleTimeoutMillis);
+               int threadIdleTimeoutMillis,
+               boolean http2Enabled);
 
     /**
      * Configures the web sockets for the embedded server.
