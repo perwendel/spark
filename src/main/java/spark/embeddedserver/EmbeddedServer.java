@@ -19,6 +19,7 @@ package spark.embeddedserver;
 import java.util.Map;
 import java.util.Optional;
 
+import spark.accesslog.AccessLogger;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.ssl.SslStores;
 
@@ -37,6 +38,7 @@ public interface EmbeddedServer {
      * @param maxThreads              - max nbr of threads.
      * @param minThreads              - min nbr of threads.
      * @param threadIdleTimeoutMillis - idle timeout (ms).
+     * @param accessLogger            - programmatic access logs configurator
      * @return The port number the server was launched on.
      */
     int ignite(String host,
@@ -44,7 +46,8 @@ public interface EmbeddedServer {
                SslStores sslStores,
                int maxThreads,
                int minThreads,
-               int threadIdleTimeoutMillis);
+               int threadIdleTimeoutMillis,
+               AccessLogger accessLogger);
 
     /**
      * Configures the web sockets for the embedded server.

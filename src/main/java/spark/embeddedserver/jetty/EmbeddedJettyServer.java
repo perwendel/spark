@@ -23,15 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.accesslog.AccessLogger;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
@@ -76,7 +74,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                       SslStores sslStores,
                       int maxThreads,
                       int minThreads,
-                      int threadIdleTimeoutMillis) {
+                      int threadIdleTimeoutMillis,
+                      AccessLogger accessLogger) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -98,7 +97,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         }
 
         server = connector.getServer();
-        server.setConnectors(new Connector[] {connector});
+        server.setConnectors(new Connector[]{connector});
 
         ServletContextHandler webSocketServletContextHandler =
             WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
@@ -119,6 +118,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
+
+        accessLogger.accessLog.ifPresent(v -> server.setRequestLog(v));
 
         try {
             logger.info("== {} has ignited ...", NAME);

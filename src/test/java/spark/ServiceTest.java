@@ -1,16 +1,17 @@
 package spark;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.powermock.reflect.Whitebox;
-
+import spark.accesslog.AccessLogger;
 import spark.ssl.SslStores;
 
+import javax.servlet.http.HttpServletResponse;
+
+import static java.util.Optional.empty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static spark.Service.ignite;
@@ -224,21 +225,38 @@ public class ServiceTest {
         Whitebox.setInternalState(service, "initialized", true);
         service.webSocket("/", DummyWebSocketListener.class);
     }
-    
+
     @Test
     public void testWebSocket_whenPathNull_thenThrowNullPointerException() {
         thrown.expect(NullPointerException.class);
         thrown.expectMessage("WebSocket path cannot be null");
         service.webSocket(null, new DummyWebSocketListener());
     }
-    
+
     @Test
     public void testWebSocket_whenHandlerNull_thenThrowNullPointerException() {
         thrown.expect(NullPointerException.class);
         thrown.expectMessage("WebSocket handler class cannot be null");
         service.webSocket("/", null);
     }
-    
+
+    @Test
+    public void testAccessLogger_whenInitializedFalse() {
+        service.accessLogger(new AccessLogger(empty()));
+
+        AccessLogger accessLogger = Whitebox.getInternalState(service, "accessLogger");
+        assertEquals("AccessLogger should be set to the AccessLogger that was specified", new AccessLogger(empty()), accessLogger);
+    }
+
+    @Test
+    public void testAccessLogs_whenInitializedTrue_thenThrowIllegalStateException() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("This must be done before route mapping has begun");
+
+        Whitebox.setInternalState(service, "initialized", true);
+        service.accessLogger(new AccessLogger(empty()));
+    }
+
     @WebSocket
     protected static class DummyWebSocketListener {
     }
