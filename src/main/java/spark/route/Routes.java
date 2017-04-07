@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import spark.FilterImpl;
+import spark.RouteImpl;
 import spark.routematch.RouteMatch;
 import spark.utils.MimeParse;
 import spark.utils.StringUtils;
@@ -51,34 +53,23 @@ public class Routes {
     }
 
     /**
-     * Parse and validates a route and adds it
+     * Add a route
      *
-     * @param route      the route path
-     * @param acceptType the accept type
-     * @param target     the invocation target
+     * @param httpMethod the http-method of the route
+     * @param route      the route to add
      */
-    public void add(String route, String acceptType, Object target) {
-        try {
-            int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
-            String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase(); // NOSONAR
-            String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim(); // NOSONAR
+    public void add(HttpMethod httpMethod, RouteImpl route) {
+        add(httpMethod, route.getPath() , route.getAcceptType(), route);
+    }
 
-            // Use special enum stuff to get from value
-            HttpMethod method;
-            try {
-                method = HttpMethod.valueOf(httpMethod);
-            } catch (IllegalArgumentException e) {
-                LOG.error("The @Route value: "
-                                  + route
-                                  + " has an invalid HTTP method part: "
-                                  + httpMethod
-                                  + ".");
-                return;
-            }
-            addRoute(method, url, acceptType, target);
-        } catch (Exception e) {
-            LOG.error("The @Route value: " + route + " is not in the correct format", e);
-        }
+    /**
+     * Add a filter
+     *
+     * @param httpMethod the http-method of the route
+     * @param filter     the filter to add
+     */
+    public void add(HttpMethod httpMethod, FilterImpl filter) {
+        add(httpMethod, filter.getPath() , filter.getAcceptType(), filter);
     }
 
     /**
@@ -177,7 +168,7 @@ public class Routes {
     // PRIVATE METHODS
     //////////////////////////////////////////////////
 
-    private void addRoute(HttpMethod method, String url, String acceptedType, Object target) {
+    private void add(HttpMethod method, String url, String acceptedType, Object target) {
         RouteEntry entry = new RouteEntry();
         entry.httpMethod = method;
         entry.path = url;
@@ -254,5 +245,37 @@ public class Routes {
         }
 
         return routes.removeAll(forRemoval);
+    }
+
+    /**
+     * Parse and validates a route and adds it
+     *
+     * @param route      the route path
+     * @param acceptType the accept type
+     * @param target     the invocation target
+     */
+    @Deprecated
+    public void add(String route, String acceptType, Object target) {
+        try {
+            int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
+            String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase(); // NOSONAR
+            String url = route.substring(singleQuoteIndex + 1, route.length() - 1).trim(); // NOSONAR
+
+            // Use special enum stuff to get from value
+            HttpMethod method;
+            try {
+                method = HttpMethod.valueOf(httpMethod);
+            } catch (IllegalArgumentException e) {
+                LOG.error("The @Route value: "
+                              + route
+                              + " has an invalid HTTP method part: "
+                              + httpMethod
+                              + ".");
+                return;
+            }
+            add(method, url, acceptType, target);
+        } catch (Exception e) {
+            LOG.error("The @Route value: " + route + " is not in the correct format", e);
+        }
     }
 }
