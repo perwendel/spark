@@ -16,18 +16,16 @@
  */
 package spark.embeddedserver.jetty;
 
-import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jetty.server.ForwardedRequestCustomizer;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-
 import spark.ssl.SslStores;
 import spark.utils.Assert;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Creates socket connectors.
@@ -42,11 +40,11 @@ public class SocketConnectorFactory {
      * @param port   port
      * @return - a server jetty
      */
-    public static ServerConnector createSocketConnector(Server server, String host, int port) {
+    public static ServerConnector createSocketConnector(Server server, String host, int port, int maxHeadersSize) {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
 
-        HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
+        HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory(maxHeadersSize);
         ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
         initializeConnector(connector, host, port);
         return connector;
@@ -65,7 +63,8 @@ public class SocketConnectorFactory {
     public static ServerConnector createSecureSocketConnector(Server server,
                                                               String host,
                                                               int port,
-                                                              SslStores sslStores) {
+                                                              SslStores sslStores,
+                                                              int maxHeadersSize) {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
         Assert.notNull(sslStores, "'sslStores' must not be null");
@@ -89,7 +88,7 @@ public class SocketConnectorFactory {
             sslContextFactory.setWantClientAuth(true);
         }
 
-        HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
+        HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory(maxHeadersSize);
 
         ServerConnector connector = new ServerConnector(server, sslContextFactory, httpConnectionFactory);
         initializeConnector(connector, host, port);
@@ -104,10 +103,12 @@ public class SocketConnectorFactory {
         connector.setPort(port);
     }
 
-    private static HttpConnectionFactory createHttpConnectionFactory() {
+    private static HttpConnectionFactory createHttpConnectionFactory(int maxHeadersSize) {
         HttpConfiguration httpConfig = new HttpConfiguration();
         httpConfig.setSecureScheme("https");
         httpConfig.addCustomizer(new ForwardedRequestCustomizer());
+        httpConfig.setRequestHeaderSize(maxHeadersSize);
+        httpConfig.setResponseHeaderSize(maxHeadersSize);
         return new HttpConnectionFactory(httpConfig);
     }
 
