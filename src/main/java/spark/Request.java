@@ -16,6 +16,14 @@
  */
 package spark;
 
+import spark.routematch.RouteMatch;
+import spark.utils.IOUtils;
+import spark.utils.SparkUtils;
+import spark.utils.StringUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -27,15 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import spark.routematch.RouteMatch;
-import spark.utils.IOUtils;
-import spark.utils.SparkUtils;
-import spark.utils.StringUtils;
 
 /**
  * Provides information about the HTTP request
@@ -280,6 +279,21 @@ public class Request {
      */
     public String queryParams(String queryParam) {
         return servletRequest.getParameter(queryParam);
+    }
+
+    /**
+     * Gets the query param
+     *
+     * @param queryParam the query parameter
+     * @param defaultValue the default value returned if given query param is not found
+     * @return the value of the provided queryParam
+     * Example: query parameter 'id' from the following request URI: /hello?id=foo, if not found return given default value.
+     */
+    public String queryParams(String queryParam, String defaultValue) {
+
+        String result = queryParams(queryParam);
+
+        return result != null ? result : defaultValue;
     }
 
     /**

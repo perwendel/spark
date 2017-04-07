@@ -37,6 +37,17 @@ public class RequestTest {
     }
 
     @Test
+    public void queryParamsShouldReturnDefaultValue_whenParamDoesNotExists() throws Exception {
+
+        String value = request.queryParams("doesNotExists", "defaultValue");
+        assertEquals("Should return given default value", "defaultValue", value);
+
+        // null default value
+        value = request.queryParams("doesNotExists", null);
+        assertNull(value);
+    }
+
+    @Test
     public void queryParamShouldReturnsParametersFromQueryString() {
 
         when(servletRequest.getParameter("name")).thenReturn("Federico");
