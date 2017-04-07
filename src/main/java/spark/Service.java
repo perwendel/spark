@@ -409,11 +409,11 @@ public final class Service extends Routable {
     public synchronized void stop() {
         new Thread(() -> {
             if (server != null) {
-                routes.clear();
                 server.extinguish();
                 latch = new CountDownLatch(1);
             }
-
+            
+            routes.clear();
             staticFilesConfiguration.clear();
             initialized = false;
         }).start();
