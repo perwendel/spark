@@ -110,7 +110,9 @@ public class GenericIntegrationTest {
 
         get("/templateView", (q, a) -> {
             return new ModelAndView(new HashMap<String, Object>() {
-                {
+				private static final long serialVersionUID = 1L;
+
+				{
                     put("hello", "Hello");
                 }}, "my view");
         }, new TemplateEngine() {

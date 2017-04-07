@@ -16,7 +16,6 @@
  */
 package spark.embeddedserver.jetty;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.ForwardedRequestCustomizer;
