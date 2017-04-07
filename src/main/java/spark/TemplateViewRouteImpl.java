@@ -17,6 +17,8 @@
 package spark;
 
 
+import spark.swagger.RouteDocumentation;
+
 import java.util.Map;
 
 /**
@@ -80,7 +82,6 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
     protected TemplateViewRouteImpl(String path, String acceptType, TemplateViewRoute route) {
         super(path, acceptType, route);
     }
-
 
     @Override
     public Object render(Object object) {

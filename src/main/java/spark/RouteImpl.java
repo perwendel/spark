@@ -17,6 +17,7 @@
 package spark;
 
 
+import spark.swagger.RouteDocumentation;
 import spark.utils.Wrapper;
 
 /**
@@ -142,5 +143,4 @@ public abstract class RouteImpl implements Route, Wrapper {
     public Object delegate() {
         return this.delegate;
     }
-
 }

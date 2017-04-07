@@ -16,15 +16,15 @@
  */
 package spark;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,11 +33,16 @@ import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
+import spark.route.RouteEntry;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
+import spark.swagger.Payload;
+import spark.swagger.RouteDocumentation;
+import spark.swagger.RouteMethod;
+import spark.swagger.SwaggerDoc;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
@@ -89,6 +94,7 @@ public final class Service extends Routable {
     public final StaticFiles staticFiles;
 
     private final StaticFilesConfiguration staticFilesConfiguration;
+    private SwaggerDoc documentation = new SwaggerDoc();
 
     // default exception handler during initialization phase
     private Consumer<Exception> initExceptionHandler = (e) -> {
@@ -115,6 +121,15 @@ public final class Service extends Routable {
         } else {
             staticFilesConfiguration = StaticFilesConfiguration.create();
         }
+    }
+
+    public SwaggerDoc getDocumentation() {
+        return documentation("/swagger.json");
+    }
+
+    public SwaggerDoc documentation(String path) {
+        documentation.setSwaggerPath(path);
+        return documentation;
     }
 
     /**
@@ -454,18 +469,35 @@ public final class Service extends Routable {
     @Override
     public void addRoute(String httpMethod, RouteImpl route) {
         init();
-        routes.add(httpMethod + " '" + getPaths() + route.getPath() + "'", route.getAcceptType(), route);
+        routes.add(httpMethod + " '" + getPaths() + route.getPath() + "'", route.getAcceptType(), null, route);
+    }
+    public void addRoute(String httpMethod, RouteDocumentation documentation, RouteImpl route) {
+        init();
+        routes.add(httpMethod + " '" + getPaths() + route.getPath() + "'", route.getAcceptType(), documentation, route);
     }
 
     @Override
     public void addFilter(String httpMethod, FilterImpl filter) {
         init();
-        routes.add(httpMethod + " '" + getPaths() + filter.getPath() + "'", filter.getAcceptType(), filter);
+        routes.add(httpMethod + " '" + getPaths() + filter.getPath() + "'", filter.getAcceptType(), null, filter);
+    }
+    @Override
+    public void addFilter(String httpMethod, RouteDocumentation documentation, FilterImpl filter) {
+        init();
+        routes.add(httpMethod + " '" + getPaths() + filter.getPath() + "'", filter.getAcceptType(), documentation, filter);
+    }
+
+    private void initSwagger() {
+        get(documentation.swaggerPath(), new RouteDocumentation("swagger").summary("Swagger JSON v2 Documentation endpoint").produces(new Payload().json()),
+            (req, resp) -> {
+                resp.header("Content-Type", "application/json");
+                return getSwaggerV2JSON();
+            }
+        );
     }
 
     public synchronized void init() {
         if (!initialized) {
-
             initializeRouteMatcher();
 
             if (!isRunningFromServlet()) {
@@ -504,6 +536,7 @@ public final class Service extends Routable {
                 }).start();
             }
             initialized = true;
+            initSwagger();
         }
     }
 
@@ -587,6 +620,47 @@ public final class Service extends Routable {
      */
     public HaltException halt(int status, String body) {
         throw new HaltException(status, body);
+    }
+
+    public Routes getRoutes() {
+        return routes;
+    }
+
+    public String getSwaggerV2JSON() {
+        Gson gson = new GsonBuilder()
+            .enableComplexMapKeySerialization()
+//            .setDateFormat(DateFormat.LONG)
+//            .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
+            .setPrettyPrinting()
+            .setVersion(1.0)
+            .setExclusionStrategies(new ExclusionStrategy[] {
+                new ExclusionStrategy() {
+
+                @Override
+                public boolean shouldSkipField(FieldAttributes fieldAttributes) {
+                    return (fieldAttributes.getName().equals("enabled"));
+                }
+
+                @Override
+                public boolean shouldSkipClass(Class<?> aClass) {
+                    return false;
+                }
+            }})
+            .create();
+
+        synchronized(Service.class) {
+            if (documentation.getPaths().isEmpty()) {
+                for (RouteEntry route : this.routes.getRoutes()) {
+                    String path = RouteDocumentation.swaggerPath(route.getPath());
+                    if (!documentation.getPaths().containsKey(path)) {
+                        documentation.getPaths().put(path, new RouteMethod());
+                    }
+                    documentation.getPaths().get(path)
+                        .put(route.getHttpMethod().name(), route.getDocumentation());
+                }
+            }
+        }
+        return gson.toJson(this.documentation);
     }
 
     /**

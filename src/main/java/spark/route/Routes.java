@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import spark.routematch.RouteMatch;
+import spark.swagger.RouteDocumentation;
 import spark.utils.MimeParse;
 import spark.utils.StringUtils;
 
@@ -57,7 +58,7 @@ public class Routes {
      * @param acceptType the accept type
      * @param target     the invocation target
      */
-    public void add(String route, String acceptType, Object target) {
+    public void add(String route, String acceptType, RouteDocumentation documentation, Object target) {
         try {
             int singleQuoteIndex = route.indexOf(SINGLE_QUOTE);
             String httpMethod = route.substring(0, singleQuoteIndex).trim().toLowerCase(); // NOSONAR
@@ -75,10 +76,13 @@ public class Routes {
                                   + ".");
                 return;
             }
-            addRoute(method, url, acceptType, target);
+            addRoute(method, url, acceptType, documentation, target);
         } catch (Exception e) {
             LOG.error("The @Route value: " + route + " is not in the correct format", e);
         }
+    }
+    public void add(String route, String acceptType, Object target) {
+        add(route, acceptType, (RouteDocumentation)null, target);
     }
 
     /**
@@ -177,12 +181,13 @@ public class Routes {
     // PRIVATE METHODS
     //////////////////////////////////////////////////
 
-    private void addRoute(HttpMethod method, String url, String acceptedType, Object target) {
+    private void addRoute(HttpMethod method, String url, String acceptedType, RouteDocumentation documentation, Object target) {
         RouteEntry entry = new RouteEntry();
         entry.httpMethod = method;
         entry.path = url;
         entry.target = target;
         entry.acceptedType = acceptedType;
+        entry.documentation = documentation;
         LOG.debug("Adds route: " + entry);
         // Adds to end of list
         routes.add(entry);
@@ -254,5 +259,9 @@ public class Routes {
         }
 
         return routes.removeAll(forRemoval);
+    }
+
+    public List<RouteEntry> getRoutes() {
+        return routes;
     }
 }
