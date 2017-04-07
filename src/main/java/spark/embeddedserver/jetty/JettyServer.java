@@ -16,8 +16,11 @@
  */
 package spark.embeddedserver.jetty;
 
+import org.eclipse.jetty.jmx.MBeanContainer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+
+import java.lang.management.ManagementFactory;
 
 /**
  * Creates Jetty Server instances.
@@ -30,9 +33,10 @@ class JettyServer {
      * @param maxThreads          maxThreads
      * @param minThreads          minThreads
      * @param threadTimeoutMillis threadTimeoutMillis
+     * @param serverJmxEnabled    true if the server should expose JMX counters
      * @return a new jetty server instance
      */
-    public static Server create(int maxThreads, int minThreads, int threadTimeoutMillis) {
+    public static Server create(int maxThreads, int minThreads, int threadTimeoutMillis, boolean serverJmxEnabled) {
         Server server;
 
         if (maxThreads > 0) {
@@ -43,6 +47,11 @@ class JettyServer {
             server = new Server(new QueuedThreadPool(max, min, idleTimeout));
         } else {
             server = new Server();
+        }
+        if (serverJmxEnabled) {
+            MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+            server.addEventListener(mbContainer);
+            server.addBean(mbContainer);
         }
 
         return server;

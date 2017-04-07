@@ -76,7 +76,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                       SslStores sslStores,
                       int maxThreads,
                       int minThreads,
-                      int threadIdleTimeoutMillis) {
+                      int threadIdleTimeoutMillis,
+                      boolean serverJmxEnabled) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -87,7 +88,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             }
         }
 
-        server = JettyServer.create(maxThreads, minThreads, threadIdleTimeoutMillis);
+        server = JettyServer.create(maxThreads, minThreads, threadIdleTimeoutMillis, serverJmxEnabled);
 
         ServerConnector connector;
 

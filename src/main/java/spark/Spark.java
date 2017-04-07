@@ -1142,6 +1142,10 @@ public class Spark {
         getInstance().webSocketIdleTimeoutMillis(timeoutMillis);
     }
 
+    public static void enableServerJmx() {
+        getInstance().enableServerJmx();
+    }
+
     /**
      * Maps 404 Not Found errors to the provided custom page
      */
