@@ -34,7 +34,7 @@ public abstract class FilterImpl implements Filter, Wrapper {
     private Filter delegate;
 
     /**
-     * Prefix the path (used for {@link Service#path}
+     * Prefix the path (used for {@link Service#path})
      *
      * @param prefix the prefix
      * @return itself for easy chaining

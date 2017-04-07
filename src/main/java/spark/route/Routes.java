@@ -54,8 +54,9 @@ public class Routes {
 
     /**
      * Add a route
+     *
      * @param httpMethod the http-method of the route
-     * @param route the route to add
+     * @param route      the route to add
      */
     public void add(HttpMethod httpMethod, RouteImpl route) {
         add(httpMethod, route.getPath() , route.getAcceptType(), route);
@@ -63,8 +64,9 @@ public class Routes {
 
     /**
      * Add a filter
+     *
      * @param httpMethod the http-method of the route
-     * @param filter the filter to add
+     * @param filter     the filter to add
      */
     public void add(HttpMethod httpMethod, FilterImpl filter) {
         add(httpMethod, filter.getPath() , filter.getAcceptType(), filter);
