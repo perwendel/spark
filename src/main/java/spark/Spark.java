@@ -16,8 +16,8 @@
  */
 package spark;
 
-import java.util.function.Consumer;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static spark.Service.ignite;
 
@@ -1033,13 +1033,11 @@ public class Spark {
 
     /**
      * Overrides default exception handler during initialization phase
-     * 
-     * @param initExceptionHandler
-     *          The custom init exception handler
+     *
+     * @param initExceptionHandler The custom init exception handler
      */
-    public static void initExceptionHandler(
-        Consumer<Exception> igniteExceptionHandler) {
-      getInstance().initExceptionHandler(igniteExceptionHandler);
+    public static void initExceptionHandler(Consumer<Exception> initExceptionHandler) {
+        getInstance().initExceptionHandler(initExceptionHandler);
     }
      
     /** 

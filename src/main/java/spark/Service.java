@@ -592,15 +592,13 @@ public final class Service extends Routable {
     /**
      * Overrides default exception handler during initialization phase
      *
-     * @param initExceptionHandler
-     *          The custom init exception handler
+     * @param initExceptionHandler The custom init exception handler
      */
-    public void initExceptionHandler(
-        Consumer<Exception> igniteExceptionHandler) {
-      if (initialized) {
-        throwBeforeRouteMappingException();
-      }
-      initExceptionHandler = igniteExceptionHandler;
+    public void initExceptionHandler(Consumer<Exception> initExceptionHandler) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        initExceptionHandler = initExceptionHandler;
     }
 
     /**
