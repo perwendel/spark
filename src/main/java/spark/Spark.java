@@ -16,6 +16,7 @@
  */
 package spark;
 
+import java.util.function.Consumer;
 import java.util.Map;
 
 import static spark.Service.ignite;
@@ -1031,6 +1032,17 @@ public class Spark {
     }
 
     /**
+     * Overrides default exception handler during initialization phase
+     * 
+     * @param initExceptionHandler
+     *          The custom init exception handler
+     */
+    public static void initExceptionHandler(
+        Consumer<Exception> igniteExceptionHandler) {
+      getInstance().initExceptionHandler(igniteExceptionHandler);
+    }
+     
+    /** 
      * Set the connection to be secure, using the specified keystore and
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore

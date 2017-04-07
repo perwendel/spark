@@ -71,12 +71,14 @@ public class EmbeddedJettyServer implements EmbeddedServer {
      * {@inheritDoc}
      */
     @Override
+
     public int ignite(String host,
                       int port,
                       SslStores sslStores,
                       int maxThreads,
                       int minThreads,
-                      int threadIdleTimeoutMillis) {
+                      int threadIdleTimeoutMillis) throws Exception {
+
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -120,16 +122,10 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             server.setHandler(handlers);
         }
 
-        try {
-            logger.info("== {} has ignited ...", NAME);
-            logger.info(">> Listening on {}:{}", host, port);
+        logger.info("== {} has ignited ...", NAME);
+        logger.info(">> Listening on {}:{}", host, port);
 
-            server.start();
-        } catch (Exception e) {
-            logger.error("ignite failed", e);
-            System.exit(100);
-        }
-
+        server.start();
         return port;
     }
 
