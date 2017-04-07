@@ -283,6 +283,19 @@ public class Request {
     }
 
     /**
+     * Gets the query param, or returns default value
+     *
+     * @param queryParam the query parameter
+     * @param defaultValue the default value
+     * @return the value of the provided queryParam, or default if value is null
+     * Example: query parameter 'id' from the following request URI: /hello?id=foo
+     */
+    public String queryParamOrDefault(String queryParam, String defaultValue) {
+        String value = queryParams(queryParam);
+        return value != null ? value : defaultValue;
+    }
+
+    /**
      * Gets all the values of the query param
      * Example: query parameter 'id' from the following request URI: /hello?id=foo&amp;id=bar
      *
