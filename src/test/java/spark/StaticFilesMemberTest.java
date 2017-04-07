@@ -128,7 +128,10 @@ public class StaticFilesMemberTest {
 
     @Test
     public void testStaticFileHeaders() throws Exception {
-        staticFiles.headers(new HashMap<String, String>() {{
+        staticFiles.headers(new HashMap<String, String>() {
+			private static final long serialVersionUID = 1L;
+
+		{
             put("Server", "Microsoft Word");
             put("Cache-Control", "private, max-age=600");
         }});

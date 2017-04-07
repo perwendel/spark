@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import spark.accesslog.AccessLogger;
+import spark.accesslog.AccessLogger;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.ssl.SslStores;
 
@@ -47,7 +48,8 @@ public interface EmbeddedServer {
                int maxThreads,
                int minThreads,
                int threadIdleTimeoutMillis,
-               AccessLogger accessLogger);
+               AccessLogger accessLogger
+    ) throws Exception;
 
     /**
      * Configures the web sockets for the embedded server.

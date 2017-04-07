@@ -23,7 +23,9 @@ public class DirectoryTraversal {
 
     public static final class DirectoryTraversalDetection extends RuntimeException {
 
-        public DirectoryTraversalDetection(String msg) {
+		private static final long serialVersionUID = 1L;
+
+		public DirectoryTraversalDetection(String msg) {
             super(msg);
         }
 

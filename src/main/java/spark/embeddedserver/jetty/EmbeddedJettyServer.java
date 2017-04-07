@@ -23,7 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
@@ -75,7 +78,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                       int maxThreads,
                       int minThreads,
                       int threadIdleTimeoutMillis,
-                      AccessLogger accessLogger) {
+                      AccessLogger accessLogger) throws Exception {
+
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -97,7 +101,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         }
 
         server = connector.getServer();
-        server.setConnectors(new Connector[]{connector});
+        server.setConnectors(new Connector[] {connector});
 
         ServletContextHandler webSocketServletContextHandler =
             WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
@@ -121,16 +125,10 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
         accessLogger.accessLog.ifPresent(v -> server.setRequestLog(v));
 
-        try {
-            logger.info("== {} has ignited ...", NAME);
-            logger.info(">> Listening on {}:{}", host, port);
+        logger.info("== {} has ignited ...", NAME);
+        logger.info(">> Listening on {}:{}", host, port);
 
-            server.start();
-        } catch (Exception e) {
-            logger.error("ignite failed", e);
-            System.exit(100);
-        }
-
+        server.start();
         return port;
     }
 
