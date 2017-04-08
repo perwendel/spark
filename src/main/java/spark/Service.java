@@ -93,8 +93,8 @@ public final class Service extends Routable {
 
     // default exception handler during initialization phase
     private Consumer<Exception> initExceptionHandler = (e) -> {
-      LOG.error("ignite failed", e);
-      System.exit(100);
+        LOG.error("ignite failed", e);
+        System.exit(100);
     };
 
     /**
@@ -613,7 +613,7 @@ public final class Service extends Routable {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        initExceptionHandler = initExceptionHandler;
+        this.initExceptionHandler = initExceptionHandler;
     }
 
     /**
