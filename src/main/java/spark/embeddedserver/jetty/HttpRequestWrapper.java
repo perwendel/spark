@@ -48,6 +48,10 @@ public class HttpRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
+        String transferEncoding = ((HttpServletRequest) super.getRequest()).getHeader("Transfer-Encoding");
+        if ("chunked".equals(transferEncoding)) {
+            return super.getInputStream(); // disable stream cache for chunked transfer encoding
+        }
         if (cachedBytes == null) {
             cacheInputStream();
         }
