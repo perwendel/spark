@@ -26,13 +26,22 @@ import spark.staticfiles.StaticFilesConfiguration;
  * Creates instances of embedded jetty containers.
  */
 public class EmbeddedJettyFactory implements EmbeddedServerFactory {
+    private final JettyServerFactory serverFactory;
+
+    public EmbeddedJettyFactory() {
+        this.serverFactory = JettyServer::create;
+    }
+
+    public EmbeddedJettyFactory(JettyServerFactory serverFactory) {
+        this.serverFactory = serverFactory;
+    }
 
     public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler) {
         MatcherFilter matcherFilter = new MatcherFilter(routeMatcher, staticFilesConfiguration, false, hasMultipleHandler);
         matcherFilter.init(null);
 
         JettyHandler handler = new JettyHandler(matcherFilter);
-        return new EmbeddedJettyServer(handler);
+        return new EmbeddedJettyServer(serverFactory, handler);
     }
 
 }

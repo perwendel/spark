@@ -36,7 +36,9 @@ public class EmbeddedServers {
     private static Map<Object, EmbeddedServerFactory> factories = new HashMap<>();
 
     public static void initialize() {
-        add(Identifiers.JETTY, new EmbeddedJettyFactory());
+        if (!factories.containsKey(Identifiers.JETTY)) {
+            add(Identifiers.JETTY, new EmbeddedJettyFactory());
+        }
     }
 
     public static Identifiers defaultIdentifier() {
