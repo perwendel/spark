@@ -29,6 +29,8 @@ import spark.RequestResponseFactory;
  */
 final class GeneralError {
 
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(GeneralError.class);
+
     /**
      * Modifies the HTTP response and body based on the provided exception.
      */
@@ -49,6 +51,8 @@ final class GeneralError {
                 body.set(bodyAfterFilter);
             }
         } else {
+            LOG.error("", e);
+
             httpResponse.setStatus(500);
 
             if (CustomErrorPages.existsFor(500)) {
@@ -58,7 +62,6 @@ final class GeneralError {
             } else {
                 body.set(CustomErrorPages.INTERNAL_ERROR);
             }
-
         }
     }
 

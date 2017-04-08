@@ -128,10 +128,12 @@ public class StaticFilesMemberTest {
 
     @Test
     public void testStaticFileHeaders() throws Exception {
-        staticFiles.headers(new HashMap<String, String>() {{
-            put("Server", "Microsoft Word");
-            put("Cache-Control", "private, max-age=600");
-        }});
+        staticFiles.headers(new HashMap() {
+            {
+                put("Server", "Microsoft Word");
+                put("Cache-Control", "private, max-age=600");
+            }
+        });
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
         Assert.assertEquals("Microsoft Word", response.headers.get("Server"));
         Assert.assertEquals("private, max-age=600", response.headers.get("Cache-Control"));

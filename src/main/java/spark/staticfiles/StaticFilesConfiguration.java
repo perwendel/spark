@@ -17,6 +17,7 @@
 package spark.staticfiles;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -92,11 +93,12 @@ public class StaticFilesConfiguration {
                         httpResponse.setHeader(MimeType.CONTENT_TYPE, MimeType.fromResource(resource));
                     }
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
-                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
 
-                    IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
-                    wrappedOutputStream.flush();
-                    wrappedOutputStream.close();
+                    try (InputStream inputStream = resource.getInputStream();
+                         OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false)) {
+                        IOUtils.copy(inputStream, wrappedOutputStream);
+                    }
+
                     return true;
                 }
             }

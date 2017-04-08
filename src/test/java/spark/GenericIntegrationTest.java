@@ -31,6 +31,7 @@ import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
 import static spark.Spark.after;
+import static spark.Spark.afterAfter;
 import static spark.Spark.before;
 import static spark.Spark.exception;
 import static spark.Spark.externalStaticFileLocation;
@@ -86,29 +87,12 @@ public class GenericIntegrationTest {
             halt(401, "{\"message\": \"Go Away!\"}");
         });
 
-        get("/hi", "application/json", (q, a) -> {
-            return "{\"message\": \"Hello World\"}";
-        });
-
-        get("/hi", (q, a) -> {
-            return "Hello World!";
-        });
-
-        get("/binaryhi", (q, a) -> {
-            return "Hello World!".getBytes();
-        });
-
-        get("/bytebufferhi", (q, a) -> {
-            return ByteBuffer.wrap("Hello World!".getBytes());
-        });
-
-        get("/inputstreamhi", (q, a) -> {
-            return new ByteArrayInputStream("Hello World!".getBytes("utf-8"));
-        });
-
-        get("/param/:param", (q, a) -> {
-            return "echo: " + q.params(":param");
-        });
+        get("/hi", "application/json", (q, a) -> "{\"message\": \"Hello World\"}");
+        get("/hi", (q, a) -> "Hello World!");
+        get("/binaryhi", (q, a) -> "Hello World!".getBytes());
+        get("/bytebufferhi", (q, a) -> ByteBuffer.wrap("Hello World!".getBytes()));
+        get("/inputstreamhi", (q, a) -> new ByteArrayInputStream("Hello World!".getBytes("utf-8")));
+        get("/param/:param", (q, a) -> "echo: " + q.params(":param"));
 
         path("/firstPath", () -> {
             before("/*", (q, a) -> a.header("before-filter-ran", "true"));
@@ -121,25 +105,21 @@ public class GenericIntegrationTest {
             });
         });
 
-        get("/paramandwild/:param/stuff/*", (q, a) -> {
-            return "paramandwild: " + q.params(":param") + q.splat()[0];
-        });
+        get("/paramandwild/:param/stuff/*", (q, a) -> "paramandwild: " + q.params(":param") + q.splat()[0]);
+        get("/paramwithmaj/:paramWithMaj", (q, a) -> "echo: " + q.params(":paramWithMaj"));
 
-        get("/paramwithmaj/:paramWithMaj", (q, a) -> {
-            return "echo: " + q.params(":paramWithMaj");
-        });
-
-        get("/templateView", (q, a) -> {
-            return new ModelAndView("Hello", "my view");
-        }, new TemplateEngine() {
+        get("/templateView", (q, a) -> new ModelAndView(new HashMap<String, Object>() {
+            {
+                put("hello", "Hello");
+            }
+        }, "my view"), new TemplateEngine() {
+            @Override
             public String render(ModelAndView modelAndView) {
                 return modelAndView.getModel() + " from " + modelAndView.getViewName();
             }
         });
 
-        get("/", (q, a) -> {
-            return "Hello Root!";
-        });
+        get("/", (q, a) -> "Hello Root!");
 
         post("/poster", (q, a) -> {
             String body = q.body();
@@ -152,9 +132,7 @@ public class GenericIntegrationTest {
             return "Method Override Worked";
         });
 
-        get("/post_via_get", (q, a) -> {
-            return "Method Override Did Not Work";
-        });
+        get("/post_via_get", (q, a) -> "Method Override Did Not Work");
 
         patch("/patcher", (q, a) -> {
             String body = q.body();
@@ -171,6 +149,8 @@ public class GenericIntegrationTest {
             session.attribute(key, "22222");
             return session.attribute(key);
         });
+
+        get("/ip", (request, response) -> request.ip());
 
         after("/hi", (q, a) -> {
 
@@ -206,6 +186,24 @@ public class GenericIntegrationTest {
             a.body(NOT_FOUND_BRO);
         });
 
+        get("/exception", (request, response) -> {
+            throw new RuntimeException();
+        });
+
+        afterAfter("/exception", (request, response) -> {
+            response.body("done executed for exception");
+        });
+
+        post("/nice", (request, response) -> "nice response");
+
+        afterAfter("/nice", (request, response) -> {
+            response.header("post-process", "nice done response");
+        });
+
+        afterAfter((request, response) -> {
+            response.header("post-process-all", "nice done response after all");
+        });
+
         Spark.awaitInitialization();
     }
 
@@ -227,7 +225,7 @@ public class GenericIntegrationTest {
     public void template_view_should_be_rendered_with_given_model_view_object() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/templateView", null);
         Assert.assertEquals(200, response.status);
-        Assert.assertEquals("Hello from my view", response.body);
+        Assert.assertEquals("{hello=Hello} from my view", response.body);
     }
 
     @Test
@@ -281,6 +279,19 @@ public class GenericIntegrationTest {
     public void testGetHiAfterFilter() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/hi", null);
         Assert.assertTrue(response.headers.get("after").contains("foobar"));
+    }
+
+    @Test
+    public void testXForwardedFor() throws Exception {
+        final String xForwardedFor = "XXX.XXX.XXX.XXX";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("X-Forwarded-For", xForwardedFor);
+
+        UrlResponse response = testUtil.doMethod("GET", "/ip", null, false, "text/html", headers);
+        Assert.assertEquals(xForwardedFor, response.body);
+
+        response = testUtil.doMethod("GET", "/ip", null, false, "text/html", null);
+        Assert.assertNotEquals(xForwardedFor, response.body);
     }
 
     @Test
@@ -502,5 +513,28 @@ public class GenericIntegrationTest {
         Assert.assertTrue(response.status == 200);
         Assert.assertEquals("Very nested path-prefix works", response.body);
         Assert.assertEquals("true", response.headers.get("before-filter-ran"));
+    }
+
+    @Test
+    public void testRuntimeExceptionForDone() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/exception", null);
+        Assert.assertEquals("done executed for exception", response.body);
+        Assert.assertEquals(500, response.status);
+    }
+
+    @Test
+    public void testRuntimeExceptionForAllRoutesFinally() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+        Assert.assertEquals("foobar", response.headers.get("after"));
+        Assert.assertEquals("nice done response after all", response.headers.get("post-process-all"));
+        Assert.assertEquals(200, response.status);
+    }
+
+    @Test
+    public void testPostProcessBodyForFinally() throws Exception {
+        UrlResponse response = testUtil.doMethod("POST", "/nice", "");
+        Assert.assertEquals("nice response", response.body);
+        Assert.assertEquals("nice done response", response.headers.get("post-process"));
+        Assert.assertEquals(200, response.status);
     }
 }

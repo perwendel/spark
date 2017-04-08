@@ -1,7 +1,8 @@
 package spark.staticfiles;
 
-import static spark.utils.StringUtils.removeLeadingAndTrailingSlashesFrom;
 import java.nio.file.Paths;
+
+import static spark.utils.StringUtils.removeLeadingAndTrailingSlashesFrom;
 
 /**
  * Protecting against Directory traversal
@@ -22,6 +23,7 @@ public class DirectoryTraversal {
     }
 
     public static final class DirectoryTraversalDetection extends RuntimeException {
+        private static final long serialVersionUID = 1L;
 
         public DirectoryTraversalDetection(String msg) {
             super(msg);
