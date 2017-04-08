@@ -108,14 +108,11 @@ public class GenericIntegrationTest {
         get("/paramandwild/:param/stuff/*", (q, a) -> "paramandwild: " + q.params(":param") + q.splat()[0]);
         get("/paramwithmaj/:paramWithMaj", (q, a) -> "echo: " + q.params(":paramWithMaj"));
 
-        get("/templateView", (q, a) -> {
-            return new ModelAndView(new HashMap<String, Object>() {
-				private static final long serialVersionUID = 1L;
-
-				{
-                    put("hello", "Hello");
-                }}, "my view");
-        }, new TemplateEngine() {
+        get("/templateView", (q, a) -> new ModelAndView(new HashMap<String, Object>() {
+            {
+                put("hello", "Hello");
+            }
+        }, "my view"), new TemplateEngine() {
             @Override
             public String render(ModelAndView modelAndView) {
                 return modelAndView.getModel() + " from " + modelAndView.getViewName();
