@@ -1,38 +1,44 @@
 package spark;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static spark.Service.ignite;
 
 public class InitExceptionHandlerTest {
 
-    @Test
-    public void testInitExceptionHandler() throws Exception {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        CompletableFuture<String> future = new CompletableFuture<>();
-        executorService.submit(() -> {
-            Service service1 = ignite().port(1122);
-            service1.init();
-            nap();
-            Service service2 = ignite().port(1122);
-            service2.initExceptionHandler((e) -> future.complete("Custom init error"));
-            service2.init();
-            service1.stop();
-            service2.stop();
-        });
-        Assert.assertEquals("Custom init error", future.get());
+    private static Service service1;
+    private static Service service2;
+    private static String errorMessage = "";
+
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+
+        service1 = ignite();
+        service1.port(1122);
+        service1.init();
+        service1.awaitInitialization();
+
+        service2 = ignite();
+        service2.port(1122);
+        service2.initExceptionHandler((e) -> errorMessage = "Custom init error");
+        service2.init();
+        service2.awaitInitialization();
+
     }
 
-    private void nap() {
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException ignored) {
-        }
+    @Test
+    public void testGetPort_withRandomPort() throws Exception {
+        Assert.assertEquals("Custom init error", errorMessage);
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        service1.stop();
+        service2.stop();
     }
 
 }
