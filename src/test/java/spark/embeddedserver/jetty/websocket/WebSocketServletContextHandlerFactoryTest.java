@@ -19,6 +19,7 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 
 @RunWith(PowerMockRunner.class)
+@PrepareForTest(WebSocketServletContextHandlerFactory.class)
 public class WebSocketServletContextHandlerFactoryTest {
 
     final String webSocketPath = "/websocket";
@@ -49,7 +50,7 @@ public class WebSocketServletContextHandlerFactoryTest {
 
         PathMappings.MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
         WebSocketCreatorFactory.SparkWebSocketCreator sc = (WebSocketCreatorFactory.SparkWebSocketCreator) mappedResource.getResource();
-        PathSpec pathSpec = (PathSpec) mappedResource.getPathSpec();
+        PathSpec pathSpec = mappedResource.getPathSpec();
 
         assertEquals("Should return the WebSocket path specified when contexst handler was created",
                 webSocketPath, pathSpec.getPathSpec());
@@ -81,7 +82,7 @@ public class WebSocketServletContextHandlerFactoryTest {
 
         PathMappings.MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
         WebSocketCreatorFactory.SparkWebSocketCreator sc = (WebSocketCreatorFactory.SparkWebSocketCreator) mappedResource.getResource();
-        PathSpec pathSpec = (PathSpec) mappedResource.getPathSpec();
+        PathSpec pathSpec = mappedResource.getPathSpec();
 
         assertEquals("Should return the WebSocket path specified when context handler was created",
                 webSocketPath, pathSpec.getPathSpec());
@@ -91,7 +92,6 @@ public class WebSocketServletContextHandlerFactoryTest {
     }
 
     @Test
-    @PrepareForTest(WebSocketServletContextHandlerFactory.class)
     public void testCreate_whenWebSocketContextHandlerCreationFails_thenThrowException() throws Exception {
 
         PowerMockito.whenNew(ServletContextHandler.class).withAnyArguments().thenThrow(new Exception(""));
