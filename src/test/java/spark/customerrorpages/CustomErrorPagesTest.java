@@ -40,13 +40,7 @@ public class CustomErrorPagesTest {
             throw new Exception("");
         });
 
-        notFound((request, response) -> {
-            if (request.queryParams(QUERY_PARAM_KEY) == null) {
-                return CUSTOM_NOT_FOUND;
-            } else {
-                throw new Exception();
-            }            
-        });
+        notFound(CUSTOM_NOT_FOUND);
 
         internalServerError((request, response) -> {
             if (request.queryParams(QUERY_PARAM_KEY) != null) {
@@ -87,11 +81,5 @@ public class CustomErrorPagesTest {
         Assert.assertEquals(500, response.status);
         Assert.assertEquals(CustomErrorPages.INTERNAL_ERROR, response.body);
     }
-    
-    @Test
-    public void testCustomNotFoundFailingRouteFallback() throws Exception {
-        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/notfoundinternal?" + QUERY_PARAM_KEY + "=sumthin", null);
-        Assert.assertEquals(404, response.status);
-        Assert.assertEquals(CustomErrorPages.NOT_FOUND, response.body);
-    }
+
 }
