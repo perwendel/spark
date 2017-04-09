@@ -257,9 +257,7 @@ public class Response {
      * @param name name of the cookie
      */
     public void removeCookie(String name) {
-        Cookie cookie = new Cookie(name, "");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        removeCookie(null, name);
     }
 
     /**
