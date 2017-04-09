@@ -257,8 +257,20 @@ public class Response {
      * @param name name of the cookie
      */
     public void removeCookie(String name) {
+        removeCookie(null, name);
+    }
+
+    /**
+     * Removes the cookie with given path and name.
+     *
+     * @param path path of the cookie
+     * @param name name of the cookie
+     */
+    public void removeCookie(String path, String name) {
         Cookie cookie = new Cookie(name, "");
+        cookie.setPath(path);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
+
 }
