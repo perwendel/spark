@@ -4,10 +4,12 @@ import java.io.File;
 
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
+import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import spark.Spark;
 import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 import spark.embeddedserver.jetty.JettyServerFactory;
 
@@ -16,13 +18,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static spark.Spark.get;
-import static spark.Spark.stop;
 
 public class EmbeddedServersTest {
+
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
 
     @Test
     public void testAddAndCreate_whenCreate_createsCustomServer() throws Exception {
@@ -49,7 +49,6 @@ public class EmbeddedServersTest {
 
     @Test
     public void testAdd_whenConfigureRoutes_createsCustomServer() throws Exception {
-        String id = "custom";
         File requestLogDir = temporaryFolder.newFolder();
         File requestLogFile = new File(requestLogDir, "request.log");
         // Register custom server
@@ -58,12 +57,15 @@ public class EmbeddedServersTest {
             server.setRequestLog(new NCSARequestLog(requestLogFile.getAbsolutePath()));
             return server;
         }));
+        Spark.get("/", (request, response) -> "OK");
+        Spark.awaitInitialization();
 
-        get("/", (request, response) -> "OK");
-
-        stop();
         assertTrue(requestLogFile.exists());
+    }
 
+    @AfterClass
+    public static void tearDown() {
+        Spark.stop();
     }
 
 }
