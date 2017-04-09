@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.accesslog.AccessLogger;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
@@ -90,6 +91,7 @@ public final class Service extends Routable {
     public final StaticFiles staticFiles;
 
     private final StaticFilesConfiguration staticFilesConfiguration;
+    private AccessLogger accessLogger = new AccessLogger();
 
     // default exception handler during initialization phase
     private Consumer<Exception> initExceptionHandler = (e) -> {
@@ -301,6 +303,20 @@ public final class Service extends Routable {
     }
 
     /**
+     * Sets the ability to configure access logs programmatically as per
+     * http://www.eclipse.org/jetty/documentation/current/configuring-jetty-request-logs.html#implementing-request-log
+     * @param accessLogger
+     * @return
+     */
+    public synchronized Service accessLogger(AccessLogger accessLogger) {
+        if (initialized && !isRunningFromServlet()) {
+            throwBeforeRouteMappingException();
+        }
+        this.accessLogger = accessLogger;
+        return this;
+    }
+
+    /**
      * Maps the given path to the given WebSocket handler class.
      * <p>
      * This is currently only available in the embedded server mode.
@@ -420,7 +436,7 @@ public final class Service extends Routable {
                 server.extinguish();
                 latch = new CountDownLatch(1);
             }
-            
+
             routes.clear();
             staticFilesConfiguration.clear();
             initialized = false;
@@ -493,9 +509,9 @@ public final class Service extends Routable {
                     }
 
                     server = EmbeddedServers.create(embeddedServerIdentifier,
-                                                    routes,
-                                                    staticFilesConfiguration,
-                                                    hasMultipleHandlers());
+                        routes,
+                        staticFilesConfiguration,
+                        hasMultipleHandlers());
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
@@ -505,7 +521,9 @@ public final class Service extends Routable {
                             sslStores,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis);
+                            threadIdleTimeoutMillis,
+                            accessLogger
+                        );
                   } catch (Exception e) {
                     initExceptionHandler.accept(e);
                   }

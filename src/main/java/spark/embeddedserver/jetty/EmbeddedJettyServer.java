@@ -32,6 +32,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.accesslog.AccessLogger;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
@@ -73,13 +74,13 @@ public class EmbeddedJettyServer implements EmbeddedServer {
      * {@inheritDoc}
      */
     @Override
-
     public int ignite(String host,
                       int port,
                       SslStores sslStores,
                       int maxThreads,
                       int minThreads,
-                      int threadIdleTimeoutMillis) throws Exception {
+                      int threadIdleTimeoutMillis,
+                      AccessLogger accessLogger) throws Exception {
 
 
         if (port == 0) {
@@ -123,6 +124,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
             server.setHandler(handlers);
         }
+
+        accessLogger.accessLog.ifPresent(v -> server.setRequestLog(v));
 
         logger.info("== {} has ignited ...", NAME);
         logger.info(">> Listening on {}:{}", host, port);
