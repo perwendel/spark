@@ -879,7 +879,7 @@ public class Spark {
      * @param exceptionClass the exception class
      * @param handler        The handler
      */
-    public static void exception(Class<? extends Exception> exceptionClass, ExceptionHandler handler) {
+    public static <T extends Exception> void exception(Class<T> exceptionClass, ExceptionHandler<? super T> handler) {
         getInstance().exception(exceptionClass, handler);
     }
 
