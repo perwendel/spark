@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import spark.embeddedserver.jetty.websocket.WebSocketTestClient;
 import spark.embeddedserver.jetty.websocket.WebSocketTestHandler;
 import spark.examples.exception.BaseException;
+import spark.examples.exception.JWGmeligMeylingException;
 import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
@@ -171,6 +172,14 @@ public class GenericIntegrationTest {
 
         get("/thrownotfound", (q, a) -> {
             throw new NotFoundException();
+        });
+
+        get("/throwmeyling", (q, a) -> {
+            throw new JWGmeligMeylingException();
+        });
+
+        exception(JWGmeligMeylingException.class, (meylingException, q, a) -> {
+            a.body(meylingException.trustButVerify());
         });
 
         exception(UnsupportedOperationException.class, (exception, q, a) -> {
@@ -468,6 +477,12 @@ public class GenericIntegrationTest {
         UrlResponse response = testUtil.doMethod("GET", "/thrownotfound", null);
         Assert.assertEquals(NOT_FOUND_BRO, response.body);
         Assert.assertEquals(404, response.status);
+    }
+
+    @Test
+    public void testTypedExceptionMapper() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/throwmeyling", null);
+        Assert.assertEquals(new JWGmeligMeylingException().trustButVerify(), response.body);
     }
 
     @Test
