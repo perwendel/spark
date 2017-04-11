@@ -1,10 +1,10 @@
 package spark.embeddedserver.jetty.websocket;
 
+import org.eclipse.jetty.http.pathmap.MappedResource;
+import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.server.WebSocketServerFactory;
 import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
-import org.eclipse.jetty.websocket.server.pathmap.PathMappings;
-import org.eclipse.jetty.websocket.server.pathmap.PathSpec;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,12 +22,11 @@ import static org.junit.Assert.*;
 public class WebSocketServletContextHandlerFactoryTest {
 
     final String webSocketPath = "/websocket";
-    private ServletContextHandler servletContextHandler;
 
     @Test
     public void testCreate_whenWebSocketHandlersIsNull_thenReturnNull() throws Exception {
 
-        servletContextHandler = WebSocketServletContextHandlerFactory.create(null, Optional.empty());
+        ServletContextHandler servletContextHandler = WebSocketServletContextHandlerFactory.create(null, Optional.empty());
 
         assertNull("Should return null because no WebSocket Handlers were passed", servletContextHandler);
 
@@ -40,19 +39,17 @@ public class WebSocketServletContextHandlerFactoryTest {
 
         webSocketHandlers.put(webSocketPath, new WebSocketHandlerClassWrapper(WebSocketTestHandler.class));
 
-        servletContextHandler = WebSocketServletContextHandlerFactory.create(webSocketHandlers, Optional.empty());
+        ServletContextHandler servletContextHandler = WebSocketServletContextHandlerFactory.create(webSocketHandlers, Optional.empty());
 
-        WebSocketUpgradeFilter webSocketUpgradeFilter =
-                (WebSocketUpgradeFilter) servletContextHandler.getAttribute("org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter");
-
+        WebSocketUpgradeFilter webSocketUpgradeFilter = getUpgradeFilter(servletContextHandler);
         assertNotNull("Should return a WebSocketUpgradeFilter because we configured it to have one", webSocketUpgradeFilter);
 
-        PathMappings.MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
+        MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getConfiguration().getMatch(webSocketPath);
         WebSocketCreatorFactory.SparkWebSocketCreator sc = (WebSocketCreatorFactory.SparkWebSocketCreator) mappedResource.getResource();
         PathSpec pathSpec = (PathSpec) mappedResource.getPathSpec();
 
-        assertEquals("Should return the WebSocket path specified when contexst handler was created",
-                webSocketPath, pathSpec.getPathSpec());
+        assertTrue("Should return the WebSocket path specified when contexst handler was created",
+                pathSpec.matches(webSocketPath));
 
         assertTrue("Should return true because handler should be an instance of the one we passed when it was created",
                 sc.getHandler() instanceof WebSocketTestHandler);
@@ -68,23 +65,22 @@ public class WebSocketServletContextHandlerFactoryTest {
 
         webSocketHandlers.put(webSocketPath, new WebSocketHandlerClassWrapper(WebSocketTestHandler.class));
 
-        servletContextHandler = WebSocketServletContextHandlerFactory.create(webSocketHandlers, Optional.of(timeout));
+        ServletContextHandler servletContextHandler = WebSocketServletContextHandlerFactory.create(webSocketHandlers, Optional.of(timeout));
 
-        WebSocketUpgradeFilter webSocketUpgradeFilter =
-                (WebSocketUpgradeFilter) servletContextHandler.getAttribute("org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter");
+        WebSocketUpgradeFilter webSocketUpgradeFilter = getUpgradeFilter(servletContextHandler);
 
         assertNotNull("Should return a WebSocketUpgradeFilter because we configured it to have one", webSocketUpgradeFilter);
 
-        WebSocketServerFactory webSocketServerFactory = webSocketUpgradeFilter.getFactory();
+        WebSocketServerFactory webSocketServerFactory = webSocketUpgradeFilter.getConfiguration().getFactory();
         assertEquals("Timeout value should be the same as the timeout specified when context handler was created",
                 timeout.longValue(), webSocketServerFactory.getPolicy().getIdleTimeout());
 
-        PathMappings.MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getMappings().getMatch("/websocket");
+        MappedResource<WebSocketCreator> mappedResource = webSocketUpgradeFilter.getConfiguration().getMatch(webSocketPath);
         WebSocketCreatorFactory.SparkWebSocketCreator sc = (WebSocketCreatorFactory.SparkWebSocketCreator) mappedResource.getResource();
         PathSpec pathSpec = (PathSpec) mappedResource.getPathSpec();
 
-        assertEquals("Should return the WebSocket path specified when context handler was created",
-                webSocketPath, pathSpec.getPathSpec());
+        assertTrue("Should return the WebSocket path specified when context handler was created",
+                pathSpec.matches(webSocketPath));
 
         assertTrue("Should return true because handler should be an instance of the one we passed when it was created",
                 sc.getHandler() instanceof WebSocketTestHandler);
@@ -100,9 +96,14 @@ public class WebSocketServletContextHandlerFactoryTest {
 
         webSocketHandlers.put(webSocketPath, new WebSocketHandlerClassWrapper(WebSocketTestHandler.class));
 
-        servletContextHandler = WebSocketServletContextHandlerFactory.create(webSocketHandlers, Optional.empty());
+        ServletContextHandler servletContextHandler = WebSocketServletContextHandlerFactory.create(webSocketHandlers, Optional.empty());
 
         assertNull("Should return null because Websocket context handler was not created", servletContextHandler);
 
+    }
+    
+    private WebSocketUpgradeFilter getUpgradeFilter(ServletContextHandler servletContextHandler) {
+        return (WebSocketUpgradeFilter)
+                servletContextHandler.getServletHandler().getFilter("Jetty_WebSocketUpgradeFilter").getFilter();
     }
 }
