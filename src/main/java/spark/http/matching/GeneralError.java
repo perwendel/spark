@@ -58,7 +58,7 @@ final class GeneralError {
             if (CustomErrorPages.existsFor(500)) {
                 requestWrapper.setDelegate(RequestResponseFactory.create(httpRequest));
                 responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
-                body.set(CustomErrorPages.getFor(500, requestWrapper, responseWrapper));
+                body.set(CustomErrorPages.getFor(500, requestWrapper, responseWrapper, e));
             } else {
                 body.set(CustomErrorPages.INTERNAL_ERROR);
             }

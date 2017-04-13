@@ -166,7 +166,9 @@ public class MatcherFilter implements Filter {
                 if (CustomErrorPages.existsFor(404)) {
                     requestWrapper.setDelegate(RequestResponseFactory.create(httpRequest));
                     responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
-                    body.set(CustomErrorPages.getFor(404, requestWrapper, responseWrapper));
+                    String message = "The requested route [" + uri + "] has not been mapped in Spark for " + ACCEPT_TYPE_REQUEST_MIME_HEADER + ": [" + acceptType + "]";
+                    Exception exception = new Exception(message);
+                    body.set(CustomErrorPages.getFor(404, requestWrapper, responseWrapper, exception));
                 } else {
                     body.set(String.format(CustomErrorPages.NOT_FOUND));
                 }

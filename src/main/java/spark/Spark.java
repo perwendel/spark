@@ -1176,7 +1176,7 @@ public class Spark {
     /**
      * Maps 500 internal server errors to the provided route.
      */
-    public static void internalServerError(Route route) {
+    public static void internalServerError(ExceptionRoute route) {
         getInstance().internalServerError(route);
     }
 

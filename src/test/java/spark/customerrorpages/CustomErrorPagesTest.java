@@ -42,7 +42,7 @@ public class CustomErrorPagesTest {
 
         notFound(CUSTOM_NOT_FOUND);
 
-        internalServerError((request, response) -> {
+        internalServerError((exception, request, response) -> {
             if (request.queryParams(QUERY_PARAM_KEY) != null) {
                 throw new Exception();
             }

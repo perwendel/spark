@@ -385,7 +385,7 @@ public final class Service extends Routable {
     /**
      * Maps 500 internal server errors to the provided route.
      */
-    public synchronized void internalServerError(Route route) {
+    public synchronized void internalServerError(ExceptionRoute route) {
         CustomErrorPages.add(500, route);
     }
 
