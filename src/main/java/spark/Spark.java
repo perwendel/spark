@@ -1181,6 +1181,13 @@ public class Spark {
     }
 
     /**
+     * Maps 500 internal server errors to the provided route.
+     */
+    public static void internalServerError(Route route) {
+        getInstance().internalServerError(route);
+    }
+
+    /**
      * Initializes the Spark server. SHOULD just be used when using the Websockets functionality.
      */
     public static void init() {
