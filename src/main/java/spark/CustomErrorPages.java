@@ -49,7 +49,7 @@ public class CustomErrorPages {
      * @param status
      * @param request
      * @param response
-     * @param exception
+ q     * @param exception
      * @return Object representing the custom error page
      */
     public static Object getFor(int status, Request request, Response response, Exception exception) {
@@ -64,7 +64,14 @@ public class CustomErrorPages {
             try {
                 customPage = ((ExceptionRoute) customRenderer).handle(exception, request, response);
             } catch (Exception e) {
-             // The custom page renderer is causing an internal server error.  Log exception as a warning and use default page instead
+                // The custom page renderer is causing an internal server error.  Log exception as a warning and use default page instead
+                LOG.warn("Custom error page handler for status code {} has thrown an exception: {}. Using default page instead.", status, e.getMessage());
+            }
+        } else if (customRenderer instanceof Route) {
+            try {
+                customPage = ((Route) customRenderer).handle(request, response);
+            } catch (Exception e) {
+                // The custom page renderer is causing an internal server error.  Log exception as a warning and use default page instead
                 LOG.warn("Custom error page handler for status code {} has thrown an exception: {}. Using default page instead.", status, e.getMessage());
             }
         } else if (customRenderer instanceof Route) {
@@ -89,7 +96,7 @@ public class CustomErrorPages {
         String defaultPage = defaultPages.get(status);
         return (defaultPage != null) ? defaultPage : "<html><body><h2>HTTP Status " + status + "</h2></body></html>";
     }
-    
+
     /**
      * Add a custom error page as a String
      * @param status
