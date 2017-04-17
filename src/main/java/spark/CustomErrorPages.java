@@ -67,13 +67,13 @@ public class CustomErrorPages {
                 // The custom page renderer is causing an internal server error.  Log exception as a warning and use default page instead
                 LOG.warn("Custom error page handler for status code {} has thrown an exception: {}. Using default page instead.", status, e.getMessage());
             }
-        } else if (customRenderer instanceof Route) {
+        } else if (customRenderer instanceof ExceptionRoute) {
             try {
-                customPage = ((Route) customRenderer).handle(request, response);
+                customPage = ((ExceptionRoute) customRenderer).handle(exception, request, response);
             } catch (Exception e) {
                 // The custom page renderer is causing an internal server error.  Log exception as a warning and use default page instead
-                LOG.warn("Custom error page handler for status code {} has thrown an exception: {}. Using default page instead.", status, e.getMessage());
-            }
+               LOG.warn("Custom error page handler for status code {} has thrown an exception: {}. Using default page instead.", status, e.getMessage());
+           }
         } else if (customRenderer instanceof Route) {
             try {
                 customPage = ((Route) customRenderer).handle(request, response);
