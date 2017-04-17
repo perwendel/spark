@@ -49,7 +49,7 @@ public class CustomErrorPages {
      * @param status
      * @param request
      * @param response
- q     * @param exception
+     * @param exception
      * @return Object representing the custom error page
      */
     public static Object getFor(int status, Request request, Response response, Exception exception) {
