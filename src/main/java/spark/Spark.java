@@ -930,6 +930,21 @@ public class Spark {
         throw getInstance().halt(status, body);
     }
 
+
+    /**
+     * Setup session clustering for this server. This should be used to all clustering for multiple instances of the
+     * same app.  This has to be called before any route mapping is done.
+     *
+     * @param clusterNodeName                       - node name for this instance of the application
+     * @param clusterDatastoreDriverClassName       - driver used to connect to the datasource (ie jdbc driver)
+     * @param clusterDatastoreDriverConnectionUrl   - url used to connect to the datasource (ie jdbc url)
+     * @param clusterScavengeInterval               - scavenge time sync up (in seconds)
+     *
+     */
+    public static void clusterSession(String clusterNodeName, String clusterDatastoreDriverClassName, String clusterDatastoreDriverConnectionUrl, int clusterScavengeInterval) {
+        getInstance().clusterSession(clusterNodeName, clusterDatastoreDriverClassName, clusterDatastoreDriverConnectionUrl, clusterScavengeInterval);
+    }
+
     /**
      * Set the IP address that Spark should listen on. If not called the default
      * address is '0.0.0.0'. This has to be called before any route mapping is
