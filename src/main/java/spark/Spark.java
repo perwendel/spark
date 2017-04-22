@@ -273,6 +273,9 @@ public class Spark {
     public static void put(String path, String acceptType, Route route) {
         getInstance().put(path, acceptType, route);
     }
+    public static void put(String path, RouteDocumentation documentation, Route route) {
+        getInstance().put(path, documentation, route);
+    }
     public static void put(String path, String acceptType, RouteDocumentation documentation, Route route) {
         getInstance().put(path, acceptType, documentation, route);
     }
@@ -291,6 +294,9 @@ public class Spark {
     public static void patch(String path, String acceptType, RouteDocumentation documentation, Route route) {
         getInstance().patch(path, acceptType, documentation, route);
     }
+    public static void patch(String path, RouteDocumentation documentation, Route route) {
+        getInstance().patch(path, documentation, route);
+    }
 
     /**
      * Map the route for HTTP DELETE requests
@@ -305,6 +311,9 @@ public class Spark {
     public static void delete(String path, String acceptType, RouteDocumentation documentation, Route route) {
         getInstance().delete(path, acceptType, documentation, route);
     }
+    public static void delete(String path, RouteDocumentation documentation, Route route) {
+        getInstance().delete(path, documentation, route);
+    }
     /**
      * Map the route for HTTP HEAD requests
      *
@@ -317,6 +326,9 @@ public class Spark {
     }
     public static void head(String path, String acceptType, RouteDocumentation documentation, Route route) {
         getInstance().head(path, acceptType, documentation, route);
+    }
+    public static void head(String path, RouteDocumentation documentation, Route route) {
+        getInstance().head(path, documentation, route);
     }
 
     /**
@@ -331,6 +343,9 @@ public class Spark {
     }
     public static void trace(String path, String acceptType, RouteDocumentation documentation, Route route) {
         getInstance().trace(path, acceptType, documentation, route);
+    }
+    public static void trace(String path, RouteDocumentation documentation, Route route) {
+        getInstance().trace(path, documentation, route);
     }
 
     /**
@@ -359,6 +374,9 @@ public class Spark {
     }
     public static void options(String path, String acceptType, RouteDocumentation documentation, Route route) {
         getInstance().options(path, acceptType, documentation, route);
+    }
+    public static void options(String path, RouteDocumentation documentation, Route route) {
+        getInstance().options(path, documentation, route);
     }
 
 

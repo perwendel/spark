@@ -16,17 +16,12 @@
  */
 package spark;
 
-import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.stream.Collectors;
-
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
@@ -42,6 +37,14 @@ import spark.swagger.Payload;
 import spark.swagger.RouteDocumentation;
 import spark.swagger.RouteMethod;
 import spark.swagger.SwaggerDoc;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
@@ -639,6 +642,7 @@ public final class Service extends Routable {
 
         synchronized(Service.class) {
             if (documentation.getPaths().isEmpty()) {
+                documentation.calculateDefinitions(this.routes);
                 for (RouteEntry route : this.routes.getRoutes()) {
                     String path = RouteDocumentation.swaggerPath(route.getPath());
                     if (!documentation.getPaths().containsKey(path)) {

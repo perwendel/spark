@@ -1,15 +1,15 @@
 package spark.swagger;
 
 /**
- * Created by magrnw on 3/8/17.
+ * @author mattg
  */
 public class Parameter {
     private String name;
     private String description;
-    private String schema;
     private Boolean required;
     private In in;
     private String type;
+    private Schema schema;
 
     public Parameter(String name) {
         this.name = name;
@@ -17,8 +17,17 @@ public class Parameter {
 
     public enum Type {
         string,
+        array,
         integer,
-        array
+        int64,
+        int32,
+        FLOAT,
+        DOUBLE,
+        BYTE,
+        BINARY,
+        DATE,
+        DATE_TIME,
+        PASSWORD
     }
 
     public In getIn() {
@@ -42,12 +51,14 @@ public class Parameter {
     public static enum In {
         body,
         query,
-        path
+        path,
+        header,
+        formData
     }
 
-    public Parameter(String name, Class schema) {
+    public Parameter(String name, Schema schema) {
         this.name = name;
-        this.schema = schema.getName();
+        this.schema = schema;
     }
 
     public String getName() {
@@ -68,11 +79,11 @@ public class Parameter {
         return this;
     }
 
-    public String getSchema() {
+    public Schema getSchema() {
         return schema;
     }
 
-    public Parameter schema(String schema) {
+    public Parameter schema(Schema schema) {
         this.schema = schema;
         return this;
     }

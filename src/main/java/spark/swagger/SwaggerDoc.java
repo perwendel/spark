@@ -1,6 +1,7 @@
 package spark.swagger;
 
-import java.util.List;
+import spark.route.RouteEntry;
+import spark.route.Routes;
 
 /**
  * Created by magrnw on 3/8/17.
@@ -14,6 +15,7 @@ public class SwaggerDoc {
     private String version = "1.0.0";
     private String swaggerPath = "/swagger.json";
     private RootTags tags;
+    private Definitions definitions;
 
     public RoutePaths getPaths() {
         return paths;
@@ -26,6 +28,17 @@ public class SwaggerDoc {
 
     public String getSwagger() {
         return swagger;
+    }
+
+    public void calculateDefinitions(Routes routes) {
+        definitions = new Definitions();
+        for (RouteEntry route : routes.getRoutes()) {
+            if (null != route.getDocumentation() && null != route.getDocumentation().getParameters()) {
+                for (Parameter parameter : route.getDocumentation().getParameters()) {
+                    definitions.put(parameter.getSchema().getClassName(), parameter.getSchema().getDefinition());
+                }
+            }
+        }
     }
 
     public SwaggerDoc swaggerVersion(String swagger) {
