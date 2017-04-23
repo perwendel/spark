@@ -16,7 +16,6 @@
  */
 package spark;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 import static spark.Service.ignite;
@@ -1194,7 +1193,7 @@ public class Spark {
      * @param viewName the view name
      * @return the model and view
      */
-    public static ModelAndView modelAndView(Map<String, Object> model, String viewName) {
+    public static ModelAndView modelAndView(Object model, String viewName) {
         return new ModelAndView(model, viewName);
     }
 
