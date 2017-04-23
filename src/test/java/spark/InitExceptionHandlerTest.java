@@ -1,11 +1,11 @@
 package spark;
 
-import static spark.Service.ignite;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static spark.Service.ignite;
 
 public class InitExceptionHandlerTest {
 
