@@ -72,6 +72,9 @@ public class StaticFilesConfiguration {
             }
 
         } catch (DirectoryTraversal.DirectoryTraversalDetection directoryTraversalDetection) {
+            httpResponse.setStatus(400);
+            httpResponse.getWriter().write("Bad request");
+            httpResponse.getWriter().flush();
             LOG.warn(directoryTraversalDetection.getMessage() + " directory traversal detection for path: "
                              + httpRequest.getPathInfo());
         }

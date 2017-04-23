@@ -16,8 +16,6 @@
  */
 package spark;
 
-import java.util.Map;
-
 /**
  * Model And View class is used to set the name of the view and the model object
  * to be rendered.
@@ -29,7 +27,7 @@ public class ModelAndView {
     /**
      * Model object.
      */
-    private Map<String, Object> model;
+    private Object model;
     /**
      * View name used to render output.
      */
@@ -41,7 +39,8 @@ public class ModelAndView {
      * @param model    the model
      * @param viewName the view name
      */
-    public ModelAndView(Map<String, Object> model, String viewName) {
+    public ModelAndView(Object model, String viewName) {
+        super();
         this.model = model;
         this.viewName = viewName;
     }
@@ -49,7 +48,7 @@ public class ModelAndView {
     /**
      * @return the model object
      */
-    public Map<String, Object> getModel() {
+    public Object getModel() {
         return model;
     }
 

@@ -142,15 +142,7 @@ public class StaticFilesTest {
     public void testDirectoryTraversalProtectionLocal() throws Exception {
         String path = "/" + URLEncoder.encode("..\\spark\\", "UTF-8") + "Spark.class";
         SparkTestUtil.UrlResponse response = doGet(path);
-
-        // Attempt to access context above root is either a 400 or 404 depending on environment
-        Assert.assertThat( response.status, CoreMatchers.anyOf(
-            CoreMatchers.is(400),
-            CoreMatchers.is(404)));
-        Assert.assertThat( response.body, CoreMatchers.anyOf(
-            CoreMatchers.containsString("Bad Message 400"),
-            CoreMatchers.containsString(NOT_FOUND_BRO)));
-
+        Assert.assertEquals(400, response.status);
         testGet();
     }
 
