@@ -16,16 +16,11 @@
  */
 package spark.staticfiles;
 
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.staticFiles;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URLEncoder;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -36,6 +31,10 @@ import org.slf4j.LoggerFactory;
 import spark.Spark;
 import spark.examples.exception.NotFoundException;
 import spark.util.SparkTestUtil;
+
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.staticFiles;
 
 /**
  * Test static files
@@ -142,7 +141,9 @@ public class StaticFilesTest {
     public void testDirectoryTraversalProtectionLocal() throws Exception {
         String path = "/" + URLEncoder.encode("..\\spark\\", "UTF-8") + "Spark.class";
         SparkTestUtil.UrlResponse response = doGet(path);
+
         Assert.assertEquals(400, response.status);
+
         testGet();
     }
 
