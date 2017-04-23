@@ -16,11 +16,16 @@
  */
 package spark.staticfiles;
 
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.staticFiles;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -31,10 +36,6 @@ import org.slf4j.LoggerFactory;
 import spark.Spark;
 import spark.examples.exception.NotFoundException;
 import spark.util.SparkTestUtil;
-
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.staticFiles;
 
 /**
  * Test static files
@@ -142,8 +143,13 @@ public class StaticFilesTest {
         String path = "/" + URLEncoder.encode("..\\spark\\", "UTF-8") + "Spark.class";
         SparkTestUtil.UrlResponse response = doGet(path);
 
-        Assert.assertEquals(404, response.status);
-        Assert.assertEquals(NOT_FOUND_BRO, response.body);
+        // Attempt to access context above root is either a 400 or 404 depending on environment
+        Assert.assertThat( response.status, CoreMatchers.anyOf(
+            CoreMatchers.is(400),
+            CoreMatchers.is(404)));
+        Assert.assertThat( response.body, CoreMatchers.anyOf(
+            CoreMatchers.containsString("Bad Message 400"),
+            CoreMatchers.containsString(NOT_FOUND_BRO)));
 
         testGet();
     }
