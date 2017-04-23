@@ -1213,4 +1213,16 @@ public class Spark {
         return new ModelAndView(model, viewName);
     }
 
+    /**
+     *
+     * Register task to be ran on application shutdown
+     *
+     * @param task  the task to be run on server shutdown
+     *
+     */
+
+    public static void beforeShutdown(Runnable task) {
+        Runtime.getRuntime().addShutdownHook(new Thread(task));
+    }
+
 }
