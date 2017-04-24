@@ -16,7 +16,14 @@ Spark - a tiny web framework for Java 8
 
 Important - There is a vulnerability in older versions of Spark (versions lower than 2.5.2). Please upgrade to the latest version.
 
-For more detailed documentation please go to: http://sparkjava.com/documentation
+For documentation please go to: http://sparkjava.com/documentation
+
+For usage questions, please use [stack overflow with the “spark-java” tag](http://stackoverflow.com/questions/tagged/spark-java) 
+
+Javadoc: http://javadoc.io/doc/com.sparkjava/
+
+Getting started
+---------------
 
 ```xml
 <dependency>
@@ -25,13 +32,6 @@ For more detailed documentation please go to: http://sparkjava.com/documentation
     <version>2.5.5</version>
 </dependency>
 ```
-
-For usage questions, please use [stack overflow with the “spark-java” tag](http://stackoverflow.com/questions/tagged/spark-java) 
-
-Javadoc: http://javadoc.io/doc/com.sparkjava/
-
-Getting started
----------------
 
 ```java
 import static spark.Spark.*;
