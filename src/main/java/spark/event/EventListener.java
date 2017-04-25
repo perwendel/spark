@@ -3,7 +3,9 @@ package spark.event;
 import spark.Service;
 
 /**
- * Created by kendrick on 4/24/17.
+ *
+ * Interface to handle events
+ *
  */
 @FunctionalInterface
 public interface EventListener {

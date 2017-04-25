@@ -3,7 +3,9 @@ package spark.event;
 import spark.Service;
 
 /**
- * Created by kendrick on 4/24/17.
+ *
+ * Encapsulate event created by system
+ *
  */
 public class Event {
     private EventType eventType;

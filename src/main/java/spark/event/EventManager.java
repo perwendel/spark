@@ -2,16 +2,15 @@ package spark.event;
 
 import spark.Service;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Created by kendrick on 4/24/17.
+ * Singleton that maintain a list of event listeners by type and notify the event listeners when event is fired.
+ *
  */
 public class EventManager {
 
+    // singleton instance
     private static EventManager INSTANCE;
 
     public synchronized static EventManager getInstance() {
@@ -25,8 +24,14 @@ public class EventManager {
 
     private EventManager() {}
 
-
-    public void addEventListener(EventType type, EventListener listener) {
+    /**
+     *
+     * Register the event listener with the manager
+     *
+     * @param type event types
+     * @param listener callback for event listener
+     */
+    public synchronized void addEventListener(EventType type, EventListener listener) {
         List<EventListener> listenerList = listenerMap.get(type);
         if (listenerList == null) {
             listenerList = new LinkedList<EventListener>();
@@ -35,6 +40,13 @@ public class EventManager {
         listenerList.add(listener);
     }
 
+    /**
+     *
+     * Used to notify event listeners when events happen
+     *
+     * @param type event types
+     * @param service service that raise the event
+     */
     public void fireEvent(EventType type,Service service) {
         List<EventListener> listenerList = listenerMap.get(type);
         if (listenerList != null) {
@@ -43,6 +55,13 @@ public class EventManager {
             }
         }
     }
+
+    /**
+     *
+     * Used to notify event listeners when events happen
+     *
+     * @param type
+     */
     public void fireEvent(EventType type) {
         List<EventListener> listenerList = listenerMap.get(type);
         if (listenerList != null) {
