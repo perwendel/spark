@@ -543,7 +543,17 @@ public final class Service extends Routable {
     // EVENT Manager
     //////////////////////////////////////////////////
 
+    /**
+     *
+     * Register event handler to be executed when an event happen
+     *
+     * @param eventType
+     * @param eventListener
+     */
     public synchronized void event(EventType eventType, EventListener eventListener) {
+        if(initialized) {
+           throwBeforeRouteMappingException();
+        }
         eventManager.addEventListener(eventType,eventListener);
     }
 
