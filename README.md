@@ -447,3 +447,80 @@ public class TransformerExample {
     }
 }
 ```
+---------------------------------
+
+Example of using Session Clustering
+
+First, setup session database and database user. The following is an example setup using mariadb/mysql. 
+
+```sql
+cmd> mysql -uroot -p -h database.server.com -P 3306
+mysql> CREATE DATABASE session_data;
+mysql> GRANT ALL ON session_data.* TO 'session_node'@'%' identified by 'password';
+
+```
+
+Next, setup service with cluster
+
+```java
+public class Test {
+    public static void main(String[] args) {
+        
+        clusterSession("jdbc" 
+            ,"node-01"
+            ,"org.mariadb.jdbc.Driver"
+            ,"jdbc:mariadb://database.server.com/session_data?user=session_node&password=password"
+            ,400
+        );
+        
+        get("/update", (req, res) -> {
+            Session s = req.session(false);
+            if (s !=null) {
+                Integer i = (Integer)req.session().attribute("data");
+                i = i == null ? 0 : i;
+                req.session().attribute("data", ++i);
+                return "data => "+i;
+            } else {
+                return "no session";
+            }
+        });
+        get("/display", (req, res) -> {
+            Integer i = 0;
+            Session s = req.session(false);
+            if (s !=null) {
+                i = (Integer)req.session().attribute("data");
+                return "data => "+i;
+            } else {
+                return "no session";
+            }
+        });
+        get("/start", (req, res) -> {
+            Session s = req.session(true);
+            s.attribute("time",System.currentTimeMillis());
+            s.attribute("data", 0);
+            return "start";
+        });
+        get("/end", (req, res) -> {
+            Session s = req.session(false);
+            if (s !=null) {
+                s.invalidate();
+            }
+            return "end";
+        });    
+    }
+}
+```
+Next, add the jdbc driver to your project.
+
+```
+<dependency>
+    <groupId>org.mariadb.jdbc</groupId>
+    <artifactId>mariadb-java-client</artifactId>
+    <version>1.1.7</version>
+</dependency>
+
+```
+
+Finally, compile and run. At this point, you should see session information stored in the database.
+
+Testing session clustering requires two instances of the application running on different Ports and/or IPs. It will also require a load balancer(such as ngnix).

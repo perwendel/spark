@@ -32,7 +32,7 @@ public interface EmbeddedServer {
      * and truststore.  If truststore is null, keystore is reused.
      *
      * @param host                    The address to listen on
-     * @param port                    - the port
+     * @param port                    - the port     
      * @param sslStores               - The SSL sslStores.
      * @param maxThreads              - max nbr of threads.
      * @param minThreads              - min nbr of threads.
@@ -69,8 +69,18 @@ public interface EmbeddedServer {
     void extinguish();
 
     /**
-     *
      * @return The approximate number of currently active threads
      */
     int activeThreadCount();
+
+    /**
+     * Configure session cluster
+     *
+     * @param clusterNodeName                       - node name for this instance of the application
+     * @param clusterDatastoreDriverClassName       - driver used to connect to the datasource (ie jdbc driver)
+     * @param clusterDatastoreDriverConnectionUrl   - url used to connect to the datasource (ie jdbc url)
+     * @param clusterScavengeInterval               - scavenge time sync up (in seconds)
+     *
+     */
+    void configureSessionCluster(String clusterNodeName, String clusterDatastoreDriverClassName, String clusterDatastoreDriverConnectionUrl, int clusterScavengeInterval);
 }

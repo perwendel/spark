@@ -16,15 +16,12 @@
  */
 package spark;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.eclipse.jetty.server.session.JDBCSessionIdManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +36,7 @@ import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
+import spark.utils.StringUtils;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
@@ -82,6 +80,11 @@ public final class Service extends Routable {
     private boolean servletStaticLocationSet;
     private boolean servletExternalStaticLocationSet;
 
+    protected String clusterNodeName;
+    protected String clusterDatastoreDriverClassName;
+    protected String clusterDatastoreDriverConnectionUrl;
+    protected int clusterScavengeInterval;
+
     private CountDownLatch latch = new CountDownLatch(1);
 
     private Object embeddedServerIdentifier = null;
@@ -117,6 +120,39 @@ public final class Service extends Routable {
         } else {
             staticFilesConfiguration = StaticFilesConfiguration.create();
         }
+    }
+
+    /**
+     * Setup session clustering for this server. This should be used to all clustering for multiple instances of the same app.
+     *
+     * @param clusterNodeName                       - node name for this instance of the application
+     * @param clusterDatastoreDriverClassName       - driver used to connect to the datasource (ie jdbc driver)
+     * @param clusterDatastoreDriverConnectionUrl   - url used to connect to the datasource (ie jdbc url)
+     * @param clusterScavengeInterval               - scavenge time sync up (in seconds)
+     *
+     * @return the object with session clustering set
+     */
+    public synchronized Service clusterSession(String clusterNodeName, String clusterDatastoreDriverClassName, String clusterDatastoreDriverConnectionUrl, int clusterScavengeInterval) {
+        if (initialized) {
+           throwBeforeRouteMappingException();
+        }
+
+        clusterDatastoreDriverConnectionUrl = StringUtils.isBlank(clusterDatastoreDriverConnectionUrl) ? null:clusterDatastoreDriverConnectionUrl;
+        if (StringUtils.isNotBlank(clusterDatastoreDriverConnectionUrl)) {
+            if ((!clusterDatastoreDriverConnectionUrl.contains("jdbc"))) {
+                throw new IllegalArgumentException("Cluster type is invalid.");
+            }
+            if (StringUtils.isBlank(clusterDatastoreDriverClassName) ||
+                clusterScavengeInterval <= 0) {
+                throw new IllegalArgumentException("Cluster information is invalid.");
+            }
+            this.clusterNodeName = StringUtils.isBlank(clusterNodeName) ? "" : clusterNodeName;
+            this.clusterScavengeInterval = clusterScavengeInterval;
+            this.clusterDatastoreDriverClassName = clusterDatastoreDriverClassName;
+            this.clusterDatastoreDriverConnectionUrl = clusterDatastoreDriverConnectionUrl;
+        }
+
+        return this;
     }
 
     /**
@@ -218,7 +254,7 @@ public final class Service extends Routable {
 
         if (keystoreFile == null) {
             throw new IllegalArgumentException(
-                    "Must provide a keystore file to run secured");
+                "Must provide a keystore file to run secured");
         }
 
         sslStores = SslStores.create(keystoreFile, keystorePassword, truststoreFile, truststorePassword, needsClientCert);
@@ -404,7 +440,7 @@ public final class Service extends Routable {
 
     private void throwBeforeRouteMappingException() {
         throw new IllegalStateException(
-                "This must be done before route mapping has begun");
+            "This must be done before route mapping has begun");
     }
 
     private boolean hasMultipleHandlers() {
@@ -421,7 +457,7 @@ public final class Service extends Routable {
                 server.extinguish();
                 latch = new CountDownLatch(1);
             }
-            
+
             routes.clear();
             exceptionMapper.clear();
             staticFilesConfiguration.clear();
@@ -487,30 +523,35 @@ public final class Service extends Routable {
 
             if (!isRunningFromServlet()) {
                 new Thread(() -> {
-                  try {
-                    EmbeddedServers.initialize();
+                    try {
+                        EmbeddedServers.initialize();
 
-                    if (embeddedServerIdentifier == null) {
-                        embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
-                    }
+                        if (embeddedServerIdentifier == null) {
+                            embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
+                        }
 
-                    server = EmbeddedServers.create(embeddedServerIdentifier,
-                                                    routes,
-                                                    staticFilesConfiguration,
-                                                    hasMultipleHandlers());
+                        server = EmbeddedServers.create(embeddedServerIdentifier,
+                            routes,
+                            staticFilesConfiguration,
+                            hasMultipleHandlers());
 
-                    server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+                        server.configureSessionCluster(clusterNodeName,
+                            clusterDatastoreDriverClassName,
+                            clusterDatastoreDriverConnectionUrl,
+                            clusterScavengeInterval);
 
-                    port = server.ignite(
+                        server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+
+                        port = server.ignite(
                             ipAddress,
                             port,
                             sslStores,
                             maxThreads,
                             minThreads,
                             threadIdleTimeoutMillis);
-                  } catch (Exception e) {
-                    initExceptionHandler.accept(e);
-                  }
+                    } catch (Exception e) {
+                        initExceptionHandler.accept(e);
+                    }
                     try {
                         latch.countDown();
                         server.join();

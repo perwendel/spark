@@ -27,8 +27,14 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.session.AbstractSessionManager;
+import org.eclipse.jetty.server.session.JDBCSessionIdManager;
+import org.eclipse.jetty.server.session.JDBCSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +42,7 @@ import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
 import spark.ssl.SslStores;
+import spark.utils.StringUtils;
 
 /**
  * Spark server implementation
@@ -48,15 +55,21 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     private static final String NAME = "Spark";
 
     private final JettyServerFactory serverFactory;
-    private final Handler handler;
+    private final JettyHandler handler;
     private Server server;
+
+    private String clusterNodeName;
+    private int clusterScavengeInterval;
+    private String clusterDatastoreDriverClassName;
+    private String clusterDatastoreDriverConnectionUrl;
+
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
     private Optional<Integer> webSocketIdleTimeoutMillis;
 
-    public EmbeddedJettyServer(JettyServerFactory serverFactory, Handler handler) {
+    public EmbeddedJettyServer(JettyServerFactory serverFactory, JettyHandler handler) {
         this.serverFactory = serverFactory;
         this.handler = handler;
     }
@@ -102,27 +115,53 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         }
 
         server = connector.getServer();
-        server.setConnectors(new Connector[] {connector});
+        server.setConnectors(new Connector[]{connector});
+
+        AbstractSessionManager sessionManager = null;
+
+        if (clusterDatastoreDriverConnectionUrl != null) {
+            if (clusterDatastoreDriverConnectionUrl.contains("jdbc")) {
+                //
+                JDBCSessionIdManager sessionIdManager = new JDBCSessionIdManager(server);
+                sessionIdManager.setWorkerName(clusterNodeName);
+                sessionIdManager.setDriverInfo(clusterDatastoreDriverClassName, clusterDatastoreDriverConnectionUrl);
+                sessionIdManager.setScavengeInterval(clusterScavengeInterval);
+                server.setSessionIdManager(sessionIdManager);
+
+                //
+                sessionManager = new JDBCSessionManager();
+                ((JDBCSessionManager) sessionManager).setSaveInterval(0);
+                sessionManager.setSessionIdManager(server.getSessionIdManager());
+                SessionHandler sessionHandler = new SessionHandler(sessionManager);
+                sessionManager.setSessionHandler(sessionHandler);
+
+                handler.setSessionManager(sessionManager);
+            }
+        }
 
         ServletContextHandler webSocketServletContextHandler =
             WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
 
+        ContextHandler contextHandler = new ContextHandler();
+        contextHandler.setContextPath("/");
+        contextHandler.setResourceBase(".");
+        contextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
+        contextHandler.setHandler(handler);
+
+        List<Handler> handlersInList = new ArrayList<>();
+        handlersInList.add(contextHandler);
+
         // Handle web socket routes
-        if (webSocketServletContextHandler == null) {
-            server.setHandler(handler);
-        } else {
-            List<Handler> handlersInList = new ArrayList<>();
-            handlersInList.add(handler);
-
-            // WebSocket handler must be the last one
-            if (webSocketServletContextHandler != null) {
-                handlersInList.add(webSocketServletContextHandler);
-            }
-
-            HandlerList handlers = new HandlerList();
-            handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
-            server.setHandler(handlers);
+        if (webSocketServletContextHandler != null) {
+            handlersInList.add(webSocketServletContextHandler);
         }
+
+        // add all handlers
+        HandlerList handlers = new HandlerList();
+        handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
+
+
+        server.setHandler(handlers);
 
         logger.info("== {} has ignited ...", NAME);
         logger.info(">> Listening on {}:{}", host, port);
@@ -162,5 +201,16 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             return 0;
         }
         return server.getThreadPool().getThreads() - server.getThreadPool().getIdleThreads();
+    }
+
+    @Override
+    public void configureSessionCluster(String clusterNodeName, String clusterDatastoreDriverClassName, String clusterDatastoreDriverConnectionUrl, int clusterScavengeInterval) {
+
+        this.clusterNodeName = clusterNodeName;
+        this.clusterScavengeInterval = clusterScavengeInterval;
+        this.clusterDatastoreDriverClassName = clusterDatastoreDriverClassName;
+        this.clusterDatastoreDriverConnectionUrl = clusterDatastoreDriverConnectionUrl;
+
+
     }
 }

@@ -31,7 +31,7 @@ public class MimeType {
 
     private static volatile boolean guessingOn = true;
 
-    private static Map<String, String> mappings = new HashMap();
+    private static Map<String, String> mappings = new HashMap<String, String>();
 
     static {
         mappings.put("au", "audio/basic");
