@@ -16,6 +16,10 @@
  */
 package spark;
 
+import spark.event.EventListener;
+import spark.event.EventManager;
+import spark.event.EventType;
+
 import java.util.function.Consumer;
 
 import static spark.Service.ignite;
@@ -39,6 +43,16 @@ import static spark.Service.ignite;
  * @author Per Wendel
  */
 public class Spark {
+
+    static {
+        // Setup Shutdown Hook
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                EventManager eventManager = EventManager.getInstance();
+                eventManager.fireEvent(EventType.PROCESS_SHUTDOWN);
+            }
+        });
+    }
 
     // Hide constructor
     protected Spark() {
@@ -1197,4 +1211,11 @@ public class Spark {
         return new ModelAndView(model, viewName);
     }
 
+    /**
+     *  Setup an event listener for system events
+     *
+     * @param eventType     the type of event to listen for
+     * @param eventListener the event callback
+     */
+    public static void event(EventType eventType, EventListener eventListener){ getInstance().event(eventType,eventListener);}
 }

@@ -33,6 +33,9 @@ import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
+import spark.event.EventListener;
+import spark.event.EventManager;
+import spark.event.EventType;
 import spark.route.HttpMethod;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
@@ -91,6 +94,7 @@ public final class Service extends Routable {
 
     private final StaticFilesConfiguration staticFilesConfiguration;
     private final ExceptionMapper exceptionMapper = ExceptionMapper.getInstance();
+    private final EventManager eventManager = EventManager.getInstance();
 
     // default exception handler during initialization phase
     private Consumer<Exception> initExceptionHandler = (e) -> {
@@ -416,6 +420,7 @@ public final class Service extends Routable {
      * Stops the Spark server and clears all routes
      */
     public synchronized void stop() {
+        eventManager.fireEvent(EventType.SERVER_STOPPING,this);
         new Thread(() -> {
             if (server != null) {
                 server.extinguish();
@@ -426,6 +431,8 @@ public final class Service extends Routable {
             exceptionMapper.clear();
             staticFilesConfiguration.clear();
             initialized = false;
+            //
+            eventManager.fireEvent(EventType.SERVER_STOPPED,this);
         }).start();
     }
 
@@ -482,9 +489,8 @@ public final class Service extends Routable {
 
     public synchronized void init() {
         if (!initialized) {
-
+            eventManager.fireEvent(EventType.SERVER_STARTING,this);
             initializeRouteMatcher();
-
             if (!isRunningFromServlet()) {
                 new Thread(() -> {
                   try {
@@ -511,6 +517,7 @@ public final class Service extends Routable {
                   } catch (Exception e) {
                     initExceptionHandler.accept(e);
                   }
+                    eventManager.fireEvent(EventType.SERVER_STARTED,this);
                     try {
                         latch.countDown();
                         server.join();
@@ -530,6 +537,14 @@ public final class Service extends Routable {
         } else {
             routes = Routes.create();
         }
+    }
+
+    //////////////////////////////////////////////////
+    // EVENT Manager
+    //////////////////////////////////////////////////
+
+    public synchronized void event(EventType eventType, EventListener eventListener) {
+        eventManager.addEventListener(eventType,eventListener);
     }
 
     //////////////////////////////////////////////////
