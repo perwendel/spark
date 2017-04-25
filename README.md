@@ -69,6 +69,10 @@ public class SimpleExample {
 
     public static void main(String[] args) {
 
+        event(EventType.PROCESS_SHUTDOWN, (e) -> {
+            System.out.println("process shutdown");
+        });
+        
         //  port(5678); <- Uncomment this if you want spark to listen to port 5678 instead of the default 4567
 
         get("/hello", (request, response) -> "Hello World!");
@@ -446,4 +450,35 @@ public class TransformerExample {
         }, new JsonTransformer());
     }
 }
+```
+---------------------------------
+
+Example of using Events. Events are fired doing runtime.
+
+```java
+
+public class EventExample {
+    public static void main(String[] args) {        
+        event(EventType.SERVER_STARTING,(e)-> {
+            System.out.println("server starting");
+        });
+
+        event(EventType.SERVER_STARTED,(e)-> {
+            System.out.println("server started");
+        });
+
+        event(EventType.SERVER_STOPPING,(e)-> {
+            System.out.println("server stopping");
+        });
+
+        event(EventType.SERVER_STOPPED,(e)-> {
+            System.out.println("server stopped");
+        });
+
+        event(EventType.PROCESS_SHUTDOWN, (e) -> {
+            System.out.println("process shutdown");
+        });
+    }
+}
+
 ```
