@@ -455,6 +455,7 @@ public final class Service extends Routable {
         pathDeque.addLast(path);
         routeGroup.addRoutes();
         pathDeque.removeLast();
+        eventManager.fireEvent(EventType.PATH_ADDED,this);
     }
 
     public String getPaths() {
@@ -465,12 +466,14 @@ public final class Service extends Routable {
     public void addRoute(HttpMethod httpMethod, RouteImpl route) {
         init();
         routes.add(httpMethod, route.withPrefix(getPaths()));
+        eventManager.fireEvent(EventType.ROUTE_ADDED,this);
     }
 
     @Override
     public void addFilter(HttpMethod httpMethod, FilterImpl filter) {
         init();
         routes.add(httpMethod, filter.withPrefix(getPaths()));
+        eventManager.fireEvent(EventType.FILTER_ADDED,this);
     }
 
     @Override
@@ -478,6 +481,7 @@ public final class Service extends Routable {
     public void addRoute(String httpMethod, RouteImpl route) {
         init();
         routes.add(httpMethod + " '" + getPaths() + route.getPath() + "'", route.getAcceptType(), route);
+        eventManager.fireEvent(EventType.ROUTE_ADDED,this);
     }
 
     @Override
@@ -485,6 +489,7 @@ public final class Service extends Routable {
     public void addFilter(String httpMethod, FilterImpl filter) {
         init();
         routes.add(httpMethod + " '" + getPaths() + filter.getPath() + "'", filter.getAcceptType(), filter);
+        eventManager.fireEvent(EventType.FILTER_ADDED,this);
     }
 
     public synchronized void init() {
