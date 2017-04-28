@@ -447,3 +447,7 @@ public class TransformerExample {
     }
 }
 ```
+
+Debugging
+------------------
+See [Spark-debug-tools](https://github.com/perwendel/spark-debug-tools) as a separate module.
