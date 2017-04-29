@@ -478,6 +478,18 @@ public class EventExample {
         event(EventType.PROCESS_SHUTDOWN, (e) -> {
             System.out.println("process shutdown");
         });
+                
+        event(EventType.FILTER_ADDED, (e) -> {
+            System.out.println("filter added");
+        });        
+        
+        event(EventType.ROUTE_ADDED, (e) -> {
+            System.out.println("route added");
+        });
+        
+        event(EventType.PATH_ADDED, (e) -> {
+            System.out.println("path added");
+        });
     }
 }
 
