@@ -11,16 +11,25 @@ import static org.junit.Assert.*;
 public class SparkUtilsTest {
 
     @Test
-    public void testConvertRouteToList() throws Exception {
-
+    public void testDefaultConvertRouteToList() throws Exception {
         List<String> expected = Arrays.asList("api", "person", ":id");
-
         List<String> actual = SparkUtils.convertRouteToList("/api/person/:id");
-
         assertThat("Should return route as a list of individual elements that path is made of",
                 actual,
                 is(expected));
 
+    }
+
+
+
+    @Test
+    public void testConvertRouteToList() throws Exception {
+        List<String> expected = Arrays.asList("api", "person", "{id}");
+        SparkUtils.setParamPlaceholder(SparkUtils.CURLY_BRACKET_MATCHER);
+        List<String> actual = SparkUtils.convertRouteToList("/api/person/{id}");
+        assertThat("Should return route as a list of individual elements that path is made of",
+            actual,
+            is(expected));
     }
 
     @Test
