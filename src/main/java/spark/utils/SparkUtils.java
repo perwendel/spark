@@ -46,7 +46,11 @@ public final class SparkUtils {
     }
 
 
-    public static void setParamPlaceholder(String regex) {
+    /**
+     * Set the regular expression for the path mather.
+     * @param regex regular expression for the path variables.
+     */
+    public static void paramMatcher(String regex) {
         SparkUtils.regex = regex;
     }
 
