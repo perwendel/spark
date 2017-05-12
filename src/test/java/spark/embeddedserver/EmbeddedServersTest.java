@@ -27,7 +27,6 @@ public class EmbeddedServersTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    @Ignore
     public void testAddAndCreate_whenCreate_createsCustomServer() throws Exception {
         // Create custom Server
         Server server = new Server();
@@ -51,7 +50,6 @@ public class EmbeddedServersTest {
     }
 
     @Test
-    @Ignore
     public void testAdd_whenConfigureRoutes_createsCustomServer() throws Exception {
         File requestLogDir = temporaryFolder.newFolder();
         File requestLogFile = new File(requestLogDir, "request.log");
