@@ -79,14 +79,14 @@ class RouteEntry {
                 String thisPathPart = thisPathList.get(i);
                 String pathPart = pathList.get(i);
 
-                if ((i == thisPathSize - 1) && (thisPathPart.equals("*") && this.path.endsWith("*"))) {
+                if ((i == thisPathSize - 1) && ("*".equals(thisPathPart) && this.path.endsWith("*"))) {
                     // wildcard match
                     return true;
                 }
 
-                if ((!thisPathPart.startsWith(":"))
-                        && !thisPathPart.equals(pathPart)
-                        && !thisPathPart.equals("*")) {
+                if (!"*".equals(thisPathPart)
+                        && (!thisPathPart.startsWith(":"))
+                        && !thisPathPart.equals(pathPart)) {
                     return false;
                 }
             }
@@ -107,13 +107,13 @@ class RouteEntry {
                     for (int i = 0; i < thisPathSize; i++) {
                         String thisPathPart = thisPathList.get(i);
                         String pathPart = pathList.get(i);
-                        if (thisPathPart.equals("*") && (i == thisPathSize - 1) && this.path.endsWith("*")) {
+                        if ("*".equals(thisPathPart) && (i == thisPathSize - 1) && this.path.endsWith("*")) {
                             // wildcard match
                             return true;
                         }
-                        if (!thisPathPart.startsWith(":")
-                                && !thisPathPart.equals(pathPart)
-                                && !thisPathPart.equals("*")) {
+                        if (!"*".equals(thisPathPart)
+                                && !thisPathPart.startsWith(":")
+                                && !thisPathPart.equals(pathPart)) {
                             return false;
                         }
                     }

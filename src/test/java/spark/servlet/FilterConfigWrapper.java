@@ -28,7 +28,7 @@ public class FilterConfigWrapper implements FilterConfig {
      * @see javax.servlet.FilterConfig#getInitParameter(java.lang.String)
      */
     public String getInitParameter(String name) {
-        if (name.equals("applicationClass")) {
+        if ("applicationClass".equals(name)) {
             return "spark.servlet.MyApp";
         }
         return delegate.getInitParameter(name);

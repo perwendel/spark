@@ -60,7 +60,7 @@ public class MimeParse {
 
         // Java URLConnection class sends an Accept header that includes a
         // single "*" - Turn it into a legal wildcard.
-        if (fullType.equals("*")) {
+        if ("*".equals(fullType)) {
             fullType = "*/*";
         }
 
@@ -141,12 +141,12 @@ public class MimeParse {
         ParseResults target = parseMediaRange(mimeType);
 
         for (ParseResults range : parsedRanges) {
-            if ((target.type.equals(range.type) || range.type.equals("*") || target.type.equals("*"))
-                    && (target.subType.equals(range.subType) || range.subType.equals("*")
-                    || target.subType.equals("*"))) {
+            if ((target.type.equals(range.type) || "*".equals(range.type) || "*".equals(target.type))
+                    && (target.subType.equals(range.subType) || "*".equals(range.subType)
+                    || "*".equals(target.subType))) {
                 for (String k : target.params.keySet()) {
                     int paramMatches = 0;
-                    if (!k.equals("q") && range.params.containsKey(k)
+                    if (!"q".equals(k) && range.params.containsKey(k)
                             && target.params.get(k).equals(range.params.get(k))) {
                         paramMatches++;
                     }
