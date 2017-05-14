@@ -146,7 +146,11 @@ public class Request {
 
         if (param.startsWith(":")) {
             return params.get(param.toLowerCase()); // NOSONAR
-        } else {
+        } 
+        else if (param.startsWith("{") && param.endsWith("}")) { //allow /{variable} in url params 
+            return params.get(":" + param.substring(1, param.length() - 1).toLowerCase());
+        }
+        else {
             return params.get(":" + param.toLowerCase()); // NOSONAR
         }
     }
