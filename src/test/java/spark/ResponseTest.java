@@ -87,10 +87,18 @@ public class ResponseTest {
     @Test
     public void testHeader() {
         final String finalHeaderKey = "Content-Length";
-        final String finalHeaderValue = "32";
+        final String firstHeaderValue = "32";
+        final String secondHeaderValue = "64";
+        final String finalHeaderValue = "128";
+
+        response.header(finalHeaderKey, firstHeaderValue);
+        verify(httpServletResponse).setHeader(finalHeaderKey, firstHeaderValue);
+
+        response.header(finalHeaderKey, secondHeaderValue, false);
+        verify(httpServletResponse).addHeader(finalHeaderKey, secondHeaderValue);
 
         response.header(finalHeaderKey, finalHeaderValue);
-        verify(httpServletResponse).addHeader(finalHeaderKey, finalHeaderValue);
+        verify(httpServletResponse).setHeader(finalHeaderKey, finalHeaderValue);
     }
 
     private void validateCookieContent(Cookie cookie,
