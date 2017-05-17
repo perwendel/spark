@@ -80,7 +80,7 @@ public class RouteOverview {
         String routeStr = routeTarget.toString();
 
         if (routeStr.contains("$$Lambda$")) { // This is a Route or Filter lambda
-            return "Lambda";
+            return "Lambda in " + routeStr.substring(0,routeStr.lastIndexOf("$$"));
         }
 
         if (routeStr.contains("@")) { // This is a Class implementing Route or Filter
