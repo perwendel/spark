@@ -422,9 +422,15 @@ public final class Service extends Routable {
                 latch = new CountDownLatch(1);
             }
             
-            routes.clear();
-            exceptionMapper.clear();
-            staticFilesConfiguration.clear();
+            if(routes != null) {
+                routes.clear();
+            }
+            if(exceptionMapper != null) {
+                exceptionMapper.clear();
+            }
+            if(staticFilesConfiguration != null) {
+                staticFilesConfiguration.clear();
+            }
             initialized = false;
         }).start();
     }
