@@ -30,6 +30,7 @@ public class RouteOverviewTest {
     private final static int ROUTE_CLASS = 5;
     private final static int ROUTE_METHOD_REF = 6;
     private final static int ROUTE_LAMBDA = 7;
+    public static final String EXPECTED_LAMBDA_RETURN_VALUE = "<em>(lambda in spark.route.RouteOverviewTest)</em>";
 
     @BeforeClass
     public static void setup() {
@@ -62,42 +63,42 @@ public class RouteOverviewTest {
 
     @Test
     public void assertThat_filter_field_works() {
-        assertThat(routeName(FILTER_FIELD), is("Lambda in spark.route.RouteOverviewTest"));
+        assertThat(routeName(FILTER_FIELD), is(EXPECTED_LAMBDA_RETURN_VALUE));
     }
 
     @Test
     public void assertThat_filter_class_works() {
-        assertThat(routeName(FILTER_CLASS), containsString("FilterImplementer.class"));
+        assertThat(routeName(FILTER_CLASS), containsString("FilterImplementer"));
     }
 
     @Test
     public void assertThat_filter_methodRef_works() {
-        assertThat(routeName(FILTER_METHOD_REF), is("Lambda in spark.route.RouteOverviewTest"));
+        assertThat(routeName(FILTER_METHOD_REF), is(EXPECTED_LAMBDA_RETURN_VALUE));
     }
 
     @Test
     public void assertThat_filter_lambda_works() {
-        assertThat(routeName(FILTER_LAMBDA), is("Lambda in spark.route.RouteOverviewTest"));
+        assertThat(routeName(FILTER_LAMBDA), is(EXPECTED_LAMBDA_RETURN_VALUE));
     }
 
     @Test
     public void assertThat_route_field_works() {
-        assertThat(routeName(ROUTE_FIELD), is("Lambda in spark.route.RouteOverviewTest"));
+        assertThat(routeName(ROUTE_FIELD), is(EXPECTED_LAMBDA_RETURN_VALUE));
     }
 
     @Test
     public void assertThat_route_class_works() {
-        assertThat(routeName(ROUTE_CLASS), containsString("RouteImplementer.class"));
+        assertThat(routeName(ROUTE_CLASS), containsString("RouteImplementer"));
     }
 
     @Test
     public void assertThat_route_methodRef_works() {
-        assertThat(routeName(ROUTE_METHOD_REF), is("Lambda in spark.route.RouteOverviewTest"));
+        assertThat(routeName(ROUTE_METHOD_REF), is(EXPECTED_LAMBDA_RETURN_VALUE));
     }
 
     @Test
     public void assertThat_route_lambda_works() {
-        assertThat(routeName(ROUTE_LAMBDA), containsString("Lambda in spark.route.RouteOverviewTest"));
+        assertThat(routeName(ROUTE_LAMBDA), containsString(EXPECTED_LAMBDA_RETURN_VALUE));
     }
 
     // fields/classes/methods to obtain names from

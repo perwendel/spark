@@ -80,13 +80,13 @@ public class RouteOverview {
         String routeStr = routeTarget.toString();
 
         if (routeStr.contains("$$Lambda$")) { // This is a Route or Filter lambda
-            return "Lambda in " + routeStr.substring(0,routeStr.lastIndexOf("$$"));
+            return "<em>(lambda in " + routeStr.substring(0,routeStr.lastIndexOf("$$")) + ")</em>";
         }
 
         if (routeStr.contains("@")) { // This is a Class implementing Route or Filter
             String packages = routeStr.split("@")[0].substring(0, routeStr.lastIndexOf("."));
             String className = routeStr.split("@")[0].substring(routeStr.lastIndexOf(".") + 1);
-            return packages + ".<b>" + className + ".class</b> <em>(class)</em>";
+            return packages + ".<b>" + className + "</b> <em>(class)</em>";
         }
 
         return "<b>Mysterious route handler</b>";
