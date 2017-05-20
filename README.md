@@ -20,7 +20,7 @@ For documentation please go to: http://sparkjava.com/documentation
 
 For usage questions, please use [stack overflow with the “spark-java” tag](http://stackoverflow.com/questions/tagged/spark-java) 
 
-Javadoc: http://javadoc.io/doc/com.sparkjava/
+Javadoc: http://javadoc.io/doc/com.sparkjava/spark-core
 
 Getting started
 ---------------
