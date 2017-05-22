@@ -5,12 +5,12 @@
 Spark - a tiny web framework for Java 8
 ==============================================
 
-**NEWS**: Spark 2.6.0 Release Candidate is out. Please try it out and report any bugs. 2.6.0 release will follow soon.
+**NEWS**: Spark 2.6.0 is out. Please try it out and report any bugs.
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.6.0.RC0</version>
+    <version>2.6.0</version>
 </dependency>
 ```
 
@@ -29,7 +29,7 @@ Getting started
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.5.5</version>
+    <version>2.6.0</version>
 </dependency>
 ```
 
