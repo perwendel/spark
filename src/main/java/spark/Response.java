@@ -17,6 +17,7 @@
 package spark;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +39,7 @@ public class Response {
 
     private HttpServletResponse response;
     private String body;
+    private boolean contentLengthManuallySet = false;
 
     protected Response() {
         // Used by wrapper
@@ -85,12 +87,45 @@ public class Response {
     }
 
     /**
+     * Sets the content length for the response
+     *
+     * @param contentLength the content length
+     */
+    public void length(int contentLength) {
+        response.setContentLength(contentLength);
+
+        contentLengthManuallySet = true;
+    }
+
+    /**
      * Sets the body
      *
      * @param body the body
      */
     public void body(String body) {
         this.body = body;
+
+        if (!contentLengthManuallySet) {
+            calculateContentLength();
+        }
+    }
+
+    /**
+     * Measures <code>body</code> content
+     * length.
+     */
+    protected void calculateContentLength() {
+        String charsetValue = response.getCharacterEncoding() == null ?
+                "ISO-8859-1" // recommended charset according to http://www.ietf.org/rfc/rfc2047.txt
+                : response.getCharacterEncoding();
+
+        Charset charset = Charset.forName(charsetValue);
+
+        if (charset != null) {
+            response.setContentLength(this.body.getBytes(charset).length);
+        } else if (LOG.isDebugEnabled()) {
+            LOG.debug("unable to retrieve charset for name '{}'", charsetValue);
+        }
     }
 
     /**
