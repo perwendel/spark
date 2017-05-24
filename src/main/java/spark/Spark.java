@@ -44,6 +44,15 @@ public class Spark {
     protected Spark() {
     }
 
+    
+    /**
+     * Boolean to tell gziputils whether to gzip the response (if content-encoding and accept-encoding are gzip)
+     * Default is true => meaning the response will be gzipped
+     * However if set to false, the content will not be gzip compressed (i.e. if it was gzip compressed before serving)
+     * @author Anthony Bradley
+     */
+    public static boolean doGzip = true;
+    
     /**
      * Initializes singleton.
      */

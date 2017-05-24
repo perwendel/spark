@@ -37,7 +37,7 @@ public class GzipUtils {
     private static final String CONTENT_ENCODING = "Content-Encoding";
 
     private static final String GZIP = "gzip";
-
+    
     private static final StringMatch STRING_MATCH = new StringMatch();
 
     // Hide constructor
@@ -68,8 +68,10 @@ public class GzipUtils {
 
         if (acceptsGzip) {
             if (!requireWantsHeader || wantGzip) {
+            	if(spark.Spark.doGzip==true){
                 responseStream = new GZIPOutputStream(responseStream, true);
                 addContentEncodingHeaderIfMissing(httpResponse, wantGzip);
+            	}
             }
         }
 
