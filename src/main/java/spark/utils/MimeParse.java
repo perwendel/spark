@@ -104,7 +104,7 @@ public class MimeParse {
         int fitness;
 
         float quality;
-
+        
         String mimeType; // optionally used
 
         private FitnessAndQuality(int fitness, float quality) {
@@ -153,6 +153,8 @@ public class MimeParse {
                     int fitness = (range.type.equals(target.type)) ? 100 : 0;
                     fitness += (range.subType.equals(target.subType)) ? 10 : 0;
                     fitness += paramMatches;
+                    fitness += (!range.type.equals("*") ? 2 : 0);
+                    fitness += (!range.subType.equals("*") ? 1 : 0);
                     if (fitness > bestFitness) {
                         bestFitness = fitness;
                         bestFitQ = toFloat(range.params.get("q"), 0);
@@ -176,7 +178,7 @@ public class MimeParse {
         for (String r : header.split(",")) {
             parseResults.add(parseMediaRange(r));
         }
-
+        
         for (String s : supported) {
             FitnessAndQuality fitnessAndQuality = fitnessAndQualityParsed(s, parseResults);
             fitnessAndQuality.mimeType = s;
