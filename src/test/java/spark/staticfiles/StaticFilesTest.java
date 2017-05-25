@@ -104,6 +104,17 @@ public class StaticFilesTest {
     }
 
     @Test
+    public void testRegisteredMimeTypesForSuffixlessRegistrations() throws Exception {
+        staticFiles.registerMimeType("pageWithoutASuffix", "text/html");
+        Assert.assertEquals("text/html", doGet("/pages/pageWithoutASuffix").headers.get("Content-Type"));
+    }
+
+    @Test
+    public void testUnRegisteredMimeTypesForSuffixlessRegistrations() throws Exception {
+        Assert.assertEquals("application/octet-stream", doGet("/pages/anotherPageWithoutASuffix").headers.get("Content-Type"));
+    }
+
+    @Test
     public void testCustomMimeType() throws Exception {
         staticFiles.registerMimeType("cxt", "custom-extension-type");
         Assert.assertEquals("custom-extension-type", doGet("/img/file.cxt").headers.get("Content-Type"));
