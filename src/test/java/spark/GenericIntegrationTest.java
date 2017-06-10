@@ -337,12 +337,12 @@ public class GenericIntegrationTest {
     }
 
     @Test
-    public void testEchoParams4() throws Exception {
-        String pathWithPlusSign = "not+broken+path+part";
-        String encoded = URIUtil.encodePath(pathWithPlusSign);
+    public void testPathParamsWithPlusSign() throws Exception {
+        String pathParamWithPlusSign = "not+broken+path+param";
+        String encoded = URIUtil.encodePath(pathParamWithPlusSign);
         UrlResponse response = testUtil.doMethod("GET", "/param/" + encoded, null);
         Assert.assertEquals(200, response.status);
-        Assert.assertEquals("echo: " + pathWithPlusSign, response.body);
+        Assert.assertEquals("echo: " + pathParamWithPlusSign, response.body);
     }
 
     @Test
