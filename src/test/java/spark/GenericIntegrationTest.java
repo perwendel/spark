@@ -337,6 +337,15 @@ public class GenericIntegrationTest {
     }
 
     @Test
+    public void testEchoParams4() throws Exception {
+        String pathWithPlusSign = "not+broken+path+part";
+        String encoded = URIUtil.encodePath(pathWithPlusSign);
+        UrlResponse response = testUtil.doMethod("GET", "/param/" + encoded, null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("echo: " + pathWithPlusSign, response.body);
+    }
+
+    @Test
     public void testParamWithEncodedSlash() throws Exception {
         String polyglot = "te/st";
         String encoded = URLEncoder.encode(polyglot, "UTF-8");
