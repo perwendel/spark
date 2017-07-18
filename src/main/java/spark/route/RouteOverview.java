@@ -16,13 +16,15 @@
  */
 package spark.route;
 
-import java.util.ArrayList;
-import static java.util.Collections.singletonList;
-import java.util.List;
 import spark.Request;
 import spark.Response;
-import static spark.Spark.get;
 import spark.utils.Wrapper;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static spark.Spark.get;
 
 public class RouteOverview {
 
@@ -48,6 +50,30 @@ public class RouteOverview {
         get(path, RouteOverview::createHtmlOverview);
     }
 
+    /**
+     * Builds up the route overviews.
+     *
+     *
+     * @param request
+     * @param response
+     * @return html content showing the various route overviews
+     */
+    public static String createHtmlOverview(Request request, Response response) {
+        String head = "<meta name='viewport' content='width=device-width, initial-scale=1'>"
+            + "<style>b,thead{font-weight:700}body{font-family:monospace;padding:15px}table{border-collapse:collapse;font-size:14px;border:1px solid #d5d5d5;width:100%;white-space:pre}thead{background:#e9e9e9;border-bottom:1px solid #d5d5d5}tbody tr:hover{background:#f5f5f5}td{padding:6px 15px}b{color:#33D}em{color:#666}</style>";
+
+        String rowTemplate = "<tr><td>%s</td><td>%s</td><td><b>%s</b></td><td>%s</td></tr>";
+
+        List<String> tableContent = new ArrayList<>(singletonList("<thead><tr><td>Method</td><td>Accepts</td><td>Path</td><td>Route</td></tr></thead>"));
+
+        routes.forEach(r -> {
+            tableContent.add(String.format(rowTemplate, r.httpMethod.name(), r.acceptedType.replace("*/*", "any"), r.path, createHtmlForRouteTarget(r.target)));
+        });
+
+        return head + "<body><h1>All mapped routes</h1><table>" + String.join("", tableContent) + "</table><body>";
+    }
+
+
     // Everything below this point is either package private or private
 
     static List<RouteEntry> routes = new ArrayList<>();
@@ -59,21 +85,6 @@ public class RouteOverview {
         }
 
         routes.add(entry);
-    }
-
-    static String createHtmlOverview(Request request, Response response) {
-        String head = "<meta name='viewport' content='width=device-width, initial-scale=1'>"
-                + "<style>b,thead{font-weight:700}body{font-family:monospace;padding:15px}table{border-collapse:collapse;font-size:14px;border:1px solid #d5d5d5;width:100%;white-space:pre}thead{background:#e9e9e9;border-bottom:1px solid #d5d5d5}tbody tr:hover{background:#f5f5f5}td{padding:6px 15px}b{color:#33D}em{color:#666}</style>";
-
-        String rowTemplate = "<tr><td>%s</td><td>%s</td><td><b>%s</b></td><td>%s</td></tr>";
-
-        List<String> tableContent = new ArrayList<>(singletonList("<thead><tr><td>Method</td><td>Accepts</td><td>Path</td><td>Route</td></tr></thead>"));
-
-        routes.forEach(r -> {
-            tableContent.add(String.format(rowTemplate, r.httpMethod.name(), r.acceptedType.replace("*/*", "any"), r.path, createHtmlForRouteTarget(r.target)));
-        });
-
-        return head + "<body><h1>All mapped routes</h1><table>" + String.join("", tableContent) + "</table><body>";
     }
 
     static String createHtmlForRouteTarget(Object routeTarget) {
