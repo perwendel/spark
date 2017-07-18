@@ -532,6 +532,16 @@ public final class Service extends Routable {
         }
     }
 
+    /**
+     * @return The approximate number of currently active threads in the embedded Jetty server
+     */
+    public synchronized int activeThreadCount() {
+        if (server != null) {
+            return server.activeThreadCount();
+        }
+        return 0;
+    }
+
     //////////////////////////////////////////////////
     // EXCEPTION mapper
     //////////////////////////////////////////////////

@@ -1197,4 +1197,11 @@ public class Spark {
         return new ModelAndView(model, viewName);
     }
 
+    /**
+     * @return The approximate number of currently active threads in the embedded Jetty server
+     */
+    public static int activeThreadCount() {
+        return getInstance().activeThreadCount();
+    }
+
 }
