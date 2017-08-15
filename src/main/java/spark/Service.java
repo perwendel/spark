@@ -65,9 +65,6 @@ public final class Service extends Routable {
 
     protected SslStores sslStores;
 
-    protected String staticFileFolder = null;
-    protected String externalStaticFileFolder = null;
-
     protected Map<String, WebSocketHandlerWrapper> webSocketHandlers = null;
 
     protected int maxThreads = -1;
@@ -78,9 +75,6 @@ public final class Service extends Routable {
     protected EmbeddedServer server;
     protected Deque<String> pathDeque = new ArrayDeque<>();
     protected Routes routes;
-
-    private boolean servletStaticLocationSet;
-    private boolean servletExternalStaticLocationSet;
 
     private CountDownLatch latch = new CountDownLatch(1);
 
@@ -266,12 +260,9 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-
-        staticFileFolder = folder;
-
-        if (!servletStaticLocationSet) {
-            staticFilesConfiguration.configure(staticFileFolder);
-            servletStaticLocationSet = true;
+        
+        if (!staticFilesConfiguration.isStaticResourcesSet()) {
+            staticFilesConfiguration.configure(folder);
         } else {
             LOG.warn("Static file location has already been set");
         }
@@ -289,12 +280,9 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-
-        externalStaticFileFolder = externalFolder;
-
-        if (!servletExternalStaticLocationSet) {
-            staticFilesConfiguration.configureExternal(externalStaticFileFolder);
-            servletExternalStaticLocationSet = true;
+        
+        if (!staticFilesConfiguration.isExternalStaticResourcesSet()) {
+            staticFilesConfiguration.configureExternal(externalFolder);
         } else {
             LOG.warn("External static file location has already been set");
         }
