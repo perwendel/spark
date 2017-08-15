@@ -123,6 +123,14 @@ public class StaticFilesConfiguration {
         staticResourcesSet = false;
         externalStaticResourcesSet = false;
     }
+    
+    public boolean isStaticResourcesSet() {
+        return staticResourcesSet;
+    }
+    
+    public boolean isExternalStaticResourcesSet() {
+        return externalStaticResourcesSet;
+    }
 
     /**
      * Configures location for static resources
@@ -143,7 +151,6 @@ public class StaticFilesConfiguration {
             StaticFilesFolder.localConfiguredTo(folder);
             staticResourcesSet = true;
         }
-
     }
 
     /**
@@ -174,7 +181,6 @@ public class StaticFilesConfiguration {
             StaticFilesFolder.externalConfiguredTo(folder);
             externalStaticResourcesSet = true;
         }
-
     }
 
     public static StaticFilesConfiguration create() {
