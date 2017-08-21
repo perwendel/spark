@@ -42,12 +42,16 @@ public class HttpRequestWrapper extends HttpServletRequestWrapper {
         return notConsumed;
     }
 
-    public void notConsumed(boolean consumed) {
-        notConsumed = consumed;
+    public void notConsumed(boolean notConsumed) {
+        this.notConsumed = notConsumed;
     }
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
+        String transferEncoding = ((HttpServletRequest) super.getRequest()).getHeader("Transfer-Encoding");
+        if ("chunked".equals(transferEncoding)) {
+            return super.getInputStream(); // disable stream cache for chunked transfer encoding
+        }
         if (cachedBytes == null) {
             cacheInputStream();
         }

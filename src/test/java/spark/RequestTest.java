@@ -46,6 +46,24 @@ public class RequestTest {
     }
 
     @Test
+    public void queryParamOrDefault_shouldReturnQueryParam_whenQueryParamExists() {
+
+        when(servletRequest.getParameter("name")).thenReturn("Federico");
+
+        String name = request.queryParamOrDefault("name", "David");
+        assertEquals("Invalid name in query string", "Federico", name);
+    }
+
+    @Test
+    public void queryParamOrDefault_shouldReturnDefault_whenQueryParamIsNull() {
+
+        when(servletRequest.getParameter("name")).thenReturn(null);
+
+        String name = request.queryParamOrDefault("name", "David");
+        assertEquals("Invalid name in default value", "David", name);
+    }
+
+    @Test
     public void queryParamShouldBeParsedAsHashMap() {
         Map<String, String[]> params = new HashMap<>();
         params.put("user[name]", new String[] {"Federico"});

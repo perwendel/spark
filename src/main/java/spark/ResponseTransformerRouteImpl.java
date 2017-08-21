@@ -36,7 +36,7 @@ public abstract class ResponseTransformerRouteImpl extends RouteImpl {
                                                       String acceptType,
                                                       Route route,
                                                       ResponseTransformer transformer) {
-        return new ResponseTransformerRouteImpl(path, acceptType) {
+        return new ResponseTransformerRouteImpl(path, acceptType, route) {
             @Override
             public Object render(Object model) throws Exception {
                 return transformer.render(model);
@@ -49,8 +49,8 @@ public abstract class ResponseTransformerRouteImpl extends RouteImpl {
         };
     }
 
-    protected ResponseTransformerRouteImpl(String path, String acceptType) {
-        super(path, acceptType);
+    protected ResponseTransformerRouteImpl(String path, String acceptType, Route route) {
+        super(path, acceptType, route);
     }
 
     /**

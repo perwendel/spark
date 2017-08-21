@@ -34,6 +34,17 @@ public abstract class FilterImpl implements Filter, Wrapper {
     private Filter delegate;
 
     /**
+     * Prefix the path (used for {@link Service#path})
+     *
+     * @param prefix the prefix
+     * @return itself for easy chaining
+     */
+    public FilterImpl withPrefix(String prefix) {
+        this.path = prefix + this.path;
+        return this;
+    }
+
+    /**
      * Wraps the filter in FilterImpl
      *
      * @param path   the path
@@ -89,7 +100,7 @@ public abstract class FilterImpl implements Filter, Wrapper {
     /**
      * Returns this route's path
      */
-    String getPath() {
+    public String getPath() {
         return this.path;
     }
 

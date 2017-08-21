@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.staticfiles.DirectoryTraversal;
 import spark.utils.Assert;
 
 /**
@@ -69,16 +70,24 @@ public class ClassPathResourceHandler extends AbstractResourceHandler {
 
             ClassPathResource resource = new ClassPathResource(addedPath);
 
-            if (resource.exists() && resource.getFile().isDirectory()) {
+            if (resource.exists() && path.endsWith("/")) {
                 if (welcomeFile != null) {
                     resource = new ClassPathResource(addPaths(resource.getPath(), welcomeFile));
                 } else {
-                    //  No welcome file configured, serve nothing since it's a directory
+                    // No welcome file configured, serve nothing since it's a directory
                     resource = null;
                 }
             }
 
-            return (resource != null && resource.exists()) ? resource : null;
+            if (resource != null && resource.exists()) {
+                DirectoryTraversal.protectAgainstInClassPath(resource.getPath());
+                return resource;
+            } else {
+                return null;
+            }
+
+        } catch (DirectoryTraversal.DirectoryTraversalDetection directoryTraversalDetection) {
+            throw directoryTraversalDetection;
         } catch (Exception e) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug(e.getClass().getSimpleName() + " when trying to get resource. " + e.getMessage());

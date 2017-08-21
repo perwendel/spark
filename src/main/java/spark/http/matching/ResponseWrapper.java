@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -45,6 +45,11 @@ class ResponseWrapper extends Response {
     @Override
     public void status(int statusCode) {
         delegate.status(statusCode);
+    }
+
+    @Override
+    public int status() {
+        return delegate.status();
     }
 
     @Override
@@ -107,6 +112,11 @@ class ResponseWrapper extends Response {
     }
 
     @Override
+    public String type() {
+        return delegate.type();
+    }
+
+    @Override
     public void cookie(String name, String value) {
         delegate.cookie(name, value);
     }
@@ -127,7 +137,22 @@ class ResponseWrapper extends Response {
     }
 
     @Override
+    public void cookie(String path, String name, String value, int maxAge, boolean secured, boolean httpOnly) {
+        delegate.cookie(path, name, value, maxAge, secured, httpOnly);
+    }
+
+    @Override
+    public void cookie(String domain, String path, String name, String value, int maxAge, boolean secured, boolean httpOnly) {
+        delegate.cookie(domain, path, name, value, maxAge, secured, httpOnly);
+    }
+
+    @Override
     public void removeCookie(String name) {
         delegate.removeCookie(name);
+    }
+
+    @Override
+    public void removeCookie(String path, String name) {
+        delegate.removeCookie(path, name);
     }
 }

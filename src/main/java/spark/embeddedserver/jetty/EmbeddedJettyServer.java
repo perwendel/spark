@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -33,9 +32,10 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.ssl.SslStores;
 import spark.embeddedserver.EmbeddedServer;
+import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
+import spark.ssl.SslStores;
 
 /**
  * Spark server implementation
@@ -47,20 +47,22 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     private static final int SPARK_DEFAULT_PORT = 4567;
     private static final String NAME = "Spark";
 
-    private Handler handler;
+    private final JettyServerFactory serverFactory;
+    private final Handler handler;
     private Server server;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private Map<String, Class<?>> webSocketHandlers;
+    private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
     private Optional<Integer> webSocketIdleTimeoutMillis;
 
-    public EmbeddedJettyServer(Handler handler) {
+    public EmbeddedJettyServer(JettyServerFactory serverFactory, Handler handler) {
+        this.serverFactory = serverFactory;
         this.handler = handler;
     }
 
     @Override
-    public void configureWebSockets(Map<String, Class<?>> webSocketHandlers,
+    public void configureWebSockets(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
                                     Optional<Integer> webSocketIdleTimeoutMillis) {
 
         this.webSocketHandlers = webSocketHandlers;
@@ -71,13 +73,14 @@ public class EmbeddedJettyServer implements EmbeddedServer {
      * {@inheritDoc}
      */
     @Override
-    public void ignite(String host,
-                       int port,
-                       SslStores sslStores,
-                       CountDownLatch latch,
-                       int maxThreads,
-                       int minThreads,
-                       int threadIdleTimeoutMillis) {
+
+    public int ignite(String host,
+                      int port,
+                      SslStores sslStores,
+                      int maxThreads,
+                      int minThreads,
+                      int threadIdleTimeoutMillis) throws Exception {
+
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -88,7 +91,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             }
         }
 
-        server = JettyServer.create(maxThreads, minThreads, threadIdleTimeoutMillis);
+        server = serverFactory.create(maxThreads, minThreads, threadIdleTimeoutMillis);
 
         ServerConnector connector;
 
@@ -102,7 +105,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         server.setConnectors(new Connector[] {connector});
 
         ServletContextHandler webSocketServletContextHandler =
-                WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
+            WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
 
         // Handle web socket routes
         if (webSocketServletContextHandler == null) {
@@ -121,17 +124,19 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             server.setHandler(handlers);
         }
 
-        try {
-            logger.info("== {} has ignited ...", NAME);
-            logger.info(">> Listening on {}:{}", host, port);
+        logger.info("== {} has ignited ...", NAME);
+        logger.info(">> Listening on {}:{}", host, port);
 
-            server.start();
-            latch.countDown();
-            server.join();
-        } catch (Exception e) {
-            logger.error("ignite failed", e);
-            System.exit(100); // NOSONAR
-        }
+        server.start();
+        return port;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void join() throws InterruptedException {
+        server.join();
     }
 
     /**
@@ -151,5 +156,11 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         logger.info("done");
     }
 
-
+    @Override
+    public int activeThreadCount() {
+        if (server == null) {
+            return 0;
+        }
+        return server.getThreadPool().getThreads() - server.getThreadPool().getIdleThreads();
+    }
 }

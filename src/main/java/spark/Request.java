@@ -16,6 +16,8 @@
  */
 package spark;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -98,6 +100,19 @@ public class Request {
     Request(RouteMatch match, HttpServletRequest request) {
         this.servletRequest = request;
         changeMatch(match);
+    }
+
+    /**
+     * Constructor - Used to create a request and no RouteMatch is available.
+     *
+     * @param request the servlet request
+     */
+    Request(HttpServletRequest request) {
+        this.servletRequest = request;
+
+        // Empty
+        params = new HashMap<>();
+        splat = new ArrayList<>();
     }
 
     protected void changeMatch(RouteMatch match) {
@@ -265,6 +280,19 @@ public class Request {
      */
     public String queryParams(String queryParam) {
         return servletRequest.getParameter(queryParam);
+    }
+
+    /**
+     * Gets the query param, or returns default value
+     *
+     * @param queryParam the query parameter
+     * @param defaultValue the default value
+     * @return the value of the provided queryParam, or default if value is null
+     * Example: query parameter 'id' from the following request URI: /hello?id=foo
+     */
+    public String queryParamOrDefault(String queryParam, String defaultValue) {
+        String value = queryParams(queryParam);
+        return value != null ? value : defaultValue;
     }
 
     /**
@@ -464,26 +492,28 @@ public class Request {
     }
 
     private static Map<String, String> getParams(List<String> request, List<String> matched) {
-        LOG.debug("get params");
-
         Map<String, String> params = new HashMap<>();
 
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
             if (SparkUtils.isParam(matchedPart)) {
-                LOG.debug("matchedPart: "
-                                  + matchedPart
-                                  + " = "
-                                  + request.get(i));
-                params.put(matchedPart.toLowerCase(), request.get(i));
+                try {
+                    String decodedReq = URLDecoder.decode(request.get(i), "UTF-8");
+                    LOG.debug("matchedPart: "
+                                      + matchedPart
+                                      + " = "
+                                      + decodedReq);
+                    params.put(matchedPart.toLowerCase(), decodedReq);
+
+                } catch (UnsupportedEncodingException e) {
+
+                }
             }
         }
         return Collections.unmodifiableMap(params);
     }
 
     private static List<String> getSplat(List<String> request, List<String> matched) {
-        LOG.debug("get splat");
-
         int nbrOfRequestParts = request.size();
         int nbrOfMatchedParts = matched.size();
 
@@ -492,20 +522,27 @@ public class Request {
         List<String> splat = new ArrayList<>();
 
         for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
+
             String matchedPart = matched.get(i);
 
             if (SparkUtils.isSplat(matchedPart)) {
 
                 StringBuilder splatParam = new StringBuilder(request.get(i));
+
                 if (!sameLength && (i == (nbrOfMatchedParts - 1))) {
                     for (int j = i + 1; j < nbrOfRequestParts; j++) {
                         splatParam.append("/");
                         splatParam.append(request.get(j));
                     }
                 }
-                splat.add(splatParam.toString());
+                try {
+                    String decodedSplat = URLDecoder.decode(splatParam.toString(), "UTF-8");
+                    splat.add(decodedSplat);
+                } catch (UnsupportedEncodingException e) {
+                }
             }
         }
+
         return Collections.unmodifiableList(splat);
     }
 

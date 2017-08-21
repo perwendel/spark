@@ -207,6 +207,13 @@ public class QueryParamsMap {
     }
 
     /**
+     * @return true if the map contains the given key
+     */
+    public boolean hasKey(String key) {
+    	return this.queryMap.containsKey( key );
+    }
+
+    /**
      * @return has values
      */
     public boolean hasValue() {
