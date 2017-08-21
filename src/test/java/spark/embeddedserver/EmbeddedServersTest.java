@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import spark.ExceptionMapper;
 import spark.Spark;
 import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 import spark.embeddedserver.jetty.JettyServerFactory;
@@ -38,7 +39,7 @@ public class EmbeddedServersTest {
 
         // Register custom server
         EmbeddedServers.add(id, new EmbeddedJettyFactory(serverFactory));
-        EmbeddedServer embeddedServer = EmbeddedServers.create(id, null, null, false);
+        EmbeddedServer embeddedServer = EmbeddedServers.create(id, null, null, false, new ExceptionMapper());
         assertNotNull(embeddedServer);
         embeddedServer.ignite("localhost", 0, null, 0, 0, 0);
 
