@@ -29,9 +29,9 @@ public final class SerializerChain {
     /**
      * Constructs a serializer chain.
      */
-    public SerializerChain() {
+    public SerializerChain(String encoding) {
 
-        DefaultSerializer defaultSerializer = new DefaultSerializer();
+        DefaultSerializer defaultSerializer = new DefaultSerializer(encoding);
 
         InputStreamSerializer inputStreamSerializer = new InputStreamSerializer();
         inputStreamSerializer.setNext(defaultSerializer);

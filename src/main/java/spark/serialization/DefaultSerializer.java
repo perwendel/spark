@@ -27,6 +27,17 @@ import java.io.UnsupportedEncodingException;
  */
 class DefaultSerializer extends Serializer {
 
+    private String encoding = "utf-8";
+
+    public DefaultSerializer() {
+        super();
+    }
+
+    public DefaultSerializer(String encoding) {
+        super();
+        this.encoding = encoding;
+    }
+
     @Override
     public boolean canProcess(Object element) {
         return true;
@@ -35,7 +46,7 @@ class DefaultSerializer extends Serializer {
     @Override
     public void process(OutputStream outputStream, Object element) throws IOException {
         try {
-            outputStream.write(element.toString().getBytes("utf-8"));
+            outputStream.write(element.toString().getBytes(this.encoding));
         } catch (UnsupportedEncodingException e) {
             throw new IOException(e);
         }

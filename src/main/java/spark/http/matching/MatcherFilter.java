@@ -74,7 +74,6 @@ public class MatcherFilter implements Filter {
         this.staticFiles = staticFiles;
         this.externalContainer = externalContainer;
         this.hasOtherHandlers = hasOtherHandlers;
-        this.serializerChain = new SerializerChain();
     }
 
     @Override
@@ -186,6 +185,7 @@ public class MatcherFilter implements Filter {
         }
 
         if (body.isSet()) {
+            serializerChain = new SerializerChain(httpResponse.getCharacterEncoding());
             body.serializeTo(httpResponse, serializerChain, httpRequest);
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
