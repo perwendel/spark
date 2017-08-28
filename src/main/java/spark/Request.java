@@ -31,6 +31,7 @@ import java.util.TreeSet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.eclipse.jetty.util.URIUtil;
 
 import spark.routematch.RouteMatch;
 import spark.utils.IOUtils;
@@ -497,17 +498,12 @@ public class Request {
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
             if (SparkUtils.isParam(matchedPart)) {
-                try {
-                    String decodedReq = URLDecoder.decode(request.get(i), "UTF-8");
-                    LOG.debug("matchedPart: "
-                                      + matchedPart
-                                      + " = "
-                                      + decodedReq);
-                    params.put(matchedPart.toLowerCase(), decodedReq);
-
-                } catch (UnsupportedEncodingException e) {
-
-                }
+                String decodedReq = URIUtil.decodePath(request.get(i));
+                LOG.debug("matchedPart: "
+                                  + matchedPart
+                                  + " = "
+                                  + decodedReq);
+                params.put(matchedPart.toLowerCase(), decodedReq);
             }
         }
         return Collections.unmodifiableMap(params);
