@@ -17,6 +17,7 @@
 package spark.utils;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * Miscellaneous collection utility methods.
@@ -42,4 +43,15 @@ public abstract class CollectionUtils {
         return (collection == null || collection.isEmpty());
     }
 
+    /**
+     * A null-safe way to call <code>.stream()</code> on a collection. Null collections result in empty streams.
+     *
+     * @param collection The collection whose stream of elements you want
+     * @return A non-null stream (may be empty though).
+     */
+    public static <T> Stream<T> stream(Collection<T> collection) {
+        return (collection == null)
+            ? Stream.empty()
+            : collection.stream();
+    }
 }
