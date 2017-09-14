@@ -88,6 +88,8 @@ public class SocketConnectorFactory {
             sslContextFactory.setWantClientAuth(true);
         }
 
+        sslContextFactory.setIncludeProtocols("TLSv1","TLSv1.1","TLSv1.2" );
+
         HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
 
         ServerConnector connector = new ServerConnector(server, sslContextFactory, httpConnectionFactory);
