@@ -101,8 +101,27 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
         }
 
+        Connector previousConnectors[] = server.getConnectors();
+        logger.info("Previous Server Connectors: {}", previousConnectors.toString());
         server = connector.getServer();
-        server.setConnectors(new Connector[] {connector});
+        if (previousConnectors.length != 0) {
+            logger.info("Previous Connectors vector has size: {}", previousConnectors.length);
+            Connector connectorsVector[] = new Connector[previousConnectors.length+1];
+            logger.info("Created Connectors vector with size: {}", previousConnectors.length+1);
+            for (int i=0; i<connectorsVector.length; i++) {
+                logger.info("Adding Connector: {}", i+1);
+                if (i!=(connectorsVector.length-1))
+                    connectorsVector[i]=previousConnectors[i];
+                else
+                    connectorsVector[i]=(Connector)connector;
+            }
+            server.setConnectors(previousConnectors);
+            logger.info("New Connectors vector successfuly set!");
+        } else {
+            logger.info("No Previous Connectors vector!");
+            server.setConnectors(new Connector[] {connector});
+            logger.info("Standard Connectors vector successfuly set!");
+        }
 
         ServletContextHandler webSocketServletContextHandler =
             WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
