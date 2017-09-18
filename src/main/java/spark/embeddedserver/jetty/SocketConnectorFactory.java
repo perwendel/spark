@@ -88,9 +88,6 @@ public class SocketConnectorFactory {
             sslContextFactory.setWantClientAuth(true);
         }
 
-        // Temporary solution to works with IBM JVM
-        //sslContextFactory.setIncludeProtocols("TLSv1","TLSv1.1","TLSv1.2" );
-
         HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
 
         ServerConnector connector = new ServerConnector(server, sslContextFactory, httpConnectionFactory);
