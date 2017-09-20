@@ -81,6 +81,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                       int minThreads,
                       int threadIdleTimeoutMillis) throws Exception {
 
+        boolean hasCustomizedConnectors = false;
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -101,8 +102,14 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
         }
 
+        Connector previousConnectors[] = server.getConnectors();
         server = connector.getServer();
-        server.setConnectors(new Connector[] {connector});
+        if (previousConnectors.length != 0) {
+            server.setConnectors(previousConnectors);
+            hasCustomizedConnectors = true;
+        } else {
+            server.setConnectors(new Connector[] {connector});
+        }
 
         ServletContextHandler webSocketServletContextHandler =
             WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
@@ -125,7 +132,11 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         }
 
         logger.info("== {} has ignited ...", NAME);
-        logger.info(">> Listening on {}:{}", host, port);
+        if (hasCustomizedConnectors) {
+            logger.info(">> Listening on Custom Server ports!");
+        } else {
+            logger.info(">> Listening on {}:{}", host, port);
+        }
 
         server.start();
         return port;
