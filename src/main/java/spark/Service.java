@@ -382,6 +382,10 @@ public final class Service extends Routable {
      * If it's already initialized will return immediately
      */
     public void awaitInitialization() {
+        if (!initialized) {
+    	        throw new IllegalStateException("Server has not been properly initialized");
+        }
+
         try {
             latch.await();
         } catch (InterruptedException e) {
