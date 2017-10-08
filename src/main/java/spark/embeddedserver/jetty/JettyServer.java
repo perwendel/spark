@@ -36,7 +36,7 @@ class JettyServer {
         Server server;
 
         if (maxThreads > 0) {
-            int max = (maxThreads > 0) ? maxThreads : 200;
+            int max = maxThreads;
             int min = (minThreads > 0) ? minThreads : 8;
             int idleTimeout = (threadTimeoutMillis > 0) ? threadTimeoutMillis : 60000;
 
