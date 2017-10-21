@@ -1,6 +1,6 @@
-![](https://img.shields.io/travis/perwendel/spark.svg) 
-![](https://img.shields.io/github/license/perwendel/spark.svg)
-![](https://img.shields.io/maven-central/v/com.sparkjava/spark-core.svg)
+[![](https://img.shields.io/travis/perwendel/spark.svg)](https://travis-ci.org/perwendel/spark)
+[![](https://img.shields.io/github/license/perwendel/spark.svg)](./LICENSE)
+[![](https://img.shields.io/maven-central/v/com.sparkjava/spark-core.svg)](http://mvnrepository.com/artifact/com.sparkjava/spark-core)
 
 Spark - a tiny web framework for Java 8
 ==============================================
