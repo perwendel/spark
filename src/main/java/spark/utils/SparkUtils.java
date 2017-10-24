@@ -27,8 +27,31 @@ import java.util.List;
 public final class SparkUtils {
 
     public static final String ALL_PATHS = "+/*paths";
+    /**
+     * The default value for the path matcher and follows the standard convention.
+     * Path parameters can be defined as {@code :parameter}.
+     */
+    public static final String DEFAULT_PATTERN = ":.+";
+
+    /**
+     * Matcher for the curly bracket notation. This pattern is used by many
+     * popular frameworks like Spring MVC or OkHttp. The expression matches
+     * strings like {@code {id}, {value}} or {@code {pathVariable}}.
+     */
+    public static final String CURLY_BRACKET_MATCHER = "\\{.+\\}";
+
+    private static String regex = DEFAULT_PATTERN;
 
     private SparkUtils() {
+    }
+
+
+    /**
+     * Set the regular expression for the path mather.
+     * @param regex regular expression for the path variables.
+     */
+    public static void paramMatcher(String regex) {
+        SparkUtils.regex = regex;
     }
 
     public static List<String> convertRouteToList(String route) {
@@ -43,7 +66,7 @@ public final class SparkUtils {
     }
 
     public static boolean isParam(String routePart) {
-        return routePart.startsWith(":");
+        return routePart.matches(regex);
     }
 
     public static boolean isSplat(String routePart) {
