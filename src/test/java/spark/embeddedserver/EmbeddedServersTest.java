@@ -4,7 +4,9 @@ import java.io.File;
 
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -52,10 +54,18 @@ public class EmbeddedServersTest {
         File requestLogDir = temporaryFolder.newFolder();
         File requestLogFile = new File(requestLogDir, "request.log");
         // Register custom server
-        EmbeddedServers.add(EmbeddedServers.Identifiers.JETTY, new EmbeddedJettyFactory((i, j, k) -> {
-            Server server = new Server();
-            server.setRequestLog(new NCSARequestLog(requestLogFile.getAbsolutePath()));
-            return server;
+        EmbeddedServers.add(EmbeddedServers.Identifiers.JETTY, new EmbeddedJettyFactory(new JettyServerFactory() {
+            @Override
+            public Server create(int maxThreads, int minThreads, int threadTimeoutMillis) {
+                Server server = new Server();
+                server.setRequestLog(new NCSARequestLog(requestLogFile.getAbsolutePath()));
+                return server;
+            }
+
+            @Override
+            public Server create(ThreadPool threadPool) {
+                return null;
+            }
         }));
         Spark.get("/", (request, response) -> "OK");
         Spark.awaitInitialization();

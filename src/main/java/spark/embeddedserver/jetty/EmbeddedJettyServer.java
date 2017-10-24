@@ -29,6 +29,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
     private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
     private Optional<Integer> webSocketIdleTimeoutMillis;
+
+    private ThreadPool threadPool = null;
 
     public EmbeddedJettyServer(JettyServerFactory serverFactory, Handler handler) {
         this.serverFactory = serverFactory;
@@ -92,7 +95,12 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             }
         }
 
-        server = serverFactory.create(maxThreads, minThreads, threadIdleTimeoutMillis);
+        // Create instance of jetty server with either default or supplied queued thread pool
+        if(threadPool == null) {
+            server = serverFactory.create(maxThreads, minThreads, threadIdleTimeoutMillis);
+        } else {
+            server = serverFactory.create(threadPool);
+        }
 
         ServerConnector connector;
 
@@ -173,5 +181,16 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             return 0;
         }
         return server.getThreadPool().getThreads() - server.getThreadPool().getIdleThreads();
+    }
+
+    /**
+     * Sets optional thread pool for jetty server.  This is useful for overriding the default thread pool
+     * behaviour for example io.dropwizard.metrics.jetty9.InstrumentedQueuedThreadPool.
+     * @param threadPool thread pool
+     * @return Builder pattern - returns this instance
+     */
+    public EmbeddedJettyServer withThreadPool(ThreadPool threadPool) {
+        this.threadPool = threadPool;
+        return this;
     }
 }
