@@ -140,9 +140,6 @@ public class UriPath {
             if (skip <= 0 && delStart >= 0 && delEnd >= delStart) {
                 buf.delete(delStart, delEnd);
                 delStart = delEnd = -1;
-                if (skip > 0) {
-                    delEnd = end;
-                }
             }
 
             end = start--;
