@@ -16,11 +16,7 @@
  */
 package spark;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -39,6 +35,7 @@ import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
+import spark.utils.StringUtils;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
@@ -57,6 +54,8 @@ public final class Service extends Routable {
 
     public static final int SPARK_DEFAULT_PORT = 4567;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    public static final String HTTP_SESSION_DATASTORE = "HttpSessionDatastore";
+    public static final String JETTY_SESSIONS = "JettySessions";
 
     protected boolean initialized = false;
 
@@ -64,6 +63,9 @@ public final class Service extends Routable {
     protected String ipAddress = "0.0.0.0";
 
     protected SslStores sslStores;
+
+    protected String staticFileFolder = null;
+    protected String externalStaticFileFolder = null;
 
     protected Map<String, WebSocketHandlerWrapper> webSocketHandlers = null;
 
@@ -75,6 +77,16 @@ public final class Service extends Routable {
     protected EmbeddedServer server;
     protected Deque<String> pathDeque = new ArrayDeque<>();
     protected Routes routes;
+
+    private boolean servletStaticLocationSet;
+    private boolean servletExternalStaticLocationSet;
+
+    protected String clusterNodeName;
+    protected String clusterDatastoreName;
+    protected String clusterCollectionName;
+    protected String clusterDatastoreDriverClassName;
+    protected String clusterDatastoreDriverConnectionUrl;
+    protected int clusterScavengeInterval;
 
     private CountDownLatch latch = new CountDownLatch(1);
 
@@ -111,6 +123,44 @@ public final class Service extends Routable {
         } else {
             staticFilesConfiguration = StaticFilesConfiguration.create();
         }
+    }
+
+    /**
+     * Setup session clustering for this server. This should be used to all clustering for multiple instances of the same app.
+     *
+     * @param clusterNodeName                       - node name for this instance of the application
+     * @param clusterDatastoreDriverClassName       - driver used to connect to the datasource (ie jdbc driver)
+     * @param clusterDatastoreName                  - datastore name used to create database in mongodb
+     * @param clusterCollectionName                 - collection name used to create collection in mongodb
+     * @param clusterDatastoreDriverConnectionUrl   - url used to connect to the datasource (ie jdbc or mongodb url)
+     * @param clusterScavengeInterval               - scavenge time sync up (in seconds)
+     *
+     * @return the object with session clustering set
+     */
+    public synchronized Service clusterSession(String clusterNodeName, String clusterDatastoreDriverClassName, String clusterDatastoreName, String clusterCollectionName, String clusterDatastoreDriverConnectionUrl, int clusterScavengeInterval) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+
+        clusterDatastoreDriverConnectionUrl = StringUtils.isBlank(clusterDatastoreDriverConnectionUrl) ? null:clusterDatastoreDriverConnectionUrl;
+        if (StringUtils.isNotBlank(clusterDatastoreDriverConnectionUrl)) {
+            if (!(clusterDatastoreDriverConnectionUrl.contains("jdbc") ||
+                    clusterDatastoreDriverConnectionUrl.contains("mongodb"))) {
+                throw new IllegalArgumentException("Cluster type is invalid.");
+            }
+            if ((StringUtils.isBlank(clusterDatastoreDriverClassName) && clusterDatastoreDriverConnectionUrl.contains("jdbc")) ||
+                clusterScavengeInterval <= 0) {
+                throw new IllegalArgumentException("Cluster information is invalid.");
+            }
+            this.clusterNodeName = StringUtils.isBlank(clusterNodeName) ? "" : clusterNodeName;
+            this.clusterDatastoreName = StringUtils.isBlank(clusterDatastoreName) ? HTTP_SESSION_DATASTORE : clusterDatastoreName;
+            this.clusterCollectionName = StringUtils.isBlank(clusterCollectionName) ? JETTY_SESSIONS : clusterCollectionName;
+            this.clusterScavengeInterval = clusterScavengeInterval;
+            this.clusterDatastoreDriverClassName = clusterDatastoreDriverClassName;
+            this.clusterDatastoreDriverConnectionUrl = clusterDatastoreDriverConnectionUrl;
+        }
+
+        return this;
     }
 
     /**
@@ -260,9 +310,12 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-        
-        if (!staticFilesConfiguration.isStaticResourcesSet()) {
-            staticFilesConfiguration.configure(folder);
+
+        staticFileFolder = folder;
+
+        if (!servletStaticLocationSet) {
+            staticFilesConfiguration.configure(staticFileFolder);
+            servletStaticLocationSet = true;
         } else {
             LOG.warn("Static file location has already been set");
         }
@@ -280,9 +333,12 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-        
-        if (!staticFilesConfiguration.isExternalStaticResourcesSet()) {
-            staticFilesConfiguration.configureExternal(externalFolder);
+
+        externalStaticFileFolder = externalFolder;
+
+        if (!servletExternalStaticLocationSet) {
+            staticFilesConfiguration.configureExternal(externalStaticFileFolder);
+            servletExternalStaticLocationSet = true;
         } else {
             LOG.warn("External static file location has already been set");
         }
@@ -382,10 +438,6 @@ public final class Service extends Routable {
      * If it's already initialized will return immediately
      */
     public void awaitInitialization() {
-        if (!initialized) {
-    	        throw new IllegalStateException("Server has not been properly initialized");
-        }
-
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -491,6 +543,13 @@ public final class Service extends Routable {
                                                     staticFilesConfiguration,
                                                     hasMultipleHandlers());
 
+                    server.configureSessionCluster(clusterNodeName,
+                            clusterDatastoreDriverClassName,
+                            clusterDatastoreName,
+                            clusterCollectionName,
+                            clusterDatastoreDriverConnectionUrl,
+                            clusterScavengeInterval);
+
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
                     port = server.ignite(
@@ -522,16 +581,6 @@ public final class Service extends Routable {
         } else {
             routes = Routes.create();
         }
-    }
-
-    /**
-     * @return The approximate number of currently active threads in the embedded Jetty server
-     */
-    public synchronized int activeThreadCount() {
-        if (server != null) {
-            return server.activeThreadCount();
-        }
-        return 0;
     }
 
     //////////////////////////////////////////////////

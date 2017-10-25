@@ -16,6 +16,7 @@
  */
 package spark;
 
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static spark.Service.ignite;
@@ -929,6 +930,23 @@ public class Spark {
         throw getInstance().halt(status, body);
     }
 
+
+    /**
+     * Setup session clustering for this server. This should be used to all clustering for multiple instances of the
+     * same app.  This has to be called before any route mapping is done.
+     *
+     * @param clusterNodeName                       - node name for this instance of the application
+     * @param clusterDatastoreDriverClassName       - driver used to connect to the datasource (ie jdbc driver)
+     * @param clusterDatastoreName                  - datastore name used to create database in mongodb
+     * @param clusterCollectionName                 - collection name used to create collection in mongodb
+     * @param clusterDatastoreDriverConnectionUrl   - url used to connect to the datasource (ie jdbc or mongodb url)
+     * @param clusterScavengeInterval               - scavenge time sync up (in seconds)
+     *
+     */
+    public static void clusterSession(String clusterNodeName, String clusterDatastoreDriverClassName, String clusterDatastoreName, String clusterCollectionName, String clusterDatastoreDriverConnectionUrl, int clusterScavengeInterval) {
+        getInstance().clusterSession(clusterNodeName, clusterDatastoreDriverClassName, clusterDatastoreName, clusterCollectionName, clusterDatastoreDriverConnectionUrl, clusterScavengeInterval);
+    }
+
     /**
      * Set the IP address that Spark should listen on. If not called the default
      * address is '0.0.0.0'. This has to be called before any route mapping is
@@ -1193,15 +1211,20 @@ public class Spark {
      * @param viewName the view name
      * @return the model and view
      */
-    public static ModelAndView modelAndView(Object model, String viewName) {
+    public static ModelAndView modelAndView(Map<String, Object> model, String viewName) {
         return new ModelAndView(model, viewName);
     }
 
     /**
-     * @return The approximate number of currently active threads in the embedded Jetty server
+     *
+     * Register task to be ran on application shutdown
+     *
+     * @param task  the task to be run on server shutdown
+     *
      */
-    public static int activeThreadCount() {
-        return getInstance().activeThreadCount();
+
+    public static void beforeShutdown(Runnable task) {
+        Runtime.getRuntime().addShutdownHook(new Thread(task));
     }
 
 }

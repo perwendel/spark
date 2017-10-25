@@ -73,4 +73,17 @@ public interface EmbeddedServer {
      * @return The approximate number of currently active threads
      */
     int activeThreadCount();
+
+    /**
+     * Configure session cluster
+     *
+     * @param clusterNodeName                       - node name for this instance of the application
+     * @param clusterDatastoreDriverClassName       - driver used to connect to the datasource (ie jdbc driver)
+     * @param clusterDatastoreName                  - datastore name used to create database in mongodb
+     * @param clusterCollectionName                 - collection name used to create collection in mongodb
+     * @param clusterDatastoreDriverConnectionUrl   - url used to connect to the datasource (ie jdbc or mongodb url)
+     * @param clusterScavengeInterval               - scavenge time sync up (in seconds)
+     *
+     */
+    void configureSessionCluster(String clusterNodeName, String clusterDatastoreDriverClassName, String clusterDatastoreName, String clusterCollectionName, String clusterDatastoreDriverConnectionUrl, int clusterScavengeInterval);
 }
