@@ -12,7 +12,7 @@ public class JettyServerTest {
     @Test
     public void testCreateServer_useDefaults() throws Exception {
 
-        Server server = JettyServer.create(0, 0, 0);
+        Server server = new JettyServer().create(0, 0, 0);
 
         QueuedThreadPool threadPool = (QueuedThreadPool) server.getThreadPool();
 
@@ -29,7 +29,7 @@ public class JettyServerTest {
     @Test
     public void testCreateServer_whenNonDefaultMaxThreadOnly_thenUseDefaultMinThreadAndTimeout() throws Exception {
 
-        Server server = JettyServer.create(1, 0, 0);
+        Server server = new JettyServer().create(1, 0, 0);
 
         QueuedThreadPool threadPool = (QueuedThreadPool) server.getThreadPool();
 

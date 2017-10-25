@@ -16,6 +16,7 @@
  */
 package spark.embeddedserver.jetty;
 
+import org.eclipse.jetty.util.thread.ThreadPool;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServerFactory;
 import spark.http.matching.MatcherFilter;
@@ -27,9 +28,10 @@ import spark.staticfiles.StaticFilesConfiguration;
  */
 public class EmbeddedJettyFactory implements EmbeddedServerFactory {
     private final JettyServerFactory serverFactory;
+    private ThreadPool threadPool;
 
     public EmbeddedJettyFactory() {
-        this.serverFactory = JettyServer::create;
+        this.serverFactory = new JettyServer();
     }
 
     public EmbeddedJettyFactory(JettyServerFactory serverFactory) {
@@ -41,7 +43,17 @@ public class EmbeddedJettyFactory implements EmbeddedServerFactory {
         matcherFilter.init(null);
 
         JettyHandler handler = new JettyHandler(matcherFilter);
-        return new EmbeddedJettyServer(serverFactory, handler);
+        return new EmbeddedJettyServer(serverFactory, handler).withThreadPool(threadPool);
     }
 
+    /**
+     * Sets optional thread pool for jetty server.  This is useful for overriding the default thread pool
+     * behaviour for example io.dropwizard.metrics.jetty9.InstrumentedQueuedThreadPool.
+     * @param threadPool thread pool
+     * @return Builder pattern - returns this instance
+     */
+    public EmbeddedJettyFactory withThreadPool(ThreadPool threadPool) {
+        this.threadPool = threadPool;
+        return this;
+    }
 }
