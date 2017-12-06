@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -522,37 +523,56 @@ public class Request {
         return Collections.unmodifiableMap(params);
     }
 
-    private static List<String> getSplat(List<String> request, List<String> matched) {
-        int nbrOfRequestParts = request.size();
-        int nbrOfMatchedParts = matched.size();
-
-        boolean sameLength = (nbrOfRequestParts == nbrOfMatchedParts);
-
+    static List<String> getSplat(List<String> request, List<String> matched) {
         List<String> splat = new ArrayList<>();
+        getSplat(matched, request, 0, 0, splat);
+        Collections.reverse(splat);
+        return Collections.unmodifiableList(splat);
+    }
 
-        for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
-
-            String matchedPart = matched.get(i);
-
-            if (SparkUtils.isSplat(matchedPart)) {
-
-                StringBuilder splatParam = new StringBuilder(request.get(i));
-
-                if (!sameLength && (i == (nbrOfMatchedParts - 1))) {
-                    for (int j = i + 1; j < nbrOfRequestParts; j++) {
-                        splatParam.append("/");
-                        splatParam.append(request.get(j));
-                    }
-                }
-                try {
-                    String decodedSplat = URLDecoder.decode(splatParam.toString(), "UTF-8");
-                    splat.add(decodedSplat);
-                } catch (UnsupportedEncodingException e) {
-                }
-            }
+    private static boolean getSplat(List<String> matched, List<String> request, int i, int j, List<String> splat) {
+        if (i == matched.size() && j == request.size()) {
+            return true;
         }
 
-        return Collections.unmodifiableList(splat);
+        if (i == matched.size() || j == request.size()) {
+            return false;
+        }
+
+        String matchedPart = matched.get(i);
+
+        if (SparkUtils.isSplat(matchedPart)) {
+            if (i == matched.size() - 1) {
+                String splatPart = createSplat(request, j, request.size());
+                if (splatPart != null) {
+                    splat.add(splatPart);
+                }
+                return true;
+            }
+
+            for (int k = j+1 ; k < request.size() ; k++) {
+                if (getSplat(matched, request, i+1, k, splat)) {
+                    String splatPart = createSplat(request, j, k);
+                    if (splatPart != null) {
+                        splat.add(splatPart);
+                    }
+                    return true;
+                }
+            }
+        } else if (SparkUtils.isParam(matchedPart) || matchedPart.equals(request.get(j))) {
+            return getSplat(matched, request, i+1, j+1, splat);
+        }
+
+        return false;
+    }
+
+    private static String createSplat(List<String> request, int start, int end) {
+        try {
+            String splat = request.stream().limit(end).skip(start).collect(Collectors.joining("/"));
+            return URLDecoder.decode(splat, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
     }
 
     /**
