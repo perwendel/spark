@@ -40,7 +40,8 @@ import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
 
-import static java.util.Objects.requireNonNull;
+import javax.annotation.Nonnull;
+
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
 
 /**
@@ -313,14 +314,13 @@ public final class Service extends Routable {
         addWebSocketHandler(path, new WebSocketHandlerInstanceWrapper(handler));
     }
 
-    private synchronized void addWebSocketHandler(String path, WebSocketHandlerWrapper handlerWrapper) {
+    private synchronized void addWebSocketHandler(@Nonnull String path, WebSocketHandlerWrapper handlerWrapper) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
         if (isRunningFromServlet()) {
             throw new IllegalStateException("WebSockets are only supported in the embedded server");
         }
-        requireNonNull(path, "WebSocket path cannot be null");
         if (webSocketHandlers == null) {
             webSocketHandlers = new HashMap<>();
         }

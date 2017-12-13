@@ -19,7 +19,7 @@ import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 
-import static java.util.Objects.requireNonNull;
+import javax.annotation.Nonnull;
 
 /**
  * Factory class to create {@link WebSocketCreator} implementations that
@@ -44,8 +44,8 @@ public class WebSocketCreatorFactory {
     static class SparkWebSocketCreator implements WebSocketCreator {
         private final Object handler;
 
-        private SparkWebSocketCreator(Object handler) {
-            this.handler = requireNonNull(handler, "handler cannot be null");
+        private SparkWebSocketCreator(@Nonnull Object handler) {
+            this.handler = handler;
         }
 
         @Override

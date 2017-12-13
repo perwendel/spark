@@ -4,9 +4,8 @@ import java.util.Enumeration;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpSession;
-
-import spark.utils.Assert;
 
 /**
  * Provides session information.
@@ -23,9 +22,7 @@ public class Session {
      * @param request
      * @throws IllegalArgumentException If the session or the request is null.
      */
-    Session(HttpSession session, Request request) {
-        Assert.notNull(session, "session cannot be null");
-        Assert.notNull(request, "request cannot be null");
+    Session(@Nonnull HttpSession session, @Nonnull Request request) {
         this.session = session;
         this.request = request;
     }

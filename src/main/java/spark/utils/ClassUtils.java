@@ -15,6 +15,7 @@
  */
 package spark.utils;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -161,8 +162,8 @@ public abstract class ClassUtils {
      * @throws LinkageError           if the class file could not be loaded
      * @see Class#forName(String, boolean, ClassLoader)
      */
-    public static Class<?> forName(String name, ClassLoader classLoader) throws ClassNotFoundException, LinkageError {
-        Assert.notNull(name, "Name must not be null");
+    public static Class<?> forName(@Nonnull String name, ClassLoader classLoader)
+        throws ClassNotFoundException, LinkageError {
 
         Class<?> clazz = resolvePrimitiveClassName(name);
         if (clazz == null) {

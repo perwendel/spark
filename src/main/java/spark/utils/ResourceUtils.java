@@ -16,6 +16,7 @@
 
 package spark.utils;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -122,8 +123,7 @@ public abstract class ResourceUtils {
      * @return a corresponding URL object
      * @throws FileNotFoundException if the resource cannot be resolved to a URL
      */
-    public static URL getURL(String resourceLocation) throws FileNotFoundException {
-        Assert.notNull(resourceLocation, "Resource location must not be null");
+    public static URL getURL(@Nonnull String resourceLocation) throws FileNotFoundException {
         if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
             String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
             URL url = ClassUtils.getDefaultClassLoader().getResource(path);
@@ -160,8 +160,7 @@ public abstract class ResourceUtils {
      * @throws FileNotFoundException if the resource cannot be resolved to
      *                               a file in the file system
      */
-    public static File getFile(String resourceLocation) throws FileNotFoundException {
-        Assert.notNull(resourceLocation, "Resource location must not be null");
+    public static File getFile(@Nonnull String resourceLocation) throws FileNotFoundException {
         if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
             String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
             String description = "class path resource [" + path + "]";
@@ -207,8 +206,7 @@ public abstract class ResourceUtils {
      * @throws FileNotFoundException if the URL cannot be resolved to
      *                               a file in the file system
      */
-    public static File getFile(URL resourceUrl, String description) throws FileNotFoundException {
-        Assert.notNull(resourceUrl, "Resource URL must not be null");
+    public static File getFile(@Nonnull URL resourceUrl, String description) throws FileNotFoundException {
         if (!URL_PROTOCOL_FILE.equals(resourceUrl.getProtocol())) {
             throw new FileNotFoundException(
                     description + " cannot be resolved to absolute file path " +
@@ -247,8 +245,7 @@ public abstract class ResourceUtils {
      * @throws FileNotFoundException if the URL cannot be resolved to
      *                               a file in the file system
      */
-    public static File getFile(URI resourceUri, String description) throws FileNotFoundException {
-        Assert.notNull(resourceUri, "Resource URI must not be null");
+    public static File getFile(@Nonnull URI resourceUri, String description) throws FileNotFoundException {
         if (!URL_PROTOCOL_FILE.equals(resourceUri.getScheme())) {
             throw new FileNotFoundException(
                     description + " cannot be resolved to absolute file path " +

@@ -75,6 +75,19 @@
             <version>${jetty.version}</version>
         </dependency>
 
+        <!-- NULL-CHECK DEPENDENCIES -->
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>tech.harmonysoft</groupId>
+            <artifactId>traute-javac</artifactId>
+            <version>1.0.10</version>
+            <scope>provided</scope><!-- make the jar eligible for compilation only -->
+        </dependency>
+
         <!-- JUNIT DEPENDENCY FOR TESTING -->
         <dependency>
             <groupId>junit</groupId>
@@ -161,6 +174,11 @@
                     <target>${java.version}</target>
                     <optimize>true</optimize>
                     <debug>true</debug>
+                    <compilerArgs>
+                        <arg>-Xplugin:Traute</arg>
+                        <arg>-Atraute.exception.parameter=IllegalArgumentException</arg>
+                        <arg>-Atraute.failure.text.parameter='$${PARAMETER_NAME}' must not be null</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

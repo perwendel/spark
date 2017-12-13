@@ -227,15 +227,15 @@ public class ServiceTest {
     
     @Test
     public void testWebSocket_whenPathNull_thenThrowNullPointerException() {
-        thrown.expect(NullPointerException.class);
-        thrown.expectMessage("WebSocket path cannot be null");
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("'path' must not be null");
         service.webSocket(null, new DummyWebSocketListener());
     }
     
     @Test
     public void testWebSocket_whenHandlerNull_thenThrowNullPointerException() {
-        thrown.expect(NullPointerException.class);
-        thrown.expectMessage("WebSocket handler class cannot be null");
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("'handlerClass' must not be null");
         service.webSocket("/", null);
     }
     

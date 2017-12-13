@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,7 +37,6 @@ import spark.resource.AbstractResourceHandler;
 import spark.resource.ClassPathResourceHandler;
 import spark.resource.ExternalResource;
 import spark.resource.ExternalResourceHandler;
-import spark.utils.Assert;
 import spark.utils.GzipUtils;
 import spark.utils.IOUtils;
 
@@ -137,9 +137,7 @@ public class StaticFilesConfiguration {
      *
      * @param folder the location
      */
-    public synchronized void configure(String folder) {
-        Assert.notNull(folder, "'folder' must not be null");
-
+    public synchronized void configure(@Nonnull String folder) {
         if (!staticResourcesSet) {
 
             if (staticResourceHandlers == null) {
@@ -158,9 +156,7 @@ public class StaticFilesConfiguration {
      *
      * @param folder the location
      */
-    public synchronized void configureExternal(String folder) {
-        Assert.notNull(folder, "'folder' must not be null");
-
+    public synchronized void configureExternal(@Nonnull String folder) {
         if (!externalStaticResourcesSet) {
             try {
                 ExternalResource resource = new ExternalResource(folder);

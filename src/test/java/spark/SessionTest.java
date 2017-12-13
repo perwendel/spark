@@ -38,7 +38,7 @@ public class SessionTest {
 
         } catch (IllegalArgumentException ex) {
 
-            assertEquals("session cannot be null", ex.getMessage());
+            assertEquals("'session' must not be null", ex.getMessage());
         }
     }
 
@@ -52,7 +52,7 @@ public class SessionTest {
 
         } catch (IllegalArgumentException ex) {
 
-            assertEquals("request cannot be null", ex.getMessage());
+            assertEquals("'request' must not be null", ex.getMessage());
         }
     }
 

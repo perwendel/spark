@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import spark.staticfiles.DirectoryTraversal;
 import spark.utils.Assert;
 
+import javax.annotation.Nonnull;
+
 /**
  * Locates resources from external folder
  * Code snippets copied from Eclipse Jetty source. Modifications made by Per Wendel.
@@ -50,8 +52,7 @@ public class ExternalResourceHandler extends AbstractResourceHandler {
      * @param baseResource the base resource path
      * @param welcomeFile  the welcomeFile
      */
-    public ExternalResourceHandler(String baseResource, String welcomeFile) {
-        Assert.notNull(baseResource);
+    public ExternalResourceHandler(@Nonnull String baseResource, String welcomeFile) {
         this.baseResource = baseResource;
         this.welcomeFile = welcomeFile;
     }

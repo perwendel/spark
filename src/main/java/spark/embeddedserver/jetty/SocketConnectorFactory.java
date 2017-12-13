@@ -26,7 +26,8 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import spark.ssl.SslStores;
-import spark.utils.Assert;
+
+import javax.annotation.Nonnull;
 
 /**
  * Creates socket connectors.
@@ -41,9 +42,7 @@ public class SocketConnectorFactory {
      * @param port   port
      * @return - a server jetty
      */
-    public static ServerConnector createSocketConnector(Server server, String host, int port) {
-        Assert.notNull(server, "'server' must not be null");
-        Assert.notNull(host, "'host' must not be null");
+    public static ServerConnector createSocketConnector(@Nonnull Server server, @Nonnull String host, int port) {
 
         HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory();
         ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
@@ -61,14 +60,10 @@ public class SocketConnectorFactory {
      * @param port      port
      * @return a ssl socket jetty
      */
-    public static ServerConnector createSecureSocketConnector(Server server,
-                                                              String host,
+    public static ServerConnector createSecureSocketConnector(@Nonnull Server server,
+                                                              @Nonnull String host,
                                                               int port,
-                                                              SslStores sslStores) {
-        Assert.notNull(server, "'server' must not be null");
-        Assert.notNull(host, "'host' must not be null");
-        Assert.notNull(sslStores, "'sslStores' must not be null");
-
+                                                              @Nonnull SslStores sslStores) {
         SslContextFactory sslContextFactory = new SslContextFactory(sslStores.keystoreFile());
 
         if (sslStores.keystorePassword() != null) {
