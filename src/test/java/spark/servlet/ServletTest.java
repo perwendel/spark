@@ -97,6 +97,20 @@ public class ServletTest {
     }
 
     @Test
+    public void testGetAsync() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/async", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Hello Async!", response.body);
+    }
+
+    @Test
+    public void testGetAsyncException() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/async-exception", null);
+        Assert.assertEquals(500, response.status);
+        Assert.assertEquals("Async Exception!", response.body);
+    }
+
+    @Test
     public void testGetRoot() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/", null);
         Assert.assertEquals(200, response.status);

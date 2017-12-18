@@ -2,6 +2,16 @@ package spark.servlet;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.AsynchronousSocketChannel;
+import java.nio.channels.CompletionHandler;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
@@ -38,6 +48,46 @@ public class MyApp implements SparkApplication {
 
         get("/hi", (request, response) -> {
             return "Hello World!";
+        });
+
+        get("/async", (request, response) -> {
+            Path path = Paths.get(ClassLoader.getSystemResource("public/page.html").toURI());
+            AsynchronousFileChannel fileChannel =
+                AsynchronousFileChannel.open(path, StandardOpenOption.READ);
+            ByteBuffer buffer = ByteBuffer.allocate(100);
+            CompletableFuture future = new CompletableFuture<>();
+            fileChannel.read(buffer, 0, null, new CompletionHandler<Integer, Object>() {
+                @Override
+                public void completed(Integer result, Object attachment) {
+                    future.complete("Hello Async!");
+                }
+
+                @Override
+                public void failed(Throwable exc, Object attachment) {
+                    future.completeExceptionally(exc);
+                }
+            });
+            return future;
+        });
+
+        get("/async-exception", (request, response) -> {
+            Path path = Paths.get(ClassLoader.getSystemResource("public/page.html").toURI());
+            AsynchronousFileChannel fileChannel =
+                AsynchronousFileChannel.open(path, StandardOpenOption.READ);
+            ByteBuffer buffer = ByteBuffer.allocate(100);
+            CompletableFuture future = new CompletableFuture<>();
+            fileChannel.read(buffer, 0, null, new CompletionHandler<Integer, Object>() {
+                @Override
+                public void completed(Integer result, Object attachment) {
+                    future.complete("Hello Async!");
+                }
+
+                @Override
+                public void failed(Throwable exc, Object attachment) {
+                    future.completeExceptionally(exc);
+                }
+            });
+            return future;
         });
 
         get("/:param", (request, response) -> {
