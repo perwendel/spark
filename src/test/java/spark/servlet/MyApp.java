@@ -62,7 +62,8 @@ public class MyApp implements SparkApplication {
                 @Override
                 public void completed(Integer result, Object attachment) {
                     try {
-                        Thread.sleep(1000);
+                        // just so the future doesn't return too quickly
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -86,6 +87,12 @@ public class MyApp implements SparkApplication {
             fileChannel.read(buffer, 0, null, new CompletionHandler<Integer, Object>() {
                 @Override
                 public void completed(Integer result, Object attachment) {
+                    try {
+                        // just so the future doesn't return too quickly
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     future.completeExceptionally(new Exception("Async Exception!"));
                 }
 
