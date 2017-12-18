@@ -108,7 +108,6 @@ public class ServletTest {
     public void testGetAsyncException() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/async-exception", null);
         Assert.assertEquals(500, response.status);
-        System.out.println(response.body);
         Assert.assertThat(response.body, CoreMatchers.containsString("500 Internal Server Error"));
     }
 
