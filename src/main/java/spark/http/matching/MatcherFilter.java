@@ -168,11 +168,11 @@ public class MatcherFilter implements Filter {
 
     private void handleRouteException(RouteContext context, Exception ex) {
         if(ex instanceof HaltException){
-            Halt.modify(context.responseWrapper().raw(), context.body(), (HaltException) ex);
+            Halt.modify(context.response().raw(), context.body(), (HaltException) ex);
         } else {
             GeneralError.modify(
                 context.httpRequest(),
-                context.responseWrapper().raw(),
+                context.response().raw(),
                 context.body(),
                 context.requestWrapper(),
                 context.responseWrapper(),
@@ -203,9 +203,9 @@ public class MatcherFilter implements Filter {
 
     private void bodySerialize(RouteContext context, FilterChain chain) throws IOException, ServletException {
         if (context.body().isSet()) {
-            context.body().serializeTo(context.responseWrapper().raw(), serializerChain, context.httpRequest());
+            context.body().serializeTo(context.response().raw(), serializerChain, context.httpRequest());
         } else if (chain != null) {
-            chain.doFilter(context.httpRequest(), context.responseWrapper().raw());
+            chain.doFilter(context.httpRequest(), context.response().raw());
         }
     }
 
@@ -226,11 +226,11 @@ public class MatcherFilter implements Filter {
         if (context.body().notSet()) {
             LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
                 context.uri(), ACCEPT_TYPE_REQUEST_MIME_HEADER, context.acceptType());
-            context.responseWrapper().raw().setStatus(HttpServletResponse.SC_NOT_FOUND);
+            context.response().raw().setStatus(HttpServletResponse.SC_NOT_FOUND);
 
             if (CustomErrorPages.existsFor(404)) {
                 context.requestWrapper().setDelegate(RequestResponseFactory.create(context.httpRequest()));
-                context.responseWrapper().setDelegate(RequestResponseFactory.create(context.responseWrapper().raw()));
+                context.responseWrapper().setDelegate(RequestResponseFactory.create(context.response().raw()));
                 context.body().set(CustomErrorPages.getFor(404, context.requestWrapper(), context.responseWrapper()));
             } else {
                 context.body().set(String.format(CustomErrorPages.NOT_FOUND));
@@ -244,7 +244,7 @@ public class MatcherFilter implements Filter {
         } catch (Exception generalException) {
             GeneralError.modify(
                 context.httpRequest(),
-                context.responseWrapper().raw(),
+                context.response().raw(),
                 context.body(),
                 context.requestWrapper(),
                 context.responseWrapper(),
