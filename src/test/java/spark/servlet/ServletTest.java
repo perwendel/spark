@@ -6,6 +6,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -107,7 +108,8 @@ public class ServletTest {
     public void testGetAsyncException() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", SOMEPATH + "/async-exception", null);
         Assert.assertEquals(500, response.status);
-        Assert.assertEquals("Async Exception!", response.body);
+        System.out.println(response.body);
+        Assert.assertThat(response.body, CoreMatchers.containsString("500 Internal Server Error"));
     }
 
     @Test

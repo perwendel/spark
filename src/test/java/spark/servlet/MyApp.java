@@ -1,5 +1,7 @@
 package spark.servlet;
 
+import spark.HaltException;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.net.InetSocketAddress;
@@ -59,6 +61,11 @@ public class MyApp implements SparkApplication {
             fileChannel.read(buffer, 0, null, new CompletionHandler<Integer, Object>() {
                 @Override
                 public void completed(Integer result, Object attachment) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     future.complete("Hello Async!");
                 }
 
@@ -79,7 +86,7 @@ public class MyApp implements SparkApplication {
             fileChannel.read(buffer, 0, null, new CompletionHandler<Integer, Object>() {
                 @Override
                 public void completed(Integer result, Object attachment) {
-                    future.complete("Hello Async!");
+                    future.completeExceptionally(new Exception("Async Exception!"));
                 }
 
                 @Override

@@ -7,6 +7,7 @@
     <filter>
         <filter-name>SparkFilter</filter-name>
         <filter-class>spark.servlet.SparkFilter</filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>applicationClass</param-name>
             <param-value>spark.servlet.MyApp</param-value>
