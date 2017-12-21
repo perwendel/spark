@@ -25,6 +25,8 @@ public class SslStores {
     protected String keystorePassword;
     protected String truststoreFile;
     protected String truststorePassword;
+    protected String[] excludeProtocols;
+    protected String[] excludeCipherSuites;
 
     /**
      * Creates a Stores instance.
@@ -42,6 +44,17 @@ public class SslStores {
 
         return new SslStores(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
+    
+    
+    public static SslStores create(String keystoreFile,
+            String keystorePassword,
+            String truststoreFile,
+            String truststorePassword,
+            String[] excludeProtocols,
+            String[] excludeCipherSuites) {
+
+    	return new SslStores(keystoreFile, keystorePassword, truststoreFile, truststorePassword, excludeProtocols, excludeCipherSuites);
+}    
 
     private SslStores(String keystoreFile,
                       String keystorePassword,
@@ -52,6 +65,20 @@ public class SslStores {
         this.truststoreFile = truststoreFile;
         this.truststorePassword = truststorePassword;
     }
+    
+    private SslStores(String keystoreFile,
+            String keystorePassword,
+            String truststoreFile,
+            String truststorePassword,
+            String[] excludeProtocols,
+            String[] excludeCipherSuites) {
+		this.keystoreFile = keystoreFile;
+		this.keystorePassword = keystorePassword;
+		this.truststoreFile = truststoreFile;
+		this.truststorePassword = truststorePassword;
+		this.excludeProtocols = excludeProtocols;
+		this.excludeCipherSuites = excludeCipherSuites;
+    }    
 
     /**
      * @return keystoreFile
@@ -80,4 +107,18 @@ public class SslStores {
     public String trustStorePassword() {
         return truststorePassword;
     }
+
+    /**
+     * @return excludeProtocols
+     */
+    public String[] excludeProtocols() {
+		return excludeProtocols;
+	}
+    
+    /**
+     * @return excludeCipherSuites
+     */    
+    public String[] excludeCipherSuites() {
+		return excludeCipherSuites;
+	}
 }

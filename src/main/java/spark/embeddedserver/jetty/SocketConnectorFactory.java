@@ -78,6 +78,14 @@ public class SocketConnectorFactory {
         if (sslStores.trustStorePassword() != null) {
             sslContextFactory.setTrustStorePassword(sslStores.trustStorePassword());
         }
+        
+        if (sslStores.excludeProtocols() != null) {
+        	sslContextFactory.addExcludeProtocols(sslStores.excludeProtocols());
+		}
+        
+        if (sslStores.excludeCipherSuites() != null) {
+        	sslContextFactory.addExcludeCipherSuites(sslStores.excludeCipherSuites());
+        }
 
         ServerConnector connector = new ServerConnector(server, sslContextFactory);
         initializeConnector(connector, host, port);

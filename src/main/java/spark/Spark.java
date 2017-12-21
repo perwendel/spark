@@ -979,6 +979,16 @@ public class Spark {
                               String truststorePassword) {
         getInstance().secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
     }
+    
+    public static void secure(String keystoreFile,
+            String keystorePassword,
+            String truststoreFile,
+            String truststorePassword,
+            String[] excludeProtocols,
+            String[] excludeCipherSuites) {
+    	getInstance().secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword, excludeProtocols, excludeCipherSuites);
+    }
+    
 
     /**
      * Configures the embedded web server's thread pool.

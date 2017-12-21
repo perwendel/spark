@@ -16,6 +16,9 @@
  */
 package spark;
 
+import static java.util.Objects.requireNonNull;
+import static spark.globalstate.ServletFlag.isRunningFromServlet;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -30,9 +33,6 @@ import spark.route.Routes;
 import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.StaticFilesConfiguration;
-
-import static java.util.Objects.requireNonNull;
-import static spark.globalstate.ServletFlag.isRunningFromServlet;
 
 /**
  * Represents a Spark server "session".
@@ -162,6 +162,26 @@ public final class Service extends Routable {
         sslStores = SslStores.create(keystoreFile, keystorePassword, truststoreFile, truststorePassword);
         return this;
     }
+ 
+    public synchronized Service secure(String keystoreFile,
+							           String keystorePassword,
+							           String truststoreFile,
+							           String truststorePassword,
+							           String[] excludeProtocols,
+							           String[] excludeCipherSuites) {
+		if (initialized) {
+			throwBeforeRouteMappingException();
+		}
+		
+		if (keystoreFile == null) {
+			throw new IllegalArgumentException(
+					"Must provide a keystore file to run secured");
+		}
+		
+		sslStores = SslStores.create(keystoreFile, keystorePassword, truststoreFile, truststorePassword, excludeProtocols, excludeCipherSuites);
+		return this;
+	}    
+    
 
     /**
      * Configures the embedded web server's thread pool.
