@@ -4,6 +4,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
 import org.junit.Test;
+
+import spark.ExceptionMapper;
 import spark.embeddedserver.EmbeddedServer;
 import spark.route.Routes;
 import spark.staticfiles.StaticFilesConfiguration;
@@ -22,7 +24,7 @@ public class EmbeddedJettyFactoryTest {
         when(jettyServerFactory.create(100,10,10000)).thenReturn(new Server());
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory);
-        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false);
+        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false, new ExceptionMapper());
 
         embeddedServer.ignite("localhost", 8080, null, 100,10,10000);
 
@@ -40,7 +42,7 @@ public class EmbeddedJettyFactoryTest {
         when(jettyServerFactory.create(threadPool)).thenReturn(new Server(threadPool));
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withThreadPool(threadPool);
-        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false);
+        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false, new ExceptionMapper());
 
         embeddedServer.ignite("localhost", 8080, null, 0,0,0);
 
@@ -57,7 +59,7 @@ public class EmbeddedJettyFactoryTest {
         when(jettyServerFactory.create(100,10,10000)).thenReturn(new Server());
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withThreadPool(null);
-        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false);
+        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false, new ExceptionMapper());
 
         embeddedServer.ignite("localhost", 8080, null, 100,10,10000);
 
