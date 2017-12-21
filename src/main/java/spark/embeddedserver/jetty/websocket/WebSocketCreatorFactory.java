@@ -15,8 +15,6 @@
  */
 package spark.embeddedserver.jetty.websocket;
 
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
@@ -32,35 +30,14 @@ import static java.util.Objects.requireNonNull;
 public class WebSocketCreatorFactory {
 
     /**
-     * Creates a {@link WebSocketCreator} that uses the given handler class for
+     * Creates a {@link WebSocketCreator} that uses the given handler class/instance for
      * the WebSocket connections.
      *
-     * @param handlerClass The handler to use to manage WebSocket connections.
+     * @param handlerWrapper The wrapped handler to use to manage WebSocket connections.
      * @return The WebSocketCreator.
      */
-    public static WebSocketCreator create(Class<?> handlerClass) {
-        validate(handlerClass);
-        try {
-            Object handler = handlerClass.newInstance();
-            return new SparkWebSocketCreator(handler);
-        } catch (InstantiationException | IllegalAccessException ex) {
-            throw new RuntimeException("Could not instantiate websocket handler", ex);
-        }
-    }
-
-    /**
-     * Validates that the handler can actually handle the WebSocket connection.
-     *
-     * @param handlerClass The handler class to validate.
-     * @throws IllegalArgumentException if the class is not a valid handler class.
-     */
-    private static void validate(Class<?> handlerClass) {
-        boolean valid = WebSocketListener.class.isAssignableFrom(handlerClass)
-                || handlerClass.isAnnotationPresent(WebSocket.class);
-        if (!valid) {
-            throw new IllegalArgumentException(
-                    "WebSocket handler must implement 'WebSocketListener' or be annotated as '@WebSocket'");
-        }
+    public static WebSocketCreator create(WebSocketHandlerWrapper handlerWrapper) {
+        return new SparkWebSocketCreator(handlerWrapper.getHandler());
     }
 
     // Package protected to be visible to the unit tests

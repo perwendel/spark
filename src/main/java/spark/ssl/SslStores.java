@@ -27,6 +27,7 @@ public class SslStores {
     protected String truststorePassword;
     protected String[] excludeProtocols;
     protected String[] excludeCipherSuites;
+    protected boolean needsClientCert;
 
     /**
      * Creates a Stores instance.
@@ -47,6 +48,15 @@ public class SslStores {
     
     
     public static SslStores create(String keystoreFile,
+                                   String keystorePassword,
+                                   String truststoreFile,
+                                   String truststorePassword,
+                                   boolean needsClientCert) {
+
+        return new SslStores(keystoreFile, keystorePassword, truststoreFile, truststorePassword, needsClientCert);
+    }
+    
+    public static SslStores create(String keystoreFile,
             String keystorePassword,
             String truststoreFile,
             String truststorePassword,
@@ -54,7 +64,18 @@ public class SslStores {
             String[] excludeCipherSuites) {
 
     	return new SslStores(keystoreFile, keystorePassword, truststoreFile, truststorePassword, excludeProtocols, excludeCipherSuites);
-}    
+    }     
+    
+    public static SslStores create(String keystoreFile,
+            String keystorePassword,
+            String truststoreFile,
+            String truststorePassword,
+            String[] excludeProtocols,
+            String[] excludeCipherSuites,
+            boolean needsClientCert) {
+
+    	return new SslStores(keystoreFile, keystorePassword, truststoreFile, truststorePassword, excludeProtocols, excludeCipherSuites, needsClientCert);
+    }        
 
     private SslStores(String keystoreFile,
                       String keystorePassword,
@@ -70,6 +91,19 @@ public class SslStores {
             String keystorePassword,
             String truststoreFile,
             String truststorePassword,
+            boolean needsClientCert) {
+    	this.keystoreFile = keystoreFile;
+    	this.keystorePassword = keystorePassword;
+    	this.truststoreFile = truststoreFile;
+    	this.truststorePassword = truststorePassword;
+    	this.needsClientCert = needsClientCert;
+    }
+    
+    
+    private SslStores(String keystoreFile,
+            String keystorePassword,
+            String truststoreFile,
+            String truststorePassword,
             String[] excludeProtocols,
             String[] excludeCipherSuites) {
 		this.keystoreFile = keystoreFile;
@@ -78,6 +112,22 @@ public class SslStores {
 		this.truststorePassword = truststorePassword;
 		this.excludeProtocols = excludeProtocols;
 		this.excludeCipherSuites = excludeCipherSuites;
+    }     
+    
+    private SslStores(String keystoreFile,
+            String keystorePassword,
+            String truststoreFile,
+            String truststorePassword,
+            String[] excludeProtocols,
+            String[] excludeCipherSuites,
+            boolean needsClientCert) {
+		this.keystoreFile = keystoreFile;
+		this.keystorePassword = keystorePassword;
+		this.truststoreFile = truststoreFile;
+		this.truststorePassword = truststorePassword;
+		this.excludeProtocols = excludeProtocols;
+		this.excludeCipherSuites = excludeCipherSuites;
+		this.needsClientCert = needsClientCert;
     }    
 
     /**
@@ -121,4 +171,11 @@ public class SslStores {
     public String[] excludeCipherSuites() {
 		return excludeCipherSuites;
 	}
+    
+    /**
+     * @return needsClientCert
+     */
+    public boolean needsClientCert() {
+        return needsClientCert;
+    }
 }

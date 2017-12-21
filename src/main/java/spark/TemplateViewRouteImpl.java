@@ -55,7 +55,7 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
                                                TemplateViewRoute route,
                                                TemplateEngine engine) {
 
-        return new TemplateViewRouteImpl(path, acceptType) {
+        return new TemplateViewRouteImpl(path, acceptType, route) {
             @Override
             public String render(ModelAndView modelAndView) {
                 return engine.render(modelAndView);
@@ -73,9 +73,10 @@ public abstract class TemplateViewRouteImpl extends RouteImpl {
      *
      * @param path       the path
      * @param acceptType the accept type
+     * @param route
      */
-    protected TemplateViewRouteImpl(String path, String acceptType) {
-        super(path, acceptType);
+    protected TemplateViewRouteImpl(String path, String acceptType, TemplateViewRoute route) {
+        super(path, acceptType, route);
     }
 
 

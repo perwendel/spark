@@ -30,7 +30,18 @@ public abstract class RouteImpl implements Route, Wrapper {
 
     private String path;
     private String acceptType;
-    private Route delegate;
+    private Object delegate;
+
+    /**
+     * Prefix the path (used for {@link Service#path})
+     *
+     * @param prefix the prefix
+     * @return itself for easy chaining
+     */
+    public RouteImpl withPrefix(String prefix) {
+        this.path = prefix + this.path;
+        return this;
+    }
 
     /**
      * Wraps the route in RouteImpl
@@ -39,7 +50,7 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param route the route
      * @return the wrapped route
      */
-    static RouteImpl create(final String path, final Route route) {
+    public static RouteImpl create(final String path, final Route route) {
         return create(path, DEFAULT_ACCEPT_TYPE, route);
     }
 
@@ -51,7 +62,7 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param route      the route
      * @return the wrapped route
      */
-    static RouteImpl create(final String path, String acceptType, final Route route) {
+    public static RouteImpl create(final String path, String acceptType, final Route route) {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
         }
@@ -90,7 +101,7 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @param acceptType The accept type which is used for matching.
      * @param route      The route used to create the route implementation
      */
-    protected RouteImpl(String path, String acceptType, Route route) {
+    protected RouteImpl(String path, String acceptType, Object route) {
         this(path, acceptType);
         this.delegate = route;
     }
@@ -131,7 +142,7 @@ public abstract class RouteImpl implements Route, Wrapper {
     /**
      * @return the path
      */
-    String getPath() {
+    public String getPath() {
         return this.path;
     }
 

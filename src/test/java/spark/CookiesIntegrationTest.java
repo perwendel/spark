@@ -53,6 +53,31 @@ public class CookiesIntegrationTest {
             response.removeCookie(cookieName);
             return "";
         });
+
+        post("/path/setCookieWithPath", (request, response) -> {
+            String cookieName = request.queryParams("cookieName");
+            String cookieValue = request.queryParams("cookieValue");
+            response.cookie("/path", cookieName, cookieValue, -1, false);
+            return "";
+        }) ;
+
+        post("/path/removeCookieWithPath", (request, response) -> {
+            String cookieName = request.queryParams("cookieName");
+            String cookieValue = request.cookie(cookieName);
+            if (!request.queryParams("cookieValue").equals(cookieValue)) {
+                halt(500);
+            }
+            response.removeCookie("/path", cookieName);
+            return "";
+        }) ;
+
+        post("/path/assertNoCookies", (request, response) -> {
+            if (!request.cookies().isEmpty()) {
+                halt(500);
+            }
+            return "";
+        });
+
     }
 
     @AfterClass
@@ -80,6 +105,20 @@ public class CookiesIntegrationTest {
         httpPost("/setCookie?cookieName=" + cookieName + "&cookieValue=" + cookieValue);
         httpPost("/removeCookie?cookieName=" + cookieName + "&cookieValue=" + cookieValue);
         httpPost("/assertNoCookies");
+    }
+
+    @Test
+    public void testRemoveCookieWithPath() {
+        String cookieName = "testCookie";
+        String cookieValue = "testCookieValue";
+        httpPost("/path/setCookieWithPath?cookieName=" + cookieName + "&cookieValue=" + cookieValue);
+
+        // for sanity, check that cookie is not sent with request if path doesn't match
+        httpPost("/assertNoCookies");
+
+        // now remove cookie with matching path
+        httpPost("/path/removeCookieWithPath?cookieName=" + cookieName + "&cookieValue=" + cookieValue);
+        httpPost("/path/assertNoCookies");
     }
 
     private void httpPost(String relativePath) {

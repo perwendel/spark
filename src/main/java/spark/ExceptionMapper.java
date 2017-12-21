@@ -105,4 +105,12 @@ public class ExceptionMapper {
     public ExceptionHandlerImpl getHandler(Exception exception) {
         return this.getHandler(exception.getClass());
     }
+
+    /**
+     * Clear the exception mappings.
+     */
+    public void clear() {
+        this.exceptionMap.clear();
+    }
+
 }
