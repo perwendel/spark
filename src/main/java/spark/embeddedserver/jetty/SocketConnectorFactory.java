@@ -75,6 +75,10 @@ public class SocketConnectorFactory {
             sslContextFactory.setKeyStorePassword(sslStores.keystorePassword());
         }
 
+        if (sslStores.certAlias() != null) {
+            sslContextFactory.setCertAlias(sslStores.certAlias());
+        }
+
         if (sslStores.trustStoreFile() != null) {
             sslContextFactory.setTrustStorePath(sslStores.trustStoreFile());
         }
