@@ -16,6 +16,7 @@
  */
 package spark.http.matching;
 
+import java.io.InputStream;
 import java.io.IOException;
 
 import javax.servlet.Filter;
@@ -186,7 +187,17 @@ public class MatcherFilter implements Filter {
         }
 
         if (body.isSet()) {
-            body.serializeTo(httpResponse, serializerChain, httpRequest);
+            try {
+                body.serializeTo(httpResponse, serializerChain, httpRequest);
+            } finally {
+                if (body.get() instanceof InputStream) {
+                    try {
+                        ((InputStream) body.get()).close();
+                    } catch (IOException e) {
+                        LOG.warn("error closing response body", e);
+                    }
+                }
+            }
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
         }
