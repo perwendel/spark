@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
+import spark.embeddedserver.jetty.eventsource.EventSourceHandlerClassWrapper;
+import spark.embeddedserver.jetty.eventsource.EventSourceHandlerInstanceWrapper;
+import spark.embeddedserver.jetty.eventsource.EventSourceHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
@@ -66,6 +69,8 @@ public final class Service extends Routable {
     protected SslStores sslStores;
 
     protected Map<String, WebSocketHandlerWrapper> webSocketHandlers = null;
+
+    protected Map<String, EventSourceHandlerWrapper> eventSourceHandlers = null;
 
     protected int maxThreads = -1;
     protected int minThreads = -1;
@@ -377,7 +382,6 @@ public final class Service extends Routable {
         if (webSocketHandlers == null) {
             webSocketHandlers = new HashMap<>();
         }
-
         webSocketHandlers.put(path, handlerWrapper);
     }
 
@@ -396,6 +400,37 @@ public final class Service extends Routable {
         }
         webSocketIdleTimeoutMillis = Optional.of(timeoutMillis);
         return this;
+    }
+
+    /**
+     * Maps the given path to the given EventSource servlet class.
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param path         the EventSource path.
+     * @param handlerClass the handler class that will manage the EventSource connection to the given path.
+     */
+    public void eventSource(String path, Class<?> handlerClass) {
+        addEventSourceHandler(path, new EventSourceHandlerClassWrapper(handlerClass));
+    }
+
+    public void eventSource(String path, Object handler) {
+        addEventSourceHandler(path, new EventSourceHandlerInstanceWrapper(handler));
+    }
+
+    private synchronized void addEventSourceHandler(String path, EventSourceHandlerWrapper handlerWrapper) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        if (isRunningFromServlet()) {
+            throw new IllegalStateException("EventSource are only supported in the embedded server");
+        }
+        requireNonNull(path, "EventSource path cannot be null");
+        if (eventSourceHandlers == null) {
+            eventSourceHandlers = new HashMap<>();
+        }
+
+        eventSourceHandlers.put(path, handlerWrapper);
     }
 
     /**
@@ -453,7 +488,7 @@ public final class Service extends Routable {
     }
 
     private boolean hasMultipleHandlers() {
-        return webSocketHandlers != null;
+        return webSocketHandlers != null || eventSourceHandlers != null;
     }
 
 
@@ -545,6 +580,8 @@ public final class Service extends Routable {
                                                     hasMultipleHandlers());
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+
+                    server.configureEventSourcing(eventSourceHandlers);
 
                     port = server.ignite(
                             ipAddress,

@@ -360,6 +360,39 @@ public class JsonAcceptTypeExample {
 ```
 ---------------------------------
 
+Example showing how to use server-sent-events
+
+```java
+public class EventSourceExample {
+    public static void main(String... args){
+        Spark.eventSource("/eventsource", EventSourceServletExample.class);
+        Spark.init();
+    }
+    public static class EventSourceServletExample extends EventSourceServlet{
+        final Queue<EventSource.Emitter> emitters = new ConcurrentLinkedQueue<>();
+        @Override
+        protected EventSource newEventSource(HttpServletRequest request) {
+            return new EventSource() {
+                Emitter emmitter;
+                @Override
+                public void onOpen(Emitter emitter) throws IOException {
+                    this.emmitter = emitter;
+                    emitter.data("Event source data message");
+                    emitters.add(emitter);
+                }
+
+                @Override
+                public void onClose() {
+                    emitters.remove(this.emmitter);
+                    this.emmitter = null;
+                }
+            };
+        }
+    }
+}
+```
+---------------------------------
+
 Example showing how to render a view from a template. Note that we are using `ModelAndView` class for setting the object and name/location of template. 
 
 First of all we define a class which handles and renders output depending on template engine used. In this case [FreeMarker](http://freemarker.incubator.apache.org/).

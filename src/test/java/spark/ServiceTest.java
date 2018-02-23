@@ -1,7 +1,10 @@
 package spark;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.servlets.EventSource;
+import org.eclipse.jetty.servlets.EventSourceServlet;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.junit.Before;
 import org.junit.Rule;
@@ -10,6 +13,8 @@ import org.junit.rules.ExpectedException;
 import org.powermock.reflect.Whitebox;
 
 import spark.ssl.SslStores;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -241,5 +246,40 @@ public class ServiceTest {
     
     @WebSocket
     protected static class DummyWebSocketListener {
+    }
+
+    @Test
+    public void testEventSource_whenInitializedTrue_thenThrowIllegalStateException() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("This must be done before route mapping has begun");
+
+        Whitebox.setInternalState(service, "initialized", true);
+        service.eventSource("/", EventSourceListener.class);
+    }
+
+    @Test
+    public void testEventSource_whenPathNull_thenThrowNullPointerException() {
+        thrown.expect(NullPointerException.class);
+        thrown.expectMessage("EventSource path cannot be null");
+        service.eventSource(null, new EventSourceListener());
+    }
+
+    @Test
+    public void testEventSource_whenHandlerNull_thenThrowNullPointerException() {
+        thrown.expect(NullPointerException.class);
+        thrown.expectMessage("EventSource handler class cannot be null");
+        service.eventSource("/", null);
+    }
+
+    protected static class EventSourceListener extends EventSourceServlet{
+        @Override
+        protected EventSource newEventSource(HttpServletRequest request) {
+            return new EventSource() {
+                @Override
+                public void onOpen(Emitter emitter) throws IOException { }
+                @Override
+                public void onClose() {}
+            };
+        }
     }
 }

@@ -31,6 +31,7 @@
     <properties>
         <java.version>1.8</java.version>
         <jetty.version>9.4.6.v20170531</jetty.version>
+        <jetty.eventsourceservlet.version>1.0.0</jetty.eventsourceservlet.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <powermock.version>1.6.6</powermock.version>
         <mockito.version>1.10.19</mockito.version>
@@ -74,6 +75,17 @@
             <artifactId>websocket-servlet</artifactId>
             <version>${jetty.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-continuation</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-eventsource-servlet</artifactId>
+            <version>${jetty.eventsourceservlet.version}</version>
+        </dependency>
+
 
         <!-- JUNIT DEPENDENCY FOR TESTING -->
         <dependency>
