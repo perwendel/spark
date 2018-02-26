@@ -16,7 +16,9 @@
  */
 package spark.embeddedserver.jetty;
 
+import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.ThreadPool;
+
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServerFactory;
 import spark.http.matching.MatcherFilter;
@@ -43,7 +45,11 @@ public class EmbeddedJettyFactory implements EmbeddedServerFactory {
         matcherFilter.init(null);
 
         JettyHandler handler = new JettyHandler(matcherFilter);
-        return new EmbeddedJettyServer(serverFactory, handler).withThreadPool(threadPool);
+
+        ServletContextHandler contextHandler = new ServletContextHandler(
+            null, "/", handler, null, null, null, ServletContextHandler.SESSIONS);
+
+        return new EmbeddedJettyServer(serverFactory, contextHandler).withThreadPool(threadPool);
     }
 
     /**
