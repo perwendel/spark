@@ -74,12 +74,20 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      */
     public ClassPathResource(String path, ClassLoader classLoader) {
         Assert.notNull(path, "Path must not be null");
+        Assert.state(doesNotContainFileColon(path), "Path must not contain 'file:'");
+
         String pathToUse = StringUtils.cleanPath(path);
+
         if (pathToUse.startsWith("/")) {
             pathToUse = pathToUse.substring(1);
         }
+
         this.path = pathToUse;
         this.classLoader = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
+    }
+
+    private static boolean doesNotContainFileColon(String path) {
+        return !path.contains("file:");
     }
 
     /**
@@ -108,10 +116,9 @@ public class ClassPathResource extends AbstractFileResolvingResource {
     /**
      * This implementation checks for the resolution of a resource URL.
      *
+     * @return if exists.
      * @see java.lang.ClassLoader#getResource(String)
      * @see java.lang.Class#getResource(String)
-     *
-     * @return if exists.
      */
     @Override
     public boolean exists() {
@@ -127,10 +134,9 @@ public class ClassPathResource extends AbstractFileResolvingResource {
     /**
      * This implementation opens an InputStream for the given class path resource.
      *
+     * @return the input stream.
      * @see java.lang.ClassLoader#getResourceAsStream(String)
      * @see java.lang.Class#getResourceAsStream(String)
-     *
-     * @return the input stream.
      */
     @Override
     public InputStream getInputStream() throws IOException {
@@ -149,10 +155,9 @@ public class ClassPathResource extends AbstractFileResolvingResource {
     /**
      * This implementation returns a URL for the underlying class path resource.
      *
+     * @return the url.
      * @see java.lang.ClassLoader#getResource(String)
      * @see java.lang.Class#getResource(String)
-     *
-     * @return the url.
      */
     @Override
     public URL getURL() throws IOException {
@@ -172,9 +177,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      * This implementation creates a ClassPathResource, applying the given path
      * relative to the path of the underlying resource of this descriptor.
      *
-     * @see spark.utils.StringUtils#applyRelativePath(String, String)
-     *
      * @return the resource.
+     * @see spark.utils.StringUtils#applyRelativePath(String, String)
      */
     @Override
     public Resource createRelative(String relativePath) {
@@ -186,9 +190,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      * This implementation returns the name of the file that this class path
      * resource refers to.
      *
-     * @see spark.utils.StringUtils#getFilename(String)
-     *
      * @return the file name.
+     * @see spark.utils.StringUtils#getFilename(String)
      */
     @Override
     public String getFilename() {
@@ -233,8 +236,8 @@ public class ClassPathResource extends AbstractFileResolvingResource {
             ClassLoader otherLoader = otherRes.classLoader;
 
             return (this.path.equals(otherRes.path) &&
-                    thisLoader.equals(otherLoader) &&
-                    this.clazz.equals(otherRes.clazz));
+                thisLoader.equals(otherLoader) &&
+                this.clazz.equals(otherRes.clazz));
         }
         return false;
     }
