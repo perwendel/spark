@@ -10,24 +10,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 public class EventSourceClient {
-    private final CountDownLatch closeLatch;
     private final Socket socket;
     public EventSourceClient(Socket socket) {
         this.socket = socket;
-        this.closeLatch = new CountDownLatch(1);
     }
 
-    public boolean awaitClose(int duration, TimeUnit unit) throws InterruptedException {
-        return closeLatch.await(duration, unit);
-    }
-    public void close() throws IOException {
+    public void close() throws IOException, InterruptedException {
         socket.close();
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        closeLatch.countDown();
+        TimeUnit.SECONDS.sleep(15);
     }
     public void writeHTTPRequest(String path) throws IOException {
         int serverPort = socket.getPort();
@@ -46,7 +36,6 @@ public class EventSourceClient {
         final BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         String line;
         while ((line = reader.readLine()) != null) {
-            System.out.println(line);
             if (line.length() == 0)
                 break;
         }

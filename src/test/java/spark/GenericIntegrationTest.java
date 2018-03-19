@@ -515,14 +515,14 @@ public class GenericIntegrationTest {
             if (line.isEmpty())
                 break;
         }
-        eventSourceClient.awaitClose(30, TimeUnit.SECONDS);
-        eventSourceClient.close();
 
+        eventSourceClient.close();
         Assert.assertEquals("data: " + EventSourceTestHandler.ES_MESSAGE, response);
         Assert.assertEquals(3, EventSourceTestHandler.events.size());
         Assert.assertEquals(EventSourceTestHandler.ON_CONNECT, EventSourceTestHandler.events.get(0));
         Assert.assertEquals(EventSourceTestHandler.ES_MESSAGE, EventSourceTestHandler.events.get(1));
         Assert.assertEquals(EventSourceTestHandler.ON_CLOSE, EventSourceTestHandler.events.get(2));
+
 
     }
 
