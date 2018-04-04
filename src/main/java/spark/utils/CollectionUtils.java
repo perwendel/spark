@@ -42,4 +42,15 @@ public abstract class CollectionUtils {
         return (collection == null || collection.isEmpty());
     }
 
+    /**
+     * Return {@code true} if the supplied Collection is not {@code null} and not empty.
+     * Otherwise, return {@code false}.
+     *
+     * @param collection the Collection to check
+     * @return whether the given Collection is not empty
+     */
+    public static boolean isNotEmpty(Collection<?> collection) {
+        return !isEmpty(collection);
+    }
+
 }
