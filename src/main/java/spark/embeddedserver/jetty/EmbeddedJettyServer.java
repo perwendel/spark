@@ -23,11 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.jetty.nosql.mongodb.MongoSessionDataStoreFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.session.*;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
@@ -49,17 +52,25 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     private static final String NAME = "Spark";
 
     private final JettyServerFactory serverFactory;
-    private final Handler handler;
+    private final JettyHandler handler;
     private Server server;
+
+    private String clusterNodeName;
+    private int clusterScavengeInterval;
+    private String clusterDatastoreDriverClassName;
+    private String clusterDatastoreName;
+    private String clusterCollectionName;
+    private String clusterDatastoreDriverConnectionUrl;
+
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
     private Optional<Integer> webSocketIdleTimeoutMillis;
-
     private ThreadPool threadPool = null;
 
-    public EmbeddedJettyServer(JettyServerFactory serverFactory, Handler handler) {
+    public EmbeddedJettyServer(JettyServerFactory serverFactory, JettyHandler handler) {
+    
         this.serverFactory = serverFactory;
         this.handler = handler;
     }
@@ -84,7 +95,6 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                       int minThreads,
                       int threadIdleTimeoutMillis) throws Exception {
 
-        boolean hasCustomizedConnectors = false;
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -110,41 +120,78 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
         }
 
-        Connector previousConnectors[] = server.getConnectors();
         server = connector.getServer();
-        if (previousConnectors.length != 0) {
-            server.setConnectors(previousConnectors);
-            hasCustomizedConnectors = true;
-        } else {
-            server.setConnectors(new Connector[] {connector});
+        server.setConnectors(new Connector[]{connector});
+
+
+        if (clusterDatastoreDriverConnectionUrl != null) {
+
+            DefaultSessionIdManager sessionIdManager = new DefaultSessionIdManager(server);
+            sessionIdManager.setWorkerName(clusterNodeName);
+            sessionIdManager.setServer(server);
+            HouseKeeper houseKeeper = new HouseKeeper();
+            houseKeeper.setSessionIdManager(sessionIdManager);
+            houseKeeper.setIntervalSec(clusterScavengeInterval);
+            sessionIdManager.setSessionHouseKeeper(houseKeeper);
+            server.setSessionIdManager(sessionIdManager);
+
+            if (clusterDatastoreDriverConnectionUrl.contains("mongodb")) {
+
+                MongoSessionDataStoreFactory mongoSessionDataStoreFactory = new MongoSessionDataStoreFactory();
+                mongoSessionDataStoreFactory.setConnectionString(clusterDatastoreDriverConnectionUrl);
+                mongoSessionDataStoreFactory.setDbName(clusterDatastoreName);
+                mongoSessionDataStoreFactory.setCollectionName(clusterCollectionName);
+
+                SessionHandler sessionHandler = new SessionHandler();
+                sessionHandler.setSessionIdManager(sessionIdManager);
+                SessionCache sessionCache = new DefaultSessionCache(sessionHandler);
+                sessionCache.setSessionDataStore(mongoSessionDataStoreFactory.getSessionDataStore(sessionHandler));
+                sessionHandler.setSessionCache(sessionCache);
+                handler.setHandler(sessionHandler);
+
+            } else if (clusterDatastoreDriverConnectionUrl.contains("jdbc")) {
+
+                JDBCSessionDataStoreFactory jdbcSessionDataStoreFactory = new JDBCSessionDataStoreFactory();
+                DatabaseAdaptor databaseAdaptor = new DatabaseAdaptor();
+                databaseAdaptor.setDriverInfo(clusterDatastoreDriverClassName, clusterDatastoreDriverConnectionUrl);
+                jdbcSessionDataStoreFactory.setDatabaseAdaptor(databaseAdaptor);
+
+                SessionHandler sessionHandler = new SessionHandler();
+                sessionHandler.setSessionIdManager(sessionIdManager);
+                SessionCache sessionCache = new DefaultSessionCache(sessionHandler);
+                sessionCache.setSessionDataStore(jdbcSessionDataStoreFactory.getSessionDataStore(sessionHandler));
+                sessionHandler.setSessionCache(sessionCache);
+                handler.setHandler(sessionHandler);
+
+            }
         }
 
         ServletContextHandler webSocketServletContextHandler =
             WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
 
+        ContextHandler contextHandler = new ContextHandler();
+        contextHandler.setContextPath("/");
+        contextHandler.setResourceBase(".");
+        contextHandler.setClassLoader(Thread.currentThread().getContextClassLoader());
+        contextHandler.setHandler(handler);
+
+        List<Handler> handlersInList = new ArrayList<>();
+        handlersInList.add(contextHandler);
+
         // Handle web socket routes
-        if (webSocketServletContextHandler == null) {
-            server.setHandler(handler);
-        } else {
-            List<Handler> handlersInList = new ArrayList<>();
-            handlersInList.add(handler);
-
-            // WebSocket handler must be the last one
-            if (webSocketServletContextHandler != null) {
-                handlersInList.add(webSocketServletContextHandler);
-            }
-
-            HandlerList handlers = new HandlerList();
-            handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
-            server.setHandler(handlers);
+        if (webSocketServletContextHandler != null) {
+            handlersInList.add(webSocketServletContextHandler);
         }
+
+        // add all handlers
+        HandlerList handlers = new HandlerList();
+        handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
+
+
+        server.setHandler(handlers);
 
         logger.info("== {} has ignited ...", NAME);
-        if (hasCustomizedConnectors) {
-            logger.info(">> Listening on Custom Server ports!");
-        } else {
-            logger.info(">> Listening on {}:{}", host, port);
-        }
+        logger.info(">> Listening on {}:{}", host, port);
 
         server.start();
         return port;
@@ -183,6 +230,17 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         return server.getThreadPool().getThreads() - server.getThreadPool().getIdleThreads();
     }
 
+
+    @Override
+    public void configureSessionCluster(String clusterNodeName, String clusterDatastoreDriverClassName, String clusterDatastoreName, String clusterCollectionName, String clusterDatastoreDriverConnectionUrl, int clusterScavengeInterval) {
+
+        this.clusterNodeName = clusterNodeName;
+        this.clusterScavengeInterval = clusterScavengeInterval;
+        this.clusterDatastoreDriverClassName = clusterDatastoreDriverClassName;
+        this.clusterDatastoreName = clusterDatastoreName;
+        this.clusterCollectionName = clusterCollectionName;
+        this.clusterDatastoreDriverConnectionUrl = clusterDatastoreDriverConnectionUrl;
+    }
     /**
      * Sets optional thread pool for jetty server.  This is useful for overriding the default thread pool
      * behaviour for example io.dropwizard.metrics.jetty9.InstrumentedQueuedThreadPool.
