@@ -41,6 +41,11 @@ import spark.utils.StringUtils;
  */
 public class ClassPathResource extends AbstractFileResolvingResource {
 
+    /**
+     * Prefix of the classpath defined in Servlet 3.0 static resources location provided by dependencies.
+     */
+    private static final String SERVLET_STATIC_FILES_PREFIX = "/META-INF/resources";
+
     private final String path;
 
     private ClassLoader classLoader;
@@ -92,8 +97,10 @@ public class ClassPathResource extends AbstractFileResolvingResource {
     }
 
     private static boolean isInvalidPath(String path) {
-        if (path.contains("WEB-INF") || path.contains("META-INF")) {
-            return true;
+        if (!path.startsWith(SERVLET_STATIC_FILES_PREFIX)) {
+            if (path.contains("WEB-INF") || path.contains("META-INF")) {
+                return true;
+            }
         }
         if (path.contains(":/")) {
             String relativePath = (path.charAt(0) == '/' ? path.substring(1) : path);
