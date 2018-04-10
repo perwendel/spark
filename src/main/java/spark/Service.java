@@ -16,18 +16,8 @@
  */
 package spark;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
@@ -39,6 +29,11 @@ import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
+
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
@@ -265,7 +260,7 @@ public final class Service extends Routable {
 
         if (keystoreFile == null) {
             throw new IllegalArgumentException(
-                    "Must provide a keystore file to run secured");
+                "Must provide a keystore file to run secured");
         }
 
         sslStores = SslStores.create(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, needsClientCert);
@@ -313,7 +308,7 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-        
+
         if (!staticFilesConfiguration.isStaticResourcesSet()) {
             staticFilesConfiguration.configure(folder);
         } else {
@@ -333,7 +328,7 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-        
+
         if (!staticFilesConfiguration.isExternalStaticResourcesSet()) {
             staticFilesConfiguration.configureExternal(externalFolder);
         } else {
@@ -436,7 +431,7 @@ public final class Service extends Routable {
      */
     public void awaitInitialization() {
         if (!initialized) {
-    	        throw new IllegalStateException("Server has not been properly initialized");
+            throw new IllegalStateException("Server has not been properly initialized");
         }
 
         try {
@@ -449,7 +444,7 @@ public final class Service extends Routable {
 
     private void throwBeforeRouteMappingException() {
         throw new IllegalStateException(
-                "This must be done before route mapping has begun");
+            "This must be done before route mapping has begun");
     }
 
     private boolean hasMultipleHandlers() {
@@ -466,7 +461,7 @@ public final class Service extends Routable {
                 server.extinguish();
                 latch = new CountDownLatch(1);
             }
-            
+
             routes.clear();
             exceptionMapper.clear();
             staticFilesConfiguration.clear();
@@ -532,30 +527,30 @@ public final class Service extends Routable {
 
             if (!isRunningFromServlet()) {
                 new Thread(() -> {
-                  try {
-                    EmbeddedServers.initialize();
+                    try {
+                        EmbeddedServers.initialize();
 
-                    if (embeddedServerIdentifier == null) {
-                        embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
-                    }
+                        if (embeddedServerIdentifier == null) {
+                            embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
+                        }
 
-                    server = EmbeddedServers.create(embeddedServerIdentifier,
-                                                    routes,
-                                                    staticFilesConfiguration,
-                                                    hasMultipleHandlers());
+                        server = EmbeddedServers.create(embeddedServerIdentifier,
+                            routes,
+                            staticFilesConfiguration,
+                            hasMultipleHandlers());
 
-                    server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+                        server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
-                    port = server.ignite(
+                        port = server.ignite(
                             ipAddress,
                             port,
                             sslStores,
                             maxThreads,
                             minThreads,
                             threadIdleTimeoutMillis);
-                  } catch (Exception e) {
-                    initExceptionHandler.accept(e);
-                  }
+                    } catch (Exception e) {
+                        initExceptionHandler.accept(e);
+                    }
                     try {
                         latch.countDown();
                         server.join();
