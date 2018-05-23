@@ -553,16 +553,17 @@ public final class Service extends Routable {
                             maxThreads,
                             minThreads,
                             threadIdleTimeoutMillis);
-                  } catch (Exception e) {
+
+                    latch.countDown();
+                    server.join();
+                  }
+                  catch (InterruptedException e) {
+                      LOG.error("server interrupted", e);
+                      Thread.currentThread().interrupt();
+                  }
+                  catch (Exception e) {
                     initExceptionHandler.accept(e);
                   }
-                    try {
-                        latch.countDown();
-                        server.join();
-                    } catch (InterruptedException e) {
-                        LOG.error("server interrupted", e);
-                        Thread.currentThread().interrupt();
-                    }
                 }).start();
             }
             initialized = true;

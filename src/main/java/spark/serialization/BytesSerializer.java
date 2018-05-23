@@ -38,10 +38,8 @@ class BytesSerializer extends Serializer {
         byte[] bytes = null;
         if (element instanceof byte[]) {
             bytes = (byte[]) element;
-        } else {
-            if (element instanceof ByteBuffer) {
-                bytes = ((ByteBuffer) element).array();
-            }
+        } else if (element instanceof ByteBuffer){
+            bytes = ((ByteBuffer) element).array();
         }
         outputStream.write(bytes);
     }
