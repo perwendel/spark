@@ -1,6 +1,5 @@
 package spark;
 
-import java.io.IOException;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -23,7 +22,7 @@ public class FilterTest {
     }
 
     @BeforeClass
-    public static void setup() throws IOException {
+    public static void setup(){
         testUtil = new SparkTestUtil(4567);
 
         before("/justfilter", (q, a) -> System.out.println("Filter matched"));

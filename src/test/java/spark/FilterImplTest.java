@@ -22,7 +22,7 @@ public class FilterImplTest {
     public void testConstructor(){
         FilterImpl filter = new FilterImpl(PATH_TEST, ACCEPT_TYPE_TEST) {
             @Override
-            public void handle(Request request, Response response) throws Exception {
+            public void handle(Request request, Response response){
             }
         };
         assertEquals("Should return path specified", PATH_TEST, filter.getPath());
@@ -30,7 +30,7 @@ public class FilterImplTest {
     }
 
     @Test
-    public void testGets_thenReturnGetPathAndGetAcceptTypeSuccessfully() throws Exception {
+    public void testGets_thenReturnGetPathAndGetAcceptTypeSuccessfully(){
         filter = FilterImpl.create(PATH_TEST, ACCEPT_TYPE_TEST, null);
         assertEquals("Should return path specified", PATH_TEST, filter.getPath());
         assertEquals("Should return accept type specified", ACCEPT_TYPE_TEST, filter.getAcceptType());

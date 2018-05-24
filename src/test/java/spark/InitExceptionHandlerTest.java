@@ -14,7 +14,7 @@ public class InitExceptionHandlerTest {
     private static String errorMessage = "";
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass(){
         service = ignite();
         service.port(NON_VALID_PORT);
         service.initExceptionHandler((e) -> errorMessage = "Custom init error");
@@ -23,12 +23,12 @@ public class InitExceptionHandlerTest {
     }
 
     @Test
-    public void testInitExceptionHandler() throws Exception {
+    public void testInitExceptionHandler(){
         Assert.assertEquals("Custom init error", errorMessage);
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown(){
         service.stop();
     }
 

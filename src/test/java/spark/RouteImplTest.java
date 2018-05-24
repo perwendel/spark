@@ -17,7 +17,7 @@ public class RouteImplTest {
     public void testConstructor(){
         route = new RouteImpl(PATH_TEST) {
             @Override
-            public Object handle(Request request, Response response) throws Exception {
+            public Object handle(Request request, Response response){
                 return null;
             }
         };
@@ -25,7 +25,7 @@ public class RouteImplTest {
     }
 
     @Test
-    public void testGets_thenReturnGetPathAndGetAcceptTypeSuccessfully() throws Exception {
+    public void testGets_thenReturnGetPathAndGetAcceptTypeSuccessfully(){
         route = RouteImpl.create(PATH_TEST, ACCEPT_TYPE_TEST, null);
         assertEquals("Should return path specified", PATH_TEST, route.getPath());
         assertEquals("Should return accept type specified", ACCEPT_TYPE_TEST, route.getAcceptType());

@@ -59,7 +59,7 @@ public class StaticFilesFromArchiveTest {
         Thread.currentThread().setContextClassLoader(initialClassLoader);
     }
 
-    private static void setupClassLoader() throws Exception {
+    private static void setupClassLoader(){
         ClassLoader extendedClassLoader = createExtendedClassLoader();
         initialClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(extendedClassLoader);

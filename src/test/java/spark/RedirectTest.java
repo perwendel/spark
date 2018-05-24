@@ -16,7 +16,7 @@
  */
 package spark;
 
-import java.io.IOException;
+
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -37,7 +37,7 @@ public class RedirectTest {
     private static SparkTestUtil testUtil;
 
     @BeforeClass
-    public static void setup() throws IOException {
+    public static void setup(){
         testUtil = new SparkTestUtil(4567);
         testUtil.setFollowRedirectStrategy(301, 302); // don't set the others to be able to verify affect of Redirect.Status
 
