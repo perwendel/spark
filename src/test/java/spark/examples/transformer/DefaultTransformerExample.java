@@ -1,13 +1,15 @@
 package spark.examples.transformer;
 
+import spark.ResponseTransformer;
+
 import static spark.Spark.get;
-import static spark.Spark.setDefaultResponseTransformer;
+import static spark.Spark.defaultResponseTransformer;
 
 public class DefaultTransformerExample {
 
     public static void main(String args[]) {
 
-        setDefaultResponseTransformer(new JsonTransformer());
+        defaultResponseTransformer(json);
 
         get("/hello", "application/json", (request, response) -> {
             return new MyMessage("Hello World");
@@ -17,5 +19,7 @@ public class DefaultTransformerExample {
             return new MyMessage("Hello World");
         }, model -> "custom transformer");
     }
+
+    private static final ResponseTransformer json = new JsonTransformer();
 
 }

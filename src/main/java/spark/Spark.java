@@ -957,7 +957,7 @@ public class Spark {
      *
      * @param transformer
      */
-    public static void setDefaultResponseTransformer(ResponseTransformer transformer) {
+    public static void defaultResponseTransformer(ResponseTransformer transformer) {
         getInstance().defaultResponseTransformer(transformer);
     }
 
