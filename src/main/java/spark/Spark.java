@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -953,6 +953,15 @@ public class Spark {
     }
 
     /**
+     * Set the default response transformer. All requests not using a custom transformer will use this one
+     *
+     * @param transformer
+     */
+    public static void defaultResponseTransformer(ResponseTransformer transformer) {
+        getInstance().defaultResponseTransformer(transformer);
+    }
+
+    /**
      * Set the port that Spark should listen on. If not called the default port
      * is 4567. This has to be called before any route mapping is done.
      * If provided port = 0 then the an arbitrary available port will be used.
@@ -1062,8 +1071,8 @@ public class Spark {
     public static void initExceptionHandler(Consumer<Exception> initExceptionHandler) {
         getInstance().initExceptionHandler(initExceptionHandler);
     }
-     
-    /** 
+
+    /**
      * Set the connection to be secure, using the specified keystore and
      * truststore. This has to be called before any route mapping is done. You
      * have to supply a keystore file, truststore file is optional (keystore
@@ -1172,6 +1181,14 @@ public class Spark {
      */
     public static void stop() {
         getInstance().stop();
+    }
+    
+    /**
+     * Waits for the Spark server to be stopped.
+     * If it's already stopped, will return immediately.
+     */
+    public static void awaitStop() {
+    	getInstance().awaitStop();
     }
 
     ////////////////
