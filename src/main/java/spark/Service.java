@@ -76,7 +76,8 @@ public final class Service extends Routable {
     protected Deque<String> pathDeque = new ArrayDeque<>();
     protected Routes routes;
 
-    private CountDownLatch latch = new CountDownLatch(1);
+    private CountDownLatch initLatch = new CountDownLatch(1);
+    private CountDownLatch stopLatch = new CountDownLatch(0);
 
     private Object embeddedServerIdentifier = null;
 
@@ -440,7 +441,7 @@ public final class Service extends Routable {
         }
 
         try {
-            latch.await();
+            initLatch.await();
         } catch (InterruptedException e) {
             LOG.info("Interrupted by another thread");
             Thread.currentThread().interrupt();
@@ -458,20 +459,43 @@ public final class Service extends Routable {
 
 
     /**
-     * Stops the Spark server and clears all routes
+     * Stops the Spark server and clears all routes.
      */
     public synchronized void stop() {
-        new Thread(() -> {
+    	if (!initialized) {
+    		return;
+    	}
+        initiateStop();
+    }
+    
+    /**
+     * Waits for the Spark server to stop.
+     * <b>Warning:</b> this method should not be called from a request handler.
+     */
+    public void awaitStop() {
+        try {
+            stopLatch.await();
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted by another thread");
+            Thread.currentThread().interrupt();
+        }
+    }
+    
+    private void initiateStop() {
+    	stopLatch = new CountDownLatch(1);
+        Thread stopThread = new Thread(() -> {
             if (server != null) {
                 server.extinguish();
-                latch = new CountDownLatch(1);
+                initLatch = new CountDownLatch(1);
             }
             
             routes.clear();
             exceptionMapper.clear();
             staticFilesConfiguration.clear();
             initialized = false;
-        }).start();
+            stopLatch.countDown();
+        });
+        stopThread.start();
     }
 
     /**
@@ -557,7 +581,7 @@ public final class Service extends Routable {
                     initExceptionHandler.accept(e);
                   }
                     try {
-                        latch.countDown();
+                        initLatch.countDown();
                         server.join();
                     } catch (InterruptedException e) {
                         LOG.error("server interrupted", e);

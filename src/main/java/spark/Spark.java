@@ -1173,6 +1173,14 @@ public class Spark {
     public static void stop() {
         getInstance().stop();
     }
+    
+    /**
+     * Waits for the Spark server to be stopped.
+     * If it's already stopped, will return immediately.
+     */
+    public static void awaitStop() {
+    	getInstance().awaitStop();
+    }
 
     ////////////////
     // Websockets //

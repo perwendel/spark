@@ -7,11 +7,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
+import spark.embeddedserver.EmbeddedServer;
+import spark.route.Routes;
 import spark.ssl.SslStores;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static spark.Service.ignite;
 
@@ -237,6 +241,40 @@ public class ServiceTest {
         thrown.expect(NullPointerException.class);
         thrown.expectMessage("WebSocket handler class cannot be null");
         service.webSocket("/", null);
+    }
+    
+    @Test(timeout = 300)
+    public void stopExtinguishesServer() {
+        Service service = Service.ignite();
+        Routes routes = Mockito.mock(Routes.class);
+        EmbeddedServer server = Mockito.mock(EmbeddedServer.class);
+        service.routes = routes;
+        service.server = server;
+        service.initialized = true;
+        service.stop();
+        try {
+        	// yes, this is ugly and forces to set a test timeout as a precaution :(
+            while (service.initialized) {
+            	Thread.sleep(20);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        Mockito.verify(server).extinguish();
+    }
+    
+    @Test
+    public void awaitStopBlocksUntilExtinguished() {
+        Service service = Service.ignite();
+        Routes routes = Mockito.mock(Routes.class);
+        EmbeddedServer server = Mockito.mock(EmbeddedServer.class);
+        service.routes = routes;
+        service.server = server;
+        service.initialized = true;
+        service.stop();
+        service.awaitStop();
+        Mockito.verify(server).extinguish();
+        assertFalse(service.initialized);
     }
     
     @WebSocket
