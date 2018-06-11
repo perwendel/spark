@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -460,18 +462,19 @@ public final class Service extends Routable {
     /**
      * Stops the Spark server and clears all routes
      */
-    public synchronized void stop() {
-        new Thread(() -> {
-            if (server != null) {
-                server.extinguish();
-                latch = new CountDownLatch(1);
-            }
-            
-            routes.clear();
-            exceptionMapper.clear();
-            staticFilesConfiguration.clear();
-            initialized = false;
-        }).start();
+    public synchronized Future<?> stop() {
+        return Executors.newSingleThreadExecutor()
+            .submit(() -> {
+                if (server != null) {
+                    server.extinguish();
+                    latch = new CountDownLatch(1);
+                }
+
+                routes.clear();
+                exceptionMapper.clear();
+                staticFilesConfiguration.clear();
+                initialized = false;
+            });
     }
 
     /**
