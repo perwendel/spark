@@ -9,6 +9,8 @@ import spark.embeddedserver.EmbeddedServer;
 import spark.route.Routes;
 import spark.staticfiles.StaticFilesConfiguration;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,7 +27,8 @@ public class EmbeddedJettyFactoryTest {
         final StaticFilesConfiguration staticFilesConfiguration = mock(StaticFilesConfiguration.class);
         final Routes routes = mock(Routes.class);
 
-        when(jettyServerFactory.create(100, 10, 10000)).thenReturn(new Server());
+        Server server = new Server();
+        when(jettyServerFactory.create(100, 10, 10000)).thenReturn(server);
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory);
         embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false);
@@ -34,6 +37,7 @@ public class EmbeddedJettyFactoryTest {
 
         verify(jettyServerFactory, times(1)).create(100, 10, 10000);
         verifyNoMoreInteractions(jettyServerFactory);
+        assertTrue(((JettyHandler) server.getHandler()).getSessionCookieConfig().isHttpOnly());
     }
 
     @Test
@@ -71,8 +75,24 @@ public class EmbeddedJettyFactoryTest {
         verifyNoMoreInteractions(jettyServerFactory);
     }
 
+    @Test
+    public void create_withoutHttpOnly() throws Exception {
+        final JettyServerFactory jettyServerFactory = mock(JettyServerFactory.class);
+        final StaticFilesConfiguration staticFilesConfiguration = mock(StaticFilesConfiguration.class);
+        final Routes routes = mock(Routes.class);
+
+        Server server = new Server();
+        when(jettyServerFactory.create(100, 10, 10000)).thenReturn(server);
+
+        final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withHttpOnly(false);
+        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false);
+        embeddedServer.ignite("localhost", 6759, null, 100, 10, 10000);
+
+        assertFalse(((JettyHandler) server.getHandler()).getSessionCookieConfig().isHttpOnly());
+    }
+
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         if (embeddedServer != null) {
             embeddedServer.extinguish();
         }
