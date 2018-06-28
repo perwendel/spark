@@ -16,6 +16,7 @@
  */
 package spark.embeddedserver;
 
+import spark.ExceptionMapper;
 import spark.route.Routes;
 import spark.staticfiles.StaticFilesConfiguration;
 
@@ -32,5 +33,5 @@ public interface EmbeddedServerFactory {
      * @param hasMultipleHandler true if other handlers exist
      * @return the created instance
      */
-    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler);
+    public EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, ExceptionMapper exceptionMapper, boolean hasMultipleHandler);
 }

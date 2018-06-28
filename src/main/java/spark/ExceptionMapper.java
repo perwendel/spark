@@ -21,20 +21,20 @@ import java.util.Map;
 
 public class ExceptionMapper {
     /**
-     * Holds a default instance for the exception mapper
+     * Holds a servlet instance for the exception mapper
      */
-    private static ExceptionMapper defaultInstance;
+    private static ExceptionMapper servletInstance;
 
     /**
-     * Returns the default instance for the exception mapper
+     * Returns the servlet instance for the exception mapper
      *
-     * @return Default instance
+     * @return servlet instance
      */
-    public synchronized static ExceptionMapper getInstance() {
-        if (defaultInstance == null) {
-            defaultInstance = new ExceptionMapper();
+    public synchronized static ExceptionMapper getServletInstance() {
+        if (servletInstance == null) {
+            servletInstance = new ExceptionMapper();
         }
-        return defaultInstance;
+        return servletInstance;
     }
 
     /**
