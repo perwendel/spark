@@ -148,7 +148,6 @@ public class StaticFilesConfiguration {
 
             staticResourceHandlers.add(new ClassPathResourceHandler(folder, "index.html"));
             LOG.info("StaticResourceHandler configured with folder = " + folder);
-            StaticFilesFolder.localConfiguredTo(folder);
             staticResourcesSet = true;
         }
     }
@@ -178,7 +177,6 @@ public class StaticFilesConfiguration {
                 LOG.error("Error when creating external StaticResourceHandler", e);
             }
 
-            StaticFilesFolder.externalConfiguredTo(folder);
             externalStaticResourcesSet = true;
         }
     }
