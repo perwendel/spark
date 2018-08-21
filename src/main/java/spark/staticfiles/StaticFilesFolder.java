@@ -16,11 +16,13 @@ public class StaticFilesFolder {
     private static volatile String local;
     private static volatile String external;
 
+    @Deprecated
     public static final void localConfiguredTo(String folder) {
 
         local = removeLeadingAndTrailingSlashesFrom(folder);
     }
 
+    @Deprecated
     public static final void externalConfiguredTo(String folder) {
 
         String unixLikeFolder = Paths.get(folder).toAbsolutePath().toString().replace("\\", "/");
@@ -28,10 +30,12 @@ public class StaticFilesFolder {
         external = removeLeadingAndTrailingSlashesFrom(unixLikeFolder);
     }
 
+    @Deprecated
     public static final String local() {
         return local;
     }
 
+    @Deprecated
     public static final String external() {
         return external;
     }
