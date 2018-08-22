@@ -28,10 +28,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import spark.http.matching.AsyncContextWrapper;
 import spark.routematch.RouteMatch;
 import spark.utils.urldecoding.UrlDecode;
 import spark.utils.IOUtils;
@@ -490,6 +492,15 @@ public class Request {
      */
     public String protocol() {
         return servletRequest.getProtocol();
+    }
+
+    /**
+     * Starts an asynchronous request.
+     *
+     * @return the asynchronous context
+     */
+    public AsyncContext startAsync() {
+        throw new RuntimeException("this should be not be called; use RequestWrapper.startAsync instead");
     }
 
     private static Map<String, String> getParams(List<String> request, List<String> matched) {

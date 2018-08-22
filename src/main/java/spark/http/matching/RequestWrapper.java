@@ -19,6 +19,7 @@ package spark.http.matching;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 
 import spark.Access;
@@ -28,6 +29,8 @@ import spark.Session;
 import spark.routematch.RouteMatch;
 
 final class RequestWrapper extends Request {
+
+    private AsyncContextWrapper asyncContextWrapper;
 
     static RequestWrapper create() {
         return new RequestWrapper();
@@ -239,5 +242,19 @@ final class RequestWrapper extends Request {
     @Override
     public String cookie(String name) {
         return delegate.cookie(name);
+    }
+
+    @Override
+    public AsyncContext startAsync() {
+        if (asyncContextWrapper != null) {
+            asyncContextWrapper.setWrappedContext(raw().startAsync());
+            return asyncContextWrapper;
+        } else {
+            return raw().startAsync();
+        }
+    }
+
+    public void setAsyncContextWrapper(AsyncContextWrapper wrapper) {
+        this.asyncContextWrapper = wrapper;
     }
 }

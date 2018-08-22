@@ -123,11 +123,18 @@ public class MatcherFilter implements Filter {
                 .withResponse(response)
                 .withHttpMethod(httpMethod);
 
+        AsyncContextWrapper asyncContextWrapper = new AsyncContextWrapper(context, serializerChain);
+        requestWrapper.setAsyncContextWrapper(asyncContextWrapper);
+
         try {
             try {
 
                 BeforeFilters.execute(context);
                 Routes.execute(context);
+                if (httpRequest.isAsyncStarted()) {
+                    ((HttpRequestWrapper) servletRequest).notConsumed(true);
+                    return;
+                }
                 AfterFilters.execute(context);
 
             } catch (HaltException halt) {
@@ -173,7 +180,9 @@ public class MatcherFilter implements Filter {
             }
         } finally {
             try {
-                AfterAfterFilters.execute(context);
+                if (!context.httpRequest().isAsyncStarted()) {
+                    AfterAfterFilters.execute(context);
+                }
             } catch (Exception generalException) {
                 GeneralError.modify(
                         httpRequest,
