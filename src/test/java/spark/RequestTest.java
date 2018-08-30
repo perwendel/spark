@@ -19,12 +19,14 @@ public class RequestTest {
 
     private static final String THE_SERVLET_PATH = "/the/servlet/path";
     private static final String THE_CONTEXT_PATH = "/the/context/path";
+    private static final String THE_MATCHED_ROUTE = "/users/:username";
 
     HttpServletRequest servletRequest;
     HttpSession httpSession;
     Request request;
 
     RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html");
+    RouteMatch matchWithParams = new RouteMatch(null, "/users/:username", "/users/bob", "text/html");
 
     @Before
     public void setup() {
@@ -90,6 +92,12 @@ public class RequestTest {
 
         Request request = new Request(match, servletRequest);
         assertEquals("Should have delegated getting the context path", THE_CONTEXT_PATH, request.contextPath());
+    }
+
+    @Test
+    public void shouldBeAbleToGetTheMatchedPath() {
+        Request request = new Request(matchWithParams, servletRequest);
+        assertEquals("Should have returned the matched route", THE_MATCHED_ROUTE, request.matchedRouteUri());
     }
 
     @Test

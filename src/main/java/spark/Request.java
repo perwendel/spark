@@ -57,6 +57,7 @@ public class Request {
 
     private Session session = null;
     private boolean validSession = false;
+    private String matchedRouteUri = null;
 
 
     /* Lazy loaded stuff */
@@ -100,6 +101,7 @@ public class Request {
      */
     Request(RouteMatch match, HttpServletRequest request) {
         this.servletRequest = request;
+        this.matchedRouteUri = match.getMatchUri();
         changeMatch(match);
     }
 
@@ -202,6 +204,12 @@ public class Request {
     public String pathInfo() {
         return servletRequest.getPathInfo();
     }
+
+    /**
+     * @return the matched route
+     * Example return: "/account/:accountId"
+     */
+    public String matchedRouteUri() { return this.matchedRouteUri; }
 
     /**
      * @return the servlet path
