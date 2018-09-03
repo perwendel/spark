@@ -9,8 +9,6 @@ import static spark.Spark.before;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +70,7 @@ public class BooksIntegrationTest {
     public void canListBooks() {
         bookId = createBookViaPOST().body.trim();
 
-        UrlResponse response = doMethod("GET", "/books", null);
+        UrlResponse response = doMethod("GET", "/books");
 
         assertNotNull(response);
         String body = response.body.trim();
@@ -86,7 +84,7 @@ public class BooksIntegrationTest {
     public void canGetBook() {
         bookId = createBookViaPOST().body.trim();
 
-        UrlResponse response = doMethod("GET", "/books/" + bookId, null);
+        UrlResponse response = doMethod("GET", "/books/" + bookId);
 
         String result = response.body;
         assertNotNull(response);
@@ -117,7 +115,7 @@ public class BooksIntegrationTest {
         bookId = createBookViaPOST().body.trim();
         updateBook();
 
-        UrlResponse response = doMethod("GET", "/books/" + bookId, null);
+        UrlResponse response = doMethod("GET", "/books/" + bookId);
 
         String result = response.body;
         assertNotNull(response);
@@ -131,7 +129,7 @@ public class BooksIntegrationTest {
     public void canDeleteBook() {
         bookId = createBookViaPOST().body.trim();
 
-        UrlResponse response = doMethod("DELETE", "/books/" + bookId, null);
+        UrlResponse response = doMethod("DELETE", "/books/" + bookId);
 
         String result = response.body;
         assertNotNull(response);
@@ -144,6 +142,10 @@ public class BooksIntegrationTest {
     @Test(expected = FileNotFoundException.class)
     public void wontFindBook() throws IOException {
         getResponse("GET", "/books/" + bookId, null);
+    }
+
+    private static UrlResponse doMethod(String requestMethod, String path) {
+        return doMethod(requestMethod, path, null);
     }
 
     private static UrlResponse doMethod(String requestMethod, String path, String body) {
@@ -159,7 +161,7 @@ public class BooksIntegrationTest {
     }
 
     private static void getResponse(String requestMethod, String path, UrlResponse response)
-            throws MalformedURLException, IOException, ProtocolException {
+        throws IOException {
         URL url = new URL("http://localhost:" + PORT + path);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod);
@@ -177,11 +179,11 @@ public class BooksIntegrationTest {
     }
 
     private UrlResponse createBookViaPOST() {
-        return doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE, null);
+        return doMethod("POST", "/books?author=" + AUTHOR + "&title=" + TITLE);
     }
 
     private UrlResponse updateBook() {
-        return doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE, null);
+        return doMethod("PUT", "/books/" + bookId + "?title=" + NEW_TITLE);
     }
 
     private boolean afterFilterIsSet(UrlResponse response) {

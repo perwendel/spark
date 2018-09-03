@@ -23,7 +23,7 @@ public class CookiesIntegrationTest {
     private HttpClient httpClient = HttpClientBuilder.create().build();
 
     @BeforeClass
-    public static void initRoutes() throws InterruptedException {
+    public static void initRoutes() {
         post("/assertNoCookies", (request, response) -> {
             if (!request.cookies().isEmpty()) {
                 halt(500);

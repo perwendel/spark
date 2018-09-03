@@ -16,7 +16,6 @@
  */
 package spark;
 
-import java.io.IOException;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -51,7 +50,7 @@ public class ResponseBodyTest {
     }
 
     @BeforeClass
-    public static void setup() throws IOException {
+    public static void setup(){
         http = new SparkTestUtil(4567);
 
         get(HELLO, (q, a) -> HELLO_WORLD);

@@ -7,7 +7,6 @@ import org.junit.Test;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
-import java.io.IOException;
 
 import static spark.Spark.*;
 
@@ -21,7 +20,7 @@ public class ResponseWrapperDelegationTest {
     }
 
     @BeforeClass
-    public static void setup() throws IOException {
+    public static void setup(){
         testUtil = new SparkTestUtil(4567);
 
         get("/204", (q, a) -> {

@@ -19,7 +19,7 @@ public class ServicePortIntegrationTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServicePortIntegrationTest.class);
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass(){
         service = ignite();
         service.port(0);
 
@@ -42,7 +42,7 @@ public class ServicePortIntegrationTest {
     }
 
     @AfterClass
-    public static void tearDown() throws Exception {
+    public static void tearDown(){
         service.stop();
     }
 }
