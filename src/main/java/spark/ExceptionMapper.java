@@ -20,13 +20,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExceptionMapper {
+
     /**
-     * Holds a servlet instance for the exception mapper
+     * Holds an exception mapper instance for use in servlet mode
      */
     private static ExceptionMapper servletInstance;
 
+    @Deprecated
+    public static ExceptionMapper getInstance() {
+        return getServletInstance();
+    }
+
     /**
-     * Returns the servlet instance for the exception mapper
+     * Returns exception mapper instance used in servlet mode
      *
      * @return servlet instance
      */

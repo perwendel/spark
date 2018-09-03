@@ -46,6 +46,19 @@ public class EmbeddedServers {
         return Identifiers.JETTY;
     }
 
+    @Deprecated
+    public static EmbeddedServer create(Object identifier,
+                                        Routes routeMatcher,
+                                        StaticFilesConfiguration staticFilesConfiguration,
+                                        boolean multipleHandlers) {
+
+        return create(identifier,
+                      routeMatcher,
+                      ExceptionMapper.getServletInstance(),
+                      staticFilesConfiguration,
+                      multipleHandlers);
+    }
+
     /**
      * Creates an embedded server of type corresponding to the provided identifier.
      *

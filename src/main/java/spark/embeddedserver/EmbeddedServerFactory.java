@@ -25,6 +25,11 @@ import spark.staticfiles.StaticFilesConfiguration;
  */
 public interface EmbeddedServerFactory {
 
+    @Deprecated
+    default EmbeddedServer create(Routes routeMatcher, StaticFilesConfiguration staticFilesConfiguration, boolean hasMultipleHandler) {
+        return create(routeMatcher, staticFilesConfiguration, ExceptionMapper.getServletInstance(), hasMultipleHandler);
+    }
+
     /**
      * Creates an embedded server instance.
      *
