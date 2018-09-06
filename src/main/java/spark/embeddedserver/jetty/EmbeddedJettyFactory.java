@@ -31,6 +31,7 @@ import spark.staticfiles.StaticFilesConfiguration;
 public class EmbeddedJettyFactory implements EmbeddedServerFactory {
     private final JettyServerFactory serverFactory;
     private ThreadPool threadPool;
+    private boolean httpOnly = true;
 
     public EmbeddedJettyFactory() {
         this.serverFactory = new JettyServer();
@@ -45,6 +46,7 @@ public class EmbeddedJettyFactory implements EmbeddedServerFactory {
         matcherFilter.init(null);
 
         JettyHandler handler = new JettyHandler(matcherFilter);
+		handler.getSessionCookieConfig().setHttpOnly(httpOnly);
         return new EmbeddedJettyServer(serverFactory, handler).withThreadPool(threadPool);
     }
 
@@ -56,6 +58,11 @@ public class EmbeddedJettyFactory implements EmbeddedServerFactory {
      */
     public EmbeddedJettyFactory withThreadPool(ThreadPool threadPool) {
         this.threadPool = threadPool;
+        return this;
+    }
+
+    public EmbeddedJettyFactory withHttpOnly(boolean httpOnly) {
+        this.httpOnly = httpOnly;
         return this;
     }
 }
