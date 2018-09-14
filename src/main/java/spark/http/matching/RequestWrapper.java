@@ -72,6 +72,9 @@ final class RequestWrapper extends Request {
     }
 
     @Override
+    public String matchedRouteUri() { return delegate.matchedRouteUri(); }
+
+    @Override
     public String servletPath() {
         return delegate.servletPath();
     }

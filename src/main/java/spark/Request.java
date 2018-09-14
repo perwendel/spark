@@ -122,6 +122,7 @@ public class Request {
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
 
+        this.matchedRouteUri = match.getMatchUri();
         params = getParams(requestList, matchedList);
         splat = getSplat(requestList, matchedList);
     }
