@@ -18,8 +18,6 @@ package spark.embeddedserver.jetty;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -126,16 +124,16 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         if (webSocketServletContextHandler == null) {
             server.setHandler(handler);
         } else {
-            List<Handler> handlersInList = new ArrayList<>();
-            handlersInList.add(handler);
-
-            // WebSocket handler must be the last one
-            if (webSocketServletContextHandler != null) {
-                handlersInList.add(webSocketServletContextHandler);
+            HandlerList handlers;
+            if (handler instanceof HandlerList) {
+                handlers = (HandlerList) handler;
+            } else {
+                handlers = new HandlerList(handler);
             }
 
-            HandlerList handlers = new HandlerList();
-            handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
+            // WebSocket handler must be the last one
+            handlers.addHandler(webSocketServletContextHandler);
+
             server.setHandler(handlers);
         }
 
