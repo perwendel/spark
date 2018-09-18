@@ -5,12 +5,12 @@
 Spark - a tiny web framework for Java 8
 ==============================================
 
-**NEWS**: Spark 2.7.2 is out. Please try it out and report any bugs.
+**NEWS**: Spark 2.8.0 is out. Please try it out and report any bugs.
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.7.2</version>
+    <version>2.8.0</version>
 </dependency>
 ```
 
