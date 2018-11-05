@@ -125,11 +125,7 @@ public abstract class RouteImpl implements Route, Wrapper {
      * @throws java.lang.Exception when render fails
      */
     public Object render(Object element) throws Exception {
-        if (element != null) {
-            return element;
-        } else {
-            return null;
-        }
+        return element;
     }
 
     /**
