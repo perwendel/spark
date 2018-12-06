@@ -102,7 +102,6 @@ public class SocketConnectorFactory {
     private static void initializeConnector(ServerConnector connector, String host, int port) {
         // Set some timeout options to make debugging easier.
         connector.setIdleTimeout(TimeUnit.HOURS.toMillis(1));
-        connector.setSoLingerTime(-1);
         connector.setHost(host);
         connector.setPort(port);
     }
