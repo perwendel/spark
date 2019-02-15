@@ -57,6 +57,10 @@ class RouteEntry {
     }
 
     private boolean matchPath(String path) { // NOSONAR
+        if (this.path.equals("*")){
+            // This path is a single wildcard and will match any path.
+            return true;
+        }
         if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) // NOSONAR
                 || (this.path.endsWith("/") && !path.endsWith("/")))) {
             // One and not both ends with slash
