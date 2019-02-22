@@ -100,6 +100,17 @@ public class StaticFilesMemberTest {
     }
 
     @Test
+    public void testStaticFileMjs() throws Exception {
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/js/module.mjs", null);
+
+        String expectedContentType = response.headers.get("Content-Type");
+        Assert.assertEquals(expectedContentType, "application/javascript");
+
+        String body = response.body;
+        Assert.assertEquals("export default function () { console.log(\"Hello, I'm a .mjs file\"); }\n", body);
+    }
+
+    @Test
     public void testStaticFilePagesIndexHtml() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
         Assert.assertEquals(200, response.status);
@@ -167,5 +178,4 @@ public class StaticFilesMemberTest {
         Assert.assertEquals(404, response.status);
         Assert.assertEquals(NOT_FOUND_BRO, response.body);
     }
-
 }
