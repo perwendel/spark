@@ -24,7 +24,7 @@ public class RequestTest {
     HttpSession httpSession;
     Request request;
 
-    RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html");
+    RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html", null);
 
     @Before
     public void setup() {
