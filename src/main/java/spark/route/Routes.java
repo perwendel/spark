@@ -114,6 +114,20 @@ public class Routes {
     }
 
     /**
+     * @return the targets
+     */
+    public List<RouteMatch> findAll() {
+        List<RouteMatch> matchSet = new ArrayList<>();
+        List<RouteEntry> routeEntries = routes;
+
+        for (RouteEntry routeEntry : routeEntries) {
+            matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, "ALL_ROUTES", routeEntry.acceptedType, routeEntry.httpMethod));
+        }
+
+        return matchSet;
+    }
+
+    /**
      * ¨Clear all routes
      */
     public void clear() {

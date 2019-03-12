@@ -36,6 +36,7 @@ import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.route.HttpMethod;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
+import spark.routematch.RouteMatch;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
@@ -314,7 +315,7 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-        
+
         if (!staticFilesConfiguration.isStaticResourcesSet()) {
             staticFilesConfiguration.configure(folder);
         } else {
@@ -334,7 +335,7 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-        
+
         if (!staticFilesConfiguration.isExternalStaticResourcesSet()) {
             staticFilesConfiguration.configureExternal(externalFolder);
         } else {
@@ -467,7 +468,7 @@ public final class Service extends Routable {
     	}
         initiateStop();
     }
-    
+
     /**
      * Waits for the Spark server to stop.
      * <b>Warning:</b> this method should not be called from a request handler.
@@ -480,7 +481,7 @@ public final class Service extends Routable {
             Thread.currentThread().interrupt();
         }
     }
-    
+
     private void initiateStop() {
     	stopLatch = new CountDownLatch(1);
         Thread stopThread = new Thread(() -> {
@@ -488,7 +489,7 @@ public final class Service extends Routable {
                 server.extinguish();
                 initLatch = new CountDownLatch(1);
             }
-            
+
             routes.clear();
             exceptionMapper.clear();
             staticFilesConfiguration.clear();
@@ -521,6 +522,12 @@ public final class Service extends Routable {
 
     public String getPaths() {
         return pathDeque.stream().collect(Collectors.joining(""));
+    }
+    /**
+     * @return all routes information from this service
+     */
+    public List<RouteMatch> getRoutes() {
+        return routes.findAll();
     }
 
     @Override
