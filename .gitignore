@@ -9,5 +9,6 @@ bin
 *.iml
 *.ipr
 *.iws
+nb-configuration.xml
 reports
 .java-version
