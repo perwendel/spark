@@ -5,16 +5,16 @@
 Spark - a tiny web framework for Java 8
 ==============================================
 
-**NEWS**: Spark 2.8.0 is out. Please try it out and report any bugs.
+**Spark 2.9.0 is out** Please try it out and report any bugs.
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.8.0</version>
+    <version>2.9.0</version>
 </dependency>
 ```
 
-Important - There is a vulnerability in older versions of Spark (versions lower than 2.5.2). Please upgrade to the latest version.
+
 
 For documentation please go to: http://sparkjava.com/documentation
 
@@ -29,7 +29,7 @@ Getting started
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.8.0</version>
+    <version>2.9.0</version>
 </dependency>
 ```
 
@@ -37,7 +37,7 @@ Getting started
 import static spark.Spark.*;
 
 public class HelloWorld {
-    public static void main(String[] args) {
+    public static void main(String[] arg){
         get("/hello", (request, response) -> "Hello World!");
     }
 }
