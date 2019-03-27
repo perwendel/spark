@@ -2,7 +2,7 @@ package spark;
 
 import org.junit.Before;
 import org.junit.Test;
-import spark.examples.sugar.http;
+
 import spark.routematch.RouteMatch;
 import spark.util.SparkTestUtil;
 
@@ -123,7 +123,7 @@ public class RequestTest {
     @Test
     public void shouldBeAbleToGetTheMatchedPath() {
         Request request = new Request(matchWithParams, servletRequest);
-        assertEquals("Should have returned the matched route", THE_MATCHED_ROUTE, request.matchedRouteUri());
+        assertEquals("Should have returned the matched route", THE_MATCHED_ROUTE, request.matchedPath());
         try {
             http.get("/users/bob");
         } catch (Exception e) {
@@ -132,15 +132,15 @@ public class RequestTest {
     }
 
     public void shouldBeAbleToGetTheMatchedPathInBeforeFilter(Request q) {
-        assertEquals("Should have returned the matched route from the before filter", BEFORE_MATCHED_ROUTE, q.matchedRouteUri());
+        assertEquals("Should have returned the matched route from the before filter", BEFORE_MATCHED_ROUTE, q.matchedPath());
     }
 
     public void shouldBeAbleToGetTheMatchedPathInAfterFilter(Request q) {
-        assertEquals("Should have returned the matched route from the after filter", AFTER_MATCHED_ROUTE, q.matchedRouteUri());
+        assertEquals("Should have returned the matched route from the after filter", AFTER_MATCHED_ROUTE, q.matchedPath());
     }
 
     public void shouldBeAbleToGetTheMatchedPathInAfterAfterFilter(Request q) {
-        assertEquals("Should have returned the matched route from the afterafter filter", AFTERAFTER_MATCHED_ROUTE, q.matchedRouteUri());
+        assertEquals("Should have returned the matched route from the afterafter filter", AFTERAFTER_MATCHED_ROUTE, q.matchedPath());
     }
 
     @Test
