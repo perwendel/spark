@@ -1,14 +1,10 @@
 version: 0.2
-env:
-  parameter-store:
-    SONARQUBE_TOKEN: "SONARQUBE_TOKEN"
-    SONARQUBE_ENDPOINT: "SONARQUBE_ENDPOINT"
-    GITHUB_TOKEN: "GITHUB_TOKEN"
+
 phases:
-  build:
+  install:
     commands:
       - echo "build"
-  install:
+  build:
     commands:
       - echo "install"
 #      - export PULL_REQUEST_ID=`echo ${CODEBUILD_SOURCE_VERSION} | sed -e 's/pr\///'`
