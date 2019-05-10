@@ -1,0 +1,11 @@
+version: 0.2
+env:
+  parameter-store:
+    SONARQUBE_TOKEN: "SONARQUBE_TOKEN"
+    SONARQUBE_ENDPOINT: "SONARQUBE_ENDPOINT"
+    GITHUB_TOKEN: "GITHUB_TOKEN"
+phases:
+  build:
+    commands:
+      - export PULL_REQUEST_ID=`echo ${CODEBUILD_SOURCE_VERSION} | sed -e 's/pr\///'`
+      - sonar-scanner -Dsonar.login=${SONARQUBE_TOKEN} -Dsonar.github.oauth=${GITHUB_TOKEN} -Dsonar.github.pullRequest=${PULL_REQUEST_ID} -Dsonar.host.url=${SONARQUBE_ENDPOINT}
