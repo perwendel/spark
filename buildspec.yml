@@ -8,4 +8,4 @@ phases:
   build:
     commands:
       - export PULL_REQUEST_ID=`echo ${CODEBUILD_SOURCE_VERSION} | sed -e 's/pr\///'`
-      - sonar-scanner -Dsonar.login=${SONARQUBE_TOKEN} -Dsonar.github.oauth=${GITHUB_TOKEN} -Dsonar.github.pullRequest=${PULL_REQUEST_ID} -Dsonar.host.url=${SONARQUBE_ENDPOINT}
+      - mvn sonar:sonar -Dsonar.login=${SONARQUBE_TOKEN} -Dsonar.github.oauth=${GITHUB_TOKEN} -Dsonar.github.pullRequest=${PULL_REQUEST_ID} -Dsonar.host.url=${SONARQUBE_ENDPOINT}
