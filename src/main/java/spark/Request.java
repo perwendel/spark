@@ -57,7 +57,7 @@ public class Request {
 
     private Session session = null;
     private boolean validSession = false;
-    private String matchedRouteUri = null;
+    private String matchedPath = null;
 
 
     /* Lazy loaded stuff */
@@ -101,7 +101,7 @@ public class Request {
      */
     Request(RouteMatch match, HttpServletRequest request) {
         this.servletRequest = request;
-        this.matchedRouteUri = match.getMatchUri();
+        this.matchedPath = match.getMatchUri();
         changeMatch(match);
     }
 
@@ -122,7 +122,7 @@ public class Request {
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
 
-        this.matchedRouteUri = match.getMatchUri();
+        this.matchedPath = match.getMatchUri();
         params = getParams(requestList, matchedList);
         splat = getSplat(requestList, matchedList);
     }
@@ -210,7 +210,7 @@ public class Request {
      * @return the matched route
      * Example return: "/account/:accountId"
      */
-    public String matchedRouteUri() { return this.matchedRouteUri; }
+    public String matchedPath() { return this.matchedPath; }
 
     /**
      * @return the servlet path
