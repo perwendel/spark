@@ -2,21 +2,35 @@ package spark;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import spark.routematch.RouteMatch;
 import spark.util.SparkTestUtil;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static spark.Spark.*;
+import static spark.Spark.after;
+import static spark.Spark.afterAfter;
+import static spark.Spark.awaitInitialization;
+import static spark.Spark.before;
+import static spark.Spark.get;
 
 public class RequestTest {
 
@@ -129,6 +143,24 @@ public class RequestTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void shouldBeAbleToGetTheOriginalMatchedPathInAfterAfter() throws Exception {
+        final AtomicReference<String> matchedPath = new AtomicReference<>();
+        final AtomicReference<String> originalMatchedRoute = new AtomicReference<>();
+        afterAfter((q, p) -> {
+            matchedPath.set(q.matchedPath());
+            originalMatchedRoute.set(q.originalMatchedRoute());
+        });
+
+        http.get("/users/bob");
+
+        assertNotNull(matchedPath.get());
+        assertThat(matchedPath.get(), is("+/*paths"));
+
+        assertNotNull(originalMatchedRoute.get());
+        assertThat(originalMatchedRoute.get(), is(THE_MATCHED_ROUTE));
     }
 
     public void shouldBeAbleToGetTheMatchedPathInBeforeFilter(Request q) {

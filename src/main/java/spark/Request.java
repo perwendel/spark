@@ -16,6 +16,15 @@
  */
 package spark;
 
+import spark.routematch.RouteMatch;
+import spark.utils.IOUtils;
+import spark.utils.SparkUtils;
+import spark.utils.StringUtils;
+import spark.utils.urldecoding.UrlDecode;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -27,16 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import spark.routematch.RouteMatch;
-import spark.utils.urldecoding.UrlDecode;
-import spark.utils.IOUtils;
-import spark.utils.SparkUtils;
-import spark.utils.StringUtils;
 
 /**
  * Provides information about the HTTP request
@@ -58,6 +57,8 @@ public class Request {
     private Session session = null;
     private boolean validSession = false;
     private String matchedPath = null;
+    private String originalMatchedRoute = null;
+
 
 
     /* Lazy loaded stuff */
@@ -211,6 +212,12 @@ public class Request {
      * Example return: "/account/:accountId"
      */
     public String matchedPath() { return this.matchedPath; }
+
+    /**
+     * @return the original matched route
+     * Example return: "/account/:accountId"
+     */
+    public String originalMatchedRoute() { return this.originalMatchedRoute; }
 
     /**
      * @return the servlet path
@@ -564,4 +571,7 @@ public class Request {
         this.validSession = validSession;
     }
 
+    public void setOriginalMatchedRoute(String matchUri) {
+        this.originalMatchedRoute = matchUri;
+    }
 }
