@@ -31,6 +31,7 @@ import static spark.Spark.afterAfter;
 import static spark.Spark.awaitInitialization;
 import static spark.Spark.before;
 import static spark.Spark.get;
+import static spark.utils.SparkUtils.ALL_PATHS;
 
 public class RequestTest {
 
@@ -146,7 +147,7 @@ public class RequestTest {
     }
 
     @Test
-    public void shouldBeAbleToGetTheOriginalMatchedPathInAfterAfter() throws Exception {
+    public void shouldBeAbleToGetTheOriginalMatchedRouteInAfterAfter() throws Exception {
         final AtomicReference<String> matchedPath = new AtomicReference<>();
         final AtomicReference<String> originalMatchedRoute = new AtomicReference<>();
         afterAfter((q, p) -> {
@@ -157,7 +158,7 @@ public class RequestTest {
         http.get("/users/bob");
 
         assertNotNull(matchedPath.get());
-        assertThat(matchedPath.get(), is("+/*paths"));
+        assertThat(matchedPath.get(), is(ALL_PATHS));
 
         assertNotNull(originalMatchedRoute.get());
         assertThat(originalMatchedRoute.get(), is(THE_MATCHED_ROUTE));
