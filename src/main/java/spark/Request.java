@@ -57,7 +57,7 @@ public class Request {
     private Session session = null;
     private boolean validSession = false;
     private String matchedPath = null;
-    private String originalMatchedRoute = null;
+    private String matchedRoutePath = null;
 
 
 
@@ -214,10 +214,11 @@ public class Request {
     public String matchedPath() { return this.matchedPath; }
 
     /**
-     * @return the original matched route
+     * @return the path of the matched route if a route was matched else null
+     *  always null in a before filter
      * Example return: "/account/:accountId"
      */
-    public String originalMatchedRoute() { return this.originalMatchedRoute; }
+    public String matchedRoutePath() { return this.matchedRoutePath; }
 
     /**
      * @return the servlet path
@@ -571,7 +572,7 @@ public class Request {
         this.validSession = validSession;
     }
 
-    public void setOriginalMatchedRoute(String matchUri) {
-        this.originalMatchedRoute = matchUri;
+    public void matchedRoutePath(String matchedRoutePath) {
+        this.matchedRoutePath = matchedRoutePath;
     }
 }

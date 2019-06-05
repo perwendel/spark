@@ -56,7 +56,7 @@ final class Routes {
                     context.requestWrapper().changeMatch(match);
                 }
 
-                context.requestWrapper().setOriginalMatchedRoute(match.getMatchUri());
+                context.requestWrapper().matchedRoutePath(match.getMatchUri());
                 context.responseWrapper().setDelegate(context.response());
 
                 Object element = route.handle(context.requestWrapper(), context.responseWrapper());

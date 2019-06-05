@@ -74,7 +74,7 @@ final class RequestWrapper extends Request {
     public String matchedPath() { return delegate.matchedPath(); }
 
     @Override
-    public String originalMatchedRoute() { return delegate.originalMatchedRoute(); }
+    public String matchedRoutePath() { return delegate.matchedRoutePath(); }
 
     @Override
     public String servletPath() {
@@ -247,5 +247,5 @@ final class RequestWrapper extends Request {
     }
 
     @Override
-    public void setOriginalMatchedRoute(String matchUri) { delegate.setOriginalMatchedRoute(matchUri); }
+    public void matchedRoutePath(String matchedRoutePath) { delegate.matchedRoutePath(matchedRoutePath); }
 }
