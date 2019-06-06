@@ -16,15 +16,16 @@
  */
 package spark.http.matching;
 
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import spark.Access;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Session;
 import spark.routematch.RouteMatch;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.Set;
 
 final class RequestWrapper extends Request {
 
@@ -75,6 +76,9 @@ final class RequestWrapper extends Request {
 
     @Override
     public String matchedRoutePath() { return delegate.matchedRoutePath(); }
+
+    @Override
+    public void matchedRoutePath(String matchedRoutePath) { delegate.matchedRoutePath(matchedRoutePath); }
 
     @Override
     public String servletPath() {
@@ -245,7 +249,4 @@ final class RequestWrapper extends Request {
     public String cookie(String name) {
         return delegate.cookie(name);
     }
-
-    @Override
-    public void matchedRoutePath(String matchedRoutePath) { delegate.matchedRoutePath(matchedRoutePath); }
 }

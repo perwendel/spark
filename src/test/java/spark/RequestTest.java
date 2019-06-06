@@ -1,19 +1,22 @@
 package spark;
 
-import org.junit.Before;
-import org.junit.Test;
-import spark.routematch.RouteMatch;
-import spark.util.SparkTestUtil;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import spark.routematch.RouteMatch;
+import spark.util.SparkTestUtil;
+import spark.utils.SparkUtils;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
@@ -66,6 +69,9 @@ public class RequestTest {
         afterAfter(AFTERAFTER_MATCHED_ROUTE, (q, a) -> {
             System.out.println("afterafter filter matched");
             shouldBeAbleToGetTheMatchedPathInAfterAfterFilter(q);
+        });
+        afterAfter((q, a) -> {
+            shouldBeAbleToGetTheMatchedPathWhenAllPathsAfterAfterFilter(q);
         });
 
         awaitInitialization();
@@ -145,6 +151,22 @@ public class RequestTest {
         }
     }
 
+    public void shouldBeAbleToGetTheMatchedPathInBeforeFilter(Request q) {
+        assertEquals("Should have returned the matched route from the before filter", BEFORE_MATCHED_ROUTE, q.matchedPath());
+    }
+
+    public void shouldBeAbleToGetTheMatchedPathInAfterFilter(Request q) {
+        assertEquals("Should have returned the matched route from the after filter", AFTER_MATCHED_ROUTE, q.matchedPath());
+    }
+
+    public void shouldBeAbleToGetTheMatchedPathInAfterAfterFilter(Request q) {
+        assertEquals("Should have returned the matched route from the afterafter filter", AFTERAFTER_MATCHED_ROUTE, q.matchedPath());
+    }
+
+    private void shouldBeAbleToGetTheMatchedPathWhenAllPathsAfterAfterFilter(Request q) {
+        assertEquals("Should have returned 'ALL_PATHS' from the afterafter filter", SparkUtils.ALL_PATHS, q.matchedPath());
+    }
+
     @Test
     public void matchedRoutePathShouldBeNullInBefore() throws Exception {
         final AtomicReference<String> matchedRoutePath = new AtomicReference<>();
@@ -208,18 +230,6 @@ public class RequestTest {
 
         assertNotNull(matchedRoutePath.get());
         assertThat(matchedRoutePath.get(), is(THE_MATCHED_ROUTE));
-    }
-
-    public void shouldBeAbleToGetTheMatchedPathInBeforeFilter(Request q) {
-        assertEquals("Should have returned the matched route from the before filter", BEFORE_MATCHED_ROUTE, q.matchedPath());
-    }
-
-    public void shouldBeAbleToGetTheMatchedPathInAfterFilter(Request q) {
-        assertEquals("Should have returned the matched route from the after filter", AFTER_MATCHED_ROUTE, q.matchedPath());
-    }
-
-    public void shouldBeAbleToGetTheMatchedPathInAfterAfterFilter(Request q) {
-        assertEquals("Should have returned the matched route from the afterafter filter", AFTERAFTER_MATCHED_ROUTE, q.matchedPath());
     }
 
     @Test
