@@ -698,6 +698,10 @@ public final class Service extends Routable {
         this.initExceptionHandler = initExceptionHandler;
     }
 
+    public Routes getRoutes() {
+        return routes;
+    }
+    
     /**
      * Provides static files utility methods.
      */
