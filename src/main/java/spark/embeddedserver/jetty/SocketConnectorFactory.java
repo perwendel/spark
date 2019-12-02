@@ -94,6 +94,9 @@ public class SocketConnectorFactory {
             sslContextFactory.setWantClientAuth(true);
         }
 
+        // null is also an option of the endpoint identification algorithm
+        sslContextFactory.setEndpointIdentificationAlgorithm(sslStores.endpointIdentificationAlgorithm());
+
         HttpConnectionFactory httpConnectionFactory = createHttpConnectionFactory(trustForwardHeaders);
 
         ServerConnector connector = new ServerConnector(server, sslContextFactory, httpConnectionFactory);

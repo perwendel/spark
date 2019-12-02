@@ -274,9 +274,9 @@ public final class Service extends Routable {
      * @param certAlias          the default certificate Alias
      * @param truststoreFile     the truststore file location as string, leave null to reuse
      *                           keystore
+     * @param truststorePassword the trust store password
      * @param needsClientCert    Whether to require client certificate to be supplied in
      *                           request
-     * @param truststorePassword the trust store password
      * @return the object with connection set to be secure
      */
     public synchronized Service secure(String keystoreFile,
@@ -285,16 +285,47 @@ public final class Service extends Routable {
                                        String truststoreFile,
                                        String truststorePassword,
                                        boolean needsClientCert) {
+        return secure(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, needsClientCert, "HTTPS");
+    }
+
+    /**
+     * Set the connection to be secure, using the specified keystore and
+     * truststore. This has to be called before any route mapping is done. You
+     * have to supply a keystore file, truststore file is optional (keystore
+     * will be reused).
+     * This method is only relevant when using embedded Jetty servers. It should
+     * not be used if you are using Servlets, where you will need to secure the
+     * connection in the servlet container
+     *
+     * @param keystoreFile                    The keystore file location as string
+     * @param keystorePassword                the password for the keystore
+     * @param certAlias                       the default certificate Alias
+     * @param truststoreFile                  the truststore file location as string, leave null to reuse
+     *                                        keystore
+     * @param truststorePassword              the trust store password
+     * @param needsClientCert                 Whether to require client certificate to be supplied in
+     *                                        request
+     * @param endpointIdentificationAlgorithm Endpoint identification algorithm:
+     *                                        "HTTPS", "LDAPS" or null
+     * @return
+     */
+    public synchronized Service secure(String keystoreFile,
+                                       String keystorePassword,
+                                       String certAlias,
+                                       String truststoreFile,
+                                       String truststorePassword,
+                                       boolean needsClientCert,
+                                       String endpointIdentificationAlgorithm) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
 
         if (keystoreFile == null) {
             throw new IllegalArgumentException(
-                    "Must provide a keystore file to run secured");
+                "Must provide a keystore file to run secured");
         }
 
-        sslStores = SslStores.create(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, needsClientCert);
+        sslStores = SslStores.create(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, needsClientCert, endpointIdentificationAlgorithm);
         return this;
     }
 

@@ -219,6 +219,7 @@ public class ServiceTest {
         assertEquals("Should return keystorePassword from SslStores", "keypassword", sslStores.keystorePassword());
         assertEquals("Should return trustStoreFile from SslStores", "truststorefile", sslStores.trustStoreFile());
         assertEquals("Should return trustStorePassword from SslStores", "truststorepassword", sslStores.trustStorePassword());
+        assertNotNull("Should be set to HTTPS as default", sslStores.endpointIdentificationAlgorithm());
     }
 
     @Test
@@ -255,21 +256,21 @@ public class ServiceTest {
         Whitebox.setInternalState(service, "initialized", true);
         service.webSocket("/", DummyWebSocketListener.class);
     }
-    
+
     @Test
     public void testWebSocket_whenPathNull_thenThrowNullPointerException() {
         thrown.expect(NullPointerException.class);
         thrown.expectMessage("WebSocket path cannot be null");
         service.webSocket(null, new DummyWebSocketListener());
     }
-    
+
     @Test
     public void testWebSocket_whenHandlerNull_thenThrowNullPointerException() {
         thrown.expect(NullPointerException.class);
         thrown.expectMessage("WebSocket handler class cannot be null");
         service.webSocket("/", null);
     }
-    
+
     @Test(timeout = 300)
     public void stopExtinguishesServer() {
         Service service = Service.ignite();
@@ -289,7 +290,7 @@ public class ServiceTest {
         }
         Mockito.verify(server).extinguish();
     }
-    
+
     @Test
     public void awaitStopBlocksUntilExtinguished() {
         Service service = Service.ignite();
@@ -303,7 +304,7 @@ public class ServiceTest {
         Mockito.verify(server).extinguish();
         assertFalse(service.initialized);
     }
-    
+
     @WebSocket
     protected static class DummyWebSocketListener {
     }
