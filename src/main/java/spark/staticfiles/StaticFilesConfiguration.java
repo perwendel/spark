@@ -182,6 +182,10 @@ public class StaticFilesConfiguration {
         return new StaticFilesConfiguration();
     }
 
+    /**
+     @param expireTimeSeconds the expiration time in seconds
+     <p> This method should set the time stamp in customHeaders in RFC 7321 format
+     */
     public void setExpireTimeSeconds(long expireTimeSeconds) {
 
         Date date = new Date(System.currentTimeMillis() + (expireTimeSeconds * 1000));
