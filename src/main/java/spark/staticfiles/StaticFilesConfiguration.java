@@ -185,7 +185,7 @@ public class StaticFilesConfiguration {
     public void setExpireTimeSeconds(long expireTimeSeconds) {
 
         Date date = new Date(System.currentTimeMillis() + (expireTimeSeconds * 1000));
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.getDefault());
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
         customHeaders.put("Cache-Control", "private, max-age=" + expireTimeSeconds);
