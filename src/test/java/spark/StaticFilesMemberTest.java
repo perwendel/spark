@@ -53,6 +53,12 @@ public class StaticFilesMemberTest {
 
     private static File tmpExternalFile;
 
+    private static final int PORT = 4567;
+    private static final int OK = 200;
+    private static final int NOTFOUND = 404;
+    private static final int PARTIAL = 206;
+    private static final int ET = 600;
+
     @AfterClass
     public static void tearDown() {
         Spark.stop();
@@ -64,7 +70,7 @@ public class StaticFilesMemberTest {
 
     @BeforeClass
     public static void setup() throws IOException {
-        testUtil = new SparkTestUtil(4567);
+        testUtil = new SparkTestUtil(PORT);
 
         tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), EXTERNAL_FILE_NAME_HTML);
 
@@ -83,19 +89,19 @@ public class StaticFilesMemberTest {
         });
 
         exception(NotFoundException.class, (e, request, response) -> {
-            response.status(404);
+            response.status(NOTFOUND);
             response.body(NOT_FOUND_BRO);
         });
 
         Spark.awaitInitialization();
+        writer.close();
     }
 
     @Test
     public void testStaticFileCssStyleCss() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/css/style.css", null);
-        Assert.assertEquals(200, response.status);
+        Assert.assertEquals(OK, response.status);
         Assert.assertEquals("Content of css file", response.body);
-
         testGet();
     }
 
@@ -113,7 +119,7 @@ public class StaticFilesMemberTest {
     @Test
     public void testStaticFilePagesIndexHtml() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
-        Assert.assertEquals(200, response.status);
+        Assert.assertEquals(OK, response.status);
         Assert.assertEquals("<html><body>Hello Static World!</body></html>", response.body);
 
         testGet();
@@ -122,7 +128,7 @@ public class StaticFilesMemberTest {
     @Test
     public void testStaticFilePageHtml() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/page.html", null);
-        Assert.assertEquals(200, response.status);
+        Assert.assertEquals(OK, response.status);
         Assert.assertEquals("<html><body>Hello Static Files World!</body></html>", response.body);
 
         testGet();
@@ -131,7 +137,7 @@ public class StaticFilesMemberTest {
     @Test
     public void testExternalStaticFile() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/externalFile.html", null);
-        Assert.assertEquals(200, response.status);
+        Assert.assertEquals(OK, response.status);
         Assert.assertEquals("Content of external file", response.body);
 
         testGet();
@@ -154,7 +160,7 @@ public class StaticFilesMemberTest {
 
     @Test
     public void testStaticFileExpireTime() throws Exception {
-        staticFiles.expireTime(600);
+        staticFiles.expireTime(ET);
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
         Assert.assertEquals("private, max-age=600", response.headers.get("Cache-Control"));
 
@@ -167,7 +173,7 @@ public class StaticFilesMemberTest {
     private static void testGet() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/hello", "");
 
-        Assert.assertEquals(200, response.status);
+        Assert.assertEquals(OK, response.status);
         Assert.assertTrue(response.body.contains(FO_SHIZZY));
     }
 
@@ -175,7 +181,29 @@ public class StaticFilesMemberTest {
     public void testExceptionMapping404() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/filethatdoesntexist.html", null);
 
-        Assert.assertEquals(404, response.status);
+        Assert.assertEquals(NOTFOUND, response.status);
         Assert.assertEquals(NOT_FOUND_BRO, response.body);
+    }
+
+    @Test
+    public void testStaticFileRange() throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("Range","bytes=0-1");
+        File file = new File("src/main/resources/public/test.mp4");
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET","/a.mp4",null,false,"video/mp4",map);
+        Assert.assertEquals(PARTIAL, response.status);
+        Assert.assertEquals("bytes 0-1/"+(file.length()+1), response.headers.get("Content-Range"));
+        testGet();
+    }
+
+    @Test
+    public void testStaticFileNoRange() throws Exception {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("Range","bytes=0-");
+        File file = new File("src/main/resources/public/test.mp4");
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET","/a.mp4",null,false,"video/mp4",map);
+        Assert.assertEquals(OK, response.status);
+        Assert.assertEquals("bytes 0-"+file.length()+"/"+(file.length()+1), response.headers.get("Content-Range"));
+        testGet();
     }
 }
