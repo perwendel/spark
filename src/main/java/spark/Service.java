@@ -81,11 +81,13 @@ public final class Service extends Routable {
 
     private Object embeddedServerIdentifier = null;
 
+    public final Alias alias;
     public final Redirect redirect;
     public final StaticFiles staticFiles;
 
     private final StaticFilesConfiguration staticFilesConfiguration;
     private final ExceptionMapper exceptionMapper = new ExceptionMapper();
+
 
     // default exception handler during initialization phase
     private Consumer<Exception> initExceptionHandler = (e) -> {
@@ -104,6 +106,7 @@ public final class Service extends Routable {
     }
 
     private Service() {
+        alias = Alias.create(this);
         redirect = Redirect.create(this);
         staticFiles = new StaticFiles();
 
