@@ -44,7 +44,7 @@ public class EmbeddedJettyFactory implements EmbeddedServerFactory {
     public EmbeddedServer create(Routes routeMatcher,
                                  StaticFilesConfiguration staticFilesConfiguration,
                                  ExceptionMapper exceptionMapper,
-                                 boolean hasMultipleHandler) {
+                                 String[] hasMultipleHandler) {
         MatcherFilter matcherFilter = new MatcherFilter(routeMatcher, staticFilesConfiguration, exceptionMapper, false, hasMultipleHandler);
         matcherFilter.init(null);
 

@@ -33,7 +33,7 @@ public class EmbeddedJettyFactoryTest {
         when(jettyServerFactory.create(100, 10, 10000)).thenReturn(server);
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory);
-        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, exceptionMapper, false);
+        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, exceptionMapper, new String[0]);
 
         embeddedServer.ignite("localhost", 6757, null, 100, 10, 10000);
 
@@ -53,7 +53,7 @@ public class EmbeddedJettyFactoryTest {
         when(jettyServerFactory.create(threadPool)).thenReturn(new Server(threadPool));
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withThreadPool(threadPool);
-        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, exceptionMapper, false);
+        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, exceptionMapper, new String[0]);
 
         embeddedServer.ignite("localhost", 6758, null, 0, 0, 0);
 
@@ -71,7 +71,7 @@ public class EmbeddedJettyFactoryTest {
         when(jettyServerFactory.create(100, 10, 10000)).thenReturn(new Server());
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withThreadPool(null);
-        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, exceptionMapper, false);
+        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, exceptionMapper, new String[0]);
 
         embeddedServer.ignite("localhost", 6759, null, 100, 10, 10000);
 
@@ -89,7 +89,7 @@ public class EmbeddedJettyFactoryTest {
         when(jettyServerFactory.create(100, 10, 10000)).thenReturn(server);
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withHttpOnly(false);
-        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false);
+        embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, new String[0]);
         embeddedServer.ignite("localhost", 6759, null, 100, 10, 10000);
 
         assertFalse(((JettyHandler) server.getHandler()).getSessionCookieConfig().isHttpOnly());

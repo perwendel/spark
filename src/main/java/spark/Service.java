@@ -70,7 +70,7 @@ public final class Service extends Routable {
     protected int maxThreads = -1;
     protected int minThreads = -1;
     protected int threadIdleTimeoutMillis = -1;
-    protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
+    protected Optional<Long> webSocketIdleTimeoutMillis = Optional.empty();
 
     protected EmbeddedServer server;
     protected Deque<String> pathDeque = new ArrayDeque<>();
@@ -388,7 +388,7 @@ public final class Service extends Routable {
      * @param timeoutMillis The max idle timeout in milliseconds.
      * @return the object with max idle timeout set for WebSocket connections
      */
-    public synchronized Service webSocketIdleTimeoutMillis(int timeoutMillis) {
+    public synchronized Service webSocketIdleTimeoutMillis(long timeoutMillis) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -453,8 +453,18 @@ public final class Service extends Routable {
                 "This must be done before route mapping has begun");
     }
 
-    private boolean hasMultipleHandlers() {
-        return webSocketHandlers != null;
+    private String[] getHandlersString() {
+        int index = 0;
+        if(webSocketHandlers != null) {
+            String[] handlersArray = new String[webSocketHandlers.keySet().size()];
+            for (String key : webSocketHandlers.keySet()) {
+                handlersArray[index] = key;
+                index++;
+            }
+            return handlersArray;
+        }
+        else
+            return new String[0];
     }
 
 
@@ -567,7 +577,7 @@ public final class Service extends Routable {
                                                     routes,
                                                     exceptionMapper,
                                                     staticFilesConfiguration,
-                                                    hasMultipleHandlers());
+                                                    getHandlersString());
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 

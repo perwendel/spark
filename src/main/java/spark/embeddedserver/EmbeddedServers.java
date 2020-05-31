@@ -50,7 +50,7 @@ public class EmbeddedServers {
     public static EmbeddedServer create(Object identifier,
                                         Routes routeMatcher,
                                         StaticFilesConfiguration staticFilesConfiguration,
-                                        boolean multipleHandlers) {
+                                        String[] multipleHandlers) {
 
         return create(identifier,
                       routeMatcher,
@@ -72,7 +72,7 @@ public class EmbeddedServers {
                                         Routes routeMatcher,
                                         ExceptionMapper exceptionMapper,
                                         StaticFilesConfiguration staticFilesConfiguration,
-                                        boolean multipleHandlers) {
+                                        String[] multipleHandlers) {
 
         EmbeddedServerFactory factory = factories.get(identifier);
 

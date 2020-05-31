@@ -16,26 +16,17 @@
  */
 package spark.http.matching;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import spark.CustomErrorPages;
-import spark.ExceptionMapper;
-import spark.HaltException;
-import spark.RequestResponseFactory;
-import spark.Response;
+import spark.*;
 import spark.embeddedserver.jetty.HttpRequestWrapper;
 import spark.route.HttpMethod;
 import spark.serialization.SerializerChain;
 import spark.staticfiles.StaticFilesConfiguration;
+
+import javax.servlet.Filter;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * Matches Spark routes and filters.
@@ -56,7 +47,8 @@ public class MatcherFilter implements Filter {
     private ExceptionMapper exceptionMapper;
 
     private boolean externalContainer;
-    private boolean hasOtherHandlers;
+    private String[] handlersString;
+    private boolean isMatchedWithWebSocket = false;
 
     /**
      * Constructor
@@ -65,19 +57,19 @@ public class MatcherFilter implements Filter {
      * @param staticFiles       The static files configuration object
      * @param externalContainer Tells the filter that Spark is run in an external web container.
      *                          If true, chain.doFilter will be invoked if request is not consumed by Spark.
-     * @param hasOtherHandlers  If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
+     * @param handlersString    If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
     public MatcherFilter(spark.route.Routes routeMatcher,
                          StaticFilesConfiguration staticFiles,
                          ExceptionMapper exceptionMapper,
                          boolean externalContainer,
-                         boolean hasOtherHandlers) {
+                         String[] handlersString) {
 
         this.routeMatcher = routeMatcher;
         this.staticFiles = staticFiles;
         this.exceptionMapper = exceptionMapper;
         this.externalContainer = externalContainer;
-        this.hasOtherHandlers = hasOtherHandlers;
+        this.handlersString = handlersString;
         this.serializerChain = new SerializerChain();
     }
 
@@ -86,6 +78,14 @@ public class MatcherFilter implements Filter {
         //
     }
 
+
+    /**
+     * Map the route between request and response
+     *
+     * @param servletRequest  The request of servlet
+     * @param servletResponse The response of servlet
+     * @param chain The filterChain
+     */
     @Override
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,
@@ -156,7 +156,7 @@ public class MatcherFilter implements Filter {
                 body.set("");
             }
 
-            if (body.notSet() && hasOtherHandlers) {
+            if (body.notSet() && handlersString.length != 0) {
                 if (servletRequest instanceof HttpRequestWrapper) {
                     ((HttpRequestWrapper) servletRequest).notConsumed(true);
                     return;
@@ -165,7 +165,7 @@ public class MatcherFilter implements Filter {
 
             if (body.notSet()) {
                 LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
-                         uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
+                        uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
                 httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
                 if (CustomErrorPages.existsFor(404)) {
@@ -191,7 +191,17 @@ public class MatcherFilter implements Filter {
             }
         }
 
-        if (body.isSet()) {
+        for (String handler : handlersString) {
+            if (((HttpServletRequest) servletRequest).getPathInfo().equals(handler)) {
+                isMatchedWithWebSocket = true;
+            }
+        }
+
+        if (body.isSet() && handlersString.length != 0 && isMatchedWithWebSocket) {
+            if (servletRequest instanceof HttpRequestWrapper) {
+                ((HttpRequestWrapper) servletRequest).notConsumed(true);
+            }
+        } else if (body.isSet()) {
             body.serializeTo(httpResponse, serializerChain, httpRequest);
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);

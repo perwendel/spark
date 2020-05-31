@@ -1215,7 +1215,7 @@ public class Spark {
      *
      * @param timeoutMillis The max idle timeout in milliseconds.
      */
-    public static void webSocketIdleTimeoutMillis(int timeoutMillis) {
+    public static void webSocketIdleTimeoutMillis(long timeoutMillis) {
         getInstance().webSocketIdleTimeoutMillis(timeoutMillis);
     }
 
