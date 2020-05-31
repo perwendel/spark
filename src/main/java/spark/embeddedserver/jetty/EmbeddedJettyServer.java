@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package spark.embeddedserver.jetty;
 
 import java.io.IOException;
@@ -36,9 +37,10 @@ import org.slf4j.LoggerFactory;
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
+import spark.http.matching.MatcherFilter;
 import spark.ssl.SslStores;
 
-/**
+/**.
  * Spark server implementation
  *
  * @author Per Wendel
@@ -55,7 +57,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
-    private Optional<Integer> webSocketIdleTimeoutMillis;
+    private Optional<Long> webSocketIdleTimeoutMillis;
 
     private ThreadPool threadPool = null;
 
@@ -66,7 +68,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
     @Override
     public void configureWebSockets(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
-                                    Optional<Integer> webSocketIdleTimeoutMillis) {
+                                    Optional<Long> webSocketIdleTimeoutMillis) {
 
         this.webSocketHandlers = webSocketHandlers;
         this.webSocketIdleTimeoutMillis = webSocketIdleTimeoutMillis;
@@ -193,4 +195,16 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         this.threadPool = threadPool;
         return this;
     }
+
+    /**
+     * CS304 Issue link: https://github.com/perwendel/spark/issues/1022
+     * get the Filter of handle
+     * @return {@code MatcherFilter} Filter inside the handler
+     */
+    public MatcherFilter getFilter() {
+        JettyHandler jh = (JettyHandler) handler;
+        return jh.getFilter();
+    }
+
+
 }

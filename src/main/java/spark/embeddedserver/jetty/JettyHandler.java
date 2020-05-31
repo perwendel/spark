@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.session.SessionHandler;
+import spark.http.matching.MatcherFilter;
 
 /**
  * Simple Jetty Handler
@@ -57,4 +58,12 @@ public class JettyHandler extends SessionHandler {
 
     }
 
+    /**
+     * CS304 Issue link: https://github.com/perwendel/spark/issues/1022
+     * getter of the filter
+     * @return {@code MatcherFilter} field filter
+     */
+    public MatcherFilter getFilter() {
+        return (MatcherFilter) filter;
+    }
 }

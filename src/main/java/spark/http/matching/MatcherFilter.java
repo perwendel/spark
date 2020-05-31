@@ -56,7 +56,9 @@ public class MatcherFilter implements Filter {
     private ExceptionMapper exceptionMapper;
 
     private boolean externalContainer;
-    private boolean hasOtherHandlers;
+    private String[] handlersString;
+    private boolean isMatchedWithWebSocket = false;
+    private boolean emptyAvailable=false;
 
     /**
      * Constructor
@@ -65,19 +67,19 @@ public class MatcherFilter implements Filter {
      * @param staticFiles       The static files configuration object
      * @param externalContainer Tells the filter that Spark is run in an external web container.
      *                          If true, chain.doFilter will be invoked if request is not consumed by Spark.
-     * @param hasOtherHandlers  If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
+     * @param handlersString    If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
     public MatcherFilter(spark.route.Routes routeMatcher,
                          StaticFilesConfiguration staticFiles,
                          ExceptionMapper exceptionMapper,
                          boolean externalContainer,
-                         boolean hasOtherHandlers) {
+                         String[] handlersString) {
 
         this.routeMatcher = routeMatcher;
         this.staticFiles = staticFiles;
         this.exceptionMapper = exceptionMapper;
         this.externalContainer = externalContainer;
-        this.hasOtherHandlers = hasOtherHandlers;
+        this.handlersString = handlersString;
         this.serializerChain = new SerializerChain();
     }
 
@@ -86,6 +88,16 @@ public class MatcherFilter implements Filter {
         //
     }
 
+
+    /**
+     * CS304 Issue link: https://github.com/perwendel/spark/issues/1022
+     * modify line 123
+     * Map the route between request and response
+     *
+     * @param servletRequest  The request of servlet
+     * @param servletResponse The response of servlet
+     * @param chain The filterChain
+     */
     @Override
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,
@@ -108,6 +120,7 @@ public class MatcherFilter implements Filter {
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
         Body body = Body.create();
+        body.setUseEmpty(emptyAvailable);
 
         RequestWrapper requestWrapper = RequestWrapper.create();
         ResponseWrapper responseWrapper = ResponseWrapper.create();
@@ -156,7 +169,7 @@ public class MatcherFilter implements Filter {
                 body.set("");
             }
 
-            if (body.notSet() && hasOtherHandlers) {
+            if (body.notSet() && handlersString.length != 0) {
                 if (servletRequest instanceof HttpRequestWrapper) {
                     ((HttpRequestWrapper) servletRequest).notConsumed(true);
                     return;
@@ -165,7 +178,7 @@ public class MatcherFilter implements Filter {
 
             if (body.notSet()) {
                 LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
-                         uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
+                        uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
                 httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
                 if (CustomErrorPages.existsFor(404)) {
@@ -191,7 +204,18 @@ public class MatcherFilter implements Filter {
             }
         }
 
-        if (body.isSet()) {
+        //CS304 Issue link: https://github.com/perwendel/spark/issues/986
+        for (String handler : handlersString) {
+            if (((HttpServletRequest) servletRequest).getPathInfo().equals(handler)) {
+                isMatchedWithWebSocket = true;
+            }
+        }
+
+        if (body.isSet() && handlersString.length != 0 && isMatchedWithWebSocket) {
+            if (servletRequest instanceof HttpRequestWrapper) {
+                ((HttpRequestWrapper) servletRequest).notConsumed(true);
+            }
+        } else if (body.isSet()) {
             body.serializeTo(httpResponse, serializerChain, httpRequest);
         } else if (chain != null) {
             chain.doFilter(httpRequest, httpResponse);
@@ -209,6 +233,14 @@ public class MatcherFilter implements Filter {
 
     @Override
     public void destroy() {
+    }
+
+    /**
+     * CS304 Issue link: https://github.com/perwendel/spark/issues/1022
+     * Support response header without content type
+     */
+    public void setEmptyAvailable() {
+        this.emptyAvailable = true;
     }
 
 

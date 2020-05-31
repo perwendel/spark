@@ -14,13 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package spark;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -30,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
+import spark.embeddedserver.jetty.EmbeddedJettyServer;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerInstanceWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
@@ -70,7 +68,7 @@ public final class Service extends Routable {
     protected int maxThreads = -1;
     protected int minThreads = -1;
     protected int threadIdleTimeoutMillis = -1;
-    protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
+    protected Optional<Long> webSocketIdleTimeoutMillis = Optional.empty();
 
     protected EmbeddedServer server;
     protected Deque<String> pathDeque = new ArrayDeque<>();
@@ -86,6 +84,7 @@ public final class Service extends Routable {
 
     private final StaticFilesConfiguration staticFilesConfiguration;
     private final ExceptionMapper exceptionMapper = new ExceptionMapper();
+    private boolean emptyAvailable=false;
 
     // default exception handler during initialization phase
     private Consumer<Exception> initExceptionHandler = (e) -> {
@@ -129,6 +128,20 @@ public final class Service extends Routable {
         this.ipAddress = ipAddress;
 
         return this;
+    }
+
+    /**
+     * Retrieves the ip address of Spark server.
+     *
+     * @return The ip address of Spark server.
+     * @throws IllegalStateException when the server is not started
+     */
+    public synchronized String ipAddress() {
+        if (initialized) {
+            return ipAddress;
+        } else {
+            throw new IllegalStateException("This must be done after route mapping has begun");
+        }
     }
 
     /**
@@ -273,6 +286,14 @@ public final class Service extends Routable {
         return this;
     }
 
+    public synchronized SslStores sslStores() {
+        if (initialized) {
+            return sslStores;
+        } else {
+            throw new IllegalStateException("This must be done after route mapping has begun");
+        }
+    }
+
     /**
      * Configures the embedded web server's thread pool.
      *
@@ -388,7 +409,8 @@ public final class Service extends Routable {
      * @param timeoutMillis The max idle timeout in milliseconds.
      * @return the object with max idle timeout set for WebSocket connections
      */
-    public synchronized Service webSocketIdleTimeoutMillis(int timeoutMillis) {
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/1146
+    public synchronized Service webSocketIdleTimeoutMillis(long timeoutMillis) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -453,8 +475,19 @@ public final class Service extends Routable {
                 "This must be done before route mapping has begun");
     }
 
-    private boolean hasMultipleHandlers() {
-        return webSocketHandlers != null;
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/986
+    private String[] getHandlersString() {
+        int index = 0;
+        if(webSocketHandlers != null) {
+            String[] handlersArray = new String[webSocketHandlers.keySet().size()];
+            for (String key : webSocketHandlers.keySet()) {
+                handlersArray[index] = key;
+                index++;
+            }
+            return handlersArray;
+        }
+        else
+            return new String[0];
     }
 
 
@@ -549,6 +582,13 @@ public final class Service extends Routable {
         routes.add(httpMethod + " '" + getPaths() + filter.getPath() + "'", filter.getAcceptType(), filter);
     }
 
+
+    /**
+     * CS304 Issue link: https://github.com/perwendel/spark/issues/1022
+     * modify 611-614
+     * Initialize the service.
+     */
+
     public synchronized void init() {
         if (!initialized) {
 
@@ -567,8 +607,12 @@ public final class Service extends Routable {
                                                     routes,
                                                     exceptionMapper,
                                                     staticFilesConfiguration,
-                                                    hasMultipleHandlers());
+                                                    getHandlersString());
 
+                      if (emptyAvailable) {
+                          EmbeddedJettyServer ejs = (EmbeddedJettyServer) server;
+                          ejs.getFilter().setEmptyAvailable();
+                      }
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
 
                     port = server.ignite(
@@ -697,6 +741,16 @@ public final class Service extends Routable {
         }
         this.initExceptionHandler = initExceptionHandler;
     }
+
+
+    /**
+     * CS304 Issue link: https://github.com/perwendel/spark/issues/1022
+     *  Service support response header without content type
+     */
+    public void setEmptyAvailable() {
+        emptyAvailable = true;
+    }
+
 
     /**
      * Provides static files utility methods.
