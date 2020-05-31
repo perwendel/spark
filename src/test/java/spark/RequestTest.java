@@ -63,6 +63,20 @@ public class RequestTest {
         request = new Request(match, servletRequest);
 
     }
+    
+    //CS304 manually written Issue link: https://github.com/perwendel/spark/issues/1072
+    @Test
+    public void testBody() {
+        
+        final String body = "error in readBodyAsBytes";
+        
+        when(servletRequest.getProtocol()).thenReturn(body);
+        String tmp = request.body();
+        
+        assertEquals("The underlying request protocol should be returned",
+                     body, request.body());
+        
+    }
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {

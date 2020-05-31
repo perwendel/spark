@@ -247,28 +247,46 @@ public class Request {
         return servletRequest.getRemoteAddr();
     }
 
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/1072
     /**
      * @return the request body sent by the client
      */
     public String body() {
-
         if (body == null) {
-            body = StringUtils.toString(bodyAsBytes(), servletRequest.getCharacterEncoding());
+            if(!doReadBodyAsBytes) {
+                try {
+                    bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
+                    doReadBodyAsBytes = true;
+                } catch (Exception e) {
+                    LOG.warn("Exception when reading body", e);
+                }
+            }
+            if(bodyAsBytes == null) {
+                body = "error in readBodyAsBytes";
+            }
+            else {
+                body = StringUtils.toString(bodyAsBytes(), servletRequest.getCharacterEncoding());
+            }
+            
         }
-
+        
         return body;
     }
 
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/1072
     public byte[] bodyAsBytes() {
         if (bodyAsBytes == null) {
+            doReadBodyAsBytes = false;
             readBodyAsBytes();
         }
         return bodyAsBytes;
     }
 
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/1072
     private void readBodyAsBytes() {
         try {
-            bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
+            //            bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
+            //            doReadBodyAsBytes = true;
         } catch (Exception e) {
             LOG.warn("Exception when reading body", e);
         }
