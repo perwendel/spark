@@ -63,7 +63,6 @@ public class RequestTest {
         request = new Request(match, servletRequest);
 
     }
-    
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {
