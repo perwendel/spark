@@ -16,6 +16,8 @@
  */
 package spark;
 
+import spark.ssl.SslStores;
+
 import java.util.function.Consumer;
 
 import static spark.Service.ignite;
@@ -1215,7 +1217,7 @@ public class Spark {
      *
      * @param timeoutMillis The max idle timeout in milliseconds.
      */
-    public static void webSocketIdleTimeoutMillis(int timeoutMillis) {
+    public static void webSocketIdleTimeoutMillis(long timeoutMillis) {
         getInstance().webSocketIdleTimeoutMillis(timeoutMillis);
     }
 
@@ -1270,6 +1272,34 @@ public class Spark {
      */
     public static int activeThreadCount() {
         return getInstance().activeThreadCount();
+    }
+
+    /**
+     * @return The ip address of server
+     */
+    public static String serverIP() { return getInstance().ipAddress(); }
+    /**
+     * @return The port number of server
+     */
+    public static int serverPort() { return getInstance().port(); }
+    /**
+     * @return Whether the server need a client certification
+     */
+    public static boolean serverNeedClientCert() {
+        SslStores sslStores = getInstance().sslStores();
+        if(sslStores!=null) {
+            return sslStores.needsClientCert();
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * CS304 Issue link: https://github.com/perwendel/spark/issues/1022
+     * Let server can send package without content type
+     */
+    public static void setEmptyAvailable() {
+        getInstance().setEmptyAvailable();
     }
 
 }
