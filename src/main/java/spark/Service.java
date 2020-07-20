@@ -16,18 +16,8 @@
  */
 package spark;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
@@ -39,6 +29,15 @@ import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
@@ -62,6 +61,7 @@ public final class Service extends Routable {
 
     protected int port = SPARK_DEFAULT_PORT;
     protected String ipAddress = "0.0.0.0";
+    protected boolean http2Enabled = false;
 
     protected SslStores sslStores;
 
@@ -128,6 +128,19 @@ public final class Service extends Routable {
         }
         this.ipAddress = ipAddress;
 
+        return this;
+    }
+
+    /**
+     * Enables HTTP 2
+     *
+     * @return the object with HTTP 2 enabled
+     */
+    public synchronized Service http2() {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        this.http2Enabled = true;
         return this;
     }
 
@@ -577,7 +590,8 @@ public final class Service extends Routable {
                             sslStores,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis);
+                            threadIdleTimeoutMillis,
+                            http2Enabled);
                   } catch (Exception e) {
                     initExceptionHandler.accept(e);
                   }

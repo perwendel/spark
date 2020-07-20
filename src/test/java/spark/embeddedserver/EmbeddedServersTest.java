@@ -1,19 +1,17 @@
 package spark.embeddedserver;
 
-import java.io.File;
-
 import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
 import spark.Spark;
 import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 import spark.embeddedserver.jetty.JettyServerFactory;
+
+import java.io.File;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -42,7 +40,7 @@ public class EmbeddedServersTest {
         EmbeddedServers.add(id, new EmbeddedJettyFactory(serverFactory));
         EmbeddedServer embeddedServer = EmbeddedServers.create(id, null, null, null, false);
         assertNotNull(embeddedServer);
-        embeddedServer.ignite("localhost", 0, null, 0, 0, 0);
+        embeddedServer.ignite("localhost", 0, null, 0, 0, 0, false);
 
         assertTrue(requestLogFile.exists());
         embeddedServer.extinguish();
