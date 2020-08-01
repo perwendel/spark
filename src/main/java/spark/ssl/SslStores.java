@@ -27,6 +27,7 @@ public class SslStores {
     protected String truststoreFile;
     protected String truststorePassword;
     protected boolean needsClientCert;
+    protected String endpointIdentificationAlgorithm = null;
 
     /**
      * Creates a Stores instance.
@@ -42,7 +43,7 @@ public class SslStores {
                                 String truststoreFile,
                                 String truststorePassword) {
 
-        return new SslStores(keystoreFile, keystorePassword, null, truststoreFile, truststorePassword, false);
+        return new SslStores(keystoreFile, keystorePassword, null, truststoreFile, truststorePassword, false, "HTTPS");
     }
 
     public static SslStores create(String keystoreFile,
@@ -51,7 +52,7 @@ public class SslStores {
                                 String truststoreFile,
                                 String truststorePassword) {
 
-        return new SslStores(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, false);
+        return new SslStores(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, false, "HTTPS");
     }
 
     public static SslStores create(String keystoreFile,
@@ -60,7 +61,7 @@ public class SslStores {
                                    String truststorePassword,
                                    boolean needsClientCert) {
 
-        return new SslStores(keystoreFile, keystorePassword, null, truststoreFile, truststorePassword, needsClientCert);
+        return new SslStores(keystoreFile, keystorePassword, null, truststoreFile, truststorePassword, needsClientCert, "HTTPS");
     }
 
     public static SslStores create(String keystoreFile,
@@ -70,21 +71,32 @@ public class SslStores {
                                    String truststorePassword,
                                    boolean needsClientCert) {
 
-        return new SslStores(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, needsClientCert);
+        return new SslStores(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, needsClientCert, "HTTPS");
     }
 
+    public static SslStores create(String keystoreFile,
+                                   String keystorePassword,
+                                   String certAlias,
+                                   String truststoreFile,
+                                   String truststorePassword,
+                                   boolean needsClientCert,
+                                   String endpointIdentificationAlgorithm) {
+        return new SslStores(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, needsClientCert, endpointIdentificationAlgorithm);
+    }
     private SslStores(String keystoreFile,
                       String keystorePassword,
                       String certAlias,
                       String truststoreFile,
                       String truststorePassword,
-                      boolean needsClientCert) {
+                      boolean needsClientCert,
+                      String endpointIdentificationAlgorithm) {
         this.keystoreFile = keystoreFile;
         this.keystorePassword = keystorePassword;
         this.certAlias = certAlias;
         this.truststoreFile = truststoreFile;
         this.truststorePassword = truststorePassword;
         this.needsClientCert = needsClientCert;
+        this.endpointIdentificationAlgorithm = endpointIdentificationAlgorithm;
     }
 
     /**
@@ -127,5 +139,12 @@ public class SslStores {
      */
     public boolean needsClientCert() {
         return needsClientCert;
+    }
+
+    /**
+     * @return endpointIdentificationAlgorithm
+     */
+    public String endpointIdentificationAlgorithm() {
+        return endpointIdentificationAlgorithm;
     }
 }
