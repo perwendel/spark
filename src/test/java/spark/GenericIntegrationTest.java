@@ -1,22 +1,5 @@
 package spark;
 
-import org.eclipse.jetty.util.URIUtil;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import spark.embeddedserver.jetty.websocket.WebSocketTestClient;
-import spark.embeddedserver.jetty.websocket.WebSocketTestHandler;
-import spark.examples.exception.BaseException;
-import spark.examples.exception.JWGmeligMeylingException;
-import spark.examples.exception.NotFoundException;
-import spark.examples.exception.SubclassOfBaseException;
-import spark.util.SparkTestUtil;
-import spark.util.SparkTestUtil.UrlResponse;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -29,6 +12,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jetty.util.URIUtil;
+import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import spark.embeddedserver.jetty.websocket.WebSocketTestClient;
+import spark.embeddedserver.jetty.websocket.WebSocketTestHandler;
+import spark.examples.exception.BaseException;
+import spark.examples.exception.JWGmeligMeylingException;
+import spark.examples.exception.NotFoundException;
+import spark.examples.exception.SubclassOfBaseException;
+import spark.util.SparkTestUtil;
+import spark.util.SparkTestUtil.UrlResponse;
 
 import static spark.Spark.after;
 import static spark.Spark.afterAfter;

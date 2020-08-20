@@ -1,15 +1,16 @@
 package spark;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static spark.Spark.after;
 import static spark.Spark.before;

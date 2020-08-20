@@ -16,6 +16,8 @@
  */
 package spark.embeddedserver.jetty;
 
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
@@ -29,10 +31,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+
 import spark.ssl.SslStores;
 import spark.utils.Assert;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Creates socket connectors.
