@@ -112,7 +112,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
                 connector = SocketConnectorFactory.createSocketConnector(server, host, port);
             }
         } else {
-            if(http2Enabled) {
+            if (http2Enabled) {
                 connector = SocketConnectorFactory.createSecureHttp2SocketConnector(server, host, port, sslStores);
             } else {
                 connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
