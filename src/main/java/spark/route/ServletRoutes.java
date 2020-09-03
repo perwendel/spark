@@ -16,6 +16,8 @@
  */
 package spark.route;
 
+import spark.CustomErrorPages;
+
 
 /**
  * Holds the servlet routes.
@@ -29,9 +31,9 @@ public final class ServletRoutes {
     private ServletRoutes() {
     }
 
-    public static synchronized Routes get() {
+    public static synchronized Routes get(CustomErrorPages customErrorPages) {
         if (routes == null) {
-            routes = new Routes();
+            routes = new Routes(customErrorPages);
         }
         return routes;
     }

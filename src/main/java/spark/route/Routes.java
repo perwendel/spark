@@ -16,17 +16,15 @@
  */
 package spark.route;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import spark.CustomErrorPages;
 import spark.FilterImpl;
 import spark.RouteImpl;
 import spark.routematch.RouteMatch;
 import spark.utils.MimeParse;
 import spark.utils.StringUtils;
+
+import java.util.*;
+import spark.*;
 
 /**
  * Holds the routes and performs matching from HTTP requests to routes.
@@ -39,16 +37,43 @@ public class Routes {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Routes.class);
     private static final char SINGLE_QUOTE = '\'';
 
+    public CustomErrorPages customErrorPages;
     private List<RouteEntry> routes;
 
+    /**
+     * This method creates routes that use {@link Service}.getFirstCustomErrorPagesInstance(). Which is using shared
+     * {@link CustomErrorPages} for all instances of {@link Service}, e.g. you wont be able differente error handlers
+     * for different {@link Service} instances.
+     *
+     * @return Routes
+     */
+    @Deprecated
     public static Routes create() {
         return new Routes();
     }
 
+    public static Routes create(CustomErrorPages customErrorPages) {
+        return new Routes(customErrorPages);
+    }
+
+    /**
+     * This constructor creates routes that use {@link Service}.getFirstCustomErrorPagesInstance(). Which is using
+     * shared {@link CustomErrorPages} for all instances of {@link Service}, e.g. you wont be able differente error
+     * handlers for different {@link Service} instances.
+     */
+    @Deprecated
+    protected Routes() {
+        this(Service.getFirstCustomErrorPagesInstance());
+    }
+
     /**
      * Constructor
+     * 
+     * @param customErrorPages CustomErrorPages instance
      */
-    protected Routes() {
+    protected Routes(CustomErrorPages customErrorPages) {
+        this.customErrorPages = customErrorPages;
+
         routes = new ArrayList<>();
     }
 

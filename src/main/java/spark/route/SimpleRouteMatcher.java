@@ -17,7 +17,9 @@
 package spark.route;
 
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import spark.Service;
 import spark.routematch.RouteMatch;
 
 /**
@@ -26,6 +28,12 @@ import spark.routematch.RouteMatch;
  * @deprecated see {@link spark.route.Routes}
  */
 public class SimpleRouteMatcher extends Routes {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleRouteMatcher.class);
+
+    public SimpleRouteMatcher() {
+        super(Service.getFirstCustomErrorPagesInstance());
+    }
 
     /**
      * @param route      the route

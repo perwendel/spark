@@ -36,6 +36,9 @@ public class MultipleServicesTest {
     private static SparkTestUtil firstClient;
     private static SparkTestUtil secondClient;
 
+    private static int firstNotFound;
+    private static int secondNotFound;
+
     @BeforeClass
     public static void setup() throws Exception {
         firstClient = new SparkTestUtil(4567);
@@ -94,11 +97,25 @@ public class MultipleServicesTest {
         Assert.assertEquals("Content of css file", response.body);
     }
 
+    @Test
+    public void testNotFound() throws Exception {
+        Assert.assertEquals(404, firstClient.doMethod("GET", "/404", null).status);
+
+        Assert.assertEquals(1, firstNotFound);
+        Assert.assertEquals(0, secondNotFound);
+
+        Assert.assertEquals(404, secondClient.doMethod("GET", "/404", null).status);
+
+        Assert.assertEquals(1, firstNotFound);
+        Assert.assertEquals(1, secondNotFound);
+    }
+
     private static Service igniteFirstService() {
 
         Service http = ignite(); // I give the variable the name 'http' for the code to make sense when adding routes.
 
         http.get("/hello", (q, a) -> "Hello World!");
+        http.notFound((q, a) -> firstNotFound++);
 
         return http;
     }
@@ -114,6 +131,8 @@ public class MultipleServicesTest {
         http.get("/uniqueforsecond", (q, a) -> "Bompton");
 
         http.redirect.any("/hi", "/hello");
+
+        http.notFound((q, a) -> secondNotFound++);
 
         return http;
     }

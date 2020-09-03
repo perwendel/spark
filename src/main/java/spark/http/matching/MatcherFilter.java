@@ -147,7 +147,8 @@ public class MatcherFilter implements Filter {
                         requestWrapper,
                         responseWrapper,
                         exceptionMapper,
-                        generalException);
+                        generalException,
+                        routeMatcher.customErrorPages);
 
             }
 
@@ -168,10 +169,10 @@ public class MatcherFilter implements Filter {
                          uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
                 httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
-                if (CustomErrorPages.existsFor(404)) {
+                if (routeMatcher.customErrorPages.existsFor(404)) {
                     requestWrapper.setDelegate(RequestResponseFactory.create(httpRequest));
                     responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
-                    body.set(CustomErrorPages.getFor(404, requestWrapper, responseWrapper));
+                    body.set(routeMatcher.customErrorPages.getFor(404, requestWrapper, responseWrapper));
                 } else {
                     body.set(String.format(CustomErrorPages.NOT_FOUND));
                 }
@@ -187,7 +188,8 @@ public class MatcherFilter implements Filter {
                         requestWrapper,
                         responseWrapper,
                         exceptionMapper,
-                        generalException);
+                        generalException,
+                    routeMatcher.customErrorPages);
             }
         }
 

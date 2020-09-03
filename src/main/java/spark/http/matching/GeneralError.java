@@ -40,7 +40,8 @@ final class GeneralError {
                        RequestWrapper requestWrapper,
                        ResponseWrapper responseWrapper,
                        ExceptionMapper exceptionMapper,
-                       Exception e) {
+                       Exception e,
+                       CustomErrorPages customErrorPages) {
 
         ExceptionHandlerImpl handler = exceptionMapper.getHandler(e);
 
@@ -56,10 +57,10 @@ final class GeneralError {
 
             httpResponse.setStatus(500);
 
-            if (CustomErrorPages.existsFor(500)) {
+            if (customErrorPages.existsFor(500)) {
                 requestWrapper.setDelegate(RequestResponseFactory.create(httpRequest));
                 responseWrapper.setDelegate(RequestResponseFactory.create(httpResponse));
-                body.set(CustomErrorPages.getFor(500, requestWrapper, responseWrapper));
+                body.set(customErrorPages.getFor(500, requestWrapper, responseWrapper));
             } else {
                 body.set(CustomErrorPages.INTERNAL_ERROR);
             }

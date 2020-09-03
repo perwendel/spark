@@ -72,6 +72,9 @@ public final class Service extends Routable {
     protected int threadIdleTimeoutMillis = -1;
     protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
 
+    private static CustomErrorPages FIRST_CUSTOM_ERROR_PAGES = null;
+    protected CustomErrorPages customErrorPages = createCustomErrorPages();
+
     protected EmbeddedServer server;
     protected Deque<String> pathDeque = new ArrayDeque<>();
     protected Routes routes;
@@ -400,12 +403,45 @@ public final class Service extends Routable {
     }
 
     /**
+     * Creates instances of CustomErrorPages and initializes default instance
+     * 
+     * @return new CustomErrorPages object
+     */
+    private static CustomErrorPages createCustomErrorPages() {
+        CustomErrorPages customErrorPages = new CustomErrorPages();
+        
+        synchronized(Service.class) {
+            if (FIRST_CUSTOM_ERROR_PAGES == null) {
+                FIRST_CUSTOM_ERROR_PAGES = customErrorPages;
+            }
+        }
+        
+        return customErrorPages;
+    }
+
+    /**
+     * Returns first instance of {@link CustomErrorPages} that was created by first instance of {@link Service}.
+     * It's only safe to use when there is only one {@link Service} instance created.
+     *
+     * Don't use it. It's for backwards compatibility only.
+     *
+     * @return CustomErrorPages instance
+     */
+    public static synchronized CustomErrorPages getFirstCustomErrorPagesInstance() {
+        if (FIRST_CUSTOM_ERROR_PAGES == null) {
+            throw new IllegalStateException();
+        }
+        
+        return FIRST_CUSTOM_ERROR_PAGES;
+    }
+
+    /**
      * Maps 404 errors to the provided custom page
      *
      * @param page the custom 404 error page.
      */
     public synchronized void notFound(String page) {
-        CustomErrorPages.add(404, page);
+        customErrorPages.add(404, page);
     }
 
     /**
@@ -414,21 +450,21 @@ public final class Service extends Routable {
      * @param page the custom 500 internal server error page.
      */
     public synchronized void internalServerError(String page) {
-        CustomErrorPages.add(500, page);
+        customErrorPages.add(500, page);
     }
 
     /**
      * Maps 404 errors to the provided route.
      */
     public synchronized void notFound(Route route) {
-        CustomErrorPages.add(404, route);
+        customErrorPages.add(404, route);
     }
 
     /**
      * Maps 500 internal server errors to the provided route.
      */
     public synchronized void internalServerError(Route route) {
-        CustomErrorPages.add(500, route);
+        customErrorPages.add(500, route);
     }
 
     /**
@@ -596,9 +632,9 @@ public final class Service extends Routable {
 
     private void initializeRouteMatcher() {
         if (isRunningFromServlet()) {
-            routes = ServletRoutes.get();
+            routes = ServletRoutes.get(customErrorPages);
         } else {
-            routes = Routes.create();
+            routes = Routes.create(customErrorPages);
         }
     }
 
