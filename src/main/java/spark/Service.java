@@ -79,7 +79,7 @@ public final class Service extends Routable {
     private CountDownLatch initLatch = new CountDownLatch(1);
     private CountDownLatch stopLatch = new CountDownLatch(0);
 
-    private Object embeddedServerIdentifier = null;
+    private Object embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
 
     public final Redirect redirect;
     public final StaticFiles staticFiles;
@@ -112,6 +112,29 @@ public final class Service extends Routable {
         } else {
             staticFilesConfiguration = StaticFilesConfiguration.create();
         }
+    }
+
+    /**
+     * Set the identifier used to select the EmbeddedServer;
+     * null for the default.
+     *
+     * @param obj the identifier passed to {@link EmbeddedServers}.
+     */
+    public synchronized void embeddedServerIdentifier(Object obj) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        embeddedServerIdentifier = obj;
+    }
+
+    /**
+     * Get the identifier used to select the EmbeddedServer;
+     * null for the default.
+     *
+     * @param obj the identifier passed to {@link EmbeddedServers}.
+     */
+    public synchronized Object embeddedServerIdentifier() {
+        return embeddedServerIdentifier;
     }
 
     /**
