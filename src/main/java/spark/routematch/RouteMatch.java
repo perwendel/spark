@@ -28,6 +28,10 @@ public class RouteMatch {
     private String requestURI;
     private String acceptType;
     private HttpMethod httpMethod;
+    
+    public RouteMatch(Object target, String matchUri, String requestUri, String acceptType) {
+        this(target, matchUri, requestUri, acceptType, null);
+     }
 
     public RouteMatch(Object target, String matchUri, String requestUri, String acceptType, HttpMethod httpMethod) {
         super();
