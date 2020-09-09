@@ -16,6 +16,9 @@
  */
 package spark;
 
+import spark.routematch.RouteMatch;
+
+import java.util.List;
 import java.util.function.Consumer;
 
 import static spark.Service.ignite;
@@ -1266,10 +1269,18 @@ public class Spark {
     }
 
     /**
+     * @return All routes available
+     */
+    public static List<RouteMatch> routes() {
+        return getInstance().routes();
+    }
+
+    /**
      * @return The approximate number of currently active threads in the embedded Jetty server
      */
     public static int activeThreadCount() {
         return getInstance().activeThreadCount();
     }
+
 
 }
