@@ -25,9 +25,6 @@ import spark.route.HttpMethod;
 import spark.routematch.RouteMatch;
 import spark.util.SparkTestUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static spark.Service.ignite;
@@ -103,7 +100,7 @@ public class MultipleServicesTest {
 
     @Test
     public void testGetAllRoutesFromBothServices(){
-        for(RouteMatch routeMatch : first.getRoutes()){
+        for(RouteMatch routeMatch : first.routes()){
             Assert.assertEquals(routeMatch.getAcceptType(), "*/*");
             Assert.assertEquals(routeMatch.getHttpMethod(), HttpMethod.get);
             Assert.assertEquals(routeMatch.getMatchUri(), "/hello");
@@ -111,7 +108,7 @@ public class MultipleServicesTest {
             Assert.assertThat(routeMatch.getTarget(), instanceOf(RouteImpl.class));
         }
 
-        for(RouteMatch routeMatch : second.getRoutes()){
+        for(RouteMatch routeMatch : second.routes()){
             Assert.assertEquals(routeMatch.getAcceptType(), "*/*");
             Assert.assertThat(routeMatch.getHttpMethod(), instanceOf(HttpMethod.class));
             boolean isUriOnList = ("/hello/hi/uniqueforsecond").contains(routeMatch.getMatchUri());

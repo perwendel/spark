@@ -1271,8 +1271,8 @@ public class Spark {
     /**
      * @return All routes available
      */
-    public static List<RouteMatch> getRoutes() {
-        return getInstance().getRoutes();
+    public static List<RouteMatch> routes() {
+        return getInstance().routes();
     }
 
     /**

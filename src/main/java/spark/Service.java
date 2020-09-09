@@ -550,7 +550,7 @@ public final class Service extends Routable {
     /**
      * @return all routes information from this service
      */
-    public List<RouteMatch> getRoutes() {
+    public List<RouteMatch> routes() {
         return routes.findAll();
     }
 
