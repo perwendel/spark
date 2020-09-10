@@ -5,12 +5,12 @@
 Spark - a tiny web framework for Java 8
 ==============================================
 
-**Spark 2.9.1 is out**. Update to get rid of security issues in the Jetty version used in 2.9.0!
+**Spark 2.9.2 is out**. 
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.9.1</version>
+    <version>2.9.2</version>
 </dependency>
 ```
 
@@ -29,7 +29,7 @@ Getting started
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.9.1</version>
+    <version>2.9.2</version>
 </dependency>
 ```
 
