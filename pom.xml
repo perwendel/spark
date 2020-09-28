@@ -11,7 +11,7 @@
     <packaging>bundle</packaging>
     <version>2.9.3-SNAPSHOT</version>
     <name>Spark</name>
-    <description>A Sinatra inspired java web framework</description>
+    <description>A micro framework for creating web applications in Kotlin and Java 8 with minimal effort</description>
     <url>http://www.sparkjava.com</url>
     <licenses>
         <license>
