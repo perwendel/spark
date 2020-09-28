@@ -13,10 +13,8 @@ Spark - a tiny web framework for Java 8
     <version>2.9.2</version>
 </dependency>
 ```
-Do you want to help in taking Spark forward?
----------------------------------------------
-Sponsor the project here https://github.com/sponsors/perwendel
 
+Sponsor the project here https://github.com/sponsors/perwendel
 
 For documentation please go to: http://sparkjava.com/documentation
 
