@@ -22,6 +22,8 @@ For usage questions, please use [stack overflow with the “spark-java” tag](h
 
 Javadoc: http://javadoc.io/doc/com.sparkjava/spark-core
 
+When committing to the project please use Spark format configured in https://github.com/perwendel/spark/blob/master/config/spark_formatter_intellij.xml
+
 Getting started
 ---------------
 
