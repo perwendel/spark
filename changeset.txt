@@ -1,7 +1,8 @@
 2.9.3
 ===========
-- Jetty version updated to latest
-- Broken travis build fixed
+- Jetty version updated to latest #1191
+- Broken travis build fixed #1192
 - Usage of deprecated SslContextFactory functions updated to new ones #1194
 - Ensuring closage of InputStreamSerializer streams #1121
 - Getting all mapped routes #1100
+- Expose get/set on Service.embeddedServerIdentifier #1071
