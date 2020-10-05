@@ -69,7 +69,8 @@ public class SocketConnectorFactory {
         Assert.notNull(host, "'host' must not be null");
         Assert.notNull(sslStores, "'sslStores' must not be null");
 
-        SslContextFactory sslContextFactory = new SslContextFactory(sslStores.keystoreFile());
+        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+        sslContextFactory.setKeyStorePath(sslStores.keystoreFile());
 
         if (sslStores.keystorePassword() != null) {
             sslContextFactory.setKeyStorePassword(sslStores.keystorePassword());
