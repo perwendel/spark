@@ -2,4 +2,5 @@
 ===========
 - Jetty version updated to latest
 - Broken travis build fixed
-- Usage of deprecated SslContextFactory functions updated to new ones  
+- Usage of deprecated SslContextFactory functions updated to new ones
+- Ensuring closage of InputStreamSerializer streams  
