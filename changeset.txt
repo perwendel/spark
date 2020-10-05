@@ -1,0 +1,5 @@
+2.9.3
+===========
+- Jetty version updated to latest
+- Broken travis build fixed
+- Usage of deprecated SslContextFactory functions updated to new ones  
