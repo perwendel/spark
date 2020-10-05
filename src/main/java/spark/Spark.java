@@ -865,20 +865,20 @@ public class Spark {
     }
 
     /**
-     * Removes a particular route from the collection of those that have been previously routed.
-     * Search for previously established routes using the given path and removes any matches that are found.
+     * Unmaps a particular route from the collection of those that have been previously routed.
+     * Search for previously established routes using the given path and unmaps any matches that are found.
      *
      * @param path          the route path
      * @return              <tt>true</tt> if this is a matching route which has been previously routed
      * @throws IllegalArgumentException if <tt>path</tt> is null or blank
      */
-    public static boolean removeRoute(String path) {
+    public static boolean unmap(String path) {
         return getInstance().routes.remove(path);
     }
 
     /**
-     * Removes a particular route from the collection of those that have been previously routed.
-     * Search for previously established routes using the given path and HTTP method, removing any
+     * Unmaps a particular route from the collection of those that have been previously routed.
+     * Search for previously established routes using the given path and HTTP method, unmaps any
      * matches that are found.
      *
      * @param path          the route path
@@ -887,7 +887,7 @@ public class Spark {
      * @throws IllegalArgumentException if <tt>path</tt> is null or blank or if <tt>httpMethod</tt> is null, blank,
      * or an invalid HTTP method
      */
-    public static boolean removeRoute(String path, String httpMethod) {
+    public static boolean unmap(String path, String httpMethod) {
         return getInstance().routes.remove(path, httpMethod);
     }
 
