@@ -16,15 +16,12 @@
  */
 package spark;
 
-import java.io.IOException;
-
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
-
 class Base64 {
 
     //CS304 Issue link:https://github.com/perwendel/spark/issues/1061
+
+    private static final java.util.Base64.Encoder urlEncoder = java.util.Base64.getUrlEncoder();
+    private static final java.util.Base64.Decoder decoder = java.util.Base64.getDecoder();
 
     /**
      * @param toEncodeContent the String to be encode
@@ -34,8 +31,7 @@ class Base64 {
         if (toEncodeContent == null) {
             return null;
         }
-        BASE64Encoder encoder = new BASE64Encoder();
-        return encoder.encode(toEncodeContent.getBytes());
+        return urlEncoder.encodeToString(toEncodeContent.getBytes());
     }
 
     //CS304 Issue link:https://github.com/perwendel/spark/issues/1061
@@ -50,8 +46,8 @@ class Base64 {
         }
         byte[] buf = null;
         try {
-            buf = new BASE64Decoder().decodeBuffer(toDecodeContent);
-        } catch (IOException e) {
+            buf = decoder.decode(toDecodeContent);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return new String(buf);
