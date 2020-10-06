@@ -1,5 +1,6 @@
 2.9.3
 ===========
+- Modify Base64 to use java.util.Base64 Encoder/Decoder rather than the sun.misc classes #1193
 - Jetty version updated to latest #1191
 - Broken travis build fixed #1192
 - Usage of deprecated SslContextFactory functions updated to new ones #1194
