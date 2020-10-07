@@ -876,7 +876,7 @@ public class Spark {
      * @throws IllegalArgumentException if <tt>path</tt> is null or blank
      */
     public static boolean unmap(String path) {
-        return getInstance().routes.remove(path);
+        return getInstance().unmap(path);
     }
 
     /**
@@ -891,7 +891,7 @@ public class Spark {
      * or an invalid HTTP method
      */
     public static boolean unmap(String path, String httpMethod) {
-        return getInstance().routes.remove(path, httpMethod);
+        return getInstance().unmap(path, httpMethod);
     }
 
     //////////////////////////////////////////////////
