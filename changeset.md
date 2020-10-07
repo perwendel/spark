@@ -7,4 +7,4 @@
 - Add methods for removing routes at runtime <a href="https://github.com/perwendel/spark/pull/1189">#1189</a>
 - Ensuring closage of InputStreamSerializer streams <a href="https://github.com/perwendel/spark/pull/1121">#1121</a>
 - Getting all mapped routes <a href="https://github.com/perwendel/spark/pull/1100">#1100</a>
-- Expose get/set on Service.embeddedServerIdentifier <a href="https://github.com/perwendel/spark/pull/1071">#1071</a>
+- Expose get/set on Service.embeddedServerIdentifier <a href="https://github.com/perwendel/spark/pull/1071" target="_blank">#1071</a>
