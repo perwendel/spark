@@ -1,6 +1,6 @@
 **Spark 2.9.3**
 ===============
-- Usage of deprecated SslContextFactory functions updated to new ones #1194 (https://github.com/perwendel/spark/pull/1194)
+- Usage of deprecated SslContextFactory functions updated to new ones <a href="https://github.com/perwendel/spark/pull/1194">#1194</a>
 - Modify Base64 to use java.util.Base64 Encoder/Decoder rather than the sun.misc classes #1193 (https://github.com/perwendel/spark/pull/1193)
 - Broken travis build fixed #1192 (https://github.com/perwendel/spark/pull/1192)
 - Jetty version updated to latest #1191 (https://github.com/perwendel/spark/pull/1191)
