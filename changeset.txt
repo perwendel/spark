@@ -1,10 +1,10 @@
 2.9.3
 ===========
+- Expose get/set on Service.embeddedServerIdentifier #1071
+- Getting all mapped routes #1100
+- Ensuring closage of InputStreamSerializer streams #1121
 - Add methods for removing routes at runtime #1189
-- Modify Base64 to use java.util.Base64 Encoder/Decoder rather than the sun.misc classes #1193
 - Jetty version updated to latest #1191
 - Broken travis build fixed #1192
+- Modify Base64 to use java.util.Base64 Encoder/Decoder rather than the sun.misc classes #1193
 - Usage of deprecated SslContextFactory functions updated to new ones #1194
-- Ensuring closage of InputStreamSerializer streams #1121
-- Getting all mapped routes #1100
-- Expose get/set on Service.embeddedServerIdentifier #1071
