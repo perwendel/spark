@@ -1,4 +1,4 @@
-**Spark 2.9.3**
+## Spark 2.9.3 {#spark-293}
 ===============
 - Usage of deprecated SslContextFactory functions updated to new ones <a href="https://github.com/perwendel/spark/pull/1194">#1194</a>
 - Modify Base64 to use java.util.Base64 Encoder/Decoder rather than the sun.misc classes <a href="https://github.com/perwendel/spark/pull/1193">#1193</a>
