@@ -5,12 +5,12 @@
 Spark - a tiny web framework for Java 8
 ==============================================
 
-**Spark 2.9.2 is out**. 
+**Spark 2.9.3 is out**. <a href="https://github.com/perwendel/spark/blob/master/changeset/2.9.3-changeset.md">Changeset</a> 
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.9.2</version>
+    <version>2.9.3</version>
 </dependency>
 ```
 
