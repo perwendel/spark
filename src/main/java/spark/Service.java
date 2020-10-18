@@ -95,6 +95,8 @@ public final class Service extends Routable {
         System.exit(100);
     };
 
+    private boolean trustForwardHeaders = true;
+
     /**
      * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
      * multiple services in one process.
@@ -635,7 +637,8 @@ public final class Service extends Routable {
                             sslStores,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis);
+                            threadIdleTimeoutMillis,
+                            trustForwardHeaders);
                   } catch (Exception e) {
                     initExceptionHandler.accept(e);
                   }
@@ -742,6 +745,21 @@ public final class Service extends Routable {
      */
     public HaltException halt(int status, String body) {
         throw new HaltException(status, body);
+    }
+
+    /**
+     * Set whether Spark should trust the HTTP headers that are commonly used in reverse proxies.
+     * More info at https://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/server/ForwardedRequestCustomizer.html
+     *
+     * @param
+     */
+    public synchronized Service trustForwardHeaders(boolean trustForwardHeaders) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        this.trustForwardHeaders = trustForwardHeaders;
+
+        return this;
     }
 
     /**
