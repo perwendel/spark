@@ -55,7 +55,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
-    private Optional<Integer> webSocketIdleTimeoutMillis;
+    private Optional<Long> webSocketIdleTimeoutMillis;
 
     private ThreadPool threadPool = null;
 
@@ -66,7 +66,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
     @Override
     public void configureWebSockets(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
-                                    Optional<Integer> webSocketIdleTimeoutMillis) {
+                                    Optional<Long> webSocketIdleTimeoutMillis) {
 
         this.webSocketHandlers = webSocketHandlers;
         this.webSocketIdleTimeoutMillis = webSocketIdleTimeoutMillis;

@@ -72,7 +72,7 @@ public class SparkFilter implements Filter {
 
         filterPath = FilterTools.getFilterPath(filterConfig);
 
-        matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFilesConfiguration.servletInstance, ExceptionMapper.getServletInstance(), true, false);
+        matcherFilter = new MatcherFilter(ServletRoutes.get(), StaticFilesConfiguration.servletInstance, ExceptionMapper.getServletInstance(), true, new String[0]);
     }
 
     /**

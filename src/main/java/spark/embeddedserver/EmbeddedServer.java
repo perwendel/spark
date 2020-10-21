@@ -53,7 +53,7 @@ public interface EmbeddedServer {
      * @param webSocketIdleTimeoutMillis - Optional WebSocket idle timeout (ms).
      */
     default void configureWebSockets(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
-                                     Optional<Integer> webSocketIdleTimeoutMillis) {
+                                     Optional<Long> webSocketIdleTimeoutMillis) {
 
         NotSupportedException.raise(getClass().getSimpleName(), "Web Sockets");
     }
