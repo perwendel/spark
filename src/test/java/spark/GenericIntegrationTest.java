@@ -1,17 +1,5 @@
 package spark;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jetty.util.URIUtil;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
@@ -21,7 +9,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import spark.embeddedserver.jetty.eventsource.EventSourceClient;
+import spark.embeddedserver.jetty.eventsource.EventSourceTestHandler;
 import spark.embeddedserver.jetty.websocket.WebSocketTestClient;
 import spark.embeddedserver.jetty.websocket.WebSocketTestHandler;
 import spark.examples.exception.BaseException;
@@ -31,18 +20,17 @@ import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
-import static spark.Spark.after;
-import static spark.Spark.afterAfter;
-import static spark.Spark.before;
-import static spark.Spark.exception;
-import static spark.Spark.externalStaticFileLocation;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.path;
-import static spark.Spark.post;
-import static spark.Spark.staticFileLocation;
-import static spark.Spark.webSocket;
+import java.io.*;
+import java.net.Socket;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static spark.Spark.*;
 
 public class GenericIntegrationTest {
 
@@ -75,6 +63,7 @@ public class GenericIntegrationTest {
         staticFileLocation("/public");
         externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
         webSocket("/ws", WebSocketTestHandler.class);
+        eventSource("/es", EventSourceTestHandler.class);
 
         before("/secretcontent/*", (q, a) -> {
             halt(401, "Go Away!");
@@ -508,6 +497,33 @@ public class GenericIntegrationTest {
         Assert.assertEquals("onConnect", events.get(0));
         Assert.assertEquals("onMessage: Hi Spark!", events.get(1));
         Assert.assertEquals("onClose: 1000 Bye!", events.get(2));
+    }
+
+    @Test
+    public void testEventSourceConversation() throws Exception{
+        String uri = "http://localhost:4567/es";
+        String response = "";
+        Socket socket = new Socket("localhost", 4567);
+        EventSourceClient eventSourceClient = new EventSourceClient(socket);
+        eventSourceClient.writeHTTPRequest(uri);
+        BufferedReader reader = eventSourceClient.readAndDiscardHTTPResponse();
+        String line;
+        while((line = reader.readLine()) != null){
+            if (line.startsWith("data:")){
+                response = line;
+            }
+            if (line.isEmpty())
+                break;
+        }
+
+        eventSourceClient.close();
+        Assert.assertEquals("data: " + EventSourceTestHandler.ES_MESSAGE, response);
+        Assert.assertEquals(3, EventSourceTestHandler.events.size());
+        Assert.assertEquals(EventSourceTestHandler.ON_CONNECT, EventSourceTestHandler.events.get(0));
+        Assert.assertEquals(EventSourceTestHandler.ES_MESSAGE, EventSourceTestHandler.events.get(1));
+        Assert.assertEquals(EventSourceTestHandler.ON_CLOSE, EventSourceTestHandler.events.get(2));
+
+
     }
 
     @Test

@@ -16,13 +16,6 @@
  */
 package spark.embeddedserver.jetty;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -32,11 +25,19 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.embeddedserver.EmbeddedServer;
+import spark.embeddedserver.jetty.eventsource.EventSourceHandlerWrapper;
+import spark.embeddedserver.jetty.eventsource.EventSourceServletContextHandlerFactory;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.embeddedserver.jetty.websocket.WebSocketServletContextHandlerFactory;
 import spark.ssl.SslStores;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Spark server implementation
@@ -57,6 +58,8 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
     private Optional<Integer> webSocketIdleTimeoutMillis;
 
+    private Map<String, EventSourceHandlerWrapper> eventSourceHandlers;
+
     private ThreadPool threadPool = null;
 
     public EmbeddedJettyServer(JettyServerFactory serverFactory, Handler handler) {
@@ -70,6 +73,11 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
         this.webSocketHandlers = webSocketHandlers;
         this.webSocketIdleTimeoutMillis = webSocketIdleTimeoutMillis;
+    }
+
+    @Override
+    public void configureEventSourcing(Map<String, EventSourceHandlerWrapper> eventSourceHandlers) {
+        this.eventSourceHandlers = eventSourceHandlers;
     }
 
     /**
@@ -121,9 +129,11 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
         ServletContextHandler webSocketServletContextHandler =
             WebSocketServletContextHandlerFactory.create(webSocketHandlers, webSocketIdleTimeoutMillis);
+        ServletContextHandler eventSourceServletContextHandler =
+            EventSourceServletContextHandlerFactory.create(eventSourceHandlers);
 
         // Handle web socket routes
-        if (webSocketServletContextHandler == null) {
+        if (webSocketServletContextHandler == null && eventSourceServletContextHandler == null) {
             server.setHandler(handler);
         } else {
             List<Handler> handlersInList = new ArrayList<>();
@@ -131,7 +141,10 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
             // WebSocket handler must be the last one
             if (webSocketServletContextHandler != null) {
+                EventSourceServletContextHandlerFactory.addToExistingContext(webSocketServletContextHandler, eventSourceHandlers);
                 handlersInList.add(webSocketServletContextHandler);
+            } else {
+                handlersInList.add(eventSourceServletContextHandler);
             }
 
             HandlerList handlers = new HandlerList();

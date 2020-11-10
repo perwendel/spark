@@ -1249,6 +1249,24 @@ public class Spark {
         getInstance().webSocketIdleTimeoutMillis(timeoutMillis);
     }
 
+    /////////////////
+    // EventSource //
+
+    /**
+     * Maps the given path to the given EventSource handler.
+     * <p>
+     * This is currently only available in the embedded server mode.
+     *
+     * @param path    the EventSource path.
+     * @param handler the handler class that will manage the EventSource connection to the given path.
+     */
+    public static void eventSource(String path, Class<?> handler){
+        getInstance().eventSource(path, handler);
+    }
+
+    public static void eventSource(String path, Object handler){
+        getInstance().eventSource(path, handler);
+    }
     /**
      * Maps 404 Not Found errors to the provided custom page
      */
