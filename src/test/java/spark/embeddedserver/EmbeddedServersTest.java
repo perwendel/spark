@@ -42,7 +42,7 @@ public class EmbeddedServersTest {
         EmbeddedServers.add(id, new EmbeddedJettyFactory(serverFactory));
         EmbeddedServer embeddedServer = EmbeddedServers.create(id, null, null, null, false);
         assertNotNull(embeddedServer);
-        embeddedServer.ignite("localhost", 0, null, 0, 0, 0);
+        embeddedServer.ignite("localhost", 0, null, 0, 0, 0, true);
 
         assertTrue(requestLogFile.exists());
         embeddedServer.extinguish();
