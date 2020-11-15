@@ -1277,6 +1277,17 @@ public class Spark {
         getInstance().internalServerError(route);
     }
 
+    ////////////////
+    // Security //
+
+    /**
+     * Whether to trust Forwarded, X-Forwarded-Host, X-Forwarded-Server, X-Forwarded-For, X-Forwarded-Proto, X-Proxied-Https headers
+     * as defined at https://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/server/ForwardedRequestCustomizer.html
+     */
+    public static void trustForwardHeaders(boolean trustForwardHeaders) {
+        getInstance().trustForwardHeaders(trustForwardHeaders);
+    }
+
     /**
      * Initializes the Spark server. SHOULD just be used when using the Websockets functionality.
      */

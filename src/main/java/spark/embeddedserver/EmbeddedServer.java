@@ -44,7 +44,8 @@ public interface EmbeddedServer {
                SslStores sslStores,
                int maxThreads,
                int minThreads,
-               int threadIdleTimeoutMillis) throws Exception;
+               int threadIdleTimeoutMillis,
+               boolean trustForwardHeaders) throws Exception;
 
     /**
      * Configures the web sockets for the embedded server.
