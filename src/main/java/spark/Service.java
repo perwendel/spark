@@ -135,7 +135,7 @@ public final class Service extends Routable {
      * Get the identifier used to select the EmbeddedServer;
      * null for the default.
      *
-     * @param obj the identifier passed to {@link EmbeddedServers}.
+     * @param embeddedServerIdentifier the identifier passed to {@link EmbeddedServers}.
      */
     public synchronized Object embeddedServerIdentifier() {
         return embeddedServerIdentifier;
@@ -630,6 +630,7 @@ public final class Service extends Routable {
                                                     hasMultipleHandlers());
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+                    server.trustForwardHeaders(trustForwardHeaders);
 
                     port = server.ignite(
                             ipAddress,
@@ -637,8 +638,7 @@ public final class Service extends Routable {
                             sslStores,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis,
-                            trustForwardHeaders);
+                            threadIdleTimeoutMillis);
                   } catch (Exception e) {
                     initExceptionHandler.accept(e);
                   }
@@ -748,16 +748,27 @@ public final class Service extends Routable {
     }
 
     /**
-     * Set whether Spark should trust the HTTP headers that are commonly used in reverse proxies.
+     * Sets Spark to trust the HTTP headers that are commonly used in reverse proxies.
      * More info at https://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/server/ForwardedRequestCustomizer.html
-     *
-     * @param
      */
-    public synchronized Service trustForwardHeaders(boolean trustForwardHeaders) {
+    public synchronized Service trustForwardHeaders() {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
-        this.trustForwardHeaders = trustForwardHeaders;
+        this.trustForwardHeaders = true;
+
+        return this;
+    }
+
+    /**
+     * Sets Spark to NOT trust the HTTP headers that are commonly used in reverse proxies.
+     * More info at https://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/server/ForwardedRequestCustomizer.html
+     */
+    public synchronized Service untrustForwardHeaders() {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        this.trustForwardHeaders = false;
 
         return this;
     }

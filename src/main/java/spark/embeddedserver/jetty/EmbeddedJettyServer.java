@@ -58,6 +58,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     private Optional<Integer> webSocketIdleTimeoutMillis;
 
     private ThreadPool threadPool = null;
+    private boolean trustForwardHeaders = true; // true by default
 
     public EmbeddedJettyServer(JettyServerFactory serverFactory, Handler handler) {
         this.serverFactory = serverFactory;
@@ -72,18 +73,21 @@ public class EmbeddedJettyServer implements EmbeddedServer {
         this.webSocketIdleTimeoutMillis = webSocketIdleTimeoutMillis;
     }
 
+    @Override
+    public void trustForwardHeaders(boolean trust) {
+        this.trustForwardHeaders = trust;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-
     public int ignite(String host,
                       int port,
                       SslStores sslStores,
                       int maxThreads,
                       int minThreads,
-                      int threadIdleTimeoutMillis,
-                      boolean trustForwardHeaders) throws Exception {
+                      int threadIdleTimeoutMillis) throws Exception {
 
         boolean hasCustomizedConnectors = false;
 
