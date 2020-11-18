@@ -134,8 +134,6 @@ public final class Service extends Routable {
     /**
      * Get the identifier used to select the EmbeddedServer;
      * null for the default.
-     *
-     * @param embeddedServerIdentifier the identifier passed to {@link EmbeddedServers}.
      */
     public synchronized Object embeddedServerIdentifier() {
         return embeddedServerIdentifier;
