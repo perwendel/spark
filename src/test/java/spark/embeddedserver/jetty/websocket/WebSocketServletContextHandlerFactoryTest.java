@@ -75,7 +75,7 @@ public class WebSocketServletContextHandlerFactoryTest {
     @Test
     public void testCreate_whenTimeoutIsPresent() throws Exception {
 
-        final Integer timeout = Integer.valueOf(1000);
+        final Long timeout = Long.valueOf(1000);
 
         Map<String, WebSocketHandlerWrapper> webSocketHandlers = new HashMap<>();
 

@@ -42,7 +42,7 @@ public class WebSocketServletContextHandlerFactory {
      * @return a new websocket servlet context handler or 'null' if creation failed.
      */
     public static ServletContextHandler create(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
-                                               Optional<Integer> webSocketIdleTimeoutMillis) {
+                                               Optional<Long> webSocketIdleTimeoutMillis) {
         ServletContextHandler webSocketServletContextHandler = null;
         if (webSocketHandlers != null) {
             try {
