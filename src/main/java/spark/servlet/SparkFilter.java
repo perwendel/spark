@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -67,7 +67,7 @@ public class SparkFilter implements Filter {
         applications = getApplications(filterConfig);
 
         for (SparkApplication application : applications) {
-            application.init();
+            application.init(filterConfig.getServletContext());
         }
 
         filterPath = FilterTools.getFilterPath(filterConfig);
@@ -76,7 +76,7 @@ public class SparkFilter implements Filter {
     }
 
     /**
-     * Returns an instance of {@link SparkApplication} which on which {@link SparkApplication#init() init()} will be called.
+     * Returns an instance of {@link SparkApplication} on which {@link SparkApplication#init(javax.servlet.ServletContext) init(ServletContext)} will be called.
      * Default implementation looks up the class name in the filterConfig using the key {@value #APPLICATION_CLASS_PARAM}.
      * Subclasses can override this method to use different techniques to obtain an instance (i.e. dependency injection).
      *
@@ -91,7 +91,7 @@ public class SparkFilter implements Filter {
     }
 
     /**
-     * Returns an instance of {@link SparkApplication} which on which {@link SparkApplication#init() init()} will be called.
+     * Returns an instance of {@link SparkApplication} which on which {@link SparkApplication#init(javax.servlet.ServletContext) init(ServletContext)} will be called.
      * Default implementation looks up the class name in the filterConfig using the key {@value #APPLICATION_CLASS_PARAM}.
      * Subclasses can override this method to use different techniques to obtain an instance (i.e. dependency injection).
      *
@@ -109,7 +109,7 @@ public class SparkFilter implements Filter {
     }
 
     /**
-     * Returns the instances of {@link SparkApplication} which on which {@link SparkApplication#init() init()} will be called.
+     * Returns the instances of {@link SparkApplication} which on which {@link SparkApplication#init(javax.servlet.ServletContext) init(ServletContext)} will be called.
      * Default implementation looks up the class names in the filterConfig using the key {@value #APPLICATION_CLASS_PARAM}.
      * Subclasses can override this method to use different techniques to obtain an instance (i.e. dependency injection).
      *
