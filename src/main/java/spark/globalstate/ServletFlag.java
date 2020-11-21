@@ -17,6 +17,7 @@
 package spark.globalstate;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Holds the global information if Spark was run from an "external" web application server.
@@ -24,12 +25,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ServletFlag {
 
     private static AtomicBoolean isRunningFromServlet = new AtomicBoolean(false);
+    private static AtomicReference<String> contextPath = new AtomicReference<>("/");
 
     /**
      * Tells the system that Spark was run from an "external" web application server.
+     * @param contextPath The context path under which the Spark application is deployed.
      */
-    public static void runFromServlet() {
+    public static void runFromServlet(String contextPath) {
         isRunningFromServlet.set(true);
+        ServletFlag.contextPath.set(contextPath);
     }
 
     /**
@@ -39,4 +43,10 @@ public class ServletFlag {
         return isRunningFromServlet.get();
     }
 
+    /**
+     * @return the context path under which the Spark application is deployed.
+     */
+    public static String getContextPath() {
+        return contextPath.get();
+    }
 }
