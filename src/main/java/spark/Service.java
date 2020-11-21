@@ -157,6 +157,20 @@ public final class Service extends Routable {
     }
 
     /**
+     * Retrieves the ip address of Spark server.
+     *
+     * @return The ip address of Spark server.
+     * @throws IllegalStateException when the server is not started
+     */
+    public synchronized String ipAddress() {
+        if (initialized) {
+            return ipAddress;
+        } else {
+            throw new IllegalStateException("This must be done after route mapping has begun");
+        }
+    }
+
+    /**
      * Set the port that Spark should listen on. If not called the default port
      * is 4567. This has to be called before any route mapping is done.
      * If provided port = 0 then the an arbitrary available port will be used.
@@ -296,6 +310,14 @@ public final class Service extends Routable {
 
         sslStores = SslStores.create(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, needsClientCert);
         return this;
+    }
+
+    public synchronized SslStores sslStores() {
+        if (initialized) {
+            return sslStores;
+        } else {
+            throw new IllegalStateException("This must be done after route mapping has begun");
+        }
     }
 
     /**

@@ -1327,6 +1327,26 @@ public class Spark {
     public static int activeThreadCount() {
         return getInstance().activeThreadCount();
     }
+    
+    /**
+     * @return The ip address of server
+     */
+    static String serverIP() { return getInstance().ipAddress(); }
+    /**
+     * @return The port number of server
+     */
+    static int serverPort() { return getInstance().port(); }
+    /**
+     * @return Whether the server need a client certification
+     */
+    static boolean serverNeedClientCert() {
+        SslStores sslStores = getInstance().sslStores();
+        if(sslStores==null) {
+            return false;
+        } else {
+            return sslStores.needsClientCert();
+        }
+    }
 
 
 }
