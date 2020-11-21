@@ -64,6 +64,11 @@ public class Spark {
     public static final Redirect redirect = getInstance().redirect;
 
     /**
+     * Statically import this for alias utility functionality
+     */
+    public static final Alias alias = getInstance().alias;
+
+    /**
      * Statically import this for static files utility functionality, see {@link spark.Service.StaticFiles}
      */
     public static final Service.StaticFiles staticFiles = getInstance().staticFiles;

@@ -16,15 +16,14 @@
  */
 package spark.staticfiles;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -81,7 +80,14 @@ public class StaticFilesConfiguration {
         return false;
     }
 
-
+    /**
+     * Attempt consuming using static file resource handlers
+     *
+     * @param httpRequest  The HTTP servlet request.
+     * @param httpResponse The HTTP servlet response.
+     * @return true if consumed, false otherwise.
+     * @throws IOException in case of IO error.
+     */
     private boolean consumeWithFileResourceHandlers(HttpServletRequest httpRequest,
                                                     HttpServletResponse httpResponse) throws IOException {
         if (staticResourceHandlers != null) {
@@ -97,6 +103,38 @@ public class StaticFilesConfiguration {
                     }
                     customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
 
+                    String range = httpRequest.getHeader("Range");
+                    if(null!=range){
+                        String[] index = range.split("=")[1].split("-");
+                        File file = resource.getFile();
+                        int startIndex = Integer.parseInt(index[0]);
+                        int endIndex = 0;
+                        try{
+                            endIndex = Integer.parseInt(index[1]);
+                            httpResponse.setStatus(206);
+                        }
+                        catch (ArrayIndexOutOfBoundsException e){
+                            endIndex = (int)file.length();
+                            httpResponse.setStatus(200);
+                        }
+                        int fileLength = endIndex - startIndex + 1;
+                        httpResponse.setHeader("Accept-Ranges","bytes");
+                        httpResponse.setContentLength(fileLength);
+                        httpResponse.setHeader("Content-Range","bytes "+startIndex+"-"+endIndex+"/"+ (file.length()+1));
+                        ServletOutputStream outputStream = httpResponse.getOutputStream();
+                        byte[] buffer = new byte[1024*4];
+                        InputStream inputStream = resource.getInputStream();
+                        inputStream.skip(startIndex);
+                        int readLength = 0;
+                        int count = 0;
+                        while (endIndex != count) {
+                            readLength = inputStream.read(buffer);
+                            count += readLength;
+                            outputStream.write(buffer, 0, readLength);
+                        }
+                        inputStream.close();
+                        outputStream.close();
+                    }
                     try (InputStream inputStream = resource.getInputStream();
                          OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false)) {
                         IOUtils.copy(inputStream, wrappedOutputStream);
