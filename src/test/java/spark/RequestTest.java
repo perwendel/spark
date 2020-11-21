@@ -503,4 +503,48 @@ public class RequestTest {
                 protocol, request.protocol());
 
     }
+
+    @Test
+    public void testGetSplat() {
+
+        List<String> request = Arrays.asList("test", "me");
+        List<String> matched = Arrays.asList("test", "*");
+        List<String> splat = Request.getSplat(request, matched);
+        assertArrayEquals("Should return splat", Arrays.asList("me").toArray(), splat.toArray());
+
+        request = Arrays.asList("test", "me", "and", "you");
+        matched = Arrays.asList("test", "*");
+        splat = Request.getSplat(request, matched);
+        assertArrayEquals("Should return splat", Arrays.asList("me/and/you").toArray(), splat.toArray());
+
+        request = Arrays.asList("test", "me", "and", "you");
+        matched = Arrays.asList("test", "*", "and", "*");
+        splat = Request.getSplat(request, matched);
+        assertArrayEquals("Should return splat", Arrays.asList("me", "you").toArray(), splat.toArray());
+
+        request = Arrays.asList("test", "this", "a", "child", "b", "c");
+        matched = Arrays.asList("test", "this", "*", "child", "*");
+        splat = Request.getSplat(request, matched);
+        assertArrayEquals("Should return splat", Arrays.asList("a", "b/c").toArray(), splat.toArray());
+
+        request = Arrays.asList("test", "this", "a", "child", "b");
+        matched = Arrays.asList("test", "*", "child", "*");
+        splat = Request.getSplat(request, matched);
+        assertArrayEquals("Should return splat", Arrays.asList("this/a", "b").toArray(), splat.toArray());
+
+        request = Arrays.asList("test", "key", "mykey", "this", "a", "child", "b", "c");
+        matched = Arrays.asList("test", "key", ":key", "this", "*", "child", "*");
+        splat = Request.getSplat(request, matched);
+        assertArrayEquals("Should return splat", Arrays.asList("a", "b/c").toArray(), splat.toArray());
+
+        request = Arrays.asList("test", "key", "mykey", "this", "a", "child", "b");
+        matched = Arrays.asList("test", "key", ":key", "*", "child", "*");
+        splat = Request.getSplat(request, matched);
+        assertArrayEquals("Should return splat", Arrays.asList("this/a", "b").toArray(), splat.toArray());
+
+        request = Arrays.asList("test", "this", "is", "a", "splat", "a", "b", "c", "d");
+        matched = Arrays.asList("test", "*", "a", "b", "*", "d");
+        splat = Request.getSplat(request, matched);
+        assertArrayEquals("Should return splat", Arrays.asList("this/is/a/splat", "c").toArray(), splat.toArray());
+    }
 }
