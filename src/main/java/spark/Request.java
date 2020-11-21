@@ -196,6 +196,27 @@ public class Request {
     public int port() {
         return servletRequest.getServerPort();
     }
+    
+        /**
+     * @return the server name
+     */
+    public String name(){
+        return servletRequest.getServerName();
+    }
+
+    /**
+     * @return the server ip
+     */
+    public InetAddress serverIp() throws UnknownHostException {
+        return InetAddress.getLocalHost();
+    }
+
+    /**
+     * @return the locale
+     */
+    public Locale locale(){
+        return servletRequest.getLocale();
+    }
 
 
     /**
