@@ -24,7 +24,7 @@ public class ExceptionMapper {
     /**
      * Holds an exception mapper instance for use in servlet mode
      */
-    private static ExceptionMapper servletInstance;
+    private static ExceptionMapper servletInstance = new ExceptionMapper();
 
     @Deprecated
     public static ExceptionMapper getInstance() {
@@ -37,9 +37,6 @@ public class ExceptionMapper {
      * @return servlet instance
      */
     public synchronized static ExceptionMapper getServletInstance() {
-        if (servletInstance == null) {
-            servletInstance = new ExceptionMapper();
-        }
         return servletInstance;
     }
 
