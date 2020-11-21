@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
  * be shared between different instances of the Service class.
  */
 public class CustomErrorPages {
-
     private static final Logger LOG = LoggerFactory.getLogger(CustomErrorPages.class);
     public static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
     public static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Server Error</h2></body></html>";
@@ -84,7 +83,7 @@ public class CustomErrorPages {
     /**
      * Add a custom error page as a String
      * @param status
-     * @param page
+     * @param page          
      */
     static void add(int status, String page) {
         CustomErrorPages.getInstance().customPages.put(status, page);

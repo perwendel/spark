@@ -101,11 +101,9 @@ public class ClassPathResource extends AbstractFileResolvingResource {
                 return true;
             }
         }
-        if (path.contains("")) {
-            path = StringUtils.cleanPath(path);
-            if (path.contains("../")) {
-                return true;
-            }
+        path = StringUtils.cleanPath(path);
+        if (path.contains("../")) {
+            return true;
         }
         return false;
     }

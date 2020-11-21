@@ -19,7 +19,11 @@ package spark;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -157,6 +161,24 @@ public class StaticFilesMemberTest {
         staticFiles.expireTime(600);
         SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
         Assert.assertEquals("private, max-age=600", response.headers.get("Cache-Control"));
+
+        testGet();
+    }
+
+    @Test
+    public void testStaticFileExpiresFormat() throws Exception {
+        staticFiles.expireTime(600);
+        SparkTestUtil.UrlResponse response = testUtil.doMethod("GET", "/pages/index.html", null);
+        Assert.assertEquals("private, max-age=600", response.headers.get("Cache-Control"));
+
+        // Locale.ENGLISH: forces day name in week to use English abbreviation
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+        try {
+            Date expires = dateFormat.parse(response.headers.get("Expires"));
+        } catch (ParseException e){
+            e.printStackTrace();
+            Assert.fail("Expire format not in compliance to RFC 7231.");
+        }
 
         testGet();
     }
