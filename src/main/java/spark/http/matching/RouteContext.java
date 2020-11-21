@@ -43,6 +43,7 @@ final class RouteContext {
     private ResponseWrapper responseWrapper;
     private Response response;
     private HttpMethod httpMethod;
+    private boolean matched;
 
     private RouteContext() {
         // hidden
@@ -129,4 +130,11 @@ final class RouteContext {
         return httpMethod;
     }
 
+    public boolean isMatched() {
+        return matched;
+    }
+
+    public void setMatched(boolean matched) {
+        this.matched = matched;
+    }
 }
