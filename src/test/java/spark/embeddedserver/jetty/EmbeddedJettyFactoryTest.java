@@ -3,6 +3,7 @@ package spark.embeddedserver.jetty;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import spark.ExceptionMapper;
@@ -21,24 +22,32 @@ import static org.mockito.Mockito.when;
 public class EmbeddedJettyFactoryTest {
 
     private EmbeddedServer embeddedServer;
+    private JettyServerFactory jettyServerFactory;
+    private StaticFilesConfiguration staticFilesConfiguration;
+    private ExceptionMapper exceptionMapper;
+    private Routes routes;
+    private Server server;
+
+    @Before
+    public void setUpMocks() {
+        jettyServerFactory = mock(JettyServerFactory.class);
+        staticFilesConfiguration = mock(StaticFilesConfiguration.class);
+        exceptionMapper = mock(ExceptionMapper.class);
+        routes = mock(Routes.class);
+        server = new Server();
+        when(jettyServerFactory.create(100, 10, 10000)).thenReturn(server);
+    }
 
     @Test
     public void create() throws Exception {
-        final JettyServerFactory jettyServerFactory = mock(JettyServerFactory.class);
-        final StaticFilesConfiguration staticFilesConfiguration = mock(StaticFilesConfiguration.class);
-        final ExceptionMapper exceptionMapper = mock(ExceptionMapper.class);
-        final Routes routes = mock(Routes.class);
-
-        Server server = new Server();
-        when(jettyServerFactory.create(100, 10, 10000)).thenReturn(server);
-
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory);
         embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, exceptionMapper, false);
 
-        embeddedServer.trustForwardHeaders(true);
-        embeddedServer.ignite("localhost", 6757, null, 100, 10, 10000);
+        igniteServer(embeddedServer, false);
+        embeddedServer.extinguish();
+        igniteServer(embeddedServer, true);
 
-        verify(jettyServerFactory, times(1)).create(100, 10, 10000);
+        verify(jettyServerFactory, times(2)).create(100, 10, 10000);
         verifyNoMoreInteractions(jettyServerFactory);
         assertTrue(((JettyHandler) server.getHandler()).getSessionCookieConfig().isHttpOnly());
     }
@@ -46,55 +55,41 @@ public class EmbeddedJettyFactoryTest {
     @Test
     public void create_withThreadPool() throws Exception {
         final QueuedThreadPool threadPool = new QueuedThreadPool(100);
-        final JettyServerFactory jettyServerFactory = mock(JettyServerFactory.class);
-        final StaticFilesConfiguration staticFilesConfiguration = mock(StaticFilesConfiguration.class);
-        final ExceptionMapper exceptionMapper = mock(ExceptionMapper.class);
-        final Routes routes = mock(Routes.class);
 
         when(jettyServerFactory.create(threadPool)).thenReturn(new Server(threadPool));
 
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withThreadPool(threadPool);
         embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, exceptionMapper, false);
 
-        embeddedServer.trustForwardHeaders(true);
-        embeddedServer.ignite("localhost", 6758, null, 0, 0, 0);
+        igniteServer(embeddedServer, false);
+        embeddedServer.extinguish();
+        igniteServer(embeddedServer, true);
 
-        verify(jettyServerFactory, times(1)).create(threadPool);
+        verify(jettyServerFactory, times(2)).create(threadPool);
         verifyNoMoreInteractions(jettyServerFactory);
     }
 
     @Test
     public void create_withNullThreadPool() throws Exception {
-        final JettyServerFactory jettyServerFactory = mock(JettyServerFactory.class);
-        final StaticFilesConfiguration staticFilesConfiguration = mock(StaticFilesConfiguration.class);
-        final ExceptionMapper exceptionMapper = mock(ExceptionMapper.class);
-        final Routes routes = mock(Routes.class);
-
-        when(jettyServerFactory.create(100, 10, 10000)).thenReturn(new Server());
-
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withThreadPool(null);
         embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, exceptionMapper, false);
 
-        embeddedServer.trustForwardHeaders(true);
-        embeddedServer.ignite("localhost", 6759, null, 100, 10, 10000);
+        igniteServer(embeddedServer, false);
+        embeddedServer.extinguish();
+        igniteServer(embeddedServer, true);
 
-        verify(jettyServerFactory, times(1)).create(100, 10, 10000);
+        verify(jettyServerFactory, times(2)).create(100, 10, 10000);
         verifyNoMoreInteractions(jettyServerFactory);
     }
 
     @Test
     public void create_withoutHttpOnly() throws Exception {
-        final JettyServerFactory jettyServerFactory = mock(JettyServerFactory.class);
-        final StaticFilesConfiguration staticFilesConfiguration = mock(StaticFilesConfiguration.class);
-        final Routes routes = mock(Routes.class);
-
-        Server server = new Server();
-        when(jettyServerFactory.create(100, 10, 10000)).thenReturn(server);
-
         final EmbeddedJettyFactory embeddedJettyFactory = new EmbeddedJettyFactory(jettyServerFactory).withHttpOnly(false);
         embeddedServer = embeddedJettyFactory.create(routes, staticFilesConfiguration, false);
-        embeddedServer.trustForwardHeaders(true);
-        embeddedServer.ignite("localhost", 6759, null, 100, 10, 10000);
+
+        igniteServer(embeddedServer, false);
+        embeddedServer.extinguish();
+        igniteServer(embeddedServer, true);
 
         assertFalse(((JettyHandler) server.getHandler()).getSessionCookieConfig().isHttpOnly());
     }
@@ -104,5 +99,10 @@ public class EmbeddedJettyFactoryTest {
         if (embeddedServer != null) {
             embeddedServer.extinguish();
         }
+    }
+
+    private void igniteServer(EmbeddedServer embeddedServer, boolean http2Enabled) throws Exception {
+        embeddedServer.trustForwardHeaders(true);
+        embeddedServer.ignite("localhost", 6759, null, 100, 10, 10000, http2Enabled);
     }
 }

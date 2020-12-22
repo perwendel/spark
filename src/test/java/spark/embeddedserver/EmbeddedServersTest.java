@@ -6,7 +6,6 @@ import org.eclipse.jetty.server.NCSARequestLog;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -44,7 +43,7 @@ public class EmbeddedServersTest {
         assertNotNull(embeddedServer);
 
         embeddedServer.trustForwardHeaders(true);
-        embeddedServer.ignite("localhost", 0, null, 0, 0, 0);
+        embeddedServer.ignite("localhost", 0, null, 0, 0, 0, false);
 
         assertTrue(requestLogFile.exists());
         embeddedServer.extinguish();

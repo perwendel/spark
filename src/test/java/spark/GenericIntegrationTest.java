@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,14 +44,14 @@ import static spark.Spark.post;
 import static spark.Spark.staticFileLocation;
 import static spark.Spark.webSocket;
 
-public class GenericIntegrationTest {
+public abstract class GenericIntegrationTest {
 
     private static final String NOT_FOUND_BRO = "Not found bro";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericIntegrationTest.class);
+    final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    static SparkTestUtil testUtil;
-    static File tmpExternalFile;
+    static SparkTestUtil testUtil = new SparkTestUtil(4567);
+    static File tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
 
     @AfterClass
     public static void tearDown() {
@@ -61,12 +61,7 @@ public class GenericIntegrationTest {
         }
     }
 
-    @BeforeClass
     public static void setup() throws IOException {
-        testUtil = new SparkTestUtil(4567);
-
-        tmpExternalFile = new File(System.getProperty("java.io.tmpdir"), "externalFile.html");
-
         FileWriter writer = new FileWriter(tmpExternalFile);
         writer.write("Content of external file");
         writer.flush();
@@ -77,14 +72,17 @@ public class GenericIntegrationTest {
         webSocket("/ws", WebSocketTestHandler.class);
 
         before("/secretcontent/*", (q, a) -> {
+            a.header("WWW-Authenticate", "Bearer");
             halt(401, "Go Away!");
         });
 
         before("/protected/*", "application/xml", (q, a) -> {
+            a.header("WWW-Authenticate", "Bearer");
             halt(401, "Go Away!");
         });
 
         before("/protected/*", "application/json", (q, a) -> {
+            a.header("WWW-Authenticate", "Bearer");
             halt(401, "{\"message\": \"Go Away!\"}");
         });
 
@@ -92,7 +90,7 @@ public class GenericIntegrationTest {
         get("/hi", (q, a) -> "Hello World!");
         get("/binaryhi", (q, a) -> "Hello World!".getBytes());
         get("/bytebufferhi", (q, a) -> ByteBuffer.wrap("Hello World!".getBytes()));
-        get("/inputstreamhi", (q, a) -> new ByteArrayInputStream("Hello World!".getBytes("utf-8")));
+        get("/inputstreamhi", (q, a) -> new ByteArrayInputStream("Hello World!".getBytes(StandardCharsets.UTF_8)));
         get("/param/:param", (q, a) -> "echo: " + q.params(":param"));
 
         path("/firstPath", () -> {
@@ -100,9 +98,7 @@ public class GenericIntegrationTest {
             get("/test", (q, a) -> "Single path-prefix works");
             path("/secondPath", () -> {
                 get("/test", (q, a) -> "Nested path-prefix works");
-                path("/thirdPath", () -> {
-                    get("/test", (q, a) -> "Very nested path-prefix works");
-                });
+                path("/thirdPath", () -> get("/test", (q, a) -> "Very nested path-prefix works"));
             });
         });
 
@@ -174,17 +170,11 @@ public class GenericIntegrationTest {
             throw new JWGmeligMeylingException();
         });
 
-        exception(JWGmeligMeylingException.class, (meylingException, q, a) -> {
-            a.body(meylingException.trustButVerify());
-        });
+        exception(JWGmeligMeylingException.class, (meylingException, q, a) -> a.body(meylingException.trustButVerify()));
 
-        exception(UnsupportedOperationException.class, (exception, q, a) -> {
-            a.body("Exception handled");
-        });
+        exception(UnsupportedOperationException.class, (exception, q, a) -> a.body("Exception handled"));
 
-        exception(BaseException.class, (exception, q, a) -> {
-            a.body("Exception handled");
-        });
+        exception(BaseException.class, (exception, q, a) -> a.body("Exception handled"));
 
         exception(NotFoundException.class, (exception, q, a) -> {
             a.status(404);
@@ -195,47 +185,48 @@ public class GenericIntegrationTest {
             throw new RuntimeException();
         });
 
-        afterAfter("/exception", (request, response) -> {
-            response.body("done executed for exception");
-        });
+        afterAfter("/exception", (request, response) -> response.body("done executed for exception"));
 
         post("/nice", (request, response) -> "nice response");
 
-        afterAfter("/nice", (request, response) -> {
-            response.header("post-process", "nice done response");
-        });
+        afterAfter("/nice", (request, response) -> response.header("post-process", "nice done response"));
 
-        afterAfter((request, response) -> {
-            response.header("post-process-all", "nice done response after all");
-        });
+        afterAfter((request, response) -> response.header("post-process-all", "nice done response after all"));
 
         Spark.awaitInitialization();
     }
 
+    abstract UrlResponse doMethod(String requestMethod, String path, String body, String acceptType) throws Exception;
+
+    abstract UrlResponse doMethod(String requestMethod, String path, String body) throws Exception;
+
+    abstract UrlResponse doMethod(String requestMethod, String path, String body, boolean secureConnection,
+                                  String acceptType, Map<String, String> reqHeaders) throws Exception;
+
     @Test
     public void filters_should_be_accept_type_aware() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/protected/resource", null, "application/json");
-        Assert.assertTrue(response.status == 401);
+        UrlResponse response = doMethod("GET", "/protected/resource", null, "application/json");
+        Assert.assertEquals(401, response.status);
         Assert.assertEquals("{\"message\": \"Go Away!\"}", response.body);
     }
 
     @Test
     public void routes_should_be_accept_type_aware() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/hi", null, "application/json");
+        UrlResponse response = doMethod("GET", "/hi", null, "application/json");
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("{\"message\": \"Hello World\"}", response.body);
     }
 
     @Test
     public void template_view_should_be_rendered_with_given_model_view_object() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/templateView", null);
+        UrlResponse response = doMethod("GET", "/templateView", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Hello from my view", response.body);
     }
 
     @Test
     public void testGetHi() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+        UrlResponse response = doMethod("GET", "/hi", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Hello World!", response.body);
     }
@@ -243,7 +234,7 @@ public class GenericIntegrationTest {
     @Test
     public void testGetBinaryHi() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/binaryhi", null);
+            UrlResponse response = doMethod("GET", "/binaryhi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("Hello World!", response.body);
         } catch (Throwable e) {
@@ -254,7 +245,7 @@ public class GenericIntegrationTest {
     @Test
     public void testGetByteBufferHi() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/bytebufferhi", null);
+            UrlResponse response = doMethod("GET", "/bytebufferhi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("Hello World!", response.body);
         } catch (Throwable e) {
@@ -265,7 +256,7 @@ public class GenericIntegrationTest {
     @Test
     public void testGetInputStreamHi() {
         try {
-            UrlResponse response = testUtil.doMethod("GET", "/inputstreamhi", null);
+            UrlResponse response = doMethod("GET", "/inputstreamhi", null);
             Assert.assertEquals(200, response.status);
             Assert.assertEquals("Hello World!", response.body);
         } catch (Throwable e) {
@@ -275,14 +266,14 @@ public class GenericIntegrationTest {
 
     @Test
     public void testHiHead() throws Exception {
-        UrlResponse response = testUtil.doMethod("HEAD", "/hi", null);
+        UrlResponse response = doMethod("HEAD", "/hi", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("", response.body);
     }
 
     @Test
     public void testGetHiAfterFilter() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+        UrlResponse response = doMethod("GET", "/hi", null);
         Assert.assertTrue(response.headers.get("after").contains("foobar"));
     }
 
@@ -292,37 +283,37 @@ public class GenericIntegrationTest {
         Map<String, String> headers = new HashMap<>();
         headers.put("X-Forwarded-For", xForwardedFor);
 
-        UrlResponse response = testUtil.doMethod("GET", "/ip", null, false, "text/html", headers);
+        UrlResponse response = doMethod("GET", "/ip", null, false, "text/html", headers);
         Assert.assertEquals(xForwardedFor, response.body);
 
-        response = testUtil.doMethod("GET", "/ip", null, false, "text/html", null);
+        response = doMethod("GET", "/ip", null, false, "text/html", null);
         Assert.assertNotEquals(xForwardedFor, response.body);
     }
 
     @Test
     public void testGetRoot() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/", null);
+        UrlResponse response = doMethod("GET", "/", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Hello Root!", response.body);
     }
 
     @Test
     public void testParamAndWild() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/paramandwild/thedude/stuff/andits", null);
+        UrlResponse response = doMethod("GET", "/paramandwild/thedude/stuff/andits", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("paramandwild: thedudeandits", response.body);
     }
 
     @Test
     public void testEchoParam1() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/param/shizzy", null);
+        UrlResponse response = doMethod("GET", "/param/shizzy", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("echo: shizzy", response.body);
     }
 
     @Test
     public void testEchoParam2() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/param/gunit", null);
+        UrlResponse response = doMethod("GET", "/param/gunit", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("echo: gunit", response.body);
     }
@@ -331,7 +322,7 @@ public class GenericIntegrationTest {
     public void testEchoParam3() throws Exception {
         String polyglot = "жξ Ä 聊";
         String encoded = URIUtil.encodePath(polyglot);
-        UrlResponse response = testUtil.doMethod("GET", "/param/" + encoded, null);
+        UrlResponse response = doMethod("GET", "/param/" + encoded, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("echo: " + polyglot, response.body);
     }
@@ -339,7 +330,7 @@ public class GenericIntegrationTest {
     @Test
     public void testPathParamsWithPlusSign() throws Exception {
         String pathParamWithPlusSign = "not+broken+path+param";
-        UrlResponse response = testUtil.doMethod("GET", "/param/" + pathParamWithPlusSign, null);
+        UrlResponse response = doMethod("GET", "/param/" + pathParamWithPlusSign, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("echo: " + pathParamWithPlusSign, response.body);
     }
@@ -348,7 +339,7 @@ public class GenericIntegrationTest {
     public void testParamWithEncodedSlash() throws Exception {
         String polyglot = "te/st";
         String encoded = URLEncoder.encode(polyglot, "UTF-8");
-        UrlResponse response = testUtil.doMethod("GET", "/param/" + encoded, null);
+        UrlResponse response = doMethod("GET", "/param/" + encoded, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("echo: " + polyglot, response.body);
     }
@@ -359,8 +350,8 @@ public class GenericIntegrationTest {
         String encodedParam = URLEncoder.encode(param, "UTF-8");
         String splat = "mah/FRIEND";
         String encodedSplat = URLEncoder.encode(splat, "UTF-8");
-        UrlResponse response = testUtil.doMethod("GET",
-                                                 "/paramandwild/" + encodedParam + "/stuff/" + encodedSplat, null);
+        UrlResponse response = doMethod("GET",
+                                        "/paramandwild/" + encodedParam + "/stuff/" + encodedSplat, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("paramandwild: " + param + splat, response.body);
     }
@@ -368,7 +359,7 @@ public class GenericIntegrationTest {
     @Test
     public void testEchoParamWithUpperCaseInValue() throws Exception {
         final String camelCased = "ThisIsAValueAndSparkShouldRetainItsUpperCasedCharacters";
-        UrlResponse response = testUtil.doMethod("GET", "/param/" + camelCased, null);
+        UrlResponse response = doMethod("GET", "/param/" + camelCased, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("echo: " + camelCased, response.body);
     }
@@ -385,40 +376,38 @@ public class GenericIntegrationTest {
     }
 
     private static void registerEchoRoute(final String routePart) {
-        get("/tworoutes/" + routePart + "/:param", (q, a) -> {
-            return routePart + " route: " + q.params(":param");
-        });
+        get("/tworoutes/" + routePart + "/:param", (q, a) -> routePart + " route: " + q.params(":param"));
     }
 
-    private static void assertEchoRoute(String routePart) throws Exception {
+    private void assertEchoRoute(String routePart) throws Exception {
         final String expected = "expected";
-        UrlResponse response = testUtil.doMethod("GET", "/tworoutes/" + routePart + "/" + expected, null);
+        UrlResponse response = doMethod("GET", "/tworoutes/" + routePart + "/" + expected, null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals(routePart + " route: " + expected, response.body);
     }
 
     @Test
     public void testEchoParamWithMaj() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/paramwithmaj/plop", null);
+        UrlResponse response = doMethod("GET", "/paramwithmaj/plop", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("echo: plop", response.body);
     }
 
     @Test
     public void testUnauthorized() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/secretcontent/whateva", null);
-        Assert.assertTrue(response.status == 401);
+        UrlResponse response = doMethod("GET", "/secretcontent/whateva", null);
+        Assert.assertEquals(401, response.status);
     }
 
     @Test
     public void testNotFound() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/no/resource", null);
-        Assert.assertTrue(response.status == 404);
+        UrlResponse response = doMethod("GET", "/no/resource", null);
+        Assert.assertEquals(404, response.status);
     }
 
     @Test
     public void testPost() throws Exception {
-        UrlResponse response = testUtil.doMethod("POST", "/poster", "Fo shizzy");
+        UrlResponse response = doMethod("POST", "/poster", "Fo shizzy");
         LOGGER.info(response.body);
         Assert.assertEquals(201, response.status);
         Assert.assertTrue(response.body.contains("Fo shizzy"));
@@ -436,7 +425,7 @@ public class GenericIntegrationTest {
 
     @Test
     public void testPatch() throws Exception {
-        UrlResponse response = testUtil.doMethod("PATCH", "/patcher", "Fo shizzy");
+        UrlResponse response = doMethod("PATCH", "/patcher", "Fo shizzy");
         LOGGER.info(response.body);
         Assert.assertEquals(200, response.status);
         Assert.assertTrue(response.body.contains("Fo shizzy"));
@@ -444,48 +433,48 @@ public class GenericIntegrationTest {
 
     @Test
     public void testSessionReset() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/session_reset", null);
+        UrlResponse response = doMethod("GET", "/session_reset", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("22222", response.body);
     }
 
     @Test
     public void testStaticFile() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/css/style.css", null);
+        UrlResponse response = doMethod("GET", "/css/style.css", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of css file", response.body);
     }
 
     @Test
     public void testExternalStaticFile() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/externalFile.html", null);
+        UrlResponse response = doMethod("GET", "/externalFile.html", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of external file", response.body);
     }
 
     @Test
     public void testExceptionMapper() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/throwexception", null);
+        UrlResponse response = doMethod("GET", "/throwexception", null);
         Assert.assertEquals("Exception handled", response.body);
     }
 
     @Test
     public void testInheritanceExceptionMapper() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/throwsubclassofbaseexception", null);
+        UrlResponse response = doMethod("GET", "/throwsubclassofbaseexception", null);
         Assert.assertEquals("Exception handled", response.body);
     }
 
     @Test
     public void testNotFoundExceptionMapper() throws Exception {
         //        thrownotfound
-        UrlResponse response = testUtil.doMethod("GET", "/thrownotfound", null);
+        UrlResponse response = doMethod("GET", "/thrownotfound", null);
         Assert.assertEquals(NOT_FOUND_BRO, response.body);
         Assert.assertEquals(404, response.status);
     }
 
     @Test
     public void testTypedExceptionMapper() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/throwmeyling", null);
+        UrlResponse response = doMethod("GET", "/throwmeyling", null);
         Assert.assertEquals(new JWGmeligMeylingException().trustButVerify(), response.body);
     }
 
@@ -512,38 +501,38 @@ public class GenericIntegrationTest {
 
     @Test
     public void path_should_prefix_routes() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/firstPath/test", null, "application/json");
-        Assert.assertTrue(response.status == 200);
+        UrlResponse response = doMethod("GET", "/firstPath/test", null, "application/json");
+        Assert.assertEquals(200, response.status);
         Assert.assertEquals("Single path-prefix works", response.body);
         Assert.assertEquals("true", response.headers.get("before-filter-ran"));
     }
 
     @Test
     public void paths_should_be_nestable() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/firstPath/secondPath/test", null, "application/json");
-        Assert.assertTrue(response.status == 200);
+        UrlResponse response = doMethod("GET", "/firstPath/secondPath/test", null, "application/json");
+        Assert.assertEquals(200, response.status);
         Assert.assertEquals("Nested path-prefix works", response.body);
         Assert.assertEquals("true", response.headers.get("before-filter-ran"));
     }
 
     @Test
     public void paths_should_be_very_nestable() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/firstPath/secondPath/thirdPath/test", null, "application/json");
-        Assert.assertTrue(response.status == 200);
+        UrlResponse response = doMethod("GET", "/firstPath/secondPath/thirdPath/test", null, "application/json");
+        Assert.assertEquals(200, response.status);
         Assert.assertEquals("Very nested path-prefix works", response.body);
         Assert.assertEquals("true", response.headers.get("before-filter-ran"));
     }
 
     @Test
     public void testRuntimeExceptionForDone() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/exception", null);
+        UrlResponse response = doMethod("GET", "/exception", null);
         Assert.assertEquals("done executed for exception", response.body);
         Assert.assertEquals(500, response.status);
     }
 
     @Test
     public void testRuntimeExceptionForAllRoutesFinally() throws Exception {
-        UrlResponse response = testUtil.doMethod("GET", "/hi", null);
+        UrlResponse response = doMethod("GET", "/hi", null);
         Assert.assertEquals("foobar", response.headers.get("after"));
         Assert.assertEquals("nice done response after all", response.headers.get("post-process-all"));
         Assert.assertEquals(200, response.status);
@@ -551,7 +540,7 @@ public class GenericIntegrationTest {
 
     @Test
     public void testPostProcessBodyForFinally() throws Exception {
-        UrlResponse response = testUtil.doMethod("POST", "/nice", "");
+        UrlResponse response = doMethod("POST", "/nice", "");
         Assert.assertEquals("nice response", response.body);
         Assert.assertEquals("nice done response", response.headers.get("post-process"));
         Assert.assertEquals(200, response.status);
