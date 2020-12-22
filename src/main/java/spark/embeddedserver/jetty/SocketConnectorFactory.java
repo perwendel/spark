@@ -48,11 +48,11 @@ public class SocketConnectorFactory {
      * @param port   port
      * @return - a server jetty
      */
-    public static ServerConnector createSocketConnector(Server server, String host, int port) {
+    public static ServerConnector createSocketConnector(Server server, String host, int port, boolean trustForwardHeaders) {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
 
-        HttpConfiguration httpConfiguration = createHttpConfiguration();
+        HttpConfiguration httpConfiguration = createHttpConfiguration(trustForwardHeaders);
         HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
         ServerConnector connector = new ServerConnector(server, httpConnectionFactory);
         initializeConnector(connector, host, port);
@@ -72,14 +72,15 @@ public class SocketConnectorFactory {
     public static ServerConnector createSecureSocketConnector(Server server,
                                                               String host,
                                                               int port,
-                                                              SslStores sslStores) {
+                                                              SslStores sslStores,
+                                                              boolean trustForwardHeaders) {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
         Assert.notNull(sslStores, "'sslStores' must not be null");
 
         SslContextFactory sslContextFactory = createSslContextFactory(sslStores);
 
-        HttpConfiguration httpConfiguration = createHttpConfiguration();
+        HttpConfiguration httpConfiguration = createHttpConfiguration(trustForwardHeaders);
         HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
 
         ServerConnector connector = new ServerConnector(server, sslContextFactory, httpConnectionFactory);
@@ -95,11 +96,14 @@ public class SocketConnectorFactory {
      * @param port   port
      * @return - a server jetty
      */
-    public static ServerConnector createHttp2SocketConnector(Server server, String host, int port) {
+    public static ServerConnector createHttp2SocketConnector(Server server,
+                                                             String host,
+                                                             int port,
+                                                             boolean trustForwardHeaders) {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
 
-        HttpConfiguration httpConfiguration = createHttpConfiguration();
+        HttpConfiguration httpConfiguration = createHttpConfiguration(trustForwardHeaders);
 
         HttpConnectionFactory http1 = new HttpConnectionFactory(httpConfiguration);
         HTTP2CServerConnectionFactory http2c = new HTTP2CServerConnectionFactory(httpConfiguration);
@@ -122,7 +126,8 @@ public class SocketConnectorFactory {
     public static ServerConnector createSecureHttp2SocketConnector(Server server,
                                                                    String host,
                                                                    int port,
-                                                                   SslStores sslStores) {
+                                                                   SslStores sslStores,
+                                                                   boolean trustForwardHeaders) {
         Assert.notNull(server, "'server' must not be null");
         Assert.notNull(host, "'host' must not be null");
         Assert.notNull(sslStores, "'sslStores' must not be null");
@@ -131,7 +136,7 @@ public class SocketConnectorFactory {
         sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
         sslContextFactory.setUseCipherSuitesOrder(true);
 
-        HttpConfiguration httpConfiguration = createHttpConfiguration();
+        HttpConfiguration httpConfiguration = createHttpConfiguration(trustForwardHeaders);
 
         HttpConnectionFactory http1 = new HttpConnectionFactory(httpConfiguration);
         HTTP2ServerConnectionFactory http2 = new HTTP2ServerConnectionFactory(httpConfiguration);
@@ -152,11 +157,12 @@ public class SocketConnectorFactory {
         connector.setPort(port);
     }
 
-    private static HttpConfiguration createHttpConfiguration() {
+    private static HttpConfiguration createHttpConfiguration(boolean trustForwardHeaders) {
         HttpConfiguration httpConfig = new HttpConfiguration();
         httpConfig.setSecureScheme("https");
         httpConfig.addCustomizer(new SecureRequestCustomizer());
-        httpConfig.addCustomizer(new ForwardedRequestCustomizer());
+        if(trustForwardHeaders)
+            httpConfig.addCustomizer(new ForwardedRequestCustomizer());
         return httpConfig;
     }
 

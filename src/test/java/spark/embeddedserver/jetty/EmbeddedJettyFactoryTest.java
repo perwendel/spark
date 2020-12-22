@@ -102,6 +102,7 @@ public class EmbeddedJettyFactoryTest {
     }
 
     private void igniteServer(EmbeddedServer embeddedServer, boolean http2Enabled) throws Exception {
+        embeddedServer.trustForwardHeaders(true);
         embeddedServer.ignite("localhost", 6759, null, 100, 10, 10000, http2Enabled);
     }
 }

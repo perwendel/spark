@@ -22,7 +22,7 @@ public class SocketConnectorFactoryTest {
     public void testCreateSocketConnector_whenServerIsNull_thenThrowException() {
 
         try {
-            SocketConnectorFactory.createSocketConnector(null, "host", 80);
+            SocketConnectorFactory.createSocketConnector(null, "host", 80, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'server' must not be null", ex.getMessage());
@@ -33,7 +33,7 @@ public class SocketConnectorFactoryTest {
     public void testCreateHttp2SocketConnector_whenServerIsNull_thenThrowException() {
 
         try {
-            SocketConnectorFactory.createHttp2SocketConnector(null, "host", 80);
+            SocketConnectorFactory.createHttp2SocketConnector(null, "host", 80, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'server' must not be null", ex.getMessage());
@@ -47,7 +47,7 @@ public class SocketConnectorFactoryTest {
         Server server = new Server();
 
         try {
-            SocketConnectorFactory.createSocketConnector(server, null, 80);
+            SocketConnectorFactory.createSocketConnector(server, null, 80, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'host' must not be null", ex.getMessage());
@@ -60,7 +60,7 @@ public class SocketConnectorFactoryTest {
         Server server = new Server();
 
         try {
-            SocketConnectorFactory.createHttp2SocketConnector(server, null, 80);
+            SocketConnectorFactory.createHttp2SocketConnector(server, null, 80, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'host' must not be null", ex.getMessage());
@@ -74,7 +74,7 @@ public class SocketConnectorFactoryTest {
         final int port = 8888;
 
         Server server = new Server();
-        ServerConnector serverConnector = SocketConnectorFactory.createSocketConnector(server, "localhost", 8888);
+        ServerConnector serverConnector = SocketConnectorFactory.createSocketConnector(server, "localhost", 8888, true);
 
         String internalHost = Whitebox.getInternalState(serverConnector, "_host");
         int internalPort = Whitebox.getInternalState(serverConnector, "_port");
@@ -92,7 +92,7 @@ public class SocketConnectorFactoryTest {
         final int port = 8888;
 
         Server server = new Server();
-        ServerConnector serverConnector = SocketConnectorFactory.createHttp2SocketConnector(server, "localhost", 8888);
+        ServerConnector serverConnector = SocketConnectorFactory.createHttp2SocketConnector(server, "localhost", 8888, true);
 
         String internalHost = Whitebox.getInternalState(serverConnector, "_host");
         int internalPort = Whitebox.getInternalState(serverConnector, "_port");
@@ -107,7 +107,7 @@ public class SocketConnectorFactoryTest {
     public void testCreateSecureSocketConnector_whenServerIsNull() {
 
         try {
-            SocketConnectorFactory.createSecureSocketConnector(null, "localhost", 80, null);
+            SocketConnectorFactory.createSecureSocketConnector(null, "localhost", 80, null, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'server' must not be null", ex.getMessage());
@@ -118,7 +118,7 @@ public class SocketConnectorFactoryTest {
     public void testCreateSecureHttp2SocketConnector_whenServerIsNull() {
 
         try {
-            SocketConnectorFactory.createSecureHttp2SocketConnector(null, "localhost", 80, null);
+            SocketConnectorFactory.createSecureHttp2SocketConnector(null, "localhost", 80, null, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'server' must not be null", ex.getMessage());
@@ -131,7 +131,7 @@ public class SocketConnectorFactoryTest {
         Server server = new Server();
 
         try {
-            SocketConnectorFactory.createSecureSocketConnector(server, null, 80, null);
+            SocketConnectorFactory.createSecureSocketConnector(server, null, 80, null, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'host' must not be null", ex.getMessage());
@@ -144,7 +144,7 @@ public class SocketConnectorFactoryTest {
         Server server = new Server();
 
         try {
-            SocketConnectorFactory.createSecureSocketConnector(server, null, 80, null);
+            SocketConnectorFactory.createSecureSocketConnector(server, null, 80, null, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'host' must not be null", ex.getMessage());
@@ -157,7 +157,7 @@ public class SocketConnectorFactoryTest {
         Server server = new Server();
 
         try {
-            SocketConnectorFactory.createSecureSocketConnector(server, "localhost", 80, null);
+            SocketConnectorFactory.createSecureSocketConnector(server, "localhost", 80, null, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'sslStores' must not be null", ex.getMessage());
@@ -170,7 +170,7 @@ public class SocketConnectorFactoryTest {
         Server server = new Server();
 
         try {
-            SocketConnectorFactory.createSecureHttp2SocketConnector(server, "localhost", 80, null);
+            SocketConnectorFactory.createSecureHttp2SocketConnector(server, "localhost", 80, null, true);
             fail("SocketConnector creation should have thrown an IllegalArgumentException");
         } catch(IllegalArgumentException ex) {
             assertEquals("'sslStores' must not be null", ex.getMessage());
@@ -194,7 +194,7 @@ public class SocketConnectorFactoryTest {
 
         Server server = new Server();
 
-        ServerConnector serverConnector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
+        ServerConnector serverConnector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores, true);
 
         String internalHost = Whitebox.getInternalState(serverConnector, "_host");
         int internalPort = Whitebox.getInternalState(serverConnector, "_port");
@@ -234,7 +234,7 @@ public class SocketConnectorFactoryTest {
 
         Server server = new Server();
 
-        ServerConnector serverConnector = SocketConnectorFactory.createSecureHttp2SocketConnector(server, host, port, sslStores);
+        ServerConnector serverConnector = SocketConnectorFactory.createSecureHttp2SocketConnector(server, host, port, sslStores, true);
 
         String internalHost = Whitebox.getInternalState(serverConnector, "_host");
         int internalPort = Whitebox.getInternalState(serverConnector, "_port");

@@ -94,6 +94,7 @@ public abstract class GenericSecureIntegrationTest {
         Assert.assertNotEquals(xForwardedFor, response.body);
     }
 
+
     @Test
     public void testHiHead() throws Exception {
         UrlResponse response = doMethodSecure("HEAD", "/hi", null);

@@ -48,6 +48,16 @@ public interface EmbeddedServer {
                int threadIdleTimeoutMillis,
                boolean http2Enabled) throws Exception;
 
+
+    /**
+     * Must be called before ignite()
+     *
+     * Must be it's own default method to maintain backwards compatibility. Move to ignite method in 3.0.
+     */
+    default void trustForwardHeaders(boolean trust) {
+
+    }
+
     /**
      * Configures the web sockets for the embedded server.
      *
@@ -55,7 +65,7 @@ public interface EmbeddedServer {
      * @param webSocketIdleTimeoutMillis - Optional WebSocket idle timeout (ms).
      */
     default void configureWebSockets(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
-                                     Optional<Integer> webSocketIdleTimeoutMillis) {
+                                     Optional<Long> webSocketIdleTimeoutMillis) {
 
         NotSupportedException.raise(getClass().getSimpleName(), "Web Sockets");
     }

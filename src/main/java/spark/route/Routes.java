@@ -83,7 +83,7 @@ public class Routes {
     public RouteMatch find(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteEntry> routeEntries = this.findTargetsForRequestedRoute(httpMethod, path);
         RouteEntry entry = findTargetWithGivenAcceptType(routeEntries, acceptType);
-        return entry != null ? new RouteMatch(entry.target, entry.path, path, acceptType) : null;
+        return entry != null ? new RouteMatch(entry.target, entry.path, path, acceptType, httpMethod) : null;
     }
 
     /**
@@ -103,11 +103,25 @@ public class Routes {
                 String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
 
                 if (routeWithGivenAcceptType(bestMatch)) {
-                    matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType));
+                    matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType, httpMethod));
                 }
             } else {
-                matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType));
+                matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, path, acceptType, httpMethod));
             }
+        }
+
+        return matchSet;
+    }
+
+    /**
+     * @return the targets
+     */
+    public List<RouteMatch> findAll() {
+        List<RouteMatch> matchSet = new ArrayList<>();
+        List<RouteEntry> routeEntries = routes;
+
+        for (RouteEntry routeEntry : routeEntries) {
+            matchSet.add(new RouteMatch(routeEntry.target, routeEntry.path, "ALL_ROUTES", routeEntry.acceptedType, routeEntry.httpMethod));
         }
 
         return matchSet;

@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
 import spark.embeddedserver.EmbeddedServer;
+import spark.embeddedserver.EmbeddedServers;
 import spark.route.Routes;
 import spark.ssl.SslStores;
 
@@ -32,6 +33,32 @@ public class ServiceTest {
     @Before
     public void test() {
         service = ignite();
+    }
+
+    @Test
+    public void testEmbeddedServerIdentifier_defaultAndSet() {
+        assertEquals("Should return defaultIdentifier()",
+            EmbeddedServers.defaultIdentifier(),
+            service.embeddedServerIdentifier());
+
+        Object obj = new Object();
+
+        service.embeddedServerIdentifier(obj);
+
+        assertEquals("Should return expected obj",
+            obj,
+            service.embeddedServerIdentifier());
+    }
+
+    @Test
+    public void testEmbeddedServerIdentifier_thenThrowIllegalStateException() {
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("This must be done before route mapping has begun");
+
+        Object obj = new Object();
+
+        Whitebox.setInternalState(service, "initialized", true);
+        service.embeddedServerIdentifier(obj);
     }
 
     @Test(expected = HaltException.class)

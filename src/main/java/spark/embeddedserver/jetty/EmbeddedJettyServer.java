@@ -55,9 +55,10 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Map<String, WebSocketHandlerWrapper> webSocketHandlers;
-    private Optional<Integer> webSocketIdleTimeoutMillis;
+    private Optional<Long> webSocketIdleTimeoutMillis;
 
     private ThreadPool threadPool = null;
+    private boolean trustForwardHeaders = true; // true by default
 
     public EmbeddedJettyServer(JettyServerFactory serverFactory, Handler handler) {
         this.serverFactory = serverFactory;
@@ -66,17 +67,21 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
     @Override
     public void configureWebSockets(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
-                                    Optional<Integer> webSocketIdleTimeoutMillis) {
+                                    Optional<Long> webSocketIdleTimeoutMillis) {
 
         this.webSocketHandlers = webSocketHandlers;
         this.webSocketIdleTimeoutMillis = webSocketIdleTimeoutMillis;
+    }
+
+    @Override
+    public void trustForwardHeaders(boolean trust) {
+        this.trustForwardHeaders = trust;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-
     public int ignite(String host,
                       int port,
                       SslStores sslStores,
@@ -107,15 +112,15 @@ public class EmbeddedJettyServer implements EmbeddedServer {
 
         if (sslStores == null) {
             if (http2Enabled) {
-                connector = SocketConnectorFactory.createHttp2SocketConnector(server, host, port);
+                connector = SocketConnectorFactory.createHttp2SocketConnector(server, host, port, trustForwardHeaders);
             } else {
-                connector = SocketConnectorFactory.createSocketConnector(server, host, port);
+                connector = SocketConnectorFactory.createSocketConnector(server, host, port, trustForwardHeaders);
             }
         } else {
             if (http2Enabled) {
-                connector = SocketConnectorFactory.createSecureHttp2SocketConnector(server, host, port, sslStores);
+                connector = SocketConnectorFactory.createSecureHttp2SocketConnector(server, host, port, sslStores, trustForwardHeaders);
             } else {
-                connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores);
+                connector = SocketConnectorFactory.createSecureSocketConnector(server, host, port, sslStores, trustForwardHeaders);
             }
         }
 
