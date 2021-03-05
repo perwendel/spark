@@ -18,6 +18,7 @@ package spark.route;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class Routes {
      * Constructor
      */
     protected Routes() {
-        routes = new ArrayList<>();
+        routes = new CopyOnWriteArrayList<>();
     }
 
     /**
