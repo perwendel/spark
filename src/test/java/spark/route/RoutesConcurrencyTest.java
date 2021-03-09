@@ -1,7 +1,6 @@
 package spark.route;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -12,18 +11,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ErrorCollector;
 
 import spark.FilterImpl;
 import spark.RouteImpl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 
 public class RoutesConcurrencyTest {
     private final AtomicInteger numberOfSuccessfulIterations = new AtomicInteger();
     private final AtomicInteger numberOfFailedIterations = new AtomicInteger();
     private ExecutorService executorService;
+
+    @Rule
+    public final ErrorCollector collector = new ErrorCollector();
 
     private static final int NUMBER_OF_ITERATIONS = 10_000;
     private static final int NUMBER_OF_THREADS = 2;
@@ -55,19 +59,19 @@ public class RoutesConcurrencyTest {
     @Test
     public void classShouldBeThreadSafe() throws Exception {
         executorService = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-        Collection<Callable<Void>> tasks = partitionIterationsIntoTasks();
+        List<Callable<Void>> tasks = partitionIterationsIntoTasks();
         List<Future<Void>> futureResults = executorService.invokeAll(tasks);
         executorService.shutdown();
         for (Future<Void> futureResult : futureResults) {
             futureResult.get();
-            assertTrue(futureResult.isDone());
+            collector.checkThat(futureResult.isDone(), is(true));
         }
-        assertEquals(NUMBER_OF_ITERATIONS, numberOfSuccessfulIterations.intValue());
-        assertEquals(0, numberOfFailedIterations.intValue());
+        collector.checkThat(NUMBER_OF_ITERATIONS, equalTo(numberOfSuccessfulIterations.intValue()));
+        collector.checkThat(0, equalTo(numberOfFailedIterations.intValue()));
     }
 
-    private Collection<Callable<Void>> partitionIterationsIntoTasks() {
-        final Collection<Callable<Void>> tasks = new ArrayList<>();
+    private List<Callable<Void>> partitionIterationsIntoTasks() {
+        final List<Callable<Void>> tasks = new ArrayList<>();
         final Routes routes = Routes.create();
         final int numberOfIterationsPerTask = NUMBER_OF_ITERATIONS / NUMBER_OF_TASKS;
         for (int taskIndex = 0; taskIndex < NUMBER_OF_TASKS; taskIndex++) {
