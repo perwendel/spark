@@ -27,7 +27,7 @@ import spark.utils.Wrapper;
  */
 public abstract class FilterImpl implements Filter, Wrapper {
 
-    static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    public static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     private String path;
     private String acceptType;
@@ -63,7 +63,7 @@ public abstract class FilterImpl implements Filter, Wrapper {
      * @param filter     the filter
      * @return the wrapped route
      */
-    static FilterImpl create(final String path, String acceptType, final Filter filter) {
+    public static FilterImpl create(final String path, String acceptType, final Filter filter) {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
         }
