@@ -26,7 +26,7 @@ import spark.utils.Wrapper;
  * @author Per Wendel
  */
 public abstract class RouteImpl implements Route, Wrapper {
-    static final String DEFAULT_ACCEPT_TYPE = "*/*";
+    public static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
     private String path;
     private String acceptType;
