@@ -66,8 +66,8 @@ public class RoutesConcurrencyTest {
             futureResult.get();
             collector.checkThat(futureResult.isDone(), is(true));
         }
-        collector.checkThat(NUMBER_OF_ITERATIONS, equalTo(numberOfSuccessfulIterations.intValue()));
-        collector.checkThat(0, equalTo(numberOfFailedIterations.intValue()));
+        collector.checkThat(numberOfSuccessfulIterations.intValue(), equalTo(NUMBER_OF_ITERATIONS));
+        collector.checkThat(numberOfFailedIterations.intValue(), equalTo(0));
     }
 
     private List<Callable<Void>> partitionIterationsIntoTasks() {
