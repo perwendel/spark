@@ -20,6 +20,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
@@ -36,6 +37,7 @@ import spark.embeddedserver.jetty.websocket.WebSocketHandlerWrapper;
 import spark.route.HttpMethod;
 import spark.route.Routes;
 import spark.route.ServletRoutes;
+import spark.routematch.RouteMatch;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
@@ -70,27 +72,30 @@ public final class Service extends Routable {
     protected int maxThreads = -1;
     protected int minThreads = -1;
     protected int threadIdleTimeoutMillis = -1;
-    protected Optional<Integer> webSocketIdleTimeoutMillis = Optional.empty();
+    protected Optional<Long> webSocketIdleTimeoutMillis = Optional.empty();
 
     protected EmbeddedServer server;
     protected Deque<String> pathDeque = new ArrayDeque<>();
     protected Routes routes;
 
-    private CountDownLatch latch = new CountDownLatch(1);
+    private CountDownLatch initLatch = new CountDownLatch(1);
+    private CountDownLatch stopLatch = new CountDownLatch(0);
 
-    private Object embeddedServerIdentifier = null;
+    private Object embeddedServerIdentifier = EmbeddedServers.defaultIdentifier();
 
     public final Redirect redirect;
     public final StaticFiles staticFiles;
 
     private final StaticFilesConfiguration staticFilesConfiguration;
-    private final ExceptionMapper exceptionMapper = ExceptionMapper.getInstance();
+    private final ExceptionMapper exceptionMapper = new ExceptionMapper();
 
     // default exception handler during initialization phase
     private Consumer<Exception> initExceptionHandler = (e) -> {
         LOG.error("ignite failed", e);
         System.exit(100);
     };
+
+    private boolean trustForwardHeaders = true;
 
     /**
      * Creates a new Service (a Spark instance). This should be used instead of the static API if the user wants
@@ -111,6 +116,27 @@ public final class Service extends Routable {
         } else {
             staticFilesConfiguration = StaticFilesConfiguration.create();
         }
+    }
+
+    /**
+     * Set the identifier used to select the EmbeddedServer;
+     * null for the default.
+     *
+     * @param obj the identifier passed to {@link EmbeddedServers}.
+     */
+    public synchronized void embeddedServerIdentifier(Object obj) {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        embeddedServerIdentifier = obj;
+    }
+
+    /**
+     * Get the identifier used to select the EmbeddedServer;
+     * null for the default.
+     */
+    public synchronized Object embeddedServerIdentifier() {
+        return embeddedServerIdentifier;
     }
 
     /**
@@ -180,7 +206,32 @@ public final class Service extends Routable {
                                        String keystorePassword,
                                        String truststoreFile,
                                        String truststorePassword) {
-        return secure(keystoreFile, keystorePassword, truststoreFile, truststorePassword, false);
+        return secure(keystoreFile, keystorePassword, null, truststoreFile, truststorePassword, false);
+    }
+
+    /**
+     * Set the connection to be secure, using the specified keystore and
+     * truststore. This has to be called before any route mapping is done. You
+     * have to supply a keystore file, truststore file is optional (keystore
+     * will be reused). By default, client certificates are not checked.
+     * This method is only relevant when using embedded Jetty servers. It should
+     * not be used if you are using Servlets, where you will need to secure the
+     * connection in the servlet container
+     *
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param certAlias          the default certificate Alias
+     * @param truststoreFile     the truststore file location as string, leave null to reuse
+     *                           keystore
+     * @param truststorePassword the trust store password
+     * @return the object with connection set to be secure
+     */
+    public synchronized Service secure(String keystoreFile,
+                                       String keystorePassword,
+                                       String certAlias,
+                                       String truststoreFile,
+                                       String truststorePassword) {
+        return secure(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, false);
     }
 
     /**
@@ -206,6 +257,34 @@ public final class Service extends Routable {
                                        String truststoreFile,
                                        String truststorePassword,
                                        boolean needsClientCert) {
+        return secure(keystoreFile, keystorePassword, null, truststoreFile, truststorePassword, needsClientCert);
+    }
+
+    /**
+     * Set the connection to be secure, using the specified keystore and
+     * truststore. This has to be called before any route mapping is done. You
+     * have to supply a keystore file, truststore file is optional (keystore
+     * will be reused).
+     * This method is only relevant when using embedded Jetty servers. It should
+     * not be used if you are using Servlets, where you will need to secure the
+     * connection in the servlet container
+     *
+     * @param keystoreFile       The keystore file location as string
+     * @param keystorePassword   the password for the keystore
+     * @param certAlias          the default certificate Alias
+     * @param truststoreFile     the truststore file location as string, leave null to reuse
+     *                           keystore
+     * @param needsClientCert    Whether to require client certificate to be supplied in
+     *                           request
+     * @param truststorePassword the trust store password
+     * @return the object with connection set to be secure
+     */
+    public synchronized Service secure(String keystoreFile,
+                                       String keystorePassword,
+                                       String certAlias,
+                                       String truststoreFile,
+                                       String truststorePassword,
+                                       boolean needsClientCert) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -215,7 +294,7 @@ public final class Service extends Routable {
                     "Must provide a keystore file to run secured");
         }
 
-        sslStores = SslStores.create(keystoreFile, keystorePassword, truststoreFile, truststorePassword, needsClientCert);
+        sslStores = SslStores.create(keystoreFile, keystorePassword, certAlias, truststoreFile, truststorePassword, needsClientCert);
         return this;
     }
 
@@ -260,7 +339,7 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-        
+
         if (!staticFilesConfiguration.isStaticResourcesSet()) {
             staticFilesConfiguration.configure(folder);
         } else {
@@ -280,13 +359,40 @@ public final class Service extends Routable {
         if (initialized && !isRunningFromServlet()) {
             throwBeforeRouteMappingException();
         }
-        
+
         if (!staticFilesConfiguration.isExternalStaticResourcesSet()) {
             staticFilesConfiguration.configureExternal(externalFolder);
         } else {
             LOG.warn("External static file location has already been set");
         }
         return this;
+    }
+
+    /**
+     * Unmaps a particular route from the collection of those that have been previously routed.
+     * Search for previously established routes using the given path and unmaps any matches that are found.
+     *
+     * @param path the route path
+     * @return <tt>true</tt> if this is a matching route which has been previously routed
+     * @throws IllegalArgumentException if <tt>path</tt> is null or blank
+     */
+    public boolean unmap(String path) {
+        return routes.remove(path);
+    }
+
+    /**
+     * Unmaps a particular route from the collection of those that have been previously routed.
+     * Search for previously established routes using the given path and HTTP method, unmaps any
+     * matches that are found.
+     *
+     * @param path       the route path
+     * @param httpMethod the http method
+     * @return <tt>true</tt> if this is a matching route that has been previously routed
+     * @throws IllegalArgumentException if <tt>path</tt> is null or blank or if <tt>httpMethod</tt> is null, blank,
+     *                                  or an invalid HTTP method
+     */
+    public boolean unmap(String path, String httpMethod) {
+        return routes.remove(path, httpMethod);
     }
 
     /**
@@ -334,7 +440,7 @@ public final class Service extends Routable {
      * @param timeoutMillis The max idle timeout in milliseconds.
      * @return the object with max idle timeout set for WebSocket connections
      */
-    public synchronized Service webSocketIdleTimeoutMillis(int timeoutMillis) {
+    public synchronized Service webSocketIdleTimeoutMillis(long timeoutMillis) {
         if (initialized) {
             throwBeforeRouteMappingException();
         }
@@ -387,7 +493,7 @@ public final class Service extends Routable {
         }
 
         try {
-            latch.await();
+            initLatch.await();
         } catch (InterruptedException e) {
             LOG.info("Interrupted by another thread");
             Thread.currentThread().interrupt();
@@ -405,20 +511,43 @@ public final class Service extends Routable {
 
 
     /**
-     * Stops the Spark server and clears all routes
+     * Stops the Spark server and clears all routes.
      */
     public synchronized void stop() {
-        new Thread(() -> {
+    	if (!initialized) {
+    		return;
+    	}
+        initiateStop();
+    }
+
+    /**
+     * Waits for the Spark server to stop.
+     * <b>Warning:</b> this method should not be called from a request handler.
+     */
+    public void awaitStop() {
+        try {
+            stopLatch.await();
+        } catch (InterruptedException e) {
+            LOG.warn("Interrupted by another thread");
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void initiateStop() {
+    	stopLatch = new CountDownLatch(1);
+        Thread stopThread = new Thread(() -> {
             if (server != null) {
                 server.extinguish();
-                latch = new CountDownLatch(1);
+                initLatch = new CountDownLatch(1);
             }
-            
+
             routes.clear();
             exceptionMapper.clear();
             staticFilesConfiguration.clear();
             initialized = false;
-        }).start();
+            stopLatch.countDown();
+        });
+        stopThread.start();
     }
 
     /**
@@ -444,6 +573,12 @@ public final class Service extends Routable {
 
     public String getPaths() {
         return pathDeque.stream().collect(Collectors.joining(""));
+    }
+    /**
+     * @return all routes information from this service
+     */
+    public List<RouteMatch> routes() {
+        return routes.findAll();
     }
 
     @Override
@@ -488,10 +623,12 @@ public final class Service extends Routable {
 
                     server = EmbeddedServers.create(embeddedServerIdentifier,
                                                     routes,
+                                                    exceptionMapper,
                                                     staticFilesConfiguration,
                                                     hasMultipleHandlers());
 
                     server.configureWebSockets(webSocketHandlers, webSocketIdleTimeoutMillis);
+                    server.trustForwardHeaders(trustForwardHeaders);
 
                     port = server.ignite(
                             ipAddress,
@@ -504,7 +641,7 @@ public final class Service extends Routable {
                     initExceptionHandler.accept(e);
                   }
                     try {
-                        latch.countDown();
+                        initLatch.countDown();
                         server.join();
                     } catch (InterruptedException e) {
                         LOG.error("server interrupted", e);
@@ -606,6 +743,32 @@ public final class Service extends Routable {
      */
     public HaltException halt(int status, String body) {
         throw new HaltException(status, body);
+    }
+
+    /**
+     * Sets Spark to trust the HTTP headers that are commonly used in reverse proxies.
+     * More info at https://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/server/ForwardedRequestCustomizer.html
+     */
+    public synchronized Service trustForwardHeaders() {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        this.trustForwardHeaders = true;
+
+        return this;
+    }
+
+    /**
+     * Sets Spark to NOT trust the HTTP headers that are commonly used in reverse proxies.
+     * More info at https://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/server/ForwardedRequestCustomizer.html
+     */
+    public synchronized Service untrustForwardHeaders() {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        this.trustForwardHeaders = false;
+
+        return this;
     }
 
     /**

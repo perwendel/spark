@@ -33,10 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import spark.routematch.RouteMatch;
-import spark.utils.urldecoding.UrlDecode;
 import spark.utils.IOUtils;
 import spark.utils.SparkUtils;
 import spark.utils.StringUtils;
+import spark.utils.urldecoding.UrlDecode;
 
 /**
  * Provides information about the HTTP request
@@ -57,6 +57,7 @@ public class Request {
 
     private Session session = null;
     private boolean validSession = false;
+    private String matchedPath = null;
 
 
     /* Lazy loaded stuff */
@@ -100,6 +101,7 @@ public class Request {
      */
     Request(RouteMatch match, HttpServletRequest request) {
         this.servletRequest = request;
+        this.matchedPath = match.getMatchUri();
         changeMatch(match);
     }
 
@@ -120,6 +122,7 @@ public class Request {
         List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
         List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
 
+        this.matchedPath = match.getMatchUri();
         params = getParams(requestList, matchedList);
         splat = getSplat(requestList, matchedList);
     }
@@ -204,6 +207,14 @@ public class Request {
     }
 
     /**
+     * @return the matched route
+     * Example return: "/account/:accountId"
+     */
+    public String matchedPath() {
+        return this.matchedPath;
+    }
+
+    /**
      * @return the servlet path
      */
     public String servletPath() {
@@ -281,6 +292,19 @@ public class Request {
      */
     public String queryParams(String queryParam) {
         return servletRequest.getParameter(queryParam);
+    }
+
+    //CS304 Issue link:https://github.com/perwendel/spark/issues/1061
+
+    /**
+     * Gets the query param and encode it
+     *
+     * @param queryParam the query parameter
+     * @return the encode value of the provided queryParam
+     * Example: query parameter 'me' from the URI: /hello?id=fool.
+     */
+    public String queryParamsSafe(final String queryParam) {
+        return Base64.encode(servletRequest.getParameter(queryParam));
     }
 
     /**
@@ -503,9 +527,9 @@ public class Request {
                 String decodedReq = UrlDecode.path(request.get(i));
 
                 LOG.debug("matchedPart: "
-                              + matchedPart
-                              + " = "
-                              + decodedReq);
+                                  + matchedPart
+                                  + " = "
+                                  + decodedReq);
 
                 params.put(matchedPart.toLowerCase(), decodedReq);
             }

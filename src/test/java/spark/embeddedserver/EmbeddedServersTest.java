@@ -40,8 +40,10 @@ public class EmbeddedServersTest {
 
         // Register custom server
         EmbeddedServers.add(id, new EmbeddedJettyFactory(serverFactory));
-        EmbeddedServer embeddedServer = EmbeddedServers.create(id, null, null, false);
+        EmbeddedServer embeddedServer = EmbeddedServers.create(id, null, null, null, false);
         assertNotNull(embeddedServer);
+
+        embeddedServer.trustForwardHeaders(true);
         embeddedServer.ignite("localhost", 0, null, 0, 0, 0);
 
         assertTrue(requestLogFile.exists());

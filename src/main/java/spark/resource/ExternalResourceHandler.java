@@ -79,7 +79,7 @@ public class ExternalResourceHandler extends AbstractResourceHandler {
             }
 
             if (resource != null && resource.exists()) {
-                DirectoryTraversal.protectAgainstForExternal(resource.getPath());
+                DirectoryTraversal.protectAgainstForExternal(resource.getPath(), baseResource);
                 return resource;
             } else {
                 return null;

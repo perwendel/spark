@@ -16,13 +16,14 @@
  */
 package spark;
 
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
 
 /**
  * Provides functionality for modifying the response
@@ -153,6 +154,46 @@ public class Response {
      */
     public void header(String header, String value) {
         response.addHeader(header, value);
+    }
+
+    /**
+     * Adds/Sets a response header
+     *
+     * @param header the header
+     * @param value  the value
+     */
+    public void header(String header, int value) {
+        response.addIntHeader(header, value);
+    }
+
+    /**
+     * Adds/Sets a response header
+     *
+     * @param header the header
+     * @param value  the value
+     */
+    public void header(String header, Date value) {
+        response.addDateHeader(header, value.getTime());
+    }
+
+    /**
+     * Adds/Sets a response header
+     *
+     * @param header the header
+     * @param value  the value
+     */
+    public void header(String header, java.sql.Date value) {
+        response.addDateHeader(header, value.getTime());
+    }
+
+    /**
+     * Adds/Sets a response header
+     *
+     * @param header the header
+     * @param value  the value
+     */
+    public void header(String header, Instant value) {
+        response.addDateHeader(header, value.toEpochMilli());
     }
 
     /**

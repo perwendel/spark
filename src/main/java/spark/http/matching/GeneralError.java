@@ -39,9 +39,10 @@ final class GeneralError {
                        Body body,
                        RequestWrapper requestWrapper,
                        ResponseWrapper responseWrapper,
+                       ExceptionMapper exceptionMapper,
                        Exception e) {
 
-        ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(e);
+        ExceptionHandlerImpl handler = exceptionMapper.getHandler(e);
 
         if (handler != null) {
             handler.handle(e, requestWrapper, responseWrapper);

@@ -9,14 +9,14 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * This objects represent the parameters sent on a Http Request. <br>
+ * These objects represent the parameters sent on a Http Request. <br>
  * Parses parameters keys like in Sinatra. <br>
  * <br>
  * For a querystring like: <br>
  * user[name]=federico&#38;user[lastname]=dayan
  * <br>
  * <br>
- * We get would get a structure like: <br>
+ * We get a structure like: <br>
  * user : {name: federico, lastname: dayan}
  * <br>
  * <br>
@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletRequest;
  * queryParamsMapInstance.get("user").get("name").value(); <br>
  * queryParamsMapInstance.get("user").get("lastname").value();
  * <br><br>
- * It is null safe, meaning that if a key does not exist, it does not throw NullPointerException
- * , it just returns null.
+ * It is null safe, meaning that if a key does not exist, it does not throw NullPointerException,
+ * it just returns null.
  *
  * @author fddayan
  */
@@ -49,7 +49,7 @@ public class QueryParamsMap {
     private String[] values;
 
     /**
-     * Creates a new QueryParamsMap from and HttpServletRequest. <br>
+     * Creates a new QueryParamsMap from an HttpServletRequest. <br>
      * Parses the parameters from request.getParameterMap() <br>
      * No need to decode, since HttpServletRequest does it for us.
      *

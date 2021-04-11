@@ -18,9 +18,11 @@ public class BodyAvailabilityTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(BodyAvailabilityTest.class);
 
     private static final String BODY_CONTENT = "the body content";
-
+    
     private static SparkTestUtil testUtil;
 
+    private final int HTTP_OK = 200;
+    
     private static String beforeBody = null;
     private static String routeBody = null;
     private static String afterBody = null;
@@ -67,7 +69,7 @@ public class BodyAvailabilityTest {
     public void testPost() throws Exception {
         SparkTestUtil.UrlResponse response = testUtil.doMethod("POST", "/hello", BODY_CONTENT);
         LOGGER.info(response.body);
-        Assert.assertEquals(200, response.status);
+        Assert.assertEquals(HTTP_OK, response.status);
         Assert.assertTrue(response.body.contains(BODY_CONTENT));
 
         Assert.assertEquals(BODY_CONTENT, beforeBody);
