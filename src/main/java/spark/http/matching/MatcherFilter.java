@@ -105,6 +105,8 @@ public class MatcherFilter implements Filter {
 
         String httpMethodStr = method.toLowerCase();
         String uri = httpRequest.getRequestURI();
+        if (uri.length() > 1 && uri.endsWith("/"))
+            uri = uri.substring(0, uri.length() - 1);
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
         Body body = Body.create();
@@ -133,7 +135,6 @@ public class MatcherFilter implements Filter {
                 BeforeFilters.execute(context);
                 Routes.execute(context);
                 AfterFilters.execute(context);
-
             } catch (HaltException halt) {
 
                 Halt.modify(httpResponse, body, halt);
