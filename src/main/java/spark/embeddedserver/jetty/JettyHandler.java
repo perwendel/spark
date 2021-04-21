@@ -33,7 +33,7 @@ import org.eclipse.jetty.server.session.SessionHandler;
  */
 public class JettyHandler extends SessionHandler {
 
-    private Filter filter;
+    private final Filter filter;
 
     public JettyHandler(Filter filter) {
         this.filter = filter;
@@ -45,15 +45,10 @@ public class JettyHandler extends SessionHandler {
             Request baseRequest,
             HttpServletRequest request,
             HttpServletResponse response) throws IOException, ServletException {
-
         HttpRequestWrapper wrapper = new HttpRequestWrapper(request);
         filter.doFilter(wrapper, response, null);
 
-        if (wrapper.notConsumed()) {
-            baseRequest.setHandled(false);
-        } else {
-            baseRequest.setHandled(true);
-        }
+        baseRequest.setHandled(!wrapper.notConsumed());
 
     }
 
