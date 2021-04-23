@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,12 +55,12 @@ public class SparkTestUtil {
 
     private HttpClientBuilder httpClientBuilder() {
         SSLConnectionSocketFactory sslConnectionSocketFactory =
-                new SSLConnectionSocketFactory(getSslFactory(), (paramString, paramSSLSession) -> true);
+            new SSLConnectionSocketFactory(getSslFactory(), (paramString, paramSSLSession) -> true);
         Registry<ConnectionSocketFactory> socketRegistry = RegistryBuilder
-                .<ConnectionSocketFactory>create()
-                .register("http", PlainConnectionSocketFactory.INSTANCE)
-                .register("https", sslConnectionSocketFactory)
-                .build();
+            .<ConnectionSocketFactory>create()
+            .register("http", PlainConnectionSocketFactory.INSTANCE)
+            .register("https", sslConnectionSocketFactory)
+            .build();
         BasicHttpClientConnectionManager connManager = new BasicHttpClientConnectionManager(socketRegistry);
         return HttpClientBuilder.create().setConnectionManager(connManager);
     }
@@ -92,7 +93,7 @@ public class SparkTestUtil {
 
 
     public UrlResponse doMethodSecure(String requestMethod, String path, String body)
-            throws Exception {
+        throws Exception {
         return doMethod(requestMethod, path, body, true, "text/html");
     }
 
@@ -101,7 +102,7 @@ public class SparkTestUtil {
     }
 
     public UrlResponse doMethodSecure(String requestMethod, String path, String body, String acceptType)
-            throws Exception {
+        throws Exception {
         return doMethod(requestMethod, path, body, true, acceptType);
     }
 
@@ -140,8 +141,8 @@ public class SparkTestUtil {
                                           String acceptType, Map<String, String> reqHeaders) {
         try {
             String protocol = secureConnection ? "https" : "http";
-            String uri = protocol + "://localhost:" + port + path;
-
+            //String uri = protocol + "://localhost:" + port + path;
+            URI uri = new URI(protocol, "//localhost:" + port + path, null);
             if (requestMethod.equals("GET")) {
                 HttpGet httpGet = new HttpGet(uri);
                 httpGet.setHeader("Accept", acceptType);
@@ -206,7 +207,7 @@ public class SparkTestUtil {
 
             throw new IllegalArgumentException("Unknown method " + requestMethod);
 
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
@@ -319,6 +320,11 @@ public class SparkTestUtil {
         public HttpLock(final String uri) {
             super();
             setURI(URI.create(uri));
+        }
+
+        public HttpLock(URI uri) {
+            super();
+            setURI(uri);
         }
 
         @Override

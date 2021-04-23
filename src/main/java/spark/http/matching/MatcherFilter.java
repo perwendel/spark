@@ -17,6 +17,7 @@
 package spark.http.matching;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -103,8 +104,10 @@ public class MatcherFilter implements Filter {
 
         String httpMethodStr = method.toLowerCase();
         String uri = httpRequest.getRequestURI();
+        uri = URLDecoder.decode(uri, "UTF-8");
         if (uri.length() > 1 && uri.endsWith("/"))
             uri = uri.substring(0, uri.length() - 1);
+
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
         Body body = Body.create();
