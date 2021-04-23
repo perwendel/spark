@@ -93,14 +93,12 @@ public class MatcherFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-
         // handle static resources
         boolean consumedByStaticFile = staticFiles.consume(httpRequest, httpResponse);
 
         if (consumedByStaticFile) {
             return;
         }
-
         String method = getHttpMethodFrom(httpRequest);
 
         String httpMethodStr = method.toLowerCase();
