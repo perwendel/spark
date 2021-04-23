@@ -50,7 +50,6 @@ final class FilterTools {
         if (!path.startsWith(SLASH)) {
             path = SLASH + path;
         }
-
         try {
             path = URLDecoder.decode(path, "UTF-8");
         } catch (UnsupportedEncodingException ex) {
