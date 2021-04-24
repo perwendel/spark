@@ -110,8 +110,14 @@ public class MatcherFilter implements Filter {
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
         List<RouteMatch> routes=routeMatcher.findAll();
-        String firstAcceptType=routes.get(0).getAcceptType();
-        if(acceptType.equals("*/*")){
+        String firstAcceptType=null;
+        for (RouteMatch rm:routes) {
+            if(rm.getMatchUri().equals(uri)){
+                firstAcceptType=rm.getAcceptType();
+                break;
+            }
+        }
+        if(acceptType.equals("*/*")&&firstAcceptType!=null){
             acceptType=firstAcceptType;
         }
 
