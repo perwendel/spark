@@ -125,15 +125,15 @@ public class MatcherFilter implements Filter {
         HttpMethod httpMethod = HttpMethod.get(httpMethodStr);
 
         RouteContext context = RouteContext.create()
-            .withMatcher(routeMatcher)
-            .withHttpRequest(httpRequest)
-            .withUri(uri)
-            .withAcceptType(acceptType)
-            .withBody(body)
-            .withRequestWrapper(requestWrapper)
-            .withResponseWrapper(responseWrapper)
-            .withResponse(response)
-            .withHttpMethod(httpMethod);
+                .withMatcher(routeMatcher)
+                .withHttpRequest(httpRequest)
+                .withUri(uri)
+                .withAcceptType(acceptType)
+                .withBody(body)
+                .withRequestWrapper(requestWrapper)
+                .withResponseWrapper(responseWrapper)
+                .withResponse(response)
+                .withHttpMethod(httpMethod);
 
         try {
             try {
@@ -149,13 +149,13 @@ public class MatcherFilter implements Filter {
             } catch (Exception generalException) {
 
                 GeneralError.modify(
-                    httpRequest,
-                    httpResponse,
-                    body,
-                    requestWrapper,
-                    responseWrapper,
-                    exceptionMapper,
-                    generalException);
+                        httpRequest,
+                        httpResponse,
+                        body,
+                        requestWrapper,
+                        responseWrapper,
+                        exceptionMapper,
+                        generalException);
 
             }
 
@@ -173,7 +173,7 @@ public class MatcherFilter implements Filter {
 
             if (body.notSet()) {
                 LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
-                    uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
+                         uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
                 httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
                 if (CustomErrorPages.existsFor(404)) {
@@ -189,13 +189,13 @@ public class MatcherFilter implements Filter {
                 AfterAfterFilters.execute(context);
             } catch (Exception generalException) {
                 GeneralError.modify(
-                    httpRequest,
-                    httpResponse,
-                    body,
-                    requestWrapper,
-                    responseWrapper,
-                    exceptionMapper,
-                    generalException);
+                        httpRequest,
+                        httpResponse,
+                        body,
+                        requestWrapper,
+                        responseWrapper,
+                        exceptionMapper,
+                        generalException);
             }
         }
 
