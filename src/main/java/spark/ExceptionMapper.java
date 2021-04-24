@@ -52,6 +52,7 @@ public class ExceptionMapper {
     /**
      * Class constructor
      */
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/318
     public ExceptionMapper() {
         this.exceptionMap = new ConcurrentHashMap<>();
     }
@@ -73,6 +74,7 @@ public class ExceptionMapper {
      * @param exceptionClass Type of exception
      * @return Associated handler
      */
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/318
     public ExceptionHandlerImpl getHandler(Class<? extends Exception> exceptionClass) {
         // If the exception map does not contain the provided exception class, it might
         // still be that a superclass of the exception class is.

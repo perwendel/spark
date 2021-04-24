@@ -131,6 +131,30 @@ public class RequestTest {
         }
     }
 
+    //CS304 (manually written) Issue link: https://github.com/perwendel/spark/issues/1056
+    @Test
+    public void shouldBeAbleToGetTheMatchedPathWithTailSlash1() {
+        Request request = new Request(matchWithParams, servletRequest);
+        assertEquals("Should have returned the matched route", THE_MATCHED_ROUTE, request.matchedPath());
+        try {
+            http.get("/users/bob/");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //CS304 (manually written) Issue link: https://github.com/perwendel/spark/issues/1056
+    @Test
+    public void shouldBeAbleToGetTheMatchedPathWithTailSlash2() {
+        Request request = new Request(match, servletRequest);
+        assertEquals("Should have returned the matched route", "/hi", request.matchedPath());
+        try {
+            http.get("/hi/");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void shouldBeAbleToGetTheMatchedPathInBeforeFilter(Request q) {
         assertEquals("Should have returned the matched route from the before filter", BEFORE_MATCHED_ROUTE, q.matchedPath());
     }
