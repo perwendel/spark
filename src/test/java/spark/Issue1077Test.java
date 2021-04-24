@@ -12,7 +12,7 @@ import static spark.Spark.*;
 // curl http://localhost:4567/hello : Hello application json
 // The first and second are right, but now the last command will get output: Go Away!!!
 // I think it is not reasonable because the empty acceptType should match every possibilities
-// so with the earliest match, it should match the first possible acceptTyoe
+// so with the earliest match, it should match the first possible acceptType
 // Therefore, you can exchange the 20th and 22th line to check whether it match the first type
 
 public class Issue1077Test {
