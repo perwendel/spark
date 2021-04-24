@@ -39,6 +39,18 @@ public class JettyHandler extends SessionHandler {
         this.filter = filter;
     }
 
+    /**
+     *  Handle the request
+     *
+     * @param target        Target host
+     * @param baseRequest   BaseRequest
+     * @param request       Request in HttpServletRequest
+     * @param response      Response in HttpServletResponse
+     *
+     * @throws IOException
+     * @throws ServletException
+     */
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/1069
     @Override
     public void doHandle(
             String target,

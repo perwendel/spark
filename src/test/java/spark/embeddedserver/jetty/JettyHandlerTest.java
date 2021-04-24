@@ -11,8 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static spark.Spark.get;
+import static spark.Spark.*;
 
+// A proxy server would change the Host header to x-forwarded-host when repeating the request to the target server.
 public class JettyHandlerTest {
 
     public static final String HELLO = "/hello";
@@ -38,14 +39,18 @@ public class JettyHandlerTest {
             return HELLO_WORLD;
         });
 
+        post(HELLO, (q, a) -> {
+            assertEquals("curl/7.55.1",q.userAgent());
+            assertEquals("proxy.mydomain.com", q.host());
+            return HELLO_WORLD;
+        });
+
         Spark.awaitInitialization();
     }
 
-    /*
-    * A proxy server would change the Host header to x-forwarded-host when repeating the request to the target server.
-    * */
+    //CS304 (manually written) Issue link: https://github.com/perwendel/spark/issues/1069
     @Test
-    public void testHELLOWithXForwardedHost() {
+    public void testHELLOWithXForwardedHostGET() {
         try {
             Map<String, String> requestHeader = new HashMap<>();
             requestHeader.put("Host", "localhost:" + PORT);
@@ -60,4 +65,20 @@ public class JettyHandlerTest {
         }
     }
 
+    //CS304 (manually written) Issue link: https://github.com/perwendel/spark/issues/1069
+    @Test
+    public void testHELLOWithXForwardedHostPOST() {
+        try {
+            Map<String, String> requestHeader = new HashMap<>();
+            requestHeader.put("Host", "localhost:" + PORT);
+            requestHeader.put("User-Agent", "curl/7.55.1");
+            requestHeader.put("x-forwarded-host", "proxy.mydomain.com");
+            SparkTestUtil.UrlResponse response = http.doMethod("POST",HELLO, "", false, "*/*", requestHeader);
+
+            assertEquals(200, response.status);
+            assertEquals(HELLO_WORLD, response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
