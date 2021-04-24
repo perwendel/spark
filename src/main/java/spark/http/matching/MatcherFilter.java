@@ -17,6 +17,7 @@
 package spark.http.matching;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -34,6 +35,7 @@ import spark.RequestResponseFactory;
 import spark.Response;
 import spark.embeddedserver.jetty.HttpRequestWrapper;
 import spark.route.HttpMethod;
+import spark.routematch.RouteMatch;
 import spark.serialization.SerializerChain;
 import spark.staticfiles.StaticFilesConfiguration;
 
@@ -106,6 +108,12 @@ public class MatcherFilter implements Filter {
         String httpMethodStr = method.toLowerCase();
         String uri = httpRequest.getRequestURI();
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
+
+        List<RouteMatch> routes=routeMatcher.findAll();
+        String firstAcceptType=routes.get(0).getAcceptType();
+        if(acceptType.equals("*/*")){
+            acceptType=firstAcceptType;
+        }
 
         Body body = Body.create();
 
