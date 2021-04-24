@@ -100,6 +100,7 @@ public class MatcherFilter implements Filter {
      */
     //CS304 Issue link: https://github.com/perwendel/spark/issues/1056
     //CS304 Issue link: https://github.com/perwendel/spark/issues/1026
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/1077
     @Override
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,
@@ -125,8 +126,14 @@ public class MatcherFilter implements Filter {
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
         List<RouteMatch> routes=routeMatcher.findAll();
-        String firstAcceptType=routes.get(0).getAcceptType();
-        if(acceptType.equals("*/*")) {
+        String firstAcceptType=null;
+        for (RouteMatch rm:routes) {
+            if(rm.getMatchUri().equals(uri)){
+                firstAcceptType=rm.getAcceptType();
+                break;
+            }
+        }
+        if(acceptType.equals("*/*")&&firstAcceptType!=null){
             acceptType=firstAcceptType;
         }
 
