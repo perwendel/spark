@@ -3,7 +3,7 @@ package spark;
 import static spark.Spark.*;
 
 
-// Try to fix issue 1026: https://github.com/perwendel/spark/issues/1077
+// Try to fix issue 1077: https://github.com/perwendel/spark/issues/1077
 // I am not sure whether it is a bug, because it is tagged as Bug ..?
 // But I think it conflict with the documentation, so I try to fix it
 // In short, we expect the input and output are:

@@ -136,7 +136,18 @@ public class SparkTestUtil {
         urlResponse.headers = headers;
         return urlResponse;
     }
-
+    /**
+     * Imitate and encapsulate the http request
+     *
+     * @param requestMethod         The method of the request
+     * @param path                  The path of the url
+     * @param body                  The body of the http
+     * @param secureConnection      The connection protocol
+     * @param acceptType            The type of accept
+     * @param reqHeaders            The header of the request
+     * @return                      The encapsulated HttpUriRequest
+     */
+    // CS304 Issue link: https://github.com/perwendel/spark/issues/1026
     private HttpUriRequest getHttpRequest(String requestMethod, String path, String body, boolean secureConnection,
                                           String acceptType, Map<String, String> reqHeaders) {
         try {

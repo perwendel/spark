@@ -95,10 +95,11 @@ public class MatcherFilter implements Filter {
      * @param servletRequest    The Request
      * @param servletResponse   The Response
      * @param chain             The FilterChain, to do filter when body is not set and chain is not null.
-     * @throws IOException
-     * @throws ServletException
+     * @throws IOException      IOException
+     * @throws ServletException ServletException
      */
     //CS304 Issue link: https://github.com/perwendel/spark/issues/1056
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/1026
     @Override
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,
