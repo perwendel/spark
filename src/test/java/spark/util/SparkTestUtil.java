@@ -55,12 +55,12 @@ public class SparkTestUtil {
 
     private HttpClientBuilder httpClientBuilder() {
         SSLConnectionSocketFactory sslConnectionSocketFactory =
-            new SSLConnectionSocketFactory(getSslFactory(), (paramString, paramSSLSession) -> true);
+                new SSLConnectionSocketFactory(getSslFactory(), (paramString, paramSSLSession) -> true);
         Registry<ConnectionSocketFactory> socketRegistry = RegistryBuilder
-            .<ConnectionSocketFactory>create()
-            .register("http", PlainConnectionSocketFactory.INSTANCE)
-            .register("https", sslConnectionSocketFactory)
-            .build();
+                .<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.INSTANCE)
+                .register("https", sslConnectionSocketFactory)
+                .build();
         BasicHttpClientConnectionManager connManager = new BasicHttpClientConnectionManager(socketRegistry);
         return HttpClientBuilder.create().setConnectionManager(connManager);
     }
@@ -93,7 +93,7 @@ public class SparkTestUtil {
 
 
     public UrlResponse doMethodSecure(String requestMethod, String path, String body)
-        throws Exception {
+            throws Exception {
         return doMethod(requestMethod, path, body, true, "text/html");
     }
 
@@ -102,7 +102,7 @@ public class SparkTestUtil {
     }
 
     public UrlResponse doMethodSecure(String requestMethod, String path, String body, String acceptType)
-        throws Exception {
+            throws Exception {
         return doMethod(requestMethod, path, body, true, acceptType);
     }
 
@@ -136,17 +136,7 @@ public class SparkTestUtil {
         urlResponse.headers = headers;
         return urlResponse;
     }
-    /**
-     * Imitate and encapsulate the http request
-     *
-     * @param requestMethod         The method of the request
-     * @param path                  The path of the url
-     * @param body                  The body of the http
-     * @param secureConnection      The connection protocol
-     * @param acceptType            The type of accept
-     * @param reqHeaders            The header of the request
-     * @return                      The encapsulated HttpUriRequest
-     */
+
     // CS304 Issue link: https://github.com/perwendel/spark/issues/1026
     private HttpUriRequest getHttpRequest(String requestMethod, String path, String body, boolean secureConnection,
                                           String acceptType, Map<String, String> reqHeaders) {

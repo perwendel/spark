@@ -8,7 +8,6 @@ import spark.util.SparkTestUtil;
 import static org.junit.Assert.*;
 import static spark.Spark.*;
 
-// CS304 Issue link: https://github.com/perwendel/spark/issues/1026
 // Try to fix issue 1026: https://github.com/perwendel/spark/issues/1026
 // If your path of URL contain this character %, please do not put the URL into address bar in browser directly.
 // Encode the URL with JavaScrip firstly, url_encode = encodeURI(URL)   (JavaScrip language)
@@ -28,12 +27,14 @@ public class Test1026 {
         awaitInitialization();
     }
 
+    // CS304 Issue link: https://github.com/perwendel/spark/issues/1026
     @Test
     public void testUrl1() throws Exception {
         SparkTestUtil.UrlResponse response = http.get(ROUTE1);
         assertEquals(200, response.status);
     }
 
+    // CS304 Issue link: https://github.com/perwendel/spark/issues/1026
     @Test
     public void testUrl2() throws Exception {
         SparkTestUtil.UrlResponse response = http.get(ROUTE2);

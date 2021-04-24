@@ -10,7 +10,6 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static spark.Spark.*;
 
-// CS304 Issue link: https://github.com/perwendel/spark/issues/1077
 // Try to fix issue 1077: https://github.com/perwendel/spark/issues/1077
 // I am not sure whether it is a bug, because it is tagged as Bug ..?
 // But I think it conflict with the documentation, so I try to fix it
@@ -57,6 +56,7 @@ public class Issue1077Test {
         });
     }
 
+    // CS304 Issue link: https://github.com/perwendel/spark/issues/1077
     @Test
     public void TestWheteherMatchRight() {
 
@@ -83,6 +83,7 @@ public class Issue1077Test {
         }
     }
 
+    // CS304 Issue link: https://github.com/perwendel/spark/issues/1077
     @Test
     public void TestWhetherMatchFirst() {
         try {
