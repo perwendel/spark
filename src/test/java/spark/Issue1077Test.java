@@ -31,11 +31,10 @@ public class Issue1077Test {
 
     public static final int PORT = 4567;
 
-    private static SparkTestUtil http;
+    private static final SparkTestUtil http = new SparkTestUtil(PORT);
 
     @Before
     public void setup() {
-        http = new SparkTestUtil(PORT);
 
         get(HELLO,"application/json", (request, response) -> "Hello application json");
 
@@ -58,7 +57,7 @@ public class Issue1077Test {
 
     // CS304 Issue link: https://github.com/perwendel/spark/issues/1077
     @Test
-    public void TestWheteherMatchRight() {
+    public void testWheteherMatchRight() {
 
         try {
             Map<String, String> requestHeader = new HashMap<>();
@@ -85,7 +84,7 @@ public class Issue1077Test {
 
     // CS304 Issue link: https://github.com/perwendel/spark/issues/1077
     @Test
-    public void TestWhetherMatchFirst() {
+    public void testWhetherMatchFirst() {
         try {
             Map<String, String> requestHeader = new HashMap<>();
             requestHeader.put("Host", "localhost:" + PORT);

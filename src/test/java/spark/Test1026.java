@@ -17,11 +17,10 @@ import static spark.Spark.*;
 public class Test1026 {
     private static final String ROUTE1 = "/api/v1/permissionrole/permission/get%2Fabc";
     private static final String ROUTE2 = "/api/v1/permissionrole/permission/get%2Fabc中文한국어にほんごلغة عربية";
-    private static SparkTestUtil http;
+    private static SparkTestUtil http = new SparkTestUtil(4567);
 
     @Before
     public void setup() {
-        http = new SparkTestUtil(4567);
         get(ROUTE1, (q, a) -> "Get filter matched");
         get(ROUTE2, (q, a) -> "Get filter matched");
         awaitInitialization();

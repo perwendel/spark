@@ -27,7 +27,7 @@ public class RequestTest {
     private static final String AFTER_MATCHED_ROUTE = "/users/:after";
     private static final String AFTERAFTER_MATCHED_ROUTE = "/users/:afterafter";
 
-    private static SparkTestUtil http;
+    private static final SparkTestUtil http = new SparkTestUtil(4567);;
 
     HttpServletRequest servletRequest;
     HttpSession httpSession;
@@ -38,8 +38,6 @@ public class RequestTest {
 
     @Before
     public void setup() {
-        http = new SparkTestUtil(4567);
-
         before(BEFORE_MATCHED_ROUTE, (q, a) -> {
             System.out.println("before filter matched");
             shouldBeAbleToGetTheMatchedPathInBeforeFilter(q);

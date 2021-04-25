@@ -22,7 +22,7 @@ public class JettyHandlerTest {
 
     public static final String HELLO_WORLD = "Hello World!";
 
-    private static SparkTestUtil http;
+    private static final SparkTestUtil http = new SparkTestUtil(4567);
 
     @AfterClass
     public static void tearDown() {
@@ -31,7 +31,6 @@ public class JettyHandlerTest {
 
     @BeforeClass
     public static void setup() throws IOException {
-        http = new SparkTestUtil(4567);
 
         get(HELLO, (q, a) -> {
             assertEquals("curl/7.55.1",q.userAgent());
