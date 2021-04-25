@@ -41,7 +41,7 @@ public class WebSocketRequestTest {
     public static void setup() throws IOException {
         staticFiles.location("/public/chatPages"); //index.html is served at localhost:4567 (default port)
         staticFiles.expireTime(600);
-        webSocket("/chat", spark.test.ChatWebSocketHandler.class);
+        webSocket("/chat", ChatWebSocketHandler.class);
         get(HELLO, (req, res) -> "Hello!");
         get(OTHER, (req, res) -> "other");
         init();
