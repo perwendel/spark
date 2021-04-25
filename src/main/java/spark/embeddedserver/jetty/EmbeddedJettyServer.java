@@ -132,7 +132,9 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             server.setHandler(handler);
         } else {
             List<Handler> handlersInList = new ArrayList<>();
-            handlersInList.add(handler);
+            JettyHandler jettyHandler = (JettyHandler) handler;
+            jettyHandler.consume(webSocketHandlers.keySet());
+            handlersInList.add(jettyHandler);
 
             // WebSocket handler must be the last one
             if (webSocketServletContextHandler != null) {
