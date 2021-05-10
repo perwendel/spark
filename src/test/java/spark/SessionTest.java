@@ -17,12 +17,12 @@ import static org.mockito.Mockito.*;
 
 public class SessionTest {
 
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
-
     Request request;
     HttpSession httpSession;
     Session session;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setup() {
@@ -33,16 +33,16 @@ public class SessionTest {
 
     @Test
     public void testSession_whenHttpSessionIsNull_thenThrowException() {
-        exceptionRule.expect(IllegalArgumentException.class);
-        exceptionRule.expectMessage("session cannot be null");
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("session cannot be null");
         new Session(null, request);
         fail("Session instantiation with a null HttpSession should throw an IllegalArgumentException");
     }
 
     @Test
     public void testSession_whenRequestIsNull_thenThrowException() {
-        exceptionRule.expect(IllegalArgumentException.class);
-        exceptionRule.expectMessage("request cannot be null");
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("request cannot be null");
         new Session(httpSession, null);
         fail("Session instantiation with a null Request should throw an IllegalArgumentException");
     }
