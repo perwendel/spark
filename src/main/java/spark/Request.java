@@ -148,11 +148,7 @@ public class Request {
             return null;
         }
 
-        if (param.startsWith(":")) {
-            return params.get(param.toLowerCase()); // NOSONAR
-        } else {
-            return params.get(":" + param.toLowerCase()); // NOSONAR
-        }
+        return params.get(param.toLowerCase()); // NOSONAR
     }
 
     /**
@@ -531,7 +527,13 @@ public class Request {
                                   + " = "
                                   + decodedReq);
 
-                params.put(matchedPart.toLowerCase(), decodedReq);
+                LOG.info(matchedPart);
+                if (matchedPart.startsWith(":")) {
+                    params.put(matchedPart.substring(1).toLowerCase(), decodedReq);
+                }
+                else {
+                    params.put(matchedPart.toLowerCase(), decodedReq);
+                }
             }
         }
         return Collections.unmodifiableMap(params);
