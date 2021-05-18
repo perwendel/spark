@@ -56,6 +56,7 @@ class RouteEntry {
         return match;
     }
 
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/1151
     private boolean matchPath(String path) { // NOSONAR
         if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) // NOSONAR
                 || (this.path.endsWith("/") && !path.endsWith("/")))) {
