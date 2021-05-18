@@ -148,7 +148,11 @@ public class Request {
             return null;
         }
 
-        return params.get(param.toLowerCase()); // NOSONAR
+        if (param.startsWith(":")) {
+            return params.get(param.substring(1).toLowerCase()); // NOSONAR
+        } else {
+            return params.get(param.toLowerCase()); // NOSONAR
+        }
     }
 
     /**
