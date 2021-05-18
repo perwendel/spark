@@ -527,7 +527,6 @@ public class Request {
                                   + " = "
                                   + decodedReq);
 
-                LOG.info(matchedPart);
                 if (matchedPart.startsWith(":")) {
                     params.put(matchedPart.substring(1).toLowerCase(), decodedReq);
                 }
