@@ -122,6 +122,14 @@ class RouteEntry {
                 }
                 // End check wild card
             }
+            if (thisPathSize > pathSize) {
+                for (int i = pathSize; i < thisPathSize; i++) {
+                    if (!thisPathList.get(i).endsWith("?")) {
+                        return false;
+                    }
+                }
+                return true;
+            }
             return false;
         }
     }
