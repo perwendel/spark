@@ -17,6 +17,7 @@
 package spark.embeddedserver.jetty;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
@@ -35,6 +36,8 @@ public class JettyHandler extends SessionHandler {
 
     private Filter filter;
 
+    private Set<String> consume;
+
     public JettyHandler(Filter filter) {
         this.filter = filter;
     }
@@ -47,14 +50,22 @@ public class JettyHandler extends SessionHandler {
             HttpServletResponse response) throws IOException, ServletException {
 
         HttpRequestWrapper wrapper = new HttpRequestWrapper(request);
-        filter.doFilter(wrapper, response, null);
-
-        if (wrapper.notConsumed()) {
-            baseRequest.setHandled(false);
-        } else {
-            baseRequest.setHandled(true);
+        if(consume!=null && consume.contains(baseRequest.getRequestURI())){
+            if (wrapper instanceof HttpRequestWrapper) {
+                ((HttpRequestWrapper) wrapper).notConsumed(true);
+            }
         }
-
+        else {
+            filter.doFilter(wrapper, response, null);
+        }
+        baseRequest.setHandled(!wrapper.notConsumed());
     }
 
+    public void consume(Set<String> consume){
+        this.consume=consume;
+    }
+
+    public Set<String> consume(){
+        return this.consume;
+    }
 }
