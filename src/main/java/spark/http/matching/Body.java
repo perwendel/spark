@@ -32,6 +32,9 @@ final class Body {
 
     private Object content;
 
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/911
+    private final Configuration configuration = Configuration.getConfiguration();
+
     public static Body create() {
         return new Body();
     }
@@ -62,7 +65,9 @@ final class Body {
 
         if (!httpResponse.isCommitted()) {
             if (httpResponse.getContentType() == null) {
-                httpResponse.setContentType("text/html; charset=utf-8");
+                //CS304 Issue link: https://github.com/perwendel/spark/issues/911
+                String type = configuration.getDefaultContentType();
+                httpResponse.setContentType(type);
             }
 
             // Check if GZIP is wanted/accepted and in that case handle that
