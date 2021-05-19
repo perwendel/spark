@@ -32,7 +32,7 @@ final class Body {
 
     private Object content;
 
-    //https://github.com/perwendel/spark/issues/911
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/911
     private final Configuration configuration = Configuration.getConfiguration();
 
     public static Body create() {
@@ -65,7 +65,7 @@ final class Body {
 
         if (!httpResponse.isCommitted()) {
             if (httpResponse.getContentType() == null) {
-                //https://github.com/perwendel/spark/issues/911
+                //CS304 Issue link: https://github.com/perwendel/spark/issues/911
                 String type = configuration.getDefaultContentType();
                 httpResponse.setContentType(type);
             }

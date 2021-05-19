@@ -1,6 +1,6 @@
 package spark.http.matching;
 
-//https://github.com/perwendel/spark/issues/911
+//CS304 Issue link: https://github.com/perwendel/spark/issues/911
 public class Configuration {
     private String defaultContentType;
     private static final Configuration configuration = new Configuration();

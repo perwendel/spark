@@ -10,13 +10,13 @@ import static spark.Spark.*;
 public class issue911Test {
     Configuration configuration;
 
-    //https://github.com/perwendel/spark/issues/911
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/911
     @Before
     public void init(){
         configuration = Configuration.getConfiguration();
     }
 
-    //https://github.com/perwendel/spark/issues/911
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/911
     @Test
     public void TestResponseDefaultContentType() throws Exception {
         get("/hello", (request, response) -> {
@@ -25,7 +25,7 @@ public class issue911Test {
         });
     }
 
-    //https://github.com/perwendel/spark/issues/911
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/911
     @Test
     public void TestResponseTypeModifiedByBefore() throws Exception {
         before("/hello", (request, response) -> response.type("application/json"));
@@ -36,7 +36,7 @@ public class issue911Test {
         });
     }
 
-    //https://github.com/perwendel/spark/issues/911
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/911
     @Test
     public void TestSetDefaultContentType() throws Exception {
         configuration.setDefaultContentType("text/html");
