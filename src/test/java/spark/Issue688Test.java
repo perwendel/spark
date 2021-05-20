@@ -33,6 +33,7 @@ public class Issue688Test {
         get(HELLO,"text/html", (request, response) -> "Specific");
     }
 
+
     // Try to fix issue 688: https://github.com/perwendel/spark/issues/688
     @Test
     public void TestWheteherMatchRight() {
@@ -46,6 +47,8 @@ public class Issue688Test {
             String acceptTypeIE="text/html, application/xhtml+xml, image/jxr, */*";
             String acceptTypeChrome="text/html,application/xhtml+xml,application/xml;q=0.9," +
                 "image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9\n";
+            String acceptTypeEdge="text/html,application/xhtml+xml,application/xml;q=0.9," +
+                "image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
 
             SparkTestUtil.UrlResponse response = http.doMethod("GET",HELLO, "", false, acceptTypeIE, requestHeader);
             assertEquals(200, response.status);
@@ -54,6 +57,11 @@ public class Issue688Test {
             response = http.doMethod("GET",HELLO, "", false, acceptTypeChrome, requestHeader);
             assertEquals(200, response.status);
             assertEquals("Specific", response.body);
+
+            response = http.doMethod("GET",HELLO, "", false, acceptTypeEdge, requestHeader);
+            assertEquals(200, response.status);
+            assertEquals("Specific", response.body);
+
 
         } catch (Exception e) {
             e.printStackTrace();

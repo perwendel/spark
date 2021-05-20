@@ -107,7 +107,7 @@ public class MatcherFilter implements Filter {
         String uri = httpRequest.getRequestURI();
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
-        if(!acceptType.contains(";q=") && acceptType.endsWith("*/*")){
+        if(acceptType!=null&&!acceptType.contains(";q=") && acceptType.endsWith("*/*")){
             //It is from IE
             acceptType=acceptType.substring(0,acceptType.indexOf(", */*"))+";q=0.9,*/*;q=0.8";
         }
