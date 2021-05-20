@@ -34,6 +34,7 @@ import static spark.Spark.get;
 public class ResponseBodyTest {
 
     public static final String HELLO = "/hello";
+    public static final String METHOD_NOT_ALLOWED = "/405";
     public static final String SPECIAL = "/special";
     public static final String PORAKATIKAOKAO = "/porakatikaokao";
     public static final String MAXIME = "/maxime";
@@ -53,6 +54,8 @@ public class ResponseBodyTest {
     @BeforeClass
     public static void setup() throws IOException {
         http = new SparkTestUtil(4567);
+
+        get(METHOD_NOT_ALLOWED, (q, a) -> HELLO_WORLD);
 
         get(HELLO, (q, a) -> HELLO_WORLD);
 
@@ -100,6 +103,16 @@ public class ResponseBodyTest {
             SparkTestUtil.UrlResponse response = http.get(HELLO);
             assertEquals(200, response.status);
             assertEquals(HELLO_WORLD, response.body);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testMethodNotAllowed() {
+        try {
+            SparkTestUtil.UrlResponse response = http.doMethod("PUT",METHOD_NOT_ALLOWED,"");
+            assertEquals(405, response.status);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
