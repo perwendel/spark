@@ -54,6 +54,7 @@ public class JettyHandler extends SessionHandler {
      * @throws ServletException
      */
     //CS304 Issue link: https://github.com/perwendel/spark/issues/1069
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/986
     @Override
     public void doHandle(
             String target,

@@ -41,12 +41,12 @@ public class Issue986Test {
         staticFiles.location("/chatPage"); //index.html is served at localhost:4567 (default port)
         staticFiles.expireTime(600);
         webSocket("/chat", ChatWebSocketHandler.class);
-//        get(HELLO, (req, res) -> "Hello!");
+        get(HELLO, (req, res) -> "Hello!");
         get(OTHER, (req, res) -> "other");
         init();
     }
 
-    // Try to fix issue 986: https://github.com/perwendel/spark/issues/986
+    // CS304 Issue link: https://github.com/perwendel/spark/issues/986
     @Test
     public void testUrl1() throws Exception {
         try {
@@ -59,7 +59,7 @@ public class Issue986Test {
         }
     }
 
-    // Try to fix issue 986: https://github.com/perwendel/spark/issues/986
+    // CS304 Issue link: https://github.com/perwendel/spark/issues/986
     @Test
     public void testUrl2() throws Exception {
         try {
@@ -72,7 +72,7 @@ public class Issue986Test {
         }
     }
 
-    // Try to fix issue 986: https://github.com/perwendel/spark/issues/986
+    // CS304 Issue link: https://github.com/perwendel/spark/issues/986
     @Test
     public void testUrl3() throws Exception {
         try {
@@ -84,7 +84,7 @@ public class Issue986Test {
         }
     }
 
-    // Try to fix issue 986: https://github.com/perwendel/spark/issues/986
+    // CS304 Issue link: https://github.com/perwendel/spark/issues/986
     @Test
     public void testUrl4() throws Exception {
         try {
