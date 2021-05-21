@@ -81,6 +81,7 @@ public class EmbeddedJettyServer implements EmbeddedServer {
     /**
      * {@inheritDoc}
      */
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/986
     @Override
     public int ignite(String host,
                       int port,
@@ -132,7 +133,9 @@ public class EmbeddedJettyServer implements EmbeddedServer {
             server.setHandler(handler);
         } else {
             List<Handler> handlersInList = new ArrayList<>();
-            handlersInList.add(handler);
+            JettyHandler jettyHandler = (JettyHandler) handler;
+            jettyHandler.consume(webSocketHandlers.keySet());
+            handlersInList.add(jettyHandler);
 
             // WebSocket handler must be the last one
             if (webSocketServletContextHandler != null) {

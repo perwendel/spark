@@ -101,6 +101,7 @@ public class MatcherFilter implements Filter {
     //CS304 Issue link: https://github.com/perwendel/spark/issues/1056
     //CS304 Issue link: https://github.com/perwendel/spark/issues/1026
     //CS304 Issue link: https://github.com/perwendel/spark/issues/1077
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/986
     @Override
     public void doFilter(ServletRequest servletRequest,
                          ServletResponse servletResponse,
@@ -183,13 +184,6 @@ public class MatcherFilter implements Filter {
             // If redirected and content is null set to empty string to not throw NotConsumedException
             if (body.notSet() && responseWrapper.isRedirected()) {
                 body.set("");
-            }
-
-            if (body.notSet() && hasOtherHandlers) {
-                if (servletRequest instanceof HttpRequestWrapper) {
-                    ((HttpRequestWrapper) servletRequest).notConsumed(true);
-                    return;
-                }
             }
 
             if (body.notSet()) {
