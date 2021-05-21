@@ -4,7 +4,7 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -41,12 +41,21 @@ public class JettyHandler extends SessionHandler {
 
     @Override
     public void doHandle(
-            String target,
-            Request baseRequest,
-            HttpServletRequest request,
-            HttpServletResponse response) throws IOException, ServletException {
+        String target,
+        Request baseRequest,
+        HttpServletRequest request,
+        HttpServletResponse response) throws IOException, ServletException {
 
         HttpRequestWrapper wrapper = new HttpRequestWrapper(request);
+        final String[] METHODS = {"GET", "POST", "HEAD", "PUT", "OPTIONS", "DELETE", "TRACE", "CONNECT "};
+        boolean isValid = false;
+        for (String METHOD : METHODS) {
+            if (request.getMethod().equalsIgnoreCase(METHOD)) {
+                isValid = true;
+                break;
+            }
+        }
+        if (!isValid) return;
         filter.doFilter(wrapper, response, null);
 
         if (wrapper.notConsumed()) {
