@@ -116,4 +116,26 @@ public class RouteEntryTest {
                    entry.matches(HttpMethod.get, "/test/this/resource/child/id"));
     }
 
+    //CS304 (manually written) Issue link: https://github.com/perwendel/spark/issues/1151
+    @Test
+    public void testMatches_WithoutOptionalParameters() {
+        RouteEntry entry = new RouteEntry();
+        entry.httpMethod = HttpMethod.get;
+        entry.path = "/test/:name?";
+
+        assertTrue("Should return true because the :name? section in path is optional",
+            entry.matches(HttpMethod.get, "/test"));
+    }
+    //CS304 (manually written) Issue link: https://github.com/perwendel/spark/issues/1151
+    @Test
+    public void testMatches_WithOptionalParameters() {
+        RouteEntry entry = new RouteEntry();
+        entry.httpMethod = HttpMethod.get;
+        entry.path = "/test/:name?";
+
+        assertTrue("Should return true because the :name? section in path is optional," +
+                "the statement can match /test/*",
+            entry.matches(HttpMethod.get, "/test/foo"));
+    }
+
 }
