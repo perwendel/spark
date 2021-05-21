@@ -124,6 +124,11 @@ class RouteEntry {
                 // End check wild card
             }
             if (thisPathSize > pathSize) {
+                for (int i = pathSize - 1; i > -1; i--) {
+                    if(!thisPathList.get(i).equals(pathList.get(i))){
+                        return false;
+                    }
+                }
                 for (int i = pathSize; i < thisPathSize; i++) {
                     if (!thisPathList.get(i).endsWith("?")) {
                         return false;
