@@ -92,9 +92,9 @@ public class MatcherFilter implements Filter {
     /**
      * Filter route
      *
-     * @param servletRequest    The Request
-     * @param servletResponse   The Response
-     * @param chain             The FilterChain, to do filter when body is not set and chain is not null.
+     * @param servletRequest  The Request
+     * @param servletResponse The Response
+     * @param chain           The FilterChain, to do filter when body is not set and chain is not null.
      * @throws IOException      IOException
      * @throws ServletException ServletException
      */
@@ -125,16 +125,16 @@ public class MatcherFilter implements Filter {
 
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
-        List<RouteMatch> routes=routeMatcher.findAll();
-        String firstAcceptType=null;
-        for (RouteMatch rm:routes) {
-            if(rm.getMatchUri().equals(uri)){
-                firstAcceptType=rm.getAcceptType();
+        List<RouteMatch> routes = routeMatcher.findAll();
+        String firstAcceptType = null;
+        for (RouteMatch rm : routes) {
+            if (rm.getMatchUri().equals(uri)) {
+                firstAcceptType = rm.getAcceptType();
                 break;
             }
         }
-        if(acceptType.equals("*/*")&&firstAcceptType!=null){
-            acceptType=firstAcceptType;
+        if ("*/*".equals(acceptType) && firstAcceptType != null) {
+            acceptType = firstAcceptType;
         }
 
         Body body = Body.create();
@@ -147,15 +147,15 @@ public class MatcherFilter implements Filter {
         HttpMethod httpMethod = HttpMethod.get(httpMethodStr);
 
         RouteContext context = RouteContext.create()
-                .withMatcher(routeMatcher)
-                .withHttpRequest(httpRequest)
-                .withUri(uri)
-                .withAcceptType(acceptType)
-                .withBody(body)
-                .withRequestWrapper(requestWrapper)
-                .withResponseWrapper(responseWrapper)
-                .withResponse(response)
-                .withHttpMethod(httpMethod);
+            .withMatcher(routeMatcher)
+            .withHttpRequest(httpRequest)
+            .withUri(uri)
+            .withAcceptType(acceptType)
+            .withBody(body)
+            .withRequestWrapper(requestWrapper)
+            .withResponseWrapper(responseWrapper)
+            .withResponse(response)
+            .withHttpMethod(httpMethod);
 
         try {
             try {
@@ -170,13 +170,13 @@ public class MatcherFilter implements Filter {
             } catch (Exception generalException) {
 
                 GeneralError.modify(
-                        httpRequest,
-                        httpResponse,
-                        body,
-                        requestWrapper,
-                        responseWrapper,
-                        exceptionMapper,
-                        generalException);
+                    httpRequest,
+                    httpResponse,
+                    body,
+                    requestWrapper,
+                    responseWrapper,
+                    exceptionMapper,
+                    generalException);
 
             }
 
@@ -194,7 +194,7 @@ public class MatcherFilter implements Filter {
 
             if (body.notSet()) {
                 LOG.info("The requested route [{}] has not been mapped in Spark for {}: [{}]",
-                         uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
+                    uri, ACCEPT_TYPE_REQUEST_MIME_HEADER, acceptType);
                 httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
                 if (CustomErrorPages.existsFor(404)) {
@@ -210,13 +210,13 @@ public class MatcherFilter implements Filter {
                 AfterAfterFilters.execute(context);
             } catch (Exception generalException) {
                 GeneralError.modify(
-                        httpRequest,
-                        httpResponse,
-                        body,
-                        requestWrapper,
-                        responseWrapper,
-                        exceptionMapper,
-                        generalException);
+                    httpRequest,
+                    httpResponse,
+                    body,
+                    requestWrapper,
+                    responseWrapper,
+                    exceptionMapper,
+                    generalException);
             }
         }
 
