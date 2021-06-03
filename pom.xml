@@ -30,7 +30,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <jetty.version>9.4.33.v20201020</jetty.version>
+        <jetty.version>9.4.40.v20210413</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <powermock.version>1.7.4</powermock.version>
         <mockito.version>1.10.19</mockito.version>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
+            <version>1.7.30</version>
         </dependency>
 
         <dependency>
