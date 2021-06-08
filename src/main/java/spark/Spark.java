@@ -16,6 +16,9 @@
  */
 package spark;
 
+import spark.routematch.RouteMatch;
+
+import java.util.List;
 import java.util.function.Consumer;
 
 import static spark.Service.ignite;
@@ -864,6 +867,33 @@ public class Spark {
         getInstance().patch(path, acceptType, route, transformer);
     }
 
+    /**
+     * Unmaps a particular route from the collection of those that have been previously routed.
+     * Search for previously established routes using the given path and unmaps any matches that are found.
+     *
+     * @param path          the route path
+     * @return              <tt>true</tt> if this is a matching route which has been previously routed
+     * @throws IllegalArgumentException if <tt>path</tt> is null or blank
+     */
+    public static boolean unmap(String path) {
+        return getInstance().unmap(path);
+    }
+
+    /**
+     * Unmaps a particular route from the collection of those that have been previously routed.
+     * Search for previously established routes using the given path and HTTP method, unmaps any
+     * matches that are found.
+     *
+     * @param path          the route path
+     * @param httpMethod    the http method
+     * @return <tt>true</tt> if this is a matching route that has been previously routed
+     * @throws IllegalArgumentException if <tt>path</tt> is null or blank or if <tt>httpMethod</tt> is null, blank,
+     * or an invalid HTTP method
+     */
+    public static boolean unmap(String path, String httpMethod) {
+        return getInstance().unmap(path, httpMethod);
+    }
+
     //////////////////////////////////////////////////
     // END Response Transforming Routes
     //////////////////////////////////////////////////
@@ -1247,6 +1277,25 @@ public class Spark {
         getInstance().internalServerError(route);
     }
 
+    ////////////////
+    // Security //
+
+    /**
+     * Sets Spark to trust Forwarded, X-Forwarded-Host, X-Forwarded-Server, X-Forwarded-For, X-Forwarded-Proto, X-Proxied-Https headers
+     * as defined at https://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/server/ForwardedRequestCustomizer.html
+     */
+    public static void trustForwardHeaders() {
+        getInstance().trustForwardHeaders();
+    }
+
+    /**
+     * Sets Spark to NOT trust Forwarded, X-Forwarded-Host, X-Forwarded-Server, X-Forwarded-For, X-Forwarded-Proto, X-Proxied-Https headers
+     * as defined at https://www.eclipse.org/jetty/javadoc/current/org/eclipse/jetty/server/ForwardedRequestCustomizer.html
+     */
+    public static void untrustForwardHeaders() {
+        getInstance().untrustForwardHeaders();
+    }
+
     /**
      * Initializes the Spark server. SHOULD just be used when using the Websockets functionality.
      */
@@ -1266,10 +1315,18 @@ public class Spark {
     }
 
     /**
+     * @return All routes available
+     */
+    public static List<RouteMatch> routes() {
+        return getInstance().routes();
+    }
+
+    /**
      * @return The approximate number of currently active threads in the embedded Jetty server
      */
     public static int activeThreadCount() {
         return getInstance().activeThreadCount();
     }
+
 
 }

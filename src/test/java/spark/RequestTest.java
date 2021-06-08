@@ -33,8 +33,8 @@ public class RequestTest {
     HttpSession httpSession;
     Request request;
 
-    RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html");
-    RouteMatch matchWithParams = new RouteMatch(null, "/users/:username", "/users/bob", "text/html");
+    RouteMatch match = new RouteMatch(null, "/hi", "/hi", "text/html", null);
+    RouteMatch matchWithParams = new RouteMatch(null, "/users/:username", "/users/bob", "text/html", null);
 
     @Before
     public void setup() {
