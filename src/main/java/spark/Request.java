@@ -255,10 +255,16 @@ public class Request {
     public String body() {
 
         if (body == null) {
-            body = StringUtils.toString(bodyAsBytes(), servletRequest.getCharacterEncoding());
+            try {
+                body = StringUtils.toString(bodyAsBytes(), servletRequest.getCharacterEncoding());
+                return body;
+            } catch (Exception e) {
+                LOG.warn("Exception when reading body", e);
+                return null;
+            }
+        } else {
+            return body;
         }
-
-        return body;
     }
 
     public byte[] bodyAsBytes() {
