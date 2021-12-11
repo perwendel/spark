@@ -252,6 +252,7 @@ public class Request {
     /**
      * @return the request body sent by the client
      */
+    // CS427 Issue link: https://github.com/perwendel/spark/issues/1178
     public String body() {
 
         if (body == null) {
