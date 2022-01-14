@@ -12,3 +12,4 @@ bin
 nb-configuration.xml
 reports
 .java-version
+.DS_Store

@@ -21,8 +21,12 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import spark.route.HttpMethod;
+import spark.routematch.RouteMatch;
 import spark.util.SparkTestUtil;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static spark.Service.ignite;
 
 /**
@@ -108,6 +112,25 @@ public class MultipleServicesTest {
 
         Assert.assertEquals(1, firstNotFound);
         Assert.assertEquals(1, secondNotFound);
+    }
+  
+    public void testGetAllRoutesFromBothServices(){
+        for(RouteMatch routeMatch : first.routes()){
+            Assert.assertEquals(routeMatch.getAcceptType(), "*/*");
+            Assert.assertEquals(routeMatch.getHttpMethod(), HttpMethod.get);
+            Assert.assertEquals(routeMatch.getMatchUri(), "/hello");
+            Assert.assertEquals(routeMatch.getRequestURI(), "ALL_ROUTES");
+            Assert.assertThat(routeMatch.getTarget(), instanceOf(RouteImpl.class));
+        }
+
+        for(RouteMatch routeMatch : second.routes()){
+            Assert.assertEquals(routeMatch.getAcceptType(), "*/*");
+            Assert.assertThat(routeMatch.getHttpMethod(), instanceOf(HttpMethod.class));
+            boolean isUriOnList = ("/hello/hi/uniqueforsecond").contains(routeMatch.getMatchUri());
+            Assert.assertTrue(isUriOnList);
+            Assert.assertEquals(routeMatch.getRequestURI(), "ALL_ROUTES");
+            Assert.assertThat(routeMatch.getTarget(), instanceOf(RouteImpl.class));
+        }
     }
 
     private static Service igniteFirstService() {

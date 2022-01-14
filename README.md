@@ -5,22 +5,24 @@
 Spark - a tiny web framework for Java 8
 ==============================================
 
-**Spark 2.9.1 is out**. Update to get rid of security issues in the Jetty version used in 2.9.0!
+**Spark 2.9.3 is out!!**  <a href="https://github.com/perwendel/spark/blob/master/changeset/2.9.3-changeset.md">Changeset</a> 
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.9.1</version>
+    <version>2.9.3</version>
 </dependency>
 ```
 
-
+Sponsor the project here https://github.com/sponsors/perwendel
 
 For documentation please go to: http://sparkjava.com/documentation
 
 For usage questions, please use [stack overflow with the “spark-java” tag](http://stackoverflow.com/questions/tagged/spark-java) 
 
 Javadoc: http://javadoc.io/doc/com.sparkjava/spark-core
+
+When committing to the project please use Spark format configured in https://github.com/perwendel/spark/blob/master/config/spark_formatter_intellij.xml
 
 Getting started
 ---------------
@@ -29,7 +31,7 @@ Getting started
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.9.0</version>
+    <version>2.9.2</version>
 </dependency>
 ```
 

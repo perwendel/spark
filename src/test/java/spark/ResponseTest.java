@@ -7,6 +7,7 @@ import org.powermock.reflect.Whitebox;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -91,6 +92,33 @@ public class ResponseTest {
 
         response.header(finalHeaderKey, finalHeaderValue);
         verify(httpServletResponse).addHeader(finalHeaderKey, finalHeaderValue);
+    }
+
+    @Test
+    public void testIntHeader() {
+        response.header("X-Processing-Time", 10);
+        verify(httpServletResponse).addIntHeader("X-Processing-Time", 10);
+    }
+
+    @Test
+    public void testJavaUtilDateHeader() {
+        Date now = new Date();
+        response.header("X-Processing-Since", now);
+        verify(httpServletResponse).addDateHeader("X-Processing-Since", now.getTime());
+    }
+
+    @Test
+    public void testJavaSqlDateHeader() {
+        Date now = new Date();
+        response.header("X-Processing-Since", new java.sql.Date(now.getTime()));
+        verify(httpServletResponse).addDateHeader("X-Processing-Since", now.getTime());
+    }
+
+    @Test
+    public void testInstantDateHeader() {
+        Date now = new Date();
+        response.header("X-Processing-Since", now.toInstant());
+        verify(httpServletResponse).addDateHeader("X-Processing-Since", now.getTime());
     }
 
     private void validateCookieContent(Cookie cookie,
