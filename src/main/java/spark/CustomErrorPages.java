@@ -38,8 +38,8 @@ public class CustomErrorPages {
      * @param status
      * @return true if error page exists
      */
-    public static boolean existsFor(int status) {
-        return CustomErrorPages.getInstance().customPages.containsKey(status);
+    public boolean existsFor(int status) {
+        return customPages.containsKey(status);
     }
 
     /**
@@ -51,10 +51,10 @@ public class CustomErrorPages {
      * @param response
      * @return Object representing the custom error page
      */
-    public static Object getFor(int status, Request request, Response response) {
+    public Object getFor(int status, Request request, Response response) {
 
-        Object customRenderer = CustomErrorPages.getInstance().customPages.get(status);
-        Object customPage = CustomErrorPages.getInstance().getDefaultFor(status);
+        Object customRenderer = customPages.get(status);
+        Object customPage = getDefaultFor(status);
 
         if (customRenderer instanceof String) {
             customPage = customRenderer;
@@ -86,8 +86,8 @@ public class CustomErrorPages {
      * @param status
      * @param page
      */
-    static void add(int status, String page) {
-        CustomErrorPages.getInstance().customPages.put(status, page);
+    void add(int status, String page) {
+        customPages.put(status, page);
     }
 
     /**
@@ -95,8 +95,8 @@ public class CustomErrorPages {
      * @param status
      * @param route
      */
-    static void add(int status, Route route) {
-        CustomErrorPages.getInstance().customPages.put(status, route);
+    void add(int status, Route route) {
+        customPages.put(status, route);
     }
 
     // Private stuff
@@ -104,19 +104,11 @@ public class CustomErrorPages {
     private final HashMap<Integer, Object> customPages;
     private final HashMap<Integer, String> defaultPages;
 
-    private CustomErrorPages() {
+    CustomErrorPages() {
         customPages = new HashMap<>();
         defaultPages = new HashMap<>();
         defaultPages.put(404, NOT_FOUND);
         defaultPages.put(500, INTERNAL_ERROR);
-    }
-
-    private static class SingletonHolder {
-        private static final CustomErrorPages INSTANCE = new CustomErrorPages();
-    }
-
-    private static CustomErrorPages getInstance() {
-        return SingletonHolder.INSTANCE;
     }
 
 }
