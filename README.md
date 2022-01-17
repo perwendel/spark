@@ -1,6 +1,7 @@
 [![](https://img.shields.io/travis/perwendel/spark.svg)](https://travis-ci.org/perwendel/spark)
 [![](https://img.shields.io/github/license/perwendel/spark.svg)](./LICENSE)
 [![](https://img.shields.io/maven-central/v/com.sparkjava/spark-core.svg)](http://mvnrepository.com/artifact/com.sparkjava/spark-core)
+[![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=perwendel_spark&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/68360#overview)
 
 Spark - a tiny web framework for Java 8
 ==============================================
