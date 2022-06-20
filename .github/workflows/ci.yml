@@ -1,0 +1,22 @@
+name: Spark Framework CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '1.8', '1.9', '1.10', '1.11' ]
+    name: Java Version ${{ matrix.java }}
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+          architecture: x64
+      - run: ./mvnw test
