@@ -28,10 +28,16 @@ public class Base64Test {
     }
 
     @Test
-    public final void testDecodeAndEncode() {
+    public final void testEncodeNull() {
         String in = null;
         String encode = Base64.encode(in);
-        String decode = Base64.decode(encode);
+        Assert.assertNull(encode);
+    }
+
+    @Test
+    public final void testDecodeNull() {
+        String in = null;
+        String decode = Base64.decode(in);
         Assert.assertNull(decode);
     }
 
