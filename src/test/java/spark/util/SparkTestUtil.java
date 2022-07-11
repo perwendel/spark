@@ -40,6 +40,16 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpField;
+import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http2.client.HTTP2Client;
+import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+
+import static org.eclipse.jetty.http.HttpVersion.HTTP_2;
 
 public class SparkTestUtil {
 
@@ -136,6 +146,105 @@ public class SparkTestUtil {
         return urlResponse;
     }
 
+    public UrlResponse doHttp2Method(String requestMethod, String path, String body)
+        throws Exception {
+        return doHttp2Method(requestMethod, path, body, false, "text/html", null);
+    }
+
+    public UrlResponse doHttp2Method(String requestMethod, String path, String body, String acceptType)
+        throws Exception {
+        return doHttp2Method(requestMethod, path, body, false, acceptType, null);
+    }
+
+    public UrlResponse doHttp2MethodSecure(String requestMethod, String path, String body)
+        throws Exception {
+        return doHttp2Method(requestMethod, path, body, true, "text/html", null);
+    }
+
+    public UrlResponse doHttp2Method(String requestMethod, String path, String body, boolean secureConnection,
+                                     String acceptType, Map<String, String> reqHeaders) throws Exception {
+        org.eclipse.jetty.client.HttpClient http2Client = null;
+        try {
+            http2Client = getHttp2Client();
+            http2Client.start();
+            Request http2Request = getHttp2Request(http2Client, requestMethod, path, body, secureConnection, acceptType, reqHeaders);
+            ContentResponse response = http2Request.send();
+
+            UrlResponse urlResponse = new UrlResponse();
+            urlResponse.status = response.getStatus();
+
+            if (response.getContent() != null) {
+                urlResponse.body = response.getContentAsString();
+            } else {
+                urlResponse.body = "";
+            }
+            Map<String, String> headers = new HashMap<>();
+            HttpFields allHeaders = response.getHeaders();
+            for (HttpField header : allHeaders) {
+                headers.put(header.getName(), header.getValue());
+            }
+            urlResponse.headers = headers;
+
+            return urlResponse;
+        } finally {
+            if (http2Client != null) {
+                try {
+                    http2Client.stop();
+                } catch (Exception ignored) {
+                }
+            }
+        }
+    }
+
+    private org.eclipse.jetty.client.HttpClient getHttp2Client() {
+        HTTP2Client http2Client = new HTTP2Client();
+
+        SslContextFactory sslContextFactory = new SslContextFactory.Client();
+        sslContextFactory.setEndpointIdentificationAlgorithm("");
+
+        sslContextFactory.setTrustStorePath(getTrustStoreLocation());
+        sslContextFactory.setTrustStorePassword(getTrustStorePassword());
+
+        return new org.eclipse.jetty.client.HttpClient(
+            new HttpClientTransportOverHTTP2(http2Client), sslContextFactory);
+    }
+
+    private Request getHttp2Request(org.eclipse.jetty.client.HttpClient httpClient,
+                                    String requestMethod,
+                                    String path,
+                                    String body,
+                                    boolean secureConnection,
+                                    String acceptType,
+                                    Map<String, String> reqHeaders) {
+            String protocol = secureConnection ? "https" : "http";
+            String uri = protocol + "://localhost:" + port + path;
+
+            Request request = httpClient.newRequest(uri);
+            request.version(HTTP_2);
+            addHeaders(reqHeaders, request);
+            request.method(requestMethod);
+
+            switch (requestMethod) {
+                case "GET":
+                case "DELETE":
+                    request.header("Accept", acceptType);
+                    return request;
+                case "HEAD":
+                case "TRACE":
+                case "OPTIONS":
+                case "LOCK":
+                    return request;
+                case "POST":
+                case "PATCH":
+                case "PUT":
+                    request.header("Accept", acceptType);
+                    request.content(new StringContentProvider(body));
+                    return request;
+                default:
+                    throw new IllegalArgumentException("Unknown method " + requestMethod);
+            }
+    }
+
     private HttpUriRequest getHttpRequest(String requestMethod, String path, String body, boolean secureConnection,
                                           String acceptType, Map<String, String> reqHeaders) {
         try {
@@ -215,6 +324,14 @@ public class SparkTestUtil {
         if (reqHeaders != null) {
             for (Map.Entry<String, String> header : reqHeaders.entrySet()) {
                 req.addHeader(header.getKey(), header.getValue());
+            }
+        }
+    }
+
+    private void addHeaders(Map<String, String> reqHeaders, Request req) {
+        if (reqHeaders != null) {
+            for (Map.Entry<String, String> header : reqHeaders.entrySet()) {
+                req.header(header.getKey(), header.getValue());
             }
         }
     }

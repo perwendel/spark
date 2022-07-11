@@ -36,14 +36,17 @@ public interface EmbeddedServer {
      * @param sslStores               - The SSL sslStores.
      * @param maxThreads              - max nbr of threads.
      * @param minThreads              - min nbr of threads.
+     * @param threadIdleTimeoutMillis - idle timeout (ms).
+     * @param http2Enabled            - whether http2 is enabled or not.
      * @return The port number the server was launched on.
      */
     int ignite(String host,
-                   int port,
-                   SslStores sslStores,
-                   int maxThreads,
-                   int minThreads,
-                   int threadIdleTimeoutMillis) throws Exception;
+               int port,
+               SslStores sslStores,
+               int maxThreads,
+               int minThreads,
+               int threadIdleTimeoutMillis,
+               boolean http2Enabled) throws Exception;
 
 
     /**

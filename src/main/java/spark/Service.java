@@ -64,6 +64,7 @@ public final class Service extends Routable {
 
     protected int port = SPARK_DEFAULT_PORT;
     protected String ipAddress = "0.0.0.0";
+    protected boolean http2Enabled = false;
 
     protected SslStores sslStores;
 
@@ -153,6 +154,19 @@ public final class Service extends Routable {
         }
         this.ipAddress = ipAddress;
 
+        return this;
+    }
+
+    /**
+     * Enables HTTP 2
+     *
+     * @return the object with HTTP 2 enabled
+     */
+    public synchronized Service http2() {
+        if (initialized) {
+            throwBeforeRouteMappingException();
+        }
+        this.http2Enabled = true;
         return this;
     }
 
@@ -636,7 +650,8 @@ public final class Service extends Routable {
                             sslStores,
                             maxThreads,
                             minThreads,
-                            threadIdleTimeoutMillis);
+                            threadIdleTimeoutMillis,
+                            http2Enabled);
                   } catch (Exception e) {
                     initExceptionHandler.accept(e);
                   }

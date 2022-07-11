@@ -983,6 +983,13 @@ public class Spark {
     }
 
     /**
+     * Enables HTTP 2
+     */
+    public static void http2() {
+        getInstance().http2();
+    }
+
+    /**
      * Set the default response transformer. All requests not using a custom transformer will use this one
      *
      * @param transformer
