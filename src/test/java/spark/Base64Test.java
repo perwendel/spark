@@ -27,4 +27,18 @@ public class Base64Test {
         Assert.assertTrue(in.equals(decode));
     }
 
+    @Test
+    public final void testEncodeNull() {
+        String in = null;
+        String encode = Base64.encode(in);
+        Assert.assertNull(encode);
+    }
+
+    @Test
+    public final void testDecodeNull() {
+        String in = null;
+        String decode = Base64.decode(in);
+        Assert.assertNull(decode);
+    }
+
 }
