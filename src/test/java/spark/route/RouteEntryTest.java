@@ -84,17 +84,6 @@ public class RouteEntryTest {
     }
 
     @Test
-    public void testMatches_WithWildcardOnEntryPath() {
-
-        RouteEntry entry = new RouteEntry();
-        entry.httpMethod = HttpMethod.get;
-        entry.path = "/test/*";
-
-        assertTrue("Should return true because path specified is covered by the route path wildcard",
-                   entry.matches(HttpMethod.get, "/test/me"));
-    }
-
-    @Test
     public void testMatches_PathsDoNotMatch() {
 
         RouteEntry entry = new RouteEntry();
@@ -106,14 +95,106 @@ public class RouteEntryTest {
     }
 
     @Test
-    public void testMatches_longRoutePathWildcard() {
+    public void testMatches_Wildcard() {
 
         RouteEntry entry = new RouteEntry();
         entry.httpMethod = HttpMethod.get;
+
+        entry.path = "/test/*";
+
+        assertFalse("Should return false because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/"));
+
+        entry.path = "/test/me/:id";
+
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid"));
+
+        entry.path = "/test/me/:id/*";
+
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/child"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/child/"));
+
         entry.path = "/test/this/resource/*";
 
         assertTrue("Should return true because path specified is covered by the route path wildcard",
-                   entry.matches(HttpMethod.get, "/test/this/resource/child/id"));
+            entry.matches(HttpMethod.get, "/test/this/resource/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/resource/child/id/"));
+
+        entry.path = "/test/this/*/resource";
+
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/resource"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/another/resource"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/another/really/really/really/long/resource"));
+
+        entry.path = "/test/this/*/resource/*";
+
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/resource/child/id/"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/another/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/another/resource/child/id/"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/another/really/really/really/long/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/another/really/really/really/long/resource/child/id/"));
+
+        entry.path = "/test/me/:id/this/*/resource/*";
+
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/this/a/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/this/a/resource/child/id/"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/this/a/another/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/this/a/another/resource/child/id/"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/this/a/another/really/really/really/long/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/this/a/another/really/really/really/long/resource/child/id/"));
+
+        entry.path = "/test/me/:id/*/resource/*";
+
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/a/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/a/resource/child/id/"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/a/another/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/a/another/resource/child/id/"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/this/a/another/really/really/really/long/resource/child/id"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/me/myid/this/a/another/really/really/really/long/resource/child/id/"));
+
+        entry.path = "/test/this/*/resource";
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/resource"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/another/resource"));
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/a/another/really/really/really/long/resource"));
+
+        entry.path = "/test/*/a/b/*/d";
+        assertTrue("Should return true because path specified is covered by the route path wildcard",
+            entry.matches(HttpMethod.get, "/test/this/is/a/splat/a/b/c/d"));
     }
 
 }
