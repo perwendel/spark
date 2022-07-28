@@ -1,0 +1,23 @@
+plugins {
+    id 'java-test-fixtures'
+    id 'org.unbroken-dome.test-sets'
+}
+
+dependencies {
+    implementation "org.slf4j:slf4j-api:1.7.25"
+    implementation "org.eclipse.jetty:jetty-server:${jettyVersion}"
+    implementation "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
+    implementation "org.eclipse.jetty.websocket:websocket-server:${jettyVersion}"
+    implementation "org.eclipse.jetty.websocket:websocket-servlet:${jettyVersion}"
+
+    testImplementation "org.slf4j:slf4j-simple:1.7.25"
+    testImplementation 'junit:junit:4.12'
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "org.powermock:powermock-module-junit4:${powermockVersion}"
+    testImplementation "org.powermock:powermock-api-mockito2:${powermockVersion}"
+    testImplementation "org.apache.httpcomponents:httpclient:4.5.6"
+    testImplementation "org.freemarker:freemarker:2.3.28"
+    testImplementation "com.google.code.gson:gson:2.8.5"
+    testImplementation "org.eclipse.jetty.websocket:websocket-client:${jettyVersion}"
+
+}

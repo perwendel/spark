@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+group 'com.sparkjava'
+version '1.0-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+        vendor = JvmVendorSpec.ADOPTOPENJDK
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    test {
+        useJUnit()
+    }
+}
+
+wrapper {
+    gradleVersion = '7.4.2'
+}

@@ -12,3 +12,6 @@ bin
 reports
 .java-version
 .DS_Store
+build
+*/build
+.gradle
