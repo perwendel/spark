@@ -31,6 +31,7 @@ public class CustomErrorPages {
 
     private static final Logger LOG = LoggerFactory.getLogger(CustomErrorPages.class);
     public static final String NOT_FOUND = "<html><body><h2>404 Not found</h2></body></html>";
+    public static final String  METHOD_NOT_ALLOWED  = "<html><body><h2>405 Method Not Allowed</h2></body></html>";
     public static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Server Error</h2></body></html>";
 
     /**
@@ -45,7 +46,7 @@ public class CustomErrorPages {
     /**
      * Gets the custom error page for a given status code.  If the custom
      * error page is a route, the output of its handle method is returned.
-     * If the custom error page is a String, it is returned as an Object.  
+     * If the custom error page is a String, it is returned as an Object.
      * @param status
      * @param request
      * @param response
@@ -80,7 +81,7 @@ public class CustomErrorPages {
         String defaultPage = defaultPages.get(status);
         return (defaultPage != null) ? defaultPage : "<html><body><h2>HTTP Status " + status + "</h2></body></html>";
     }
-    
+
     /**
      * Add a custom error page as a String
      * @param status
@@ -106,6 +107,7 @@ public class CustomErrorPages {
 
     private CustomErrorPages() {
         customPages = new HashMap<>();
+        customPages.put(405, METHOD_NOT_ALLOWED);
         defaultPages = new HashMap<>();
         defaultPages.put(404, NOT_FOUND);
         defaultPages.put(500, INTERNAL_ERROR);
