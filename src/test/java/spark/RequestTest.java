@@ -345,6 +345,29 @@ public class RequestTest {
                 port, request.port());
 
     }
+    
+        @Test
+    public void testName() {
+
+        final String name = "localhost";
+
+        when(servletRequest.getServerName()).thenReturn("localhost");
+
+        assertEquals("The server name of the the underlying servlet request should be returned",
+            name, request.name());
+
+    }
+    @Test
+    public void testLocale() {
+
+        final Locale locale = Locale.SIMPLIFIED_CHINESE;
+
+        when(servletRequest.getLocale()).thenReturn(Locale.SIMPLIFIED_CHINESE);
+
+        assertEquals("The locale of the the underlying servlet request should be returned",
+            locale, request.locale());
+
+    }
 
     @Test
     public void testPathInfo() {
