@@ -111,6 +111,7 @@ public class SocketConnectorFactory {
     private static HttpConnectionFactory createHttpConnectionFactory(boolean trustForwardHeaders) {
         HttpConfiguration httpConfig = new HttpConfiguration();
         httpConfig.setSecureScheme("https");
+        httpConfig.setSendServerVersion(false);
         if(trustForwardHeaders)
             httpConfig.addCustomizer(new ForwardedRequestCustomizer());
         return new HttpConnectionFactory(httpConfig);
