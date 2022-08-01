@@ -56,6 +56,7 @@ class RouteEntry {
         return match;
     }
 
+    //CS304 Issue link: https://github.com/perwendel/spark/issues/1151
     private boolean matchPath(String path) { // NOSONAR
         if (!this.path.endsWith("*") && ((path.endsWith("/") && !this.path.endsWith("/")) // NOSONAR
                 || (this.path.endsWith("/") && !path.endsWith("/")))) {
@@ -121,6 +122,19 @@ class RouteEntry {
                     return true;
                 }
                 // End check wild card
+            }
+            if (thisPathSize > pathSize) {
+                for (int i = pathSize - 1; i > -1; i--) {
+                    if(!thisPathList.get(i).equals(pathList.get(i))){
+                        return false;
+                    }
+                }
+                for (int i = pathSize; i < thisPathSize; i++) {
+                    if (!thisPathList.get(i).endsWith("?")) {
+                        return false;
+                    }
+                }
+                return true;
             }
             return false;
         }
