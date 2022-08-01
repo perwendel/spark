@@ -18,6 +18,7 @@
 package spark.utils.urldecoding;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 /* ------------------------------------------------------------ */
 
@@ -82,13 +83,12 @@ public abstract class Utf8Appendable {
         _state = UTF8_ACCEPT;
     }
 
-
     private void checkCharAppend() throws IOException {
         if (_state != UTF8_ACCEPT) {
             _appendable.append(REPLACEMENT);
             int state = _state;
             _state = UTF8_ACCEPT;
-            throw new org.eclipse.jetty.util.Utf8Appendable.NotUtf8Exception("char appended in state " + state);
+            throw new NotUtf8Exception("char appended in state " + state);
         }
     }
 
@@ -97,7 +97,7 @@ public abstract class Utf8Appendable {
             checkCharAppend();
             _appendable.append(c);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -106,16 +106,15 @@ public abstract class Utf8Appendable {
             checkCharAppend();
             _appendable.append(s, offset, offset + length);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
-
 
     public void append(byte b) {
         try {
             appendByte(b);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -145,7 +144,7 @@ public abstract class Utf8Appendable {
                     _codep = 0;
                     _state = UTF8_ACCEPT;
                     _appendable.append(REPLACEMENT);
-                    throw new org.eclipse.jetty.util.Utf8Appendable.NotUtf8Exception(reason);
+                    throw new NotUtf8Exception(reason);
 
                 default:
                     _state = next;
@@ -172,10 +171,9 @@ public abstract class Utf8Appendable {
             try {
                 _appendable.append(REPLACEMENT);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new UncheckedIOException(e);
             }
-            throw new org.eclipse.jetty.util.Utf8Appendable.NotUtf8Exception("incomplete UTF8 sequence");
+            throw new NotUtf8Exception("incomplete UTF8 sequence");
         }
     }
-
 }
