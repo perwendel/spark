@@ -9,7 +9,7 @@
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
     <packaging>bundle</packaging>
-    <version>2.9.4-SNAPSHOT</version>
+    <version>3-JDK17-SNAPSHOT</version>
     <name>Spark</name>
     <description>A micro framework for creating web applications in Kotlin and Java 8 with minimal effort</description>
     <url>http://www.sparkjava.com</url>
@@ -29,7 +29,9 @@
     </developers>
 
     <properties>
-        <java.version>1.17</java.version>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <jetty.version>11.0.11</jetty.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <powermock.version>1.7.4</powermock.version>
