@@ -2,7 +2,7 @@ package spark.embeddedserver.jetty.websocket;
 
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.eclipse.jetty.websocket.core.server.WebSocketCreator;
 import org.junit.Test;
 
 import spark.embeddedserver.jetty.websocket.WebSocketCreatorFactory.SparkWebSocketCreator;

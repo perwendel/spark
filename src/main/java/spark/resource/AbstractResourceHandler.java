@@ -19,8 +19,8 @@ package spark.resource;
 
 import java.net.MalformedURLException;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Abstract class providing functionality for finding resources based on an Http Servlet request.

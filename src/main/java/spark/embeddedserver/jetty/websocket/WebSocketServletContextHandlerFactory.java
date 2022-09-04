@@ -21,9 +21,9 @@ import java.util.Optional;
 
 import org.eclipse.jetty.http.pathmap.ServletPathSpec;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.websocket.server.NativeWebSocketConfiguration;
-import org.eclipse.jetty.websocket.server.WebSocketUpgradeFilter;
-import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.eclipse.jetty.websocket.server.config.JettyWebSocketConfiguration;
+import org.eclipse.jetty.websocket.servlet.WebSocketUpgradeFilter;
+import org.eclipse.jetty.websocket.core.server.WebSocketCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,28 +43,31 @@ public class WebSocketServletContextHandlerFactory {
      */
     public static ServletContextHandler create(Map<String, WebSocketHandlerWrapper> webSocketHandlers,
                                                Optional<Long> webSocketIdleTimeoutMillis) {
+        if ( webSocketHandlers == null ) return null;
         ServletContextHandler webSocketServletContextHandler = null;
-        if (webSocketHandlers != null) {
-            try {
-                webSocketServletContextHandler = new ServletContextHandler(null, "/", true, false);
-                WebSocketUpgradeFilter webSocketUpgradeFilter = WebSocketUpgradeFilter.configureContext(webSocketServletContextHandler);
-                if (webSocketIdleTimeoutMillis.isPresent()) {
-                    webSocketUpgradeFilter.getFactory().getPolicy().setIdleTimeout(webSocketIdleTimeoutMillis.get());
-                }
-                // Since we are configuring WebSockets before the ServletContextHandler and WebSocketUpgradeFilter is
-                // even initialized / started, then we have to pre-populate the configuration that will eventually
-                // be used by Jetty's WebSocketUpgradeFilter.
-                NativeWebSocketConfiguration webSocketConfiguration = (NativeWebSocketConfiguration) webSocketServletContextHandler
-                    .getServletContext().getAttribute(NativeWebSocketConfiguration.class.getName());
-                for (String path : webSocketHandlers.keySet()) {
-                    WebSocketCreator webSocketCreator = WebSocketCreatorFactory.create(webSocketHandlers.get(path));
-                    webSocketConfiguration.addMapping(new ServletPathSpec(path), webSocketCreator);
-                }
-            } catch (Exception ex) {
-                logger.error("creation of websocket context handler failed.", ex);
-                webSocketServletContextHandler = null;
+        /*
+        try {
+            webSocketServletContextHandler = new ServletContextHandler(null, "/", true, false);
+            WebSocketUpgradeFilter webSocketUpgradeFilter = new WebSocketUpgradeFilter();
+            webSocketUpgradeFilter.init( webSocketHandlers.);
+                WebSocketUpgradeFilter.configureContext(webSocketServletContextHandler);
+            if (webSocketIdleTimeoutMillis.isPresent()) {
+                webSocketUpgradeFilter.getFactory().getPolicy().setIdleTimeout(webSocketIdleTimeoutMillis.get());
             }
+            // Since we are configuring WebSockets before the ServletContextHandler and WebSocketUpgradeFilter is
+            // even initialized / started, then we have to pre-populate the configuration that will eventually
+            // be used by Jetty's WebSocketUpgradeFilter.
+            JettyWebSocketConfiguration webSocketConfiguration = (JettyWebSocketConfiguration) webSocketServletContextHandler
+                .getServletContext().getAttribute(JettyWebSocketConfiguration.class.getName());
+            for (String path : webSocketHandlers.keySet()) {
+                WebSocketCreator webSocketCreator = WebSocketCreatorFactory.create(webSocketHandlers.get(path));
+                webSocketConfiguration.addMapping(new ServletPathSpec(path), webSocketCreator);
+            }
+        } catch (Exception ex) {
+            logger.error("creation of websocket context handler failed.", ex);
+            webSocketServletContextHandler = null;
         }
+        */
         return webSocketServletContextHandler;
     }
 
