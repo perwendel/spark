@@ -21,14 +21,9 @@ import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 
  */
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
 public class WebSocketServletContextHandlerFactoryTest {
-/*
+
     final String webSocketPath = "/websocket";
     private ServletContextHandler servletContextHandler;
 
@@ -40,7 +35,7 @@ public class WebSocketServletContextHandlerFactoryTest {
         assertNull("Should return null because no WebSocket Handlers were passed", servletContextHandler);
 
     }
-
+/*
     @Test
     public void testCreate_whenNoIdleTimeoutIsPresent() throws Exception {
 
