@@ -504,6 +504,7 @@ public class GenericIntegrationTest {
         }
 
         List<String> events = WebSocketTestHandler.events;
+        Assert.assertFalse( "No exchange happened via websocket!", events.isEmpty());
         Assert.assertEquals(3, events.size(), 3);
         Assert.assertEquals("onConnect", events.get(0));
         Assert.assertEquals("onMessage: Hi Spark!", events.get(1));
