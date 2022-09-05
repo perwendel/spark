@@ -66,6 +66,9 @@ public class ResponseWrapperDelegationTest {
         UrlResponse response = testUtil.get("/json");
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("{\"status\": \"ok\"}", response.body);
-        Assert.assertEquals("text/plain", response.headers.get("Content-Type"));
+        // jetty automatically would add context-type. hence we need to change it
+        final String ct = response.headers.get("Content-Type");
+        Assert.assertNotNull(ct);
+        Assert.assertTrue( ct.startsWith("text/plain"));
     }
 }
