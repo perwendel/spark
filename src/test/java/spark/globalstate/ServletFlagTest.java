@@ -2,28 +2,24 @@ package spark.globalstate;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import spark.RawReflect;
 
-@RunWith(PowerMockRunner.class)
 public class ServletFlagTest {
 
     @Before
     public void setup() {
 
-        Whitebox.setInternalState(ServletFlag.class, "isRunningFromServlet", new AtomicBoolean(false));
+        RawReflect.setInternalState(ServletFlag.class, "isRunningFromServlet", new AtomicBoolean(false));
     }
 
     @Test
     public void testRunFromServlet_whenDefault() throws Exception {
 
-        AtomicBoolean isRunningFromServlet = Whitebox.getInternalState(ServletFlag.class, "isRunningFromServlet");
+        AtomicBoolean isRunningFromServlet = RawReflect.getInternalState(ServletFlag.class, "isRunningFromServlet");
         assertFalse("Should be false because it is the default value", isRunningFromServlet.get());
     }
 
@@ -31,7 +27,7 @@ public class ServletFlagTest {
     public void testRunFromServlet_whenExecuted() throws Exception {
 
         ServletFlag.runFromServlet();
-        AtomicBoolean isRunningFromServlet = Whitebox.getInternalState(ServletFlag.class, "isRunningFromServlet");
+        AtomicBoolean isRunningFromServlet = RawReflect.getInternalState(ServletFlag.class, "isRunningFromServlet");
 
         assertTrue("Should be true because it flag has been set after runFromServlet", isRunningFromServlet.get());
     }
