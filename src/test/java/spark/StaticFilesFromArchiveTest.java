@@ -20,9 +20,11 @@ import static java.lang.ClassLoader.getSystemClassLoader;
 import static java.lang.System.arraycopy;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Paths;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -67,7 +69,18 @@ public class StaticFilesFromArchiveTest {
     }
 
     private static URLClassLoader createExtendedClassLoader() {
-        URL[] parentURLs = ((URLClassLoader) getSystemClassLoader()).getURLs();
+        // https://stackoverflow.com/questions/49557431/how-to-safely-access-the-urls-of-all-resource-files-in-the-classpath-in-java-9
+        String classpath = System.getProperty("java.class.path");
+        String[] entries = classpath.split(File.pathSeparator);
+        URL[] parentURLs = new URL[entries.length];
+        for(int i = 0; i < entries.length; i++) {
+            try {
+                parentURLs[i] = Paths.get(entries[i]).toAbsolutePath().toUri().toURL();
+            }catch (Exception e){
+
+            }
+        }
+
         URL[] urls = new URL[parentURLs.length + 1];
         arraycopy(parentURLs, 0, urls, 0, parentURLs.length);
 
