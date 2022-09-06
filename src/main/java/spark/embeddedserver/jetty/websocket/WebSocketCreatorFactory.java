@@ -18,6 +18,9 @@ package spark.embeddedserver.jetty.websocket;
 import org.eclipse.jetty.websocket.core.server.ServerUpgradeRequest;
 import org.eclipse.jetty.websocket.core.server.ServerUpgradeResponse;
 import org.eclipse.jetty.websocket.core.server.WebSocketCreator;
+import org.eclipse.jetty.websocket.server.JettyServerUpgradeRequest;
+import org.eclipse.jetty.websocket.server.JettyServerUpgradeResponse;
+import org.eclipse.jetty.websocket.server.JettyWebSocketCreator;
 
 import static java.util.Objects.requireNonNull;
 
@@ -40,8 +43,12 @@ public class WebSocketCreatorFactory {
         return new SparkWebSocketCreator(handlerWrapper.getHandler());
     }
 
+    public static JettyWebSocketCreator createWS(WebSocketHandlerWrapper handlerWrapper) {
+        return new SparkWebSocketCreator(handlerWrapper.getHandler());
+    }
+
     // Package protected to be visible to the unit tests
-    static class SparkWebSocketCreator implements WebSocketCreator {
+    static class SparkWebSocketCreator implements WebSocketCreator , JettyWebSocketCreator  {
         private final Object handler;
 
         private SparkWebSocketCreator(Object handler) {
@@ -51,6 +58,11 @@ public class WebSocketCreatorFactory {
         @Override
         public Object createWebSocket(ServerUpgradeRequest request,
                                       ServerUpgradeResponse response) {
+            return handler;
+        }
+
+        @Override
+        public Object createWebSocket(JettyServerUpgradeRequest req, JettyServerUpgradeResponse resp) {
             return handler;
         }
 
