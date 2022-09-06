@@ -1,20 +1,18 @@
 [![](https://img.shields.io/travis/perwendel/spark.svg)](https://travis-ci.org/perwendel/spark)
 [![](https://img.shields.io/github/license/perwendel/spark.svg)](./LICENSE)
-[![](https://img.shields.io/maven-central/v/com.sparkjava/spark-core.svg)](http://mvnrepository.com/artifact/com.sparkjava/spark-core)
+Spark3-JDK17 - a tiny web framework for Java 9+!
 
-Spark - a tiny web framework for Java 8
-==============================================
+**Spark 3-JDK17 is in the making!**
 
-**Spark 2.9.4 is out!!**
 ```xml
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.9.4</version>
+    <version>3-JDK17-SNAPSHOT</version>
 </dependency>
 ```
 
-Sponsor the project here https://github.com/sponsors/perwendel
+Sponsor the original project here https://github.com/sponsors/perwendel
 
 For documentation please go to: http://sparkjava.com/documentation
 
@@ -24,6 +22,16 @@ Javadoc: http://javadoc.io/doc/com.sparkjava/spark-core
 
 When committing to the project please use Spark format configured in https://github.com/perwendel/spark/blob/master/config/spark_formatter_intellij.xml
 
+## Customizations Done for Java 9+
+
+1. Moved to Java 17 ( obviously :-) ) 
+2. Jetty 11 is being used ( which is Java 9+ compatible )
+3. Tests earlier using Powermock ( yes, bad idea ) - were removed - and custom reflection set in 
+4. All `javax` classes replaced by corresponding `jakarta` ( Java 9+ removed `javax` from base SDK ) as jetty chose to do it that way
+5. Refactoring the websockets - jetty 11 does it differently. 
+
+
+
 Getting started
 ---------------
 
@@ -31,7 +39,7 @@ Getting started
 <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
-    <version>2.9.4</version>
+    <version>3-JDK17-SNAPSHOT</version>
 </dependency>
 ```
 
