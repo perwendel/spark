@@ -19,7 +19,7 @@ package spark.http.matching;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import spark.Access;
 import spark.QueryParamsMap;

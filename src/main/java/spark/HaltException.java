@@ -16,7 +16,7 @@
  */
 package spark;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Exception used for stopping the execution

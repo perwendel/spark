@@ -43,7 +43,10 @@ public class ServletTest {
 
         // Set some timeout options to make debugging easier.
         connector.setIdleTimeout(1000 * 60 * 60);
-        connector.setSoLingerTime(-1);
+        
+        // Method not in newer Jetty
+        // connector.setSoLingerTime(-1);
+        
         connector.setPort(PORT);
         server.setConnectors(new Connector[] {connector});
 

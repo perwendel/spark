@@ -4,7 +4,7 @@ import java.util.Enumeration;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import spark.utils.Assert;
 

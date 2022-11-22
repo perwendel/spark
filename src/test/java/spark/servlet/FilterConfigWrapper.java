@@ -2,8 +2,8 @@ package spark.servlet;
 
 import java.util.Enumeration;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
 
 
 public class FilterConfigWrapper implements FilterConfig {
@@ -16,7 +16,7 @@ public class FilterConfigWrapper implements FilterConfig {
     
     /**
      * @return
-     * @see javax.servlet.FilterConfig#getFilterName()
+     * @see jakarta.servlet.FilterConfig#getFilterName()
      */
     public String getFilterName() {
         return delegate.getFilterName();
@@ -25,7 +25,7 @@ public class FilterConfigWrapper implements FilterConfig {
     /**
      * @param name
      * @return
-     * @see javax.servlet.FilterConfig#getInitParameter(java.lang.String)
+     * @see jakarta.servlet.FilterConfig#getInitParameter(java.lang.String)
      */
     public String getInitParameter(String name) {
         if (name.equals("applicationClass")) {
@@ -36,7 +36,7 @@ public class FilterConfigWrapper implements FilterConfig {
 
     /**
      * @return
-     * @see javax.servlet.FilterConfig#getInitParameterNames()
+     * @see jakarta.servlet.FilterConfig#getInitParameterNames()
      */
     public Enumeration<String> getInitParameterNames() {
         return delegate.getInitParameterNames();
@@ -44,7 +44,7 @@ public class FilterConfigWrapper implements FilterConfig {
 
     /**
      * @return
-     * @see javax.servlet.FilterConfig#getServletContext()
+     * @see jakarta.servlet.FilterConfig#getServletContext()
      */
     public ServletContext getServletContext() {
         return delegate.getServletContext();
