@@ -6,7 +6,7 @@
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
-    <groupId>com.sparkjava</groupId>
+    <groupId>zoomba-lang</groupId>
     <artifactId>spark-core</artifactId>
     <packaging>bundle</packaging>
     <version>3-JDK17-SNAPSHOT</version>
