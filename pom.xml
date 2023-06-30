@@ -36,7 +36,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <powermock.version>1.7.4</powermock.version>
         <mockito.version>1.10.19</mockito.version>
+        <gpg.skip>true</gpg.skip>
+        <deploy.skip>false</deploy.skip>
     </properties>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>
+                https://oss.sonatype.org/content/repositories/snapshots
+            </url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <dependencies>
         <!-- LOGGING DEPENDENCIES -->
