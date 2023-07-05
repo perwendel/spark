@@ -10,9 +10,7 @@ import org.junit.Test;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
 
-import static spark.Spark.awaitInitialization;
-import static spark.Spark.before;
-import static spark.Spark.stop;
+import static spark.Spark.*;
 
 public class FilterTest {
     static SparkTestUtil testUtil;
@@ -27,6 +25,15 @@ public class FilterTest {
         testUtil = new SparkTestUtil(4567);
 
         before("/justfilter", (q, a) -> System.out.println("Filter matched"));
+        get("/foo", (req, resp) -> {
+            Spark.halt(400, "Exception");
+            return "";
+        });
+        afterAfter("/foo", (req, a) -> {
+            Assert.assertEquals("Exception", a.body());
+            System.out.println(req);
+            System.out.println(a);
+        });
         awaitInitialization();
     }
 
@@ -38,4 +45,12 @@ public class FilterTest {
         Assert.assertEquals(404, response.status);
     }
 
+    @Test
+    public void testAfterAfter() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/foo", null);
+
+        System.out.println("response.status = " + response.status);
+        Assert.assertEquals(400, response.status);
+        Assert.assertEquals("Exception", response.body);
+    }
 }

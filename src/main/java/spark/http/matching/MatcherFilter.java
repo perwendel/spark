@@ -178,6 +178,12 @@ public class MatcherFilter implements Filter {
             }
         } finally {
             try {
+                try {
+                    if (body.get() instanceof String) {
+                        context.responseWrapper().body(body.get().toString());
+                    }
+                } catch (Exception ignore) {}
+
                 AfterAfterFilters.execute(context);
             } catch (Exception generalException) {
                 GeneralError.modify(
