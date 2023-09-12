@@ -468,7 +468,7 @@ public class RequestTest {
     @Test
     public void testQueryParams() {
 
-        Map<String, String[]> params = new HashMap<>();
+        Map<String, String[]> params = new LinkedHashMap<>();
         params.put("sort", new String[]{"asc"});
         params.put("items", new String[]{"10"});
 
